@@ -2,6 +2,12 @@ package com.Variables;
 
 public class Local_Variables {
 
+    //classification of variables in java
+    //1. Local variables
+    //2. Instance variables
+    //3. Static variables
+    //4. primitive and object based  
+
     //rules for local variables
     //1. Local variables are declared inside a method, constructor or any block.
     //2. Local variables are created when the method, constructor or block is entered and destroyed
