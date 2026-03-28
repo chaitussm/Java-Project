@@ -1,0 +1,53 @@
+Shell script block (run: |)
+1. echo ...
+prints message to workflow console:
+Running all classes that expose main() in target/classes.
+2. set +e
+disable “exit on error” behavior.
+after this, a command failing returns non-zero but script continues.
+important because some java class executions may fail; we want to attempt all, not abort on first failing program.
+3. for file in $(find target/classes -name '*.class' | sort); do
+find target/classes -name '*.class': list all .class files below target/classes.
+| sort: make deterministic order.
+for file in ...: iterate each class file path.
+4. cls=${file#target/classes/}
+remove prefix target/classes/ from the path.
+example: target/classes/com/example/Main.class → com/example/Main.class.
+5. cls=${cls%.class}
+strip .class suffix from filename.
+now com/example/Main.
+6. cls=${cls//\//.}
+replace / with . (filesystem path -> Java package name).
+final example: com.example.Main.
+7. if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
+javap -classpath target/classes "$cls" decompiles class signature (public API only) from compiled class.
+2>/dev/null hides stderr warnings from missing classes etc.
+grep -q "public static void main" checks if output contains main method declaration.
+condition true when this class declares a public static void main(...).
+this avoids executing non-entrypoint classes.
+8. echo "--- RUNNING: $cls ---"
+logs which class is about to run, helpful in Actions output to identify progress/results.
+9. java -cp target/classes "$cls"
+actually launches Java for this class.
+-cp target/classes: uses compiled classpath.
+"$cls" is class name (FQCN).
+if class has no main, the earlier if guards against calling it.
+10. fi
+end of if block.
+11. done
+end of for loop after all class files are processed.
+12. set -e
+re-enable the default “exit on first error” behavior for following steps.
+safe end-of-step to restore normal failure semantics for next steps (Run tests, etc).
+Behavior summary
+iterates all built classes
+filters only main entrypoints with javap + grep
+runs each entrypoint one by one
+continues through failures (set +e)
+returns to strict mode afterwards (set -e)
+typed for GitHub Action logs and traceability: list + run + reporting
+Important nuance
+It may run multiple mains and produce mixed outputs; good for demo code collection but not test-suite style.
+If run class requires args, they currently run with no args.
+If you want stop on first failure, remove set +e / set -e, or handle statuses explicitly.
+Raptor mini (Preview) • 1x

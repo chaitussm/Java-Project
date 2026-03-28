@@ -1,0 +1,172 @@
+1. Workflow metadata
+name: Java CI
+name = key for workflow label.
+Java CI = display string of workflow in GitHub Actions UI.
+2. Event triggers
+on:
+
+on = root key for events that start workflow.
+push:
+
+push = event fired when git push to repository.
+branches:
+
+branches = list filter for push event branch names.
+- main
+
+- = YAML sequence item
+main = branch name (source branch on push).
+pull_request:
+
+pull_request = event fired when PR is opened/updated/closed.
+with no nested keys it means all PR events.
+schedule:
+
+schedule = cron-based trigger.
+- cron: '30 17 * * *' # 11:00 PM IST daily
+
+cron: = cron expression property.
+'30 17 * * *' = run at minute 30, hour 17 UTC every day (which is 11:00 PM IST).
+# 11:00 PM IST daily = code comment (ignored by processor).
+3. Job declaration
+jobs:
+
+jobs = container for one or more jobs.
+build-and-run:
+
+build-and-run = job ID (identifier, no spaces, YAML key).
+if: github.event.pull_request.merged == true || github.event_name == 'push' || github.event_name == 'schedule'
+
+if: = conditional execution rule.
+github.event.pull_request.merged == true = condition true only when PR is merged.
+|| = logical OR.
+github.event_name == 'push' = condition true for push event.
+github.event_name == 'schedule' = condition true for schedule event.
+runs-on: ubuntu-latest
+
+runs-on = runner VM type.
+ubuntu-latest = latest stable Ubuntu image.
+4. Steps sequence
+steps:
+steps = array of job steps.
+Step 1: checkout repo
+- name: Checkout repository
+name = label text for step.
+uses: actions/checkout@v4
+uses = action reference.
+actions/checkout@v4 = GitHub action to clone repo.
+Step 2: JDK setup
+- name: Set up JDK 21
+
+step display label.
+uses: actions/setup-java@v4
+
+built-in action for installing Java.
+with:
+
+with = inputs to action.
+distribution: temurin
+
+selects OpenJDK distribution.
+temurin = Eclipse Temurin JDK binaries.
+java-version: '21'
+
+JDK version 21.
+quotes '21' to keep as string exactly.
+Step 3: Maven build
+- name: Build with Maven
+
+step name.
+working-directory: demo
+
+run command from demo subfolder.
+run: mvn -B clean package
+
+run command to execute.
+mvn = Maven CLI.
+-B = batch mode (no interactive prompts).
+clean = delete previous build output.
+package = compile+test and package artifact.
+Step 4: Run sample class
+- name: Run a sample class
+
+step name.
+working-directory: demo
+
+context path.
+run: |
+
+pipe symbol for multiline shell script.
+java -cp target/classes com.example.Main
+
+execute Java application.
+java = JVM launcher.
+-cp = classpath.
+target/classes = compiled classes output dir.
+com.example.Main = fully-qualified class name with main method.
+Step 5: Run tests and report
+- name: Run tests and generate report
+
+step label.
+working-directory: demo
+
+context folder.
+run: mvn -B test
+
+runs Maven tests.
+generates surefire report XMLs (in demo/target/surefire-reports).
+Step 6: Email report
+- name: Email test report
+
+step label.
+uses: dawidd6/action-send-mail@v3
+
+sends email with SMTP via action.
+with:
+
+inputs to email action.
+server_address: ${{ secrets.SMTP_SERVER }}
+
+SMTP host from repository secrets.
+server_port: ${{ secrets.SMTP_PORT }}
+
+SMTP port from secrets.
+username: ${{ secrets.SMTP_USERNAME }}
+
+SMTP username from secrets.
+password: ${{ secrets.SMTP_PASSWORD }}
+
+SMTP password from secrets.
+subject: Java Program Execution Report
+
+email subject.
+body: | + text block
+
+email body multiline text.
+to: chaitanyassm@outlook.com
+
+recipient.
+from: ${{ secrets.SMTP_FROM }}
+
+sender from secrets.
+attachments: demo/target/surefire-reports/*.xml
+
+attaches generated test report files.
+📌 Important notes for every word
+YAML uses indentation levels to represent structure.
+: pairs keys + values.
+- starts list entries.
+'...' is string literal.
+# introduces comments not executed.
+|| boolean OR.
+== equality comparison.
+${{ ... }} is GitHub Actions expression syntax.
+event_name and github.event are context variables from GitHub Actions runtime.
+actions/checkout@v4 and actions/setup-java@v4 are fixed versions; upgrade as needed.
+dawidd6/action-send-mail@v3 requires configured SMTP secrets in repository settings.
+💡 Quick confirmation
+Every line is now explained with its purpose.
+Combined triggers: push, PR closed (merged), schedule daily.
+Reporting: tests are run and results emailed to chaitanyassm@outlook.com via SMTP secret config.
+temurin was already clarified (Eclipse Temurin OpenJDK build).
+Raptor mini (Preview) • 1x
