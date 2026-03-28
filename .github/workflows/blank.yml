@@ -1,36 +1,84 @@
-# This is a basic workflow to help you get started with Actions
+---
+name: Java CI
+#name = The name of the workflow, which will be displayed in the GitHub Actions interface.
+#JAva CI = This is a descriptive name indicating that this workflow is for continuous integration of Java code.
 
-name: CI
-
-# Controls when the workflow will run
-on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
+on: 
+#on root key specifies the events that trigger the workflow. In this case, the workflow is triggered by three types of events:
+  push: 
+  # This event triggers the workflow whenever there is a push to the repository. The workflow will run on any push to any branch.
+    branches:
+    # This specifies that the workflow should only run when there is a push to the 'main' branch. If you want to trigger the workflow on pushes to other branches, you can add them to this list.
+      - main
+      # The 'main' branch is typically the default branch in a Git repository, and this configuration ensures that the workflow runs only when changes are pushed to this branch.
   pull_request:
-    branches: [ "main" ]
+  # This event triggers the workflow whenever a pull request is created, updated, or merged. The workflow will run on any pull request targeting the 'main' branch.
+    types:
+    # This specifies the types of pull request events that will trigger the workflow. In this case, the workflow will only run when a pull request is closed (which includes merging).
+      - closed
+  schedule:
+  # This event triggers the workflow on a scheduled basis, according to the specified cron expression. In this case, the workflow is set to run daily at 11:00 PM IST.
+    - cron: '30 17 * * *' # 11:00 PM IST daily
+    # The cron is expression property '30 17 * * *' means that the workflow will run at 17:30 UTC every day, which corresponds to 11:00 PM IST (Indian Standard Time). You can adjust the cron expression to fit your desired schedule.
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
-jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+jobs: 
+# container fro one or more jobs that will be executed as part of the workflow. Each job can run on a different runner and can have its own set of steps.
+  build-and-run:
+  # This is the identifier for the job. You can choose any name for your job, but it should be descriptive of what the job does. In this case, "build-and-run" indicates that this job will handle building and running the Java code.
+    if: github.event.pull_request.merged == true || github.event_name == 'push' || github.event_name == 'schedule'
+    # This condition ensures that the job will only run if the pull request has been merged, or if the event is a push or a scheduled event. This prevents the job from running on pull request events that are not merged.
     runs-on: ubuntu-latest
+    # This specifies the type of runner that the job will run on. In this case, it will run on the latest version of Ubuntu available in GitHub's hosted runners.
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    # array of job steps that will be executed sequentially. Each step can run a command or use an action.
+      - name: Checkout repository
+      # label for next step which checks out the repository code so that it can be built and tested in subsequent steps.
+        uses: actions/checkout@v4
+      # action reference to the official GitHub Action for checking out code from a repository. The '@v4' indicates that it is using version 4 of the action.
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin # here temurin is the Eclipse Temurin build of OpenJDK.
+          java-version: '21'
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Build with Maven
+        working-directory: demo
+        run: mvn -B clean package
+
+      - name: Run all detected classes with main()
+        working-directory: demo
+        # pipe symbol for multiline shell script which allows multiple commands to run as one step.
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "Running all classes that expose main() in target/classes"
+          set +e
+          for file in $(find target/classes -name '*.class' | sort); do
+            cls=${file#target/classes/}
+            cls=${cls%.class}
+            cls=${cls//\//.}
+            if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
+              echo "--- RUNNING: $cls ---"
+              java -cp target/classes "$cls"
+            fi
+          done
+          set -e
+
+      - name: Run tests and generate report # step label for running tests and generating a report.
+        working-directory: demo
+        run: mvn -B test # This command runs the tests defined in the Maven project. The '-B' flag stands for "batch mode," which is used to run Maven in a non-interactive mode, suitable for CI environments.
+
+      - name: Email test report
+        uses: dawidd6/action-send-mail@v3 # This is a GitHub Action that allows you to send emails from your workflow. The '@v3' indicates that it is using version 3 of the action.
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }} # This is the SMTP server address that will be used to send the email. It is stored as a secret in the GitHub repository for security reasons.
+          server_port: ${{ secrets.SMTP_PORT }} # This is the port number for the SMTP server. It is also stored as a secret in the GitHub repository.
+          username: ${{ secrets.SMTP_USERNAME }} # This is the username for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
+          password: ${{ secrets.SMTP_PASSWORD }} # This is the password for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
+          subject: Java Program Execution Report # This is the subject line for the email.
+          body: | # This is the body of the email. The pipe symbol allows for a multiline string, which can include line breaks and formatting.
+            The scheduled Java pipeline has completed. 
+            Please find the test report attached.
+          to: chaitanyassm@outlook.com 
+          from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
+          attachments: demo/target/surefire-reports/*.xml 
