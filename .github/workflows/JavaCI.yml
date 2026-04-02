@@ -85,7 +85,7 @@ jobs:
           HTML
 
       - name: Upload main output report artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: main-execution-report
           path: demo/target/execution/all-main-output.html
