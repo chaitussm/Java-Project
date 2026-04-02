@@ -49,9 +49,22 @@ jobs:
 
       - name: Run all detected classes with main()
         working-directory: demo
-        # pipe symbol for multiline shell script which allows multiple commands to run as one step.
         run: |
           echo "Running all classes that expose main() in target/classes"
+          mkdir -p target/execution 
+          report=target/execution/all-main-output.html
+          cat > "$report" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <title>Java main() output report</title>
+            <style>body{font-family:Arial,Helvetica,sans-serif;line-height:1.4}pre{background:#f7f7f7;border:1px solid #ddd;padding:12px;overflow-x:auto}</style>
+          </head>
+          <body>
+          <h1>Java main() execution report</h1>
+          HTML
+
           set +e
           for file in $(find target/classes -name '*.class' | sort); do
             cls=${file#target/classes/}
@@ -59,10 +72,23 @@ jobs:
             cls=${cls//\//.}
             if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
               echo "--- RUNNING: $cls ---"
-              java -cp target/classes "$cls"
+              echo "<h2>$cls</h2><pre>" >> "$report"
+              java -cp target/classes "$cls" 2>&1 | sed -e 's/&/\\&amp;/g' -e 's/</\\&lt;/g' -e 's/>/\\&gt;/g' >> "$report"
+              echo "</pre><hr/>" >> "$report"
             fi
           done
           set -e
+
+          cat >> "$report" <<'HTML'
+          </body>
+          </html>
+          HTML
+
+      - name: Upload main output report artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: main-execution-report
+          path: demo/target/execution/all-main-output.html
 
       - name: Run tests and generate report # step label for running tests and generating a report.
         working-directory: demo
