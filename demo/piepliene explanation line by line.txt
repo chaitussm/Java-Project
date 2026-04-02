@@ -170,3 +170,40 @@ Combined triggers: push, PR closed (merged), schedule daily.
 Reporting: tests are run and results emailed to chaitanyassm@outlook.com via SMTP secret config.
 temurin was already clarified (Eclipse Temurin OpenJDK build).
 Raptor mini (Preview) • 1x
+
+Step Run all detected classes with main() now:
+
+Creates demo/target/execution/all-main-output.html
+Wraps output in HTML (<h1>, <h2>, <pre>)
+Escapes special chars (&, <, >)
+Includes each main-class output section with <hr/>
+New step:
+
+Upload main output report artifact
+Uses actions/upload-artifact@v3
+Artifact name: main-execution-report
+Path: demo/target/execution/all-main-output.html
+Existing surefire-report step remains intact (for tests also).
+
+📂 Result location
+After CI execution, artifact:
+
+main-execution-report → download from GitHub Actions run
+file: all-main-output.html
+You can open it in browser immediately.
+
+💡 Optional next step (local usage)
+You can also run locally from repo root:
+
+cd demo
+mvn -B clean package
+./run output extraction step manually (or re-use workflow step script)
+Then open:
+
+demo/target/execution/all-main-output.html
+🧩 Why this is correct for your request
+You asked: “generate a html report for to view the output of all executed programs”
+
+Now you get exactly that: one HTML document capturing each class run output.
+Works from the same pipeline that already runs all main() methods and test reports.
+Raptor mini (Preview) • 1x
