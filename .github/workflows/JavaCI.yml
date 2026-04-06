@@ -131,4 +131,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/java-project:latest
             ${{ secrets.DOCKER_USERNAME }}/java-project:${{ github.sha }}
+            chaitu108/java252:latest
           platforms: linux/amd64,linux/arm64
