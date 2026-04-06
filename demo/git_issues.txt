@@ -1,0 +1,17 @@
+
+Issue one : 
+
+The git pull issue from origin/main has been resolved! Here's what happened:
+
+Issue Identified: Your local branch Java_Chaitanya had diverged from origin/main, meaning both branches had different commits that needed to be reconciled.
+
+Resolution: I performed a merge pull using git pull origin main --no-rebase, which successfully merged the changes from origin/main into your current branch.
+
+Current Status:
+
+You're still on branch Java_Chaitanya
+The branch is now ahead of origin/Java_Chaitanya by 9 commits (due to the merge)
+Working tree is clean with no conflicts
+If you want to push these merged changes back to origin/Java_Chaitanya, you can run:
+
+If you intended to work on the main branch instead, you could switch to it with:
