@@ -118,7 +118,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       
@@ -138,3 +138,18 @@ jobs:
           file: ./demo/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/java252:latest
+
+      - name : Email Docker image build report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Java Docker Image Build Report
+          body: |
+            The Java Docker image has been built and pushed to Docker Hub successfully.
+            Image Name: ${{ secrets.DOCKER_USERNAME }}/java252:latest
+          to: chaitanyassm@outlook.com
+          from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
+
