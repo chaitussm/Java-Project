@@ -1,0 +1,32 @@
+# Git files and directories
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+target
+*.class
+*.jar
+*.log
+
+# Maven
+.m2
+
+# Node modules (if any)
+node_modules
+
+# Environment files
+.env
+.env.local
+
+# Other
+README.md
+*.md
