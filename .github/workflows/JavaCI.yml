@@ -113,23 +113,26 @@ jobs:
           from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
           attachments: demo/target/surefire-reports/*.xml, demo/target/site/surefire-report.html, demo/target/execution/all-main-output.html # Attach test XML/HTML reports and the main() execution report.
 
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
+      
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push Docker image
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: ./demo
-          dockerfile: ./Dockerfile
+          file: ./demo/Dockerfile
           push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/java-project:latest
-            ${{ secrets.DOCKER_USERNAME }}/java-project:${{ github.sha }}
-            chaitu108/java252:latest
-          platforms: linux/amd64,linux/arm64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/java252:latest
