@@ -98,21 +98,6 @@ jobs:
         working-directory: demo
         run: mvn -B surefire-report:report # Create HTML test report under target/site/surefire-report.html
 
-      - name: Email test report
-        uses: dawidd6/action-send-mail@v3 # This is a GitHub Action that allows you to send emails from your workflow. The '@v3' indicates that it is using version 3 of the action.
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }} # This is the SMTP server address that will be used to send the email. It is stored as a secret in the GitHub repository for security reasons.
-          server_port: ${{ secrets.SMTP_PORT }} # This is the port number for the SMTP server. It is also stored as a secret in the GitHub repository.
-          username: ${{ secrets.SMTP_USERNAME }} # This is the username for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
-          password: ${{ secrets.SMTP_PASSWORD }} # This is the password for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
-          subject: Java Program Execution Report # This is the subject line for the email.
-          body: | # This is the body of the email. The pipe symbol allows for a multiline string, which can include line breaks and formatting.
-            The scheduled Java pipeline has completed. 
-            Please find the test report attached.
-          to: chaitanyassm@outlook.com 
-          from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
-          attachments: demo/target/surefire-reports/*.xml, demo/target/site/surefire-report.html, demo/target/execution/all-main-output.html # Attach test XML/HTML reports and the main() execution report.
-
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -139,17 +124,20 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/java252:latest
 
-      - name : Email Docker image build report
+      - name : Email Docker image build report and Java build Test report
         uses: dawidd6/action-send-mail@v3
         with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
+          server_address: ${{ secrets.SMTP_SERVER }} # This is the SMTP server address that will be used to send the email. It is stored as a secret in the GitHub repository for security reasons.
+          server_port: ${{ secrets.SMTP_PORT }} # This is the port number for the SMTP server. It is also stored as a secret in the GitHub repository.
+          username: ${{ secrets.SMTP_USERNAME }} # This is the username for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
+          password: ${{ secrets.SMTP_PASSWORD }} # This is the password for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
           subject: Java Docker Image Build Report
           body: |
             The Java Docker image has been built and pushed to Docker Hub successfully.
             Image Name: ${{ secrets.DOCKER_USERNAME }}/java252:latest
+            Please find the attached test report for the Java build.
+            The scheduled Java pipeline has completed. 
+            Please find the test report attached.
           to: chaitanyassm@outlook.com
           from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
-
+          attachments: demo/target/surefire-reports/*.xml, demo/target/site/surefire-report.html, demo/target/execution/all-main-output.html # Attach test XML/HTML reports and the main() execution report.
