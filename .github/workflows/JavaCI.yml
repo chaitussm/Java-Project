@@ -121,11 +121,9 @@ jobs:
 
       - name: Prepare email attachments
         run: |
-          mkdir -p mail-attachments/surefire-reports
-          cp artifacts/demo/target/site/surefire-report.html mail-attachments/ || true
-          cp artifacts/demo/target/execution/all-main-output.html mail-attachments/ || true
-          cp artifacts/demo/target/surefire-reports/*.xml mail-attachments/surefire-reports/ 2>/dev/null || true
-          cd mail-attachments
+          echo "Downloaded artifact tree:"
+          find artifacts -maxdepth 5 -type f | sort
+          cd artifacts
           zip -r ../attachments.zip .
 
       - name: Set up QEMU
@@ -164,5 +162,5 @@ jobs:
             Please find the test report attached.
           to: chaitanyassm@outlook.com
           from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
-          attachments: mail-attachments/attachments.zip, mail-attachments/surefire-report.html, mail-attachments/all-main-output.html
-          # Attach a verified zip bundle plus the HTML reports directly so mail clients receive the generated reports.
+          attachments: attachments.zip
+          # Attach the generated zip bundle containing all downloaded build artifacts.
