@@ -15,3 +15,13 @@ Working tree is clean with no conflicts
 If you want to push these merged changes back to origin/Java_Chaitanya, you can run:
 
 If you intended to work on the main branch instead, you could switch to it with:
+
+====================================================================
+The git error has been resolved. Here's what I did:
+
+Configured git to use rebase for pulls: git config pull.rebase true
+Successfully pulled and rebased the changes from origin/main into the local Java_Chaitu branch.
+Switched to the main branch.
+Merged the Java_Chaitu branch into main.
+Pushed the updated main branch to origin/main.
+The changes are now pushed to origin/main. The repository is up to date, and the divergent branches issue is fixed. If you have any further issues, let me know!

@@ -131,7 +131,7 @@ jobs:
           server_port: ${{ secrets.SMTP_PORT }} # This is the port number for the SMTP server. It is also stored as a secret in the GitHub repository.
           username: ${{ secrets.SMTP_USERNAME }} # This is the username for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
           password: ${{ secrets.SMTP_PASSWORD }} # This is the password for authenticating with the SMTP server. It is stored as a secret in the GitHub repository.
-          subject: Java Docker Image Build Report
+          subject: Java Docker Image Build Report And Java Build Test Report # This is the subject line of the email that will be sent. It indicates that the email contains a report about the Java Docker image build and the Java build tests.
           body: |
             The Java Docker image has been built and pushed to Docker Hub successfully.
             Image Name: ${{ secrets.DOCKER_USERNAME }}/java252:latest
@@ -140,4 +140,4 @@ jobs:
             Please find the test report attached.
           to: chaitanyassm@outlook.com
           from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
-          attachments: demo/target/surefire-reports/*.xml, demo/target/site/surefire-report.html, demo/target/execution/all-main-output.html # Attach test XML/HTML reports and the main() execution report.
+          attachments: demo/target/site/surefire-report.html, demo/target/execution/all-main-output.html
