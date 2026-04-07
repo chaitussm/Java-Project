@@ -207,3 +207,19 @@ You asked: “generate a html report for to view the output of all executed prog
 Now you get exactly that: one HTML document capturing each class run output.
 Works from the same pipeline that already runs all main() methods and test reports.
 Raptor mini (Preview) • 1x
+
+=======================================================
+Your workflow now sends the Docker email from the last job (docker) and attaches build artifacts produced by the earlier build-and-run job.
+
+What changed
+Added needs: build-and-run to the docker job.
+Uploaded demo/target/site/surefire-report.html, demo/target/surefire-reports, and demo/target/execution/all-main-output.html as a single build-artifacts artifact in build-and-run.
+Downloaded build-artifacts inside the docker job before sending email.
+Updated the email attachments to use the downloaded paths under artifacts/....
+Result
+The Docker job now sends mail with:
+
+Surefire XML reports
+Surefire HTML report
+Main execution HTML report
+If you want, I can also add an explicit needs: docker dependency to any later job that should run after the mail is sent.
