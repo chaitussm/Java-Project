@@ -6,6 +6,69 @@
     "configurations": [
         {
             "type": "java",
+            "name": "OtherOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.OtherOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "TypeCasteOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.TypeCasteOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "BooleanComplementOperator",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.BooleanComplementOperator",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "BitwiseComplementOperator",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.BitwiseComplementOperator",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "InstanceOfOperator",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.InstanceOfOperator",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "EqualityOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.EqualityOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "StringConcatenationOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.StringConcatenationOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "ArithmeticOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.ArithmeticOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Increment_DecrementOperators",
+            "request": "launch",
+            "mainClass": "com.Operators_Assignments.Increment_DecrementOperators",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
