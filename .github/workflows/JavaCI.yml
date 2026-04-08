@@ -163,4 +163,4 @@ jobs:
           to: chaitanyassm@outlook.com
           from: ${{ secrets.SMTP_FROM }} # This is the email address that will appear as the sender of the email. It is stored as a secret in the GitHub repository.
           attachments: attachments.zip
-          # Attach the generated zip bundle containing all downloaded build artifacts.
+          # Attach the generated zip bundle containing all downloaded build artifacts.  

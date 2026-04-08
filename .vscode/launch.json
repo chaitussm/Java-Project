@@ -6,6 +6,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Forloop",
+            "request": "launch",
+            "mainClass": "com.FlowControl.IterativeStatements.Forloop",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "whileloop",
+            "request": "launch",
+            "mainClass": "com.FlowControl.IterativeStatements.whileloop",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Switch",
+            "request": "launch",
+            "mainClass": "com.FlowControl.IterativeStatements.Switch",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "IfElse",
+            "request": "launch",
+            "mainClass": "com.FlowControl.IterativeStatements.IfElse",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "OtherOperators",
             "request": "launch",
             "mainClass": "com.Operators_Assignments.OtherOperators",
