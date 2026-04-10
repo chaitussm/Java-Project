@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PrintStatementInjava",
+            "request": "launch",
+            "mainClass": "com.Import.PrintStatementInjava",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "StaticImport",
+            "request": "launch",
+            "mainClass": "com.Import.StaticImport",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "ImplicitImport",
+            "request": "launch",
+            "mainClass": "com.Import.ImplicitImport",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "Forloop",
             "request": "launch",
             "mainClass": "com.FlowControl.IterativeStatements.Forloop",
