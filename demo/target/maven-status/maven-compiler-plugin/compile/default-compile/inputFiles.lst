@@ -1,25 +1,57 @@
-/home/surya/Study/Java-Project/demo/src/main/java/com/Arrays/AssignmentOfObjInArrays.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Arrays/CMDWithArrays.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Arrays/InitializeArray.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Command_LineArguments/CMDBasics.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/BytedataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/CharDataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/DoubleDataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/FloatDataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/IntdataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/LongDataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/DataTypes/ShortDataType.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Garbage_Collector/Garbage_Collector.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Literals/NumericLiterals.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Literals/StringLiterals.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/MainMethod/ChildMethod.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/MainMethod/InheritanceMainMethod.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/MainMethod/MainmethodDef.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/MainMethod/OverloadMainMethod.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/MainMethod/OverridingMainMethod.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/VarArg_Methods/VarArg_def.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/VarArg_Methods/VarArg_preference.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Variables/Instance_Variables.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Variables/Local_Variables.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/Variables/Static_Variables.java
-/home/surya/Study/Java-Project/demo/src/main/java/com/example/Main.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/collections/arrays/AssignmentOfObjInArrays.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/collections/arrays/CMDWithArrays.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/collections/arrays/InitializeArray.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/examples/Main.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/conditionalstmts/IfElse.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/conditionalstmts/Switch.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/iterativestmts/DoWhileloop.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/iterativestmts/ForEachloop.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/iterativestmts/Forloop.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/flowcontrol/iterativestmts/Whileloop.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/commandlineargs/CMDBasics.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/BytedataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/CharDataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/DoubleDataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/FloatDataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/IntdataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/LongDataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/datatypes/ShortDataType.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/literals/NumericLiterals.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/literals/StringLiterals.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/ArithmeticOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/AssignmentOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/BitwiseComplementOperator.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/BooleanComplementOperator.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/ConditionalOperator.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/EqualityOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/Increment_DecrementOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/InstanceOfOperator.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/OtherOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/RelationalOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/ShortCircuitOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/StringConcatenationOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/operators/TypeCasteOperators.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/variables/Instance_Variables.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/variables/Local_Variables.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/fundamentals/variables/Static_Variables.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/imports/ExplicitImport.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/imports/ImplicitImport.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/imports/PrintStatementInjava.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/imports/StaticImport.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/AccessdefaultModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/DefaultModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/FinalModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/PrivateModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/ProtectedMoidifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/PublicModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/SynchronizeModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/TransientModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/accessmodifiers/VolatileModifier.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/mainmethods/ChildMethod.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/mainmethods/InheritanceMainMethod.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/mainmethods/MainmethodDef.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/mainmethods/OverloadMainMethod.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/mainmethods/OverridingMainMethod.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/methods/VarArg_def.java
+/home/surya/Study/Java Project/Java-Project/demo/src/main/java/com/objectoriented/methods/VarArg_preference.java
