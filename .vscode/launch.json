@@ -6,6 +6,62 @@
     "configurations": [
         {
             "type": "java",
+            "name": "VolatileModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.VolatileModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "SynchronizeModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.SynchronizeModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "FinalModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.FinalModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "protectedMoidifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.protectedMoidifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "AccessdefaultModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.AccessdefaultModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "defaultModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.defaultModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "privateModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.privateModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "publicModifier",
+            "request": "launch",
+            "mainClass": "com.AccessModifiers.publicModifier",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "PrintStatementInjava",
             "request": "launch",
             "mainClass": "com.Import.PrintStatementInjava",
