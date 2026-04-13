@@ -6,6 +6,41 @@
     "configurations": [
         {
             "type": "java",
+            "name": "InterfaceCaseThree",
+            "request": "launch",
+            "mainClass": "com.fundamentals.Interface.InterfaceCaseThree",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "InterfaceCaseTwo",
+            "request": "launch",
+            "mainClass": "com.fundamentals.Interface.InterfaceCaseTwo",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "InterfaceCaseOne",
+            "request": "launch",
+            "mainClass": "com.fundamentals.Interface.InterfaceCaseOne",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "Markerinterface",
+            "request": "launch",
+            "mainClass": "com.fundamentals.Interface.Markerinterface",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "InterfaceDef",
+            "request": "launch",
+            "mainClass": "com.fundamentals.Interface.InterfaceDef",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "VolatileModifier",
             "request": "launch",
             "mainClass": "com.AccessModifiers.VolatileModifier",
