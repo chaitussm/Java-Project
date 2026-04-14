@@ -6,6 +6,48 @@
     "configurations": [
         {
             "type": "java",
+            "name": "EncapsulationDef",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Encapsulation.EncapsulationDef",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "AutomaticPromotion",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Overloading.AutomaticPromotion",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "OverloadingBasics",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Overloading.OverloadingBasics",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "CovariantNewEngine",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Overriding.CovariantNewEngine",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "NewEngine",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Overriding.NewEngine",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "AssociationExample",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Aggregation_Composition.AssociationExample",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "InterfaceCaseThree",
             "request": "launch",
             "mainClass": "com.fundamentals.Interface.InterfaceCaseThree",
