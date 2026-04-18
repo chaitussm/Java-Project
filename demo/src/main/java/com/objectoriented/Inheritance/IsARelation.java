@@ -24,6 +24,13 @@ public class IsARelation extends BaseClass {
         // with child class reference we can access the method of parent class and child class because child class is inheriting the properties and behaviors of parent class but with parent class reference we can only access the method of parent class because parent class is not inheriting the properties and behaviors of child class.
         BaseClass obj1 = new IsARelation();
         obj1.display();
+
+        BaseClass obj2 = new IsARelation();
+        obj2.display();   // This will cause a compile-time error because the reference type is Base
+
+        //IsARelation obj3 = new BaseClass();  // child class object reference cannot hold parent class object
+        // This will cause a compile-time error because the reference type is IsARelation
+       // obj3.display();
     }
     
 }
