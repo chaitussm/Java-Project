@@ -73,7 +73,6 @@ public class dataTypesData {
       short number = scanner.nextShort();
       System.out.println("You entered: " + number);
       scanner.nextLine(); // consume newline
-      scanner.close();
      }
 
 
