@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "provideDataFromTerminal",
+            "request": "launch",
+            "mainClass": "com.fundamentals.commandlineargs.provideDataFromTerminal",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "typeCastingDef",
             "request": "launch",
             "mainClass": "com.objectoriented.typeCasting.typeCastingDef",
