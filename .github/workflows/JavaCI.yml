@@ -66,17 +66,22 @@ jobs:
               echo "$USER_INPUT" | java -cp demo/target/classes "$class"
             done < input_classes.txt
 
+
       - name: Run all detected classes with main()
         working-directory: demo
         run: |
           echo "Running all classes that expose main() in target/classes"
-          mkdir -p target/execution 
+          mkdir -p target/execution
           report=target/execution/all-main-output.html
-          cat > "$report" <<'HTML'
-          <!doctype html>
-
-          </html>
-          HTML
+          echo "<!doctype html><html><body><h1>Main Class Execution Output</h1><pre>" > "$report"
+          # Find all .class files, convert to class names, and run them
+          for classfile in $(find target/classes -type f -name '*.class'); do
+            class=$(echo "$classfile" | sed 's|target/classes/||;s|/|.|g;s|\.class$||')
+            echo "Running $class" >> "$report"
+            java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
+            echo "" >> "$report"
+          done
+          echo "</pre></body></html>" >> "$report"
 
       - name: Upload main output report artifact
         uses: actions/upload-artifact@v4
