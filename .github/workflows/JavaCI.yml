@@ -51,6 +51,21 @@ jobs:
         working-directory: demo
         run: mvn -B ${{ github.event.inputs.build_goal || 'clean package' }}
 
+      - name: Detect input-requiring classes
+        run: |
+          grep -rlE 'Scanner|System\\.console\\(|BufferedReader\\(.*System\\.in' demo/src/main/java/ > input_classes.txt || true
+          cat input_classes.txt
+
+      - name: Run classes requiring input
+        run: |
+            while read -r file; do
+              [ -z "$file" ] && continue
+              class=$(echo "$file" | sed 's|.*/java/||;s|/|.|g;s|\\.java$||')
+              echo "Detected input for class: $class"
+              read -p "Enter input for $class: " USER_INPUT
+              echo "$USER_INPUT" | java -cp demo/target/classes "$class"
+            done < input_classes.txt
+
       - name: Run all detected classes with main()
         working-directory: demo
         run: |
@@ -59,32 +74,7 @@ jobs:
           report=target/execution/all-main-output.html
           cat > "$report" <<'HTML'
           <!doctype html>
-          <html lang="en">
-          <head>
-            <meta charset="utf-8" />
-            <title>Java main() output report</title>
-            <style>body{font-family:Arial,Helvetica,sans-serif;line-height:1.4}pre{background:#f7f7f7;border:1px solid #ddd;padding:12px;overflow-x:auto}</style>
-          </head>
-          <body>
-          <h1>Java main() execution report</h1>
-          HTML
 
-          set +e
-          for file in $(find target/classes -name '*.class' | sort); do
-            cls=${file#target/classes/}
-            cls=${cls%.class}
-            cls=${cls//\//.}
-            if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
-              echo "--- RUNNING: $cls ---"
-              echo "<h2>$cls</h2><pre>" >> "$report"
-              java -cp target/classes "$cls" 2>&1 | sed -e 's/&/\\&amp;/g' -e 's/</\\&lt;/g' -e 's/>/\\&gt;/g' >> "$report"
-              echo "</pre><hr/>" >> "$report"
-            fi
-          done
-          set -e
-
-          cat >> "$report" <<'HTML'
-          </body>
           </html>
           HTML
 
