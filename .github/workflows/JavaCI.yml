@@ -78,7 +78,11 @@ jobs:
           for classfile in $(find target/classes -type f -name '*.class'); do
             class=$(echo "$classfile" | sed 's|target/classes/||;s|/|.|g;s|\.class$||')
             echo "Running $class" >> "$report"
-            java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
+            if [[ "$class" == "com.fundamentals.commandlineargs.dataTypesData" ]]; then
+              echo "42" | java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
+            else
+              java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
+            fi
             echo "" >> "$report"
           done
           echo "</pre></body></html>" >> "$report"
