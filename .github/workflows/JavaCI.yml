@@ -19,9 +19,8 @@ on:
         description: 'Maven Goal'
         required: true
         default: 'clean package'
-
 jobs:
-  build-and-run:
+ build-and-run:
     if: github.event.pull_request.merged == true || github.event_name == 'push' || github.event_name == 'schedule'
     runs-on: ubuntu-latest
     steps:
@@ -108,7 +107,7 @@ jobs:
             demo/target/surefire-reports
             demo/target/execution/all-main-output.html
 
-  docker:
+ docker:
     needs: build-and-run
     runs-on: ubuntu-latest
     steps:
