@@ -83,10 +83,11 @@ public class dataTypesData {
         doubleData();
         stringData();
         charData();
-        booleanData();
         floatData();
         longData();
         shortData();
+        booleanData();
+        
      }
 
     
