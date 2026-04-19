@@ -58,10 +58,10 @@ jobs:
                 2) val=$(LC_ALL=C awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double
                 3) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 6);; # string
                 4) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
-                5) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false); val=$(echo "$val" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]');; # boolean
-                6) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
-                7) val=$((RANDOM * 10000));; # long
-                8) val=$((RANDOM % 32767));; # short
+                5) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
+                6) val=$((RANDOM * 10000));; # long
+                7) val=$((RANDOM % 32767));; # short
+                8) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false); val=$(echo "$val" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]');; # boolean
                 *) val=0;; # fallback
               esac
               input_str="$input_str$val\n"
