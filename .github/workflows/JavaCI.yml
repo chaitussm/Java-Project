@@ -54,16 +54,19 @@ jobs:
             # Generate random values for each input
             input_str=""
             for i in $(seq 1 $num_inputs); do
-              case $((RANDOM % 8)) in
-                0) val=$((RANDOM % 100));; # int
-                1) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double/float
-                2) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
-                3) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false);; # boolean
-                4) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
-                5) val=$((RANDOM * 10000));; # long
-                6) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
-                7) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
-              esac
+              if [ "$i" -eq 1 ]; then
+                val=$((RANDOM % 100)) # Always int for first input
+              else
+                case $((RANDOM % 7)) in
+                  0) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double/float
+                  1) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
+                  2) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false);; # boolean
+                  3) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
+                  4) val=$((RANDOM * 10000));; # long
+                  5) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
+                  6) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
+                esac
+              fi
               input_str="$input_str$val\n"
             done
             echo -e "$input_str" | java -cp demo/target/classes "$class"
