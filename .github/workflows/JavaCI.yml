@@ -56,15 +56,16 @@ jobs:
             for i in $(seq 1 $num_inputs); do
               if [ "$i" -eq 1 ]; then
                 val=$((RANDOM % 100)) # Always int for first input
+              elif [ "$i" -eq 2 ]; then
+                val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false) # Always boolean for second input
               else
-                case $((RANDOM % 7)) in
+                case $((RANDOM % 6)) in
                   0) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double/float
                   1) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
-                  2) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false);; # boolean
-                  3) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
-                  4) val=$((RANDOM * 10000));; # long
-                  5) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
-                  6) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
+                  2) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
+                  3) val=$((RANDOM * 10000));; # long
+                  4) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
+                  5) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
                 esac
               fi
               input_str="$input_str$val\n"
