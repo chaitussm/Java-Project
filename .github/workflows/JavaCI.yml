@@ -54,22 +54,17 @@ jobs:
             # Generate random values for each input
             input_str=""
             for i in $(seq 1 $num_inputs); do
-              if [ "$i" -eq 1 ]; then
-                val=$((RANDOM % 100)) # Always int for first input
-              elif [ "$i" -eq 2 ]; then
-                val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false) # Always boolean for second input
-              elif [ "$i" -eq 3 ]; then
-                val=$(LC_ALL=C awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}')
-                val=$(echo "$val" | tr -d '[:space:]') # Remove any whitespace
-              else
-                case $((RANDOM % 5)) in
-                  0) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
-                  1) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
-                  2) val=$((RANDOM * 10000));; # long
-                  3) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
-                  4) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
-                esac
-              fi
+              case $i in
+                1) val=$((RANDOM % 100));; # int
+                2) val=$(LC_ALL=C awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double
+                3) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 6);; # string
+                4) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
+                5) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false);; # boolean
+                6) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
+                7) val=$((RANDOM * 10000));; # long
+                8) val=$((RANDOM % 32767));; # short
+                *) val=0;; # fallback
+              esac
               input_str="$input_str$val\n"
             done
             echo -e "$input_str" | env LANG=C LC_ALL=C java -cp demo/target/classes "$class"
