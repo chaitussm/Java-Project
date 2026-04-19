@@ -51,12 +51,20 @@ jobs:
             echo "Detected input for class: $class"
             # Count the number of Scanner input calls
             num_inputs=$(grep -o 'next[a-zA-Z]*(' "$file" | wc -l)
-            # Cycle through type-appropriate test values
-            test_values=("42" "3.14" "hello" "true" "A" "1234567890" "2.718" "SampleString")
+            # Generate random values for each input
             input_str=""
             for i in $(seq 1 $num_inputs); do
-              idx=$(( (i-1) % ${#test_values[@]} ))
-              input_str="$input_str${test_values[$idx]}\n"
+              case $((RANDOM % 8)) in
+                0) val=$((RANDOM % 100));; # int
+                1) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}');; # double/float
+                2) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
+                3) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false);; # boolean
+                4) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 1);; # char
+                5) val=$((RANDOM * 10000));; # long
+                6) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
+                7) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 8);; # another string
+              esac
+              input_str="$input_str$val\n"
             done
             echo -e "$input_str" | java -cp demo/target/classes "$class"
           done < input_classes.txt
