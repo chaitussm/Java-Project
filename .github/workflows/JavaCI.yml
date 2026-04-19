@@ -59,7 +59,7 @@ jobs:
               elif [ "$i" -eq 2 ]; then
                 val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false) # Always boolean for second input
               elif [ "$i" -eq 3 ]; then
-                val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}') # Always double for third input
+                val=$(LC_ALL=C awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.2f", rand()*100}') # Always double for third input
               else
                 case $((RANDOM % 5)) in
                   0) val=$(head /dev/urandom | tr -dc A-Za-z | head -c 5);; # string
