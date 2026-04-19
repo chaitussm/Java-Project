@@ -61,11 +61,13 @@ jobs:
                 5) val=$(awk -v seed=$RANDOM 'BEGIN{srand(seed); printf "%.3f", rand()*10}');; # float
                 6) val=$((RANDOM * 10000));; # long
                 7) val=$((RANDOM % 32767));; # short
-                8) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false); val=$(echo "$val" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]');; # boolean
+                8) val=$([ $((RANDOM % 2)) -eq 0 ] && echo true || echo false); val=$(echo "$val" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | grep -Eo 'true|false');; # boolean
                 *) val=0;; # fallback
               esac
               input_str="$input_str$val\n"
             done
+            echo "Generated input values:" >&2
+            echo -e "$input_str" >&2
             echo -e "$input_str" | env LANG=C LC_ALL=C java -cp demo/target/classes "$class"
           done < input_classes.txt
 
