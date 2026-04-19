@@ -1,11 +1,6 @@
----
 name: Java CI
-#name = The name of the workflow, which will be displayed in the GitHub Actions interface.
-#JAva CI = This is a descriptive name indicating that this workflow is for continuous integration of Java code.
 
-on: 
-
-# on root key specifies the events that trigger the workflow. In this case, the workflow is triggered by four types of events:
+on:
   push:
     branches:
       - main
@@ -13,7 +8,7 @@ on:
     types:
       - closed
   schedule:
-    - cron: '30 17 * * *' # 11:00 PM IST daily
+    - cron: '30 17 * * *'
   workflow_dispatch:
     inputs:
       java_version:
@@ -25,26 +20,18 @@ on:
         required: true
         default: 'clean package'
 
-jobs: 
-# container fro one or more jobs that will be executed as part of the workflow. Each job can run on a different runner and can have its own set of steps.
+jobs:
   build-and-run:
-  # This is the identifier for the job. You can choose any name for your job, but it should be descriptive of what the job does. In this case, "build-and-run" indicates that this job will handle building and running the Java code.
     if: github.event.pull_request.merged == true || github.event_name == 'push' || github.event_name == 'schedule'
-    # This condition ensures that the job will only run if the pull request has been merged, or if the event is a push or a scheduled event. This prevents the job from running on pull request events that are not merged.
     runs-on: ubuntu-latest
-    # This specifies the type of runner that the job will run on. In this case, it will run on the latest version of Ubuntu available in GitHub's hosted runners.
-
     steps:
-    # array of job steps that will be executed sequentially. Each step can run a command or use an action.
       - name: Checkout repository
-      # label for next step which checks out the repository code so that it can be built and tested in subsequent steps.
         uses: actions/checkout@v4
-      # action reference to the official GitHub Action for checking out code from a repository. The '@v4' indicates that it is using version 4 of the action.
 
       - name: Set up JDK ${{ github.event.inputs.java_version || '21' }}
         uses: actions/setup-java@v4
         with:
-          distribution: temurin # here temurin is the Eclipse Temurin build of OpenJDK.
+          distribution: temurin
           java-version: ${{ github.event.inputs.java_version || '21' }}
 
       - name: Build with Maven
@@ -53,19 +40,23 @@ jobs:
 
       - name: Detect input-requiring classes
         run: |
-          grep -rlE 'Scanner|System\\.console\\(|BufferedReader\\(.*System\\.in' demo/src/main/java/ > input_classes.txt || true
+          grep -rlE 'Scanner|System\.console\(|BufferedReader\(.*System\.in' demo/src/main/java/ > input_classes.txt || true
           cat input_classes.txt
 
-      - name: Run classes requiring input
+      - name: Run classes requiring input (dynamic input)
         run: |
-            while read -r file; do
-              [ -z "$file" ] && continue
-              class=$(echo "$file" | sed 's|.*/java/||;s|/|.|g;s|\\.java$||')
-              echo "Detected input for class: $class"
-              read -p "Enter input for $class: " USER_INPUT
-              echo "$USER_INPUT" | java -cp demo/target/classes "$class"
+          while read -r file; do
+            [ -z "$file" ] && continue
+            class=$(echo "$file" | sed 's|.*/java/||;s|/|.|g;s|\.java$||')
+            echo "Detected input for class: $class"
+            # Count the number of Scanner input calls
+            num_inputs=$(grep -o 'next[a-zA-Z]*(' "$file" | wc -l)
+            input_str=""
+            for i in $(seq 1 $num_inputs); do
+               input_str="$input_str$i\n"
+            done
+            echo -e "$input_str" | java -cp demo/target/classes "$class"
             done < input_classes.txt
-
 
       - name: Run all detected classes with main()
         working-directory: demo
@@ -74,15 +65,10 @@ jobs:
           mkdir -p target/execution
           report=target/execution/all-main-output.html
           echo "<!doctype html><html><body><h1>Main Class Execution Output</h1><pre>" > "$report"
-          # Find all .class files, convert to class names, and run them
           for classfile in $(find target/classes -type f -name '*.class'); do
             class=$(echo "$classfile" | sed 's|target/classes/||;s|/|.|g;s|\.class$||')
             echo "Running $class" >> "$report"
-            if [[ "$class" == "com.fundamentals.commandlineargs.dataTypesData" ]]; then
-              echo "42" | java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
-            else
-              java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
-            fi
+            echo -e "1\n2\n3\n4\n5\n6\n7\n8" | java -cp target/classes "$class" >> "$report" 2>&1 || echo "(Error running $class)" >> "$report"
             echo "" >> "$report"
           done
           echo "</pre></body></html>" >> "$report"
@@ -93,13 +79,13 @@ jobs:
           name: main-execution-report
           path: demo/target/execution/all-main-output.html
 
-      - name: Run tests and generate report # step label for running tests and generating a report.
+      - name: Run tests and generate report
         working-directory: demo
-        run: mvn -B test # This command runs the tests defined in the Maven project. The '-B' flag stands for "batch mode," which is used to run Maven in a non-interactive mode, suitable for CI environments.
+        run: mvn -B test
 
       - name: Generate HTML surefire report
         working-directory: demo
-        run: mvn -B surefire-report:report # Create HTML test report under target/site/surefire-report.html
+        run: mvn -B surefire-report:report
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -137,6 +123,9 @@ jobs:
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -148,7 +137,7 @@ jobs:
           file: ./demo/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/java252:latest
-
+      
       - name : Email Docker image build report and Java build Test report
         uses: dawidd6/action-send-mail@v3
         with:
