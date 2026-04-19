@@ -13,15 +13,17 @@ public class dataTypesData {
      {
         
         System.out.println("Enter an integer: ");
-        int number = scanner.nextInt();
-        System.out.println("You entered: " + number);
+      int number = scanner.nextInt();
+      System.out.println("You entered: " + number);
+      scanner.nextLine(); // consume newline
       }    
 
      public static void doubleData()
      {        
         System.out.println("Enter a double: ");
-        double number = scanner.nextDouble();
-        System.out.println("You entered: " + number);
+      double number = scanner.nextDouble();
+      System.out.println("You entered: " + number);
+      scanner.nextLine(); // consume newline
      }
 
      public static void stringData()
@@ -36,37 +38,42 @@ public class dataTypesData {
      public static void charData()
      {
         System.out.println("Enter a character: ");
-        char ch = scanner.next().charAt(0);
-        System.out.println("You entered: " + ch);
+      char ch = scanner.next().charAt(0);
+      System.out.println("You entered: " + ch);
+      scanner.nextLine(); // consume newline
      }
 
      public static void booleanData()
      {
         System.out.println("Enter a boolean value (true/false): ");
-        boolean bool = scanner.nextBoolean();
-        System.out.println("You entered: " + bool);
+      boolean bool = scanner.nextBoolean();
+      System.out.println("You entered: " + bool);
+      scanner.nextLine(); // consume newline
      }
 
      public static void floatData()
      {
         System.out.println("Enter a float: ");
-        float number = scanner.nextFloat();
-        System.out.println("You entered: " + number);
+      float number = scanner.nextFloat();
+      System.out.println("You entered: " + number);
+      scanner.nextLine(); // consume newline
     }
 
      public static void longData()
      {
         System.out.println("Enter a long: ");
-        long number = scanner.nextLong();
-        System.out.println("You entered: " + number);
+      long number = scanner.nextLong();
+      System.out.println("You entered: " + number);
+      scanner.nextLine(); // consume newline
      }
 
      public static void shortData()
      {
         System.out.println("Enter a short: ");
-        short number = scanner.nextShort();
-        System.out.println("You entered: " + number);
-        scanner.close();
+      short number = scanner.nextShort();
+      System.out.println("You entered: " + number);
+      scanner.nextLine(); // consume newline
+      scanner.close();
      }
 
 
