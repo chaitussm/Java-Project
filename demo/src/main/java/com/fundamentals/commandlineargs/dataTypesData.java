@@ -45,10 +45,20 @@ public class dataTypesData {
 
      public static void booleanData()
      {
-        System.out.println("Enter a boolean value (true/false): ");
-      boolean bool = scanner.nextBoolean();
-      System.out.println("You entered: " + bool);
-      scanner.nextLine(); // consume newline
+         System.out.println("Enter a boolean value (true/false): ");
+         if (scanner.hasNext()) {
+            String next = scanner.next();
+            System.out.println("[DEBUG] Next token for boolean: '" + next + "'");
+            try {
+               boolean bool = Boolean.parseBoolean(next);
+               System.out.println("You entered: " + bool);
+            } catch (Exception e) {
+               System.out.println("[ERROR] Could not parse boolean: '" + next + "'");
+            }
+         } else {
+            System.out.println("[ERROR] No input available for boolean value.");
+         }
+         scanner.nextLine(); // consume newline
      }
 
      public static void floatData()
