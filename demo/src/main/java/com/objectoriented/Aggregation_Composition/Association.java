@@ -5,6 +5,10 @@ import java.util.*;
 // Class 1
 // Bank class
 class Bank {
+    public static void main(String[] args) {
+        Bank bank = new Bank("DemoBank");
+        System.out.println("Bank name: " + bank.getBankName());
+    }
 
     // Attributes of bank
     private String bankName;
@@ -37,6 +41,10 @@ class Bank {
 // Class 2
 // Employee class
 class Employee {
+    public static void main(String[] args) {
+        Employee emp = new Employee("DemoEmployee");
+        System.out.println("Employee name: " + emp.getEmployeeName());
+    }
   
     // Attributes of employee
     private String name;

@@ -6,6 +6,12 @@ class Calculator {
     public int add(int a, int b) {
         return a + b;
     }
+
+    public static void main(String[] args) {
+        Calculator calc = new Calculator();
+        int result = calc.add(3, 7);
+        System.out.println("Sum: " + result);
+    }
 }
 
 
@@ -14,6 +20,11 @@ class Calculator {
 class NotificationService {
     public void sendEmail(String message) {
         System.out.println("Email sent with content: " + message);
+    }
+
+    public static void main(String[] args) {
+        NotificationService notifier = new NotificationService();
+        notifier.sendEmail("Hello from NotificationService main method!");
     }
 }
 

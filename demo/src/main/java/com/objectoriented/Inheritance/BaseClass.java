@@ -10,5 +10,9 @@ public class BaseClass {
     public void display() {
         System.out.println("This is the base class.");
     }
-    
+
+    public static void main(String[] args) {
+        BaseClass base = new BaseClass();
+        base.display();
+    }
 }

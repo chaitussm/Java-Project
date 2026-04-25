@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "InheritanceWithStaticBlock",
+            "request": "launch",
+            "mainClass": "com.objectoriented.staticBlock.InheritanceWithStaticBlock",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "executionFlowInSB",
+            "request": "launch",
+            "mainClass": "com.objectoriented.staticBlock.executionFlowInSB",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "provideDataFromTerminal",
             "request": "launch",
             "mainClass": "com.fundamentals.commandlineargs.provideDataFromTerminal",
