@@ -6,6 +6,55 @@
     "configurations": [
         {
             "type": "java",
+            "name": "super_thisVariations",
+            "request": "launch",
+            "mainClass": "com.objectoriented.constructors.super_thisVariations",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "prototypeConstructor",
+            "request": "launch",
+            "mainClass": "com.objectoriented.constructors.prototypeConstructor",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "constructore_voidMethod",
+            "request": "launch",
+            "mainClass": "com.objectoriented.constructors.constructore_voidMethod",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "ConstructorInvokeCount",
+            "request": "launch",
+            "mainClass": "com.objectoriented.constructors.ConstructorInvokeCount",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "MixedBlockFlow",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Blocks.MixedBlockFlow",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "MixedBlockOrder",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Blocks.MixedBlockOrder",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "MixedBlock",
+            "request": "launch",
+            "mainClass": "com.objectoriented.Blocks.MixedBlock",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "instanceblockDef",
             "request": "launch",
             "mainClass": "com.objectoriented.instanceBlock.instanceblockDef",

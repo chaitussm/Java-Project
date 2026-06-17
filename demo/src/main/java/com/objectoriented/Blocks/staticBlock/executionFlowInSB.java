@@ -1,4 +1,4 @@
-package com.objectoriented.staticBlock;
+package com.objectoriented.Blocks.staticBlock;
 
 public class executionFlowInSB {
 

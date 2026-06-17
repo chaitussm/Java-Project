@@ -1,6 +1,4 @@
-package com.objectoriented.instanceBlock;
-
-import com.examples.Main;
+package com.objectoriented.Blocks.instanceBlock;
 
 public class instanceblockDef {
 
