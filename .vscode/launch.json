@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "overloadConstructors",
+            "request": "launch",
+            "mainClass": "com.objectoriented.constructors.overloadConstructors",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "super_thisVariations",
             "request": "launch",
             "mainClass": "com.objectoriented.constructors.super_thisVariations",

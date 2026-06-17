@@ -1,7 +1,7 @@
 package com.objectoriented.constructors;
 
-class ConstructorInvokeCount{
-    
+class ConstructorInvokeCount {
+        
     //Other than initializaton use intance block to check count of constructor invoke 
     static int count = 0;
     
