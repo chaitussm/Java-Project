@@ -1,14 +1,13 @@
 package com.objectoriented.constructors;
 
-//NOTE 
-//1. In the belwo sceanrio the caller constructoir should throws same exception or its parent exception.
-//2. Else we may get the error as below:
+// NOTE
+// 1. In the below scenario the caller constructor should declare the same exception or a parent exception using `throws`.
+// 2. Otherwise you may see an error such as:
 /*
 Error: Unreported exception Exception in constructor; must be caught or declared to be thrown
- */
-//3. Generally we can handle this in 2 ways for general methods 
-// one is by using try catch block and the other one is throwing the same exception or its parent exception 
-// But for the constructor scenario try catch is not allowed beacuse the first line of the code will be this() or super() only.
+*/
+// 3. For regular methods, exceptions can be handled with `try/catch` or declared with `throws`.
+// 4. For constructors, `try/catch` cannot surround `this()` or `super()` because those calls must be the first statement.
 
 public class constructorWithExceptionHandling extends constructorWithCheckedException{
 

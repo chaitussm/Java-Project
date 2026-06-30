@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "exceptionTypes",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.exceptionTypes",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "abnormalFlowNoExceptionHandling",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.abnormalFlowNoExceptionHandling",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "overloadConstructors",
             "request": "launch",
             "mainClass": "com.objectoriented.constructors.overloadConstructors",

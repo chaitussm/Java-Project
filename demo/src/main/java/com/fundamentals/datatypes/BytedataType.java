@@ -17,7 +17,7 @@ public class BytedataType {
         System.out.println("Minimum value of byte: " + minByte);
         System.out.println("Maximum value of byte: " + maxByte);
 
-        //default value of byte
+        // Default value of a byte
         byte defaultByte = 0;
         System.out.println("Default value of byte: " + defaultByte);
     }
