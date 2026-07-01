@@ -6,6 +6,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "nullPointerException",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.nullPointerException",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "throwKeyword",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.throwKeyword",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "rulesInExceptionHandling",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.rulesInExceptionHandling",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "waysOfPrintingException",
+            "request": "launch",
+            "mainClass": "com.exceptionHandling.waysOfPrintingException",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "exceptionTypes",
             "request": "launch",
             "mainClass": "com.exceptionHandling.exceptionTypes",
