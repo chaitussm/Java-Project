@@ -6,6 +6,118 @@
     "configurations": [
         {
             "type": "java",
+            "name": "interruptMethodInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.interruptMethodInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "similarLikeDeadlock",
+            "request": "launch",
+            "mainClass": "com.multiThreading.similarLikeDeadlock",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "executeMainFirstusingJoin",
+            "request": "launch",
+            "mainClass": "com.multiThreading.executeMainFirstusingJoin",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "sleepMethodInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.sleepMethodInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "joinMethodInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.joinMethodInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "yieldMethodInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.yieldMethodInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "setAndGetPriorityInTheread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.setAndGetPriorityInTheread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "threadConstructors",
+            "request": "launch",
+            "mainClass": "com.multiThreading.threadConstructors",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "superKeywordWithMultithreading",
+            "request": "launch",
+            "mainClass": "com.multiThreading.superKeywordWithMultithreading",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "executionWithoutThreadCreation",
+            "request": "launch",
+            "mainClass": "com.multiThreading.executionWithoutThreadCreation",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "overridingInMultithreading",
+            "request": "launch",
+            "mainClass": "com.multiThreading.overridingInMultithreading",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "overloadingInMultithreading",
+            "request": "launch",
+            "mainClass": "com.multiThreading.overloadingInMultithreading",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "executionWithoutThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.executionWithoutThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "threadCreationPartOne",
+            "request": "launch",
+            "mainClass": "com.multiThreading.threadCreationPartOne",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "threadCreationPartTwo",
+            "request": "launch",
+            "mainClass": "com.multiThreading.threadCreationPartTwo",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "types",
+            "request": "launch",
+            "mainClass": "com.multiThreading.types",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "trywithresources",
             "request": "launch",
             "mainClass": "com.exceptionHandling.trywithresources",
