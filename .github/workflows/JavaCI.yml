@@ -85,6 +85,7 @@ jobs:
           mkdir -p target/execution
           report=target/execution/all-main-output.html
           echo "<!doctype html><html><body><h1>Main Class Execution Output</h1><pre>" > "$report"
+          set +e
           for classfile in $(find target/classes -type f -name '*.class'); do
             class=$(echo "$classfile" | sed 's|target/classes/||;s|/|.|g;s|\.class$||')
             if [ -f ../input_class_names.txt ] && grep -qFx "$class" ../input_class_names.txt; then
@@ -96,12 +97,14 @@ jobs:
             # The timeout line is commented because we are keeping all classes enabled.
             # Use this timeout if the pipeline is delayed by non-terminating examples.
             echo -e "1\n2\n3\n4\n5\n6\n7\n8" | java -cp target/classes "$class" >> "$report" 2>&1
-            # if [ $? -eq 124 ]; then
-            #   echo "(Timed out running $class)" >> "$report"
-            # fi
+            rc=$?
+            if [ $rc -ne 0 ]; then
+              echo "--- WARNING: $class exited with code $rc ---" >> "$report"
+            fi
             echo "" >> "$report"
           done
           echo "</pre></body></html>" >> "$report"
+          true
 
       - name: Upload main output report artifact
         uses: actions/upload-artifact@v4
