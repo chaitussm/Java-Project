@@ -59,7 +59,13 @@ jobs:
             cls=${cls//\//.}
             if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
               echo "--- RUNNING: $cls ---"
+              # timeout 15s java -cp target/classes "$cls"
+              # The timeout is commented out so the script keeps all main() programs enabled.
+              # When a class does not exit, uncomment this timeout to stop it after 15 seconds.
               java -cp target/classes "$cls"
+              # if [ $? -eq 124 ]; then
+              #   echo "--- TIMED OUT: $cls ---"
+              # fi
             fi
           done
           set -e
