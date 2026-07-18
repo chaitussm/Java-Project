@@ -1,0 +1,50 @@
+Java Multithreading Exceptions and Common Error Names (Points Form)
+Quick reference for Java threading exceptions, synchronization issues, and coordination pitfalls.
+
+1. THREAD.START() VS THREAD.RUN()
+   - Exception Name: none (no JVM exception)
+   - Issue: Calling Thread.run() executes on the current thread instead of starting a new one.
+
+2. java.lang.IllegalMonitorStateException
+   - Exception Name: java.lang.IllegalMonitorStateException
+   - Issue: wait(), notify(), or notifyAll() is called without holding the object's monitor lock.
+
+3. notify() logic issue
+   - Exception Name: none (logic bug, not a JVM exception)
+   - Issue: notify() wakes only one waiting thread, which can cause missed signals and incorrect coordination.
+
+4. deadlock
+   - Exception Name: none (thread hang / blocked forever)
+   - Issue: Two or more threads wait forever for locks held by each other.
+
+5. race condition
+   - Exception Name: none (data corruption / undefined behavior)
+   - Issue: Multiple threads access mutable data without proper synchronization.
+
+6. volatile misuse
+   - Exception Name: none (visibility/atomicity bug)
+   - Issue: volatile guarantees visibility but not atomicity for compound operations.
+
+7. unsynchronized shared data access
+   - Exception Name: none (stale or inconsistent data)
+   - Issue: Shared fields are read or written without synchronized/volatile/atomic protection.
+
+8. java.lang.IllegalThreadStateException
+   - Exception Name: java.lang.IllegalThreadStateException
+   - Issue: Calling thread.start() more than once on the same Thread object.
+
+9. java.lang.InterruptedException
+   - Exception Name: java.lang.InterruptedException
+   - Issue: InterruptedException is caught and ignored, hiding thread cancellation or interrupt status.
+
+10. blocking inside synchronized
+    - Exception Name: none (performance/deadlock risk)
+    - Issue: Holding a lock while sleeping, waiting on I/O, or joining reduces concurrency and raises deadlock risk.
+
+11. wait/notify semantics error
+    - Exception Name: none (coordination bug)
+    - Issue: notify() wakes a thread, but the awakened thread still must reacquire the lock before continuing.
+
+12. manual wait/notify complexity
+    - Exception Name: none (low-level coordination bug)
+    - Issue: Using wait/notify directly instead of higher-level concurrency utilities is error-prone.

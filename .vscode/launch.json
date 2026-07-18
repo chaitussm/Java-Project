@@ -6,6 +6,62 @@
     "configurations": [
         {
             "type": "java",
+            "name": "starvation",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.starvation.starvation",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "deadlockOne",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.deadLock.deadlockOne",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "deadlock",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.deadLock.deadlock",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "myThreadCom",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.interThreadCommunication.myThreadCom",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "waitNotifyNotifyAll",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.interThreadCommunication.waitNotifyNotifyAll",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "multiLock",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.multipleLock.multiLock",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "syncBlockClasslevel",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.synchronizationBlock.syncBlockClasslevel",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "syncBlockCurrentObject",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.synchronizationBlock.syncBlockCurrentObject",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "syncDemoClass",
             "request": "launch",
             "mainClass": "com.multiThreading.classlevelLock.syncDemoClass",

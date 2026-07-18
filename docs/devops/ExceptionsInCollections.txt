@@ -1,0 +1,26 @@
+Collections Topic Errors and Exceptions
+Quick reference for collection-related Java exceptions and iteration errors.
+
+1. java.lang.ArrayIndexOutOfBoundsException
+   - Thrown when array access uses an invalid index.
+   - Common in manual array loops and incorrect boundary conditions.
+
+2. java.util.ConcurrentModificationException
+   - Happens when a collection is modified while iterating over it with an iterator.
+   - Use iterator.remove() or iterate over a copy to avoid this.
+
+3. java.util.NoSuchElementException
+   - Occurs when next() is called on an iterator with no remaining elements.
+   - Also thrown by Scanner when input is missing.
+
+4. java.lang.NullPointerException
+   - Can occur when a collection reference or its elements are null.
+   - Common when storing null in maps or lists and then retrieving without checks.
+
+5. java.lang.UnsupportedOperationException
+   - Thrown by immutable collections when modification methods are called.
+   - Example: List.of(...).add(...) or Arrays.asList(...).remove(...).
+
+6. java.lang.ClassCastException
+   - Happens when raw collections are cast incorrectly.
+   - Avoid raw types and use generics to reduce this risk.

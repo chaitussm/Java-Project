@@ -1,0 +1,26 @@
+Examples Topic Errors and Exceptions
+Quick reference for common Java runtime exceptions seen in sample code and demo programs.
+
+1. java.lang.NullPointerException
+   - The most common runtime error in example programs.
+   - Happens when code dereferences a null variable.
+
+2. java.lang.ArithmeticException
+   - Thrown for invalid arithmetic operations, such as division by zero.
+   - Example: int x = 10 / 0.
+
+3. java.lang.NumberFormatException
+   - Happens when parsing a non-numeric string to a number.
+   - Example: Integer.parseInt("abc").
+
+4. java.lang.ClassNotFoundException
+   - Checked exception when a class is not found by the class loader.
+   - Common in dynamic loading examples or incorrect classpath setups.
+
+5. java.lang.NoSuchMethodError
+   - Happens when a method signature changes but old bytecode is still executed.
+   - Often occurs after recompiling only part of the codebase.
+
+6. java.lang.ArrayIndexOutOfBoundsException
+   - Common when example loops use wrong array boundaries.
+   - Fix by checking index ranges carefully.

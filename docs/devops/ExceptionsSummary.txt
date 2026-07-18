@@ -1,0 +1,47 @@
+Java Exception Reference Summary
+
+This summary gathers the top exception categories across the topic-specific reference files.
+Use it as a quick lookup for the most important exception names and where to find the full notes.
+
+Topics:
+
+- Advanced Java
+  - Key exceptions: java.lang.IllegalMonitorStateException, java.lang.IllegalThreadStateException, java.lang.InterruptedException, java.lang.OutOfMemoryError, java.lang.StackOverflowError, java.lang.NullPointerException
+  - See: ExceptionsInAdvanced.txt
+
+- Collections
+  - Key exceptions: java.lang.ArrayIndexOutOfBoundsException, java.util.ConcurrentModificationException, java.util.NoSuchElementException, java.lang.NullPointerException, java.lang.UnsupportedOperationException, java.lang.ClassCastException
+  - See: ExceptionsInCollections.txt
+
+- Examples
+  - Key exceptions: java.lang.NullPointerException, java.lang.ArithmeticException, java.lang.NumberFormatException, java.lang.ClassNotFoundException, java.lang.NoSuchMethodError, java.lang.ArrayIndexOutOfBoundsException
+  - See: ExceptionsInExamples.txt
+
+- Exception Handling
+  - Key exceptions: java.lang.ExceptionInInitializerError, java.lang.ArrayIndexOutOfBoundsException, java.lang.NumberFormatException, java.lang.ArithmeticException, java.lang.InterruptedException, java.lang.NullPointerException
+  - See: ExceptionsInExceptionHandling.txt
+
+- Flow Control
+  - Key exceptions: java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, java.lang.ArithmeticException, java.lang.IllegalArgumentException
+  - See: ExceptionsInFlowControl.txt
+
+- Fundamentals
+  - Key exceptions: java.lang.NullPointerException, java.lang.ClassCastException, java.lang.ArrayIndexOutOfBoundsException, java.lang.NumberFormatException, java.lang.IllegalArgumentException
+  - See: ExceptionsInFundamentals.txt
+
+- Imports
+  - Key exceptions: java.lang.ClassNotFoundException, java.lang.NoClassDefFoundError, java.lang.IllegalAccessError
+  - See: ExceptionsInImports.txt
+
+- Object-Oriented
+  - Key exceptions: java.lang.ClassCastException, java.lang.NullPointerException, java.lang.AbstractMethodError, java.lang.IncompatibleClassChangeError, java.lang.IllegalArgumentException
+  - See: ExceptionsInObjectOriented.txt
+
+- Multithreading
+  - Key exceptions: java.lang.IllegalMonitorStateException, java.lang.IllegalThreadStateException, java.lang.InterruptedException
+  - See: ExceptionsInMultiThreading.txt
+
+How to use this summary:
+1. Identify the topic that matches your code area.
+2. Open the referenced `ExceptionsIn...` file for detailed notes and examples.
+3. Search within the file for the exact `java.lang.` exception name when you need the runtime error name.

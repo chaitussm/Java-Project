@@ -1,0 +1,30 @@
+Exception Handling Topic Errors and Exceptions
+Quick reference for exceptions and compile-time checked error handling patterns.
+
+1. java.lang.ExceptionInInitializerError
+   - Thrown when an exception occurs during static initialization.
+   - Common in classes with faulty static blocks or static field initialization.
+
+2. java.lang.ArrayIndexOutOfBoundsException
+   - Often caught in example exception-handling code around arrays.
+   - Use try/catch to handle invalid indexes gracefully.
+
+3. java.lang.NumberFormatException
+   - Thrown when converting invalid text input to numeric types.
+   - Wrap parsing logic in try/catch or validate input first.
+
+4. java.lang.ArithmeticException
+   - Example of a runtime exception that can be handled with try/catch.
+   - Common for division by zero or numeric overflow.
+
+5. java.lang.InterruptedException
+   - Checked exception for wait(), sleep(), join() calls.
+   - Must be declared or handled explicitly in the method signature.
+
+6. java.lang.NullPointerException
+   - A frequently handled runtime exception in example code.
+   - Best practice: validate object references before using them.
+
+7. Unhandled checked exception
+   - Compilation error when a checked exception is not declared or caught.
+   - Example: calling FileReader without try/catch or throws declaration.

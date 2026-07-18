@@ -1,0 +1,22 @@
+Flow Control Topic Errors and Exceptions
+Quick reference for loop/branching errors and control-flow exceptions.
+
+1. java.lang.ArrayIndexOutOfBoundsException
+   - Happens when a loop iterates beyond array bounds.
+   - Fix by ensuring loop conditions match the array length.
+
+2. java.lang.NullPointerException
+   - Occurs when branching or looping on a null reference.
+   - Validate references before using if/else or loop conditions.
+
+3. java.lang.ArithmeticException
+   - Thrown in arithmetic expressions inside loops, such as division by zero.
+   - Guard arithmetic operations before use.
+
+4. infinite loop
+   - Not a JVM exception, but a runtime hang caused by wrong loop conditions.
+   - Example: while(true) without a correct exit condition.
+
+5. java.lang.IllegalArgumentException
+   - Thrown when a method receives an invalid argument used in conditional logic.
+   - Example: passing a negative size to a loop or array constructor.

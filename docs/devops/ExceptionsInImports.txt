@@ -1,0 +1,22 @@
+Imports Topic Errors and Exceptions
+Quick reference for import/classpath errors and runtime class-loading problems.
+
+1. java.lang.ClassNotFoundException
+   - Occurs when the JVM cannot find a class referenced by import or runtime loading.
+   - Common with incorrect package names or missing classpath entries.
+
+2. java.lang.NoClassDefFoundError
+   - Happens when a class was present at compile time but missing at runtime.
+   - Often caused by deploying an incomplete JAR or wrong classpath.
+
+3. compile-time error: package does not exist
+   - Shown when an import statement references a non-existent package.
+   - Fix by correcting the package path or adding the required dependency.
+
+4. compile-time error: cannot find symbol
+   - Thrown for missing imported types or mistyped class names.
+   - Use exact class names and package names in import declarations.
+
+5. java.lang.IllegalAccessError
+   - Can happen if imported class visibility is restricted and the runtime access is invalid.
+   - Example: package-private class used from a different package.

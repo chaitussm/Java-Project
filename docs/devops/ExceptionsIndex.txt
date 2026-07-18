@@ -1,0 +1,24 @@
+Java DevOps Exception Reference Index
+
+Use this index to quickly open the topic-specific exception reference files.
+Each file contains readable point-form notes and exact exception names where applicable.
+
+Files:
+- ExceptionsInAdvanced.txt
+- ExceptionsInCollections.txt
+- ExceptionsInExamples.txt
+- ExceptionsInExceptionHandling.txt
+- ExceptionsInFlowControl.txt
+- ExceptionsInFundamentals.txt
+- ExceptionsInImports.txt
+- ExceptionsInObjectOriented.txt
+- ExceptionsInMultiThreading.txt
+
+How to use:
+1. Open the relevant file for the topic you are studying.
+2. Read the exception name first, then the issue description.
+3. Look for exact JVM exception names when they are available.
+4. Remember that some issues are logic/runtime problems rather than throwable exceptions.
+
+Tip:
+- Search for `java.lang.` names inside these files when you want exact output-window exception names.

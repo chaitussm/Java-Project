@@ -1,0 +1,26 @@
+Fundamentals Topic Errors and Exceptions
+Quick reference for basic Java runtime exceptions and common syntax/type issues.
+
+1. java.lang.NullPointerException
+   - Very common for uninitialized object references.
+   - Happens in basic code when a variable is used before assignment.
+
+2. java.lang.ClassCastException
+   - Occurs when casting objects incorrectly.
+   - Typical in early examples of polymorphism and inheritance.
+
+3. java.lang.ArrayIndexOutOfBoundsException
+   - Happens when accessing arrays with invalid indexes.
+   - Common in loops and array initialization examples.
+
+4. java.lang.NumberFormatException
+   - Thrown when parsing non-numeric input into numeric types.
+   - Example: Integer.parseInt("abc").
+
+5. java.lang.IllegalArgumentException
+   - Thrown for invalid argument values in basic utility methods.
+   - Example: passing negative values to Math methods or invalid enum constants.
+
+6. compile-time error: missing semicolon or type mismatch
+   - Happens in foundational Java syntax examples.
+   - The compiler points to the exact line and error type.

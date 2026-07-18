@@ -1,0 +1,30 @@
+Object-Oriented Topic Errors and Exceptions
+Quick reference for OOP-related casting, inheritance, and class-loading errors.
+
+1. java.lang.ClassCastException
+   - Thrown when an object is cast to an incompatible class.
+   - Common in inheritance and polymorphism examples.
+
+2. java.lang.NullPointerException
+   - Happens when a method is called on a null object reference.
+   - Common in object-oriented examples with uninitialized references.
+
+3. java.lang.AbstractMethodError
+   - Occurs if bytecode refers to an abstract method implementation that is missing.
+   - Can happen after mixing old and new compiled classes.
+
+4. java.lang.IncompatibleClassChangeError
+   - Thrown when class definitions change incompatibly between compile-time and runtime.
+   - Example: method signature changes without recompiling all dependent classes.
+
+5. java.lang.IllegalArgumentException
+   - Often used in constructors or setter methods when arguments are invalid.
+   - Example: passing null to a constructor that does not allow it.
+
+6. compile-time error: incompatible types
+   - Happens when assigning objects of incompatible types without casting.
+   - Use proper inheritance relationships or interface types.
+
+7. compile-time error: cannot inherit from final class
+   - Triggered when code attempts to extend a class declared final.
+   - Fix by removing the extends clause or using composition instead.
