@@ -6,6 +6,41 @@
     "configurations": [
         {
             "type": "java",
+            "name": "syncDemoClass",
+            "request": "launch",
+            "mainClass": "com.multiThreading.classlevelLock.syncDemoClass",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "executeSync",
+            "request": "launch",
+            "mainClass": "com.multiThreading.executeSync",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "synchroinizedExample",
+            "request": "launch",
+            "mainClass": "com.multiThreading.synchroinizedExample",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "wishMethodInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.wishMethodInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
+            "name": "synchronizationInThread",
+            "request": "launch",
+            "mainClass": "com.multiThreading.synchronizationInThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "interruptMethodInThread",
             "request": "launch",
             "mainClass": "com.multiThreading.interruptMethodInThread",
