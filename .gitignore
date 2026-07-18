@@ -1,0 +1,37 @@
+# Maven / Java build outputs
+/target/
+/demo/target/
+**/target/
+
+# IntelliJ IDEA
+/.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local execution reports
+demo/target/execution/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*~
+
+# Generated jar artifacts
+*.jar
+
+# Ignore compile class files if accidentally staged
+*.class

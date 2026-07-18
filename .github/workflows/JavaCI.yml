@@ -93,12 +93,12 @@ jobs:
               continue
             fi
             echo "Running $class" >> "$report"
-            # echo -e "1\n2\n3\n4\n5\n6\n7\n8" | timeout 15s java -cp target/classes "$class" >> "$report" 2>&1
-            # The timeout line is commented because we are keeping all classes enabled.
-            # Use this timeout if the pipeline is delayed by non-terminating examples.
-            echo -e "1\n2\n3\n4\n5\n6\n7\n8" | java -cp target/classes "$class" >> "$report" 2>&1
+            # Timeout protects the pipeline from long-running demo programs.
+            echo -e "1\n2\n3\n4\n5\n6\n7\n8" | timeout 10s java -cp target/classes "$class" >> "$report" 2>&1
             rc=$?
-            if [ $rc -ne 0 ]; then
+            if [ $rc -eq 124 ]; then
+              echo "--- WARNING: $class timed out after 10 seconds ---" >> "$report"
+            elif [ $rc -ne 0 ]; then
               echo "--- WARNING: $class exited with code $rc ---" >> "$report"
             fi
             echo "" >> "$report"
