@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "daemonThread",
+            "request": "launch",
+            "mainClass": "com.advanced.multiThreading.daemonThreads.daemonThread",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "interruptMethodInThread",
             "request": "launch",
             "mainClass": "com.advanced.multiThreading.interruptMethodInThread",
