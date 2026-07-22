@@ -10,6 +10,7 @@ public class starvation {
      * 1) One shared resource is protected by an unfair lock.
      * 2) A greedy thread keeps acquiring the lock repeatedly.
      * 3) A starved thread tries to acquire the same lock and often fails.
+     
      */
 
     private static final int GREEDY_ROUNDS = 12;
