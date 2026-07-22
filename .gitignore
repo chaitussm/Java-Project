@@ -1,7 +1,5 @@
 # Maven / Java build outputs
 /target/
-/demo/target/
-**/target/
 
 # IntelliJ IDEA
 /.idea/
@@ -23,6 +21,12 @@ Thumbs.db
 
 # Local execution reports
 demo/target/execution/
+
+# Ignore demo build outputs
+/demo/target/
+
+# Ignore data binaries
+/data/binary/
 
 # Logs and temporary files
 *.log

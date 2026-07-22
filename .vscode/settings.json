@@ -1,6 +1,0 @@
-{
-  "editor.codeLens": true,
-  "java.debug.settings.enableRunDebugCodeLens": true,
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.import.gradle.enabled": false
-}
