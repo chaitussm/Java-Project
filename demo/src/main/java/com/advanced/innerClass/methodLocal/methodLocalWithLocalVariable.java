@@ -10,6 +10,7 @@ public class methodLocalWithLocalVariable {
      * When the local variable is declared as the final at the compile time evry final variable is repalced by the value.
      * The if the m1() is destroyed after calling existing object left method2() from the i object reference
      * Inside inner classes we cannot decalare static members
+     * possible modifiers for the method local inner classes final, abstract and strictfp
 
      */
      
