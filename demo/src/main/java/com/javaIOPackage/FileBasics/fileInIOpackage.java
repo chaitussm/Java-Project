@@ -1,10 +1,11 @@
-package com.javaIoPackage.FileBasics;
+package com.javaIOPackage.FileBasics;
 
 import java.io.*;
+import java.lang.reflect.Method;
 
 public class fileInIOpackage {
 
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws Exception
     {
         File f = new File("FirstFile.txt");
 
@@ -27,8 +28,22 @@ public class fileInIOpackage {
         System.out.println(f.exists());
 
         /*NOTE : In Unix everything is treated as a file , java file Io Concept is implemented based on Unix operating System
-          Hence java file Object can be used to represent both files and directories */
+          Hence java file Object can be used to represent both files and directories 
+         */
+        
+          int count = 0;
 
+        Class cs = Class.forName("java.io.File");
+
+        Method[] m = cs.getDeclaredMethods();
+
+        for(Method m1: m)
+        {
+           System.out.println(m1.getName());
+           count++;
+        }    
+
+        System.out.println("Number of methods available : " + count);
         
     }
     
