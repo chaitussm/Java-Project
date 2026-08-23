@@ -2,12 +2,13 @@ package com.javaIOPackage.FileBasics;
 
 import java.io.*;
 import java.lang.reflect.Method;
+import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
-public class fileInIOpackage {
+public class fileInIOpackage extends fileBasicMethods {
 
     public static void main(String[] args) throws Exception
     {
-        File f = new File("FirstFile.txt");
+        File f = sampleDataPath("file-operations", "FirstFile.txt").toFile();
 
         /* The above line won't create any physical file , first it will check is there any physical file named with 
          * "FirstFile.txt" is available or not if it is available the f simply refers that file.
@@ -33,7 +34,7 @@ public class fileInIOpackage {
         
           int count = 0;
 
-        Class cs = Class.forName("java.io.File");
+        Class<?> cs = Class.forName("java.io.File");
 
         Method[] m = cs.getDeclaredMethods();
 

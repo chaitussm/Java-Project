@@ -25,8 +25,9 @@ demo/target/execution/
 # Ignore demo build outputs
 /demo/target/
 
-# Ignore data binaries
+# Ignore generated sample binaries
 /data/binary/
+/demo/sample-data/binary/
 
 # Logs and temporary files
 *.log

@@ -54,7 +54,7 @@ public class BytedataType {
     {
         bytedeclaration();
         
-        String filename = "bytes.bin";
+        String filename = "sample-data/binary/bytes.bin";
         byte[] data = {10, 20, 30, 40, 50};
         writeBytesToFile(filename, data);
         readBytesFromFile(filename);

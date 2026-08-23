@@ -1,8 +1,9 @@
 package com.javaIOPackage.FileReader;
 
 import java.io.*;
+import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
-public class fileReaderBasics {
+public class fileReaderBasics extends fileBasicMethods {
 
     /*
      *
@@ -21,8 +22,7 @@ public class fileReaderBasics {
      */
     public static void readMethod() throws Exception
     {
-         FileReader fr = new FileReader("writeData.txt");
-
+        try (FileReader fr = new FileReader(sampleDataPath("file-operations", "writeData.txt").toFile())) {
          int value = fr.read();
 
          System.out.println(value);
@@ -34,17 +34,18 @@ public class fileReaderBasics {
            value = fr.read();
 
          }
+        }
     }
 
     public static void readMethodWithCharArray() throws Exception
     {
-        File file = new File("writeData.txt");
+        File file = sampleDataPath("file-operations", "writeData.txt").toFile();
         
         char[] ch = new char[(int)file.length()];//if the range is more than int range then use read() only 
 
-        FileReader fr = new FileReader(file);
-
-        fr.read(ch);
+        try (FileReader fr = new FileReader(file)) {
+            fr.read(ch);
+        }
 
         for(char ch1 : ch)
         {

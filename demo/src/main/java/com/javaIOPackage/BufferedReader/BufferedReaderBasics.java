@@ -1,8 +1,9 @@
 package com.javaIOPackage.BufferedReader;
 
 import java.io.*;
+import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
-public class BufferedReaderBasics {
+public class BufferedReaderBasics extends fileBasicMethods {
 
     /*
      *
@@ -25,7 +26,7 @@ public class BufferedReaderBasics {
 
     public static void main(String[] args) throws Exception
     {
-       FileReader fr = new FileReader("BufferedData.txt");
+      FileReader fr = new FileReader(sampleDataPath("file-operations", "BufferedData.txt").toFile());
 
        BufferedReader br = new BufferedReader(fr);
 

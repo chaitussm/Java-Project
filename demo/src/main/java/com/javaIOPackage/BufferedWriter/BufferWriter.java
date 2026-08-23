@@ -2,7 +2,9 @@ package com.javaIOPackage.BufferedWriter;
 
 import java.io.*;
 
-public class BufferWriter {
+import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+
+public class BufferWriter extends fileBasicMethods{
 
     /*
      * We can use Buffered writer to write character data to the file 
@@ -20,16 +22,17 @@ public class BufferWriter {
      */
 
     public static void main(String[] args) throws Exception
-    {
-       FileWriter fw = new FileWriter("BufferedData.txt");
+    {  
+       
+       String finalpath = sampleDataPath("file-operations", "BufferedData.txt").toString();
+       
+       FileWriter fw = new FileWriter(finalpath);
 
        BufferedWriter bw = new BufferedWriter(fw);
 
        bw.write(100);
 
        bw.newLine();
-
-       char[] ch1 = {'S', 'H', 'I', 'V', 'A'};
 
        bw.newLine();
 

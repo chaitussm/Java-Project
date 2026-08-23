@@ -1,7 +1,6 @@
 package com.javaIOPackage.baseMethodsInFileOperations;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -15,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class fileBasicMethods {
+
 
     /*To Create dynamic directory*/
 
@@ -127,21 +127,54 @@ public class fileBasicMethods {
         
     }
 
+    public static Path sampleDataPath(String... parts)
+    {
+        // Read the directory from which the Java program was started.
+        Path workingDirectory = Path.of(System.getProperty("user.dir"));
+
+        // Check whether the program was started from the repository root.
+        boolean runningFromRepositoryRoot = Files.isDirectory(workingDirectory.resolve("sample-data"));
+
+        // The ternary operator has the form condition ? valueWhenTrue : valueWhenFalse.
+        // Use ./sample-data from the repository root; otherwise use ./demo/sample-data.
+        Path root = runningFromRepositoryRoot
+                ? workingDirectory.resolve("sample-data")
+                : workingDirectory.resolve("demo").resolve("sample-data");
+
+        // Start with the selected sample-data directory.
+        Path result = root;
+
+        // Add each requested folder or filename to the selected root path.
+        for (String part : parts) {
+            // Resolve adds one path component using the operating system's separator.
+            result = result.resolve(part);
+        }
+
+        // Return the complete path to the requested sample file or folder.
+        return result;
+    }
+
     public  static String searchFolder(String targetFolder)
     {
-         // Gets the current project root path
-        String projectPath = System.getProperty("user.dir");
-       
-        // Combine project path with the target folder
-        File directory = new File(projectPath, targetFolder);
+        // Read the directory from which the Java program was started.
+        Path workingDirectory = Path.of(System.getProperty("user.dir"));
+
+        // file-operations is stored inside sample-data after the reorganization.
+        // Other folder names, such as demo, are resolved directly from the working directory.
+        File directory = targetFolder.equals("file-operations")
+            ? sampleDataPath(targetFolder).toFile()
+            : workingDirectory.resolve(targetFolder).toFile();
         
-        // Check if the folder exists inside the project
+        // Check whether the resolved path exists and is a directory.
         if (directory.exists() && directory.isDirectory()) {
+            // Print the absolute path when the folder is available.
             System.out.println("Folder found at: " + directory.getAbsolutePath());
         } else {
+            // Report a missing folder without stopping the program.
             System.out.println("Folder not found in the project path.");
         }
 
+        // Return the path as text for callers that need to create or inspect files there.
         return directory.toString();
     }
 
@@ -159,7 +192,7 @@ public class fileBasicMethods {
         String projectRoot = System.getProperty("user.dir");
 
         // 2. Fixed folder path (Created once, reused every time)
-        String folderPath = projectRoot + File.separator + "FileOperations" + File.separator + "SharedOutputFolder"; 
+        String folderPath = Path.of(projectRoot, "artifacts", "file-operations", "SharedOutputFolder").toString();
 
         // 3. Dynamic file name (A brand new file name on every single run!)
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));

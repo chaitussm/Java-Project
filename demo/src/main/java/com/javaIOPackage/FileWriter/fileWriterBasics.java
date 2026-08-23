@@ -1,6 +1,5 @@
 package com.javaIOPackage.FileWriter;
 
-import java.io.File;
 import java.io.FileWriter;
 
 import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
@@ -31,10 +30,10 @@ public class fileWriterBasics extends fileBasicMethods{
     public static void writeDataToFile() throws Exception
     {
         //to orverride the data at each of execution 
-        FileWriter fw = new FileWriter("writeData.txt");
+        FileWriter fw = new FileWriter(sampleDataPath("file-operations", "writeData.txt").toFile());
 
         //to append the data everytime 
-       // FileWriter fw = new FileWriter("writeData.txt" , true);
+    // FileWriter fw = new FileWriter(sampleDataPath("file-operations", "writeData.txt").toFile(), true);
 
         fw.write(100); //adding a single character 
 
@@ -57,7 +56,7 @@ public class fileWriterBasics extends fileBasicMethods{
 
     public static void main(String[] args) throws Exception
     {
-        searchFile("writeData.txt");
+        searchFile(sampleDataPath("file-operations", "writeData.txt").getFileName().toString());
         writeDataToFile();
     }
     
