@@ -1,14 +1,11 @@
 package com.javaIOPackage.serialization;
 
-import java.io.*;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
-
 // This class can be serialized because it implements Serializable.
 // It also inherits the shared sampleDataPath() method from fileBasicMethods.
-public class serializationBasics extends fileBasicMethods implements Serializable{
+public class serializationBasics extends serializeBase {
 
     // This object contains the state that will be saved and restored.
-    serializeBase sb = new serializeBase();
+    //serializeBase sb = new serializeBase();
 
     /*
      * Serialization is the process of preserving an object's state as bytes.
@@ -33,73 +30,6 @@ public class serializationBasics extends fileBasicMethods implements Serializabl
     * NotSerializableException
      */
     
-    // Converts the serializeBase object into bytes and saves those bytes in the specified file.
-    // The file parameter contains the path or name of the destination file.
-    public void serialize(String file)
-    {
-        // Create or replace the destination file and prepare it to receive bytes.
-        try( FileOutputStream fos = new FileOutputStream(file);
-              // Add Java's object-stream format on top of the file output stream.
-              ObjectOutputStream oos = new ObjectOutputStream(fos);)
-          {
-              // Convert sb and its field values into bytes and write them to the file.
-              oos.writeObject(sb);
-          }
-         
-        // Handle problems such as an invalid path or a file that cannot be opened.
-        catch(IOException e) 
-        {
-            System.out.println("No file is available");
-        }
-
-    } 
-
-    // Reads the serialized bytes from the specified file and rebuilds the original object.
-    // The file parameter must point to a file previously created by serialize().
-    public void deserialize(String file)
-    {
-            // Open the serialized file and prepare a stream that understands Java objects.
-         try(FileInputStream fis = new FileInputStream(file);
-              ObjectInputStream ois = new ObjectInputStream(fis);)
-            {
-                 // Read the bytes and reconstruct the original serializeBase object.
-                serializeBase sb1 = (serializeBase)ois.readObject(); 
-
-                 // Display the values restored from the serialized object.
-                System.out.println(sb1.i + "=====" + sb1.j);
-            }
-
-        // Handle missing files or invalid serialized data.
-        catch(Exception e )
-        {
-            System.out.println("No file is available");
-        }
-    }
-
-    // Displays the exact absolute path where the serialization file is located.
-    // An absolute path starts from the computer's root directory.
-    public void checkSerializationFileLocation(String file)
-    {
-        // Create a File object representing the supplied relative or absolute path.
-        File serializationFile = new File(file);
-        // Convert the path into its complete location and print it.
-        System.out.println("Serialization file location: "
-                + serializationFile.getAbsoluteFile());
-    }
-
-    // Checks whether the path exists and represents a regular file.
-    // This confirms that serialization created a usable file.
-    public void checkSerializationFileCreated(String file)
-    {
-        // Represent the expected serialized file as a File object.
-        File serializationFile = new File(file);
-        // exists() checks presence; isFile() confirms it is a file, not a directory.
-        if (serializationFile.exists() && serializationFile.isFile()) {
-            System.out.println("Serialization file was created successfully.");
-        } else {
-            System.out.println("Serialization file was not created.");
-        }
-    }
 
     // Starts the example: serialize the object, inspect the file, and deserialize it.
     public static void main(String[] args)
