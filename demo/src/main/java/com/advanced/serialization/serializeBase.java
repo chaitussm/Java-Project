@@ -8,6 +8,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.*;
+import java.util.Base64;
+
 
 import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
@@ -56,7 +58,6 @@ public class serializeBase extends fileBasicMethods implements Serializable {
         {
             System.out.println("No file is available");
         }
-
     } 
 
     /*
@@ -189,5 +190,51 @@ public class serializeBase extends fileBasicMethods implements Serializable {
             System.out.println("Serialization file was not created.");
         }
     }
+
+    // V2 writes the current object and lets the caller handle any I/O failure.
+    // The output stream remains inside this method and is closed automatically.
+    public void serializeV2(String file) throws IOException
+    {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(file))) {
+            oos.writeObject(this);
+        }
+    }
+
+    // V2 reads the serialized object and returns it instead of only printing it.
+    // The generic type allows a child serialization class to receive its own type.
+    public <T extends serializeBase> T deserializeV2(String file)
+            throws IOException, ClassNotFoundException
+    {
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(file))) {
+            @SuppressWarnings("unchecked")
+            T restoredObject = (T) ois.readObject();
+            return restoredObject;
+        }
+    }
     
+
+    public static String  encryptPwd(String password)
+    {
+        // 1. "Encrypt" (Encode)
+        String encodedText = Base64.getEncoder().encodeToString(password.getBytes());
+        System.out.println("Encoded: " + encodedText);
+
+        return encodedText;
+    }
+    
+    public static String decryptPwd(String encodedText)
+    {
+        // 2. "Decrypt" (Decode)
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedText);
+        String decodedText = new String(decodedBytes);
+        System.out.println("Decoded: " + decodedText); 
+
+        return decodedText;
+    }
 }
+
+         
+    
+

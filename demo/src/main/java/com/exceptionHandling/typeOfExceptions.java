@@ -11,7 +11,7 @@ public class typeOfExceptions {
         System.out.println(arr[10]);
         /*ClassCastException It is an unchcked exception below example*/
         Object obj = "Hello";
-        Integer num = (Integer) obj; // This will throw ClassCastException
+        //Integer num = (Integer) obj; // This will throw ClassCastException
         /*StackOverflowError It is an unchcked exception below example*/
         //main(args); 
         /*NoclassDefFoundError It is an unchcked exception below example*/

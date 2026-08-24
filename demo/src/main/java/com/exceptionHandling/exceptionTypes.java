@@ -11,8 +11,9 @@ then we get error like below:
 Error: Unreported exception Exception; must be caught or declared to be thrown
 */
  public static void main(String[] args) throws Exception {
-      PrintWriter pw = new PrintWriter("abc.txt");
-      pw.println("Hello");
+        try (PrintWriter pw = new PrintWriter("abc.txt")) {
+          pw.println("Hello");
+        }
 
     }
 
