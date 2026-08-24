@@ -9,18 +9,18 @@ Normally, Java knows these things during compilation. With reflection, the progr
 All reflection examples are inside this package folder:
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/
+demo/src/main/java/com/advanced/reflections/
 ```
 
 | Topic | Program path |
 |---|---|
-| Class information | `demo/src/main/java/com/javalangPackage/reflections/classBasics/ClassInspectionBasics.java` |
-| Constructors | `demo/src/main/java/com/javalangPackage/reflections/constructors/ConstructorReflectionBasics.java` |
-| Fields | `demo/src/main/java/com/javalangPackage/reflections/fields/FieldReflectionBasics.java` |
-| Methods | `demo/src/main/java/com/javalangPackage/reflections/methods/MethodReflectionBasics.java` |
-| Modifiers | `demo/src/main/java/com/javalangPackage/reflections/modifiers/ModifierReflectionBasics.java` |
-| Arrays | `demo/src/main/java/com/javalangPackage/reflections/arrays/ArrayReflectionBasics.java` |
-| Complete example | `demo/src/main/java/com/javalangPackage/reflections/complete/CompleteReflectionExample.java` |
+| Class information | `demo/src/main/java/com/advanced/reflections/classBasics/ClassInspectionBasics.java` |
+| Constructors | `demo/src/main/java/com/advanced/reflections/constructors/ConstructorReflectionBasics.java` |
+| Fields | `demo/src/main/java/com/advanced/reflections/fields/FieldReflectionBasics.java` |
+| Methods | `demo/src/main/java/com/advanced/reflections/methods/MethodReflectionBasics.java` |
+| Modifiers | `demo/src/main/java/com/advanced/reflections/modifiers/ModifierReflectionBasics.java` |
+| Arrays | `demo/src/main/java/com/advanced/reflections/arrays/ArrayReflectionBasics.java` |
+| Complete example | `demo/src/main/java/com/advanced/reflections/complete/CompleteReflectionExample.java` |
 
 The package declaration must match the folder structure. For example:
 
@@ -45,13 +45,13 @@ Use this table as a quick reference when returning to the examples later.
 ### Exact Program Locations
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/classBasics/ClassInspectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/constructors/ConstructorReflectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/fields/FieldReflectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/methods/MethodReflectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/modifiers/ModifierReflectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/arrays/ArrayReflectionBasics.java
-demo/src/main/java/com/javalangPackage/reflections/complete/CompleteReflectionExample.java
+demo/src/main/java/com/advanced/reflections/classBasics/ClassInspectionBasics.java
+demo/src/main/java/com/advanced/reflections/constructors/ConstructorReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/fields/FieldReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/methods/MethodReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/modifiers/ModifierReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/arrays/ArrayReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/complete/CompleteReflectionExample.java
 ```
 
 ### Arrays with Reflection: Theory
@@ -77,7 +77,7 @@ Unknown array object
 The complete runnable example is:
 
 ```text
-Folder:  demo/src/main/java/com/javalangPackage/reflections/arrays/
+Folder:  demo/src/main/java/com/advanced/reflections/arrays/
 Program: ArrayReflectionBasics.java
 ```
 
@@ -119,7 +119,7 @@ Every class loaded by the JVM has a corresponding `Class<?>` object. It contains
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/classBasics/ClassInspectionBasics.java
+demo/src/main/java/com/advanced/reflections/classBasics/ClassInspectionBasics.java
 ```
 
 ### Example
@@ -155,7 +155,7 @@ A field is a variable declared inside a class.
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/fields/FieldReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/fields/FieldReflectionBasics.java
 ```
 
 ### Example
@@ -196,7 +196,7 @@ A constructor creates and initializes an object.
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/constructors/ConstructorReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/constructors/ConstructorReflectionBasics.java
 ```
 
 ### Example
@@ -235,7 +235,7 @@ A method is an action defined inside a class.
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/methods/MethodReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/methods/MethodReflectionBasics.java
 ```
 
 ### Example
@@ -284,7 +284,7 @@ Modifiers describe how a class member behaves.
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/modifiers/ModifierReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/modifiers/ModifierReflectionBasics.java
 ```
 
 ### Example
@@ -325,7 +325,7 @@ The `Array` class works with arrays when the component type is known only at run
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/arrays/ArrayReflectionBasics.java
+demo/src/main/java/com/advanced/reflections/arrays/ArrayReflectionBasics.java
 ```
 
 ### Example
@@ -361,7 +361,7 @@ Array.newInstance(type, size)  // Creates a new array dynamically
 ### Path
 
 ```text
-demo/src/main/java/com/javalangPackage/reflections/complete/CompleteReflectionExample.java
+demo/src/main/java/com/advanced/reflections/complete/CompleteReflectionExample.java
 ```
 
 The complete example follows this sequence:

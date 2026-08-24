@@ -1,4 +1,4 @@
-package com.javaIOPackage.serialization;
+package com.advanced.serialization;
 
 // This class can be serialized because it implements Serializable.
 // It also inherits the shared sampleDataPath() method from fileBasicMethods.

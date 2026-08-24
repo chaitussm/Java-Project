@@ -1,4 +1,4 @@
-package com.javalangPackage.reflections.methods;
+package com.advanced.reflections.methods;
 
 import java.lang.reflect.Method;
 

@@ -1,4 +1,4 @@
-package com.javaIOPackage.serialization;
+package com.advanced.serialization;
 
 public class transientKeyword extends serializeBase{
 

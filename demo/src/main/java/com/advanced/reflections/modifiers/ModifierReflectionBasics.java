@@ -1,4 +1,4 @@
-package com.javalangPackage.reflections.modifiers;
+package com.advanced.reflections.modifiers;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

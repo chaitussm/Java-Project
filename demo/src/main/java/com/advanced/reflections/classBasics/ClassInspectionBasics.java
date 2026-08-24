@@ -1,4 +1,4 @@
-package com.javalangPackage.reflections.classBasics;
+package com.advanced.reflections.classBasics;
 
 public class ClassInspectionBasics {
 

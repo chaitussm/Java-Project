@@ -1,4 +1,4 @@
-package com.javalangPackage.reflections.fields;
+package com.advanced.reflections.fields;
 
 import java.lang.reflect.Field;
 
