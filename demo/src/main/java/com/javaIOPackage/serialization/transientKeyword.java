@@ -11,9 +11,11 @@ public class transientKeyword extends serializeBase{
      * =========== static vs transient
      * static variable is not part of object state and hence it won't participate in serialization, due to this declaring 
      * static variable as transient there is no use
-     * =========== final vs transient
-     * Final variables will be participated in serialization directly by the value(at compile time only) hence decalring a final 
-     * variable as transient there is no impact
+    * =========== final vs transient
+    * final and transient control different things. final prevents reassignment,
+    * while transient prevents the field value from being written to the file.
+    * Therefore, a final transient field is still excluded from serialization.
+    * The .ser file is created, but it does not contain that transient value.
      */
 
     public static void main(String[] args)
@@ -27,7 +29,8 @@ public class transientKeyword extends serializeBase{
         sb.checkSerializationFileLocation(filename);
         sb.deserialize(filename);
     }
-
+       
+    //For final transeint secanrio refer the program reflectionVsDirectAccess.java program
 
 
     

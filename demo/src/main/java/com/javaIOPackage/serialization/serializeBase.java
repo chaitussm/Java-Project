@@ -115,17 +115,24 @@ public class serializeBase extends fileBasicMethods implements Serializable {
                         staticFields.append("  ").append(field.getName()).append(" = ")
                                 .append(field.get(null)).append(System.lineSeparator());
                     } 
-                    // Transient fields are skipped during serialization.
-                    // An int transient field therefore returns to its default value, 0.
-                    else if (Modifier.isTransient(modifiers)) {
+                        // A final transient field follows both rules: final prevents
+                        // reassignment, but transient prevents its value being saved.
+                        // Therefore m is restored with the default int value, 0.
+                        else if (Modifier.isTransient(modifiers) && Modifier.isFinal(modifiers)) {
                         transientFields.append("  ").append(field.getName()).append(" = ")
                                 .append(field.get(restoredObject)).append(System.lineSeparator());
-                        // A final transient field, such as m, follows both rules:
-                        // final prevents reassignment, while transient prevents saving its value.
-                        if (Modifier.isFinal(modifiers)) {
-                            finalFields.append("  ").append(field.getName()).append(" = ")
-                                    .append(field.get(restoredObject)).append(System.lineSeparator());
-                        }
+                        finalFields.append("  ").append(field.getName()).append(" = ")
+                            .append(field.get(restoredObject)).append(System.lineSeparator());
+                        // Other transient fields are skipped during serialization.
+                        } else if (Modifier.isTransient(modifiers)) {
+                        transientFields.append("  ").append(field.getName()).append(" = ")
+                            .append(field.get(restoredObject)).append(System.lineSeparator());
+                        // A final non-transient field is serialized normally and also listed as final.
+                        } else if (Modifier.isFinal(modifiers)) {
+                        normalFields.append("  ").append(field.getName()).append(" = ")
+                            .append(field.get(restoredObject)).append(System.lineSeparator());
+                        finalFields.append("  ").append(field.getName()).append(" = ")
+                            .append(field.get(restoredObject)).append(System.lineSeparator());
                     // Other instance fields are normal fields restored from the file.
                     } else {
                         normalFields.append("  ").append(field.getName()).append(" = ")
