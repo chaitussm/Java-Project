@@ -11,6 +11,7 @@ import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
 public class sequenceOfMultpleObjects extends fileBasicMethods {
 
+	// Docs: docs/concepts/serialization/multipleObjectsSerialization.md (Part 1, line 10)
 	private static class Dog implements Serializable {
 		private static final long serialVersionUID = 1L;
 	}

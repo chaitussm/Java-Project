@@ -11,6 +11,7 @@ import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
 public class instanceOfMultipleObjects extends fileBasicMethods {
 
+    // Docs: docs/concepts/serialization/multipleObjectsSerialization.md (Part 2, line 49)
     // Both objects must implement Serializable before they can be written to a file.
     private static class Dog implements Serializable {
         private static final long serialVersionUID = 1L;

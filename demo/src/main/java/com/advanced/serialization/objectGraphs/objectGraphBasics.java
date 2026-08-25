@@ -29,14 +29,7 @@ class rat implements Serializable
 
 public class objectGraphBasics extends serializeBase{
 
-    /*
-     *
-     *
-     * whenevr we are serializng an object , the set of all objects which are reachable from the object will be serialized
-     * automatically this group of Object nothing but Object graphs 
-     * In Object graph every object should be serializable if atleast one Object is not not serializable then we will 
-     * runtime exception saying NotSerializableException 
-     */
+    // Docs: docs/concepts/serialization/objectGraphBasics.md (line 1)
 
     public static void main(String[] args) throws Exception
     {

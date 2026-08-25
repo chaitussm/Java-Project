@@ -13,6 +13,7 @@ import java.util.Base64;
 
 import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
 
+// Docs: docs/concepts/serialization/serializationBasics.md (line 1)
 public class serializeBase extends fileBasicMethods implements Serializable {
 
     int i = 10;
@@ -23,19 +24,7 @@ public class serializeBase extends fileBasicMethods implements Serializable {
 
     transient static int x = 30;
 
-    /*
-     * This field uses two independent modifiers:
-     *
-     * transient - do not save this field's value in the serialized file.
-     * final     - do not allow this field to be assigned a new value after
-     *             its initialization.
-     *
-     * Therefore, final does not make a field serializable. The transient rule
-     * still wins for file storage: m = 15 is not written to the file. When the
-     * object is deserialized, Java gives this int field its default value, 0.
-     * The combination is legal and useful when a value must be fixed during
-     * normal object life but must never be stored in serialized data.
-     */
+    // final + transient: not reassignable, and never written to the serialized file (restored as 0).
     transient final int m = 15;
 
 
@@ -60,26 +49,6 @@ public class serializeBase extends fileBasicMethods implements Serializable {
         }
     } 
 
-    /*
-     * Deserialization is the reverse of serialization. It reads the binary bytes
-     * from the file and rebuilds the Java object in memory.
-     *
-     * The filename extension is not used to identify the data format. The file
-     * must contain bytes written by ObjectOutputStream, regardless of whether
-     * its name ends with .ser, .dat, .bin, .object, or another extension.
-     *
-     * This method also demonstrates an important serialization rule:
-     * normal fields are restored, transient fields are not restored, and static
-     * fields are not part of the object's serialized state.
-     *
-     * The old condition `this.i == restoredObject.i` was not suitable here.
-     * Comparing values cannot identify a field's type. Reflection modifiers are
-     * used instead to determine whether a field is normal, transient, or static.
-     *
-     * The complete class hierarchy is inspected because a topic class such as
-     * transientKeyword may inherit its fields from serializeBase. Checking only
-     * the child class would miss those inherited fields.
-     */
     // The file parameter must point to a file previously created by serialize().
     public void deserialize(String file)
     {

@@ -2,6 +2,11 @@
 
 This guide explains the customized serialization example and maps it to the Java source file.
 
+| Part | File | Scenario |
+|---|---|---|
+| [Part 1](#source-and-output-locations) | `customizedSer.java` | `writeObject()`/`readObject()` callbacks encode a transient password manually |
+| [Part 2](#part-2--normalserjava-the-baseline-without-customization) | `normalSer.java` | Default serialization only — shows the data loss customization fixes |
+
 ## Source and Output Locations
 
 Java source file:
@@ -269,8 +274,45 @@ password is converted and written manually
 Customized deserialization:
 username is restored by defaultReadObject()
 converted password is read, decoded, and assigned manually
+
+programmer cant calls private directly from outside of the class 
+but JVM can call private methods directly from outside of the class
 ```
 
 The central lesson is:
 
 > `writeObject()` and `readObject()` are private callback methods that allow a class to add its own behavior around Java's default serialization process.
+
+---
+
+## Part 2 — normalSer.java: the baseline without customization
+
+**File:** [normalSer.java](../../../demo/src/main/java/com/advanced/serialization/customizedSerialization/normalSer.java)
+
+### 📌 Concept
+
+> This is the "before" picture: `normalAccount` has the exact same shape as `account` (a normal `username` field and a `transient password` field) but defines **no** `writeObject()`/`readObject()` callbacks. Default serialization silently drops the transient field — there is no way to recover it after deserialization.
+
+```mermaid
+flowchart TD
+    A["new normalAccount()\nusername='Shiva', password='Sati'"] --> B["oos.writeObject(a1)\n(no custom callbacks defined)"]
+    B --> C["Default serialization:\nusername written\npassword skipped (transient)"]
+    C --> D["ois.readObject()\n-> normalAccount a2"]
+    D --> E["a2.username = 'Shiva' (restored)\na2.password = null (never written, never restored)"]
+    E --> F["print a2.username + '-----' + a2.password"]
+```
+
+### ✅ Verified Output
+```
+Shiva-----null
+```
+
+### Part 1 vs. Part 2 — the direct comparison
+
+| | `normalSer.java` (Part 2) | `customizedSer.java` (Part 1) |
+|---|---|---|
+| `writeObject()`/`readObject()` defined? | ❌ No | ✅ Yes |
+| Transient `password` after deserialize | `null` (lost) | Restored via manual encode/decode |
+| Output | `Shiva-----null` | `Rama===Sita` |
+
+This pair proves the exact problem statement in `normalSer.java`'s own comment: *"During default serialization there may be a chance of loss of information because of transient keyword."* `customizedSer.java` is the fix.

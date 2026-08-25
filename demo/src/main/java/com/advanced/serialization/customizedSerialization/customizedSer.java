@@ -49,23 +49,7 @@ class account extends serializeBase {
 
 public class customizedSer extends serializeBase{
 
-    /*
-     *
-     * We can implement customized serialization by using the following 2 methods 
-     * private void writeObject(ObjectOuptuStream os) throws Exception 
-     * This method will be executed automatically at the time of serialization, hence at the time of serialization 
-     * if we want to perform any activity we have to define that in this method only 
-     * private void readObject(ObjectInputStream is) throws Exception
-     * This method will be executed automatically at the time of deserialization, hence at the time of deserialization 
-     * if we want to perform any activity we have to define that in this method only
-     * NOTE: the above methods are call back methods because these are executed automatically by the JVM 
-     * while performing the required object serialization we have do extra work in the corresponding class we have to 
-     * define above methods
-     * example : while performing account Object serialization if we required to extra work in the account class 
-     * we have to define above methods
-     * 
-     */
-    
+    // Docs: docs/concepts/serialization/customizedSer.md (Part 1, line 1)
     public static void main(String[] args)
     {
         account a1 = new account();

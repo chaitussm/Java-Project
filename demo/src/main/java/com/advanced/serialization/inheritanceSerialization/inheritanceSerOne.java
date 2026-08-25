@@ -1,4 +1,4 @@
-package com.advanced.serialization.customizedSerialization;
+package com.advanced.serialization.inheritanceSerialization;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,23 +8,25 @@ import java.io.Serializable;
 
 import com.advanced.serialization.serializeBase;
 
-class normalAccount implements Serializable{
-
-    String username = "Shiva";
-    transient String password = "Sati";
-
+class engine implements Serializable
+{
+     int rpm = 100;
 }
 
-public class normalSer extends serializeBase{
+class tata extends engine
+{
+     int cc = 20; 
+}
+public class inheritanceSerOne extends serializeBase{
 
-    // Docs: docs/concepts/serialization/customizedSer.md (Part 2, line 288)
-
-    public static void main(String[] args) 
+    // Docs: docs/concepts/serialization/inheritanceSerializationbasics.md (Part 1, line 13)
+    public static void main(String[] args)
     {
-           
-          normalAccount a1 = new normalAccount();
 
-          String filename = sampleDataPath("serialization","custmDemo,ser").toString();
+        tata a1 = new tata();
+
+        String filename = sampleDataPath("serialization","engine.ser").toString();
+
 
           try( FileOutputStream fos = new FileOutputStream(filename);
 
@@ -41,9 +43,9 @@ public class normalSer extends serializeBase{
           try(FileInputStream fis = new FileInputStream(filename);
               ObjectInputStream ois = new ObjectInputStream(fis);)
               {
-                 normalAccount a2 = (normalAccount)ois.readObject();
+                 tata a2 = (tata)ois.readObject();
                  
-                 System.out.println(a2.username + "-----" + a2.password);
+                 System.out.println(a2.rpm + "-----" + a2.cc);
               }
 
         catch(Exception e)
@@ -52,4 +54,7 @@ public class normalSer extends serializeBase{
         }
     }
 
-}
+
+    }
+
+
