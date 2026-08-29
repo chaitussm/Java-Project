@@ -233,5 +233,7 @@ We can use Pattern class split() to split thew target String according to a part
 
 It is specially designed class for tokenization activity 
 
+StringTokenizer present in java.util package 
+
 
 
