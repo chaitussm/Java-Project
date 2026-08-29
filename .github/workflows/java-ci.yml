@@ -51,7 +51,15 @@ jobs:
             if javap -classpath target/classes "$cls" 2>/dev/null | grep -q "public static void main"; then
               found_main=true
               echo "--- RUNNING: $cls ---"
-              timeout 15s java -cp target/classes "$cls" || true
+              set +e
+              timeout 15s java -cp target/classes "$cls"
+              rc=$?
+              set -e
+              if [ "$rc" -eq 124 ]; then
+                echo "--- TIMED OUT: $cls ---"
+              elif [ "$rc" -ne 0 ]; then
+                echo "--- FAILED ($rc): $cls ---"
+              fi
             fi
           done < <(find target/classes -type f -name '*.class' -print0 | sort -z)
 
@@ -83,7 +91,7 @@ jobs:
           fi
 
       - name: Email test report
-        if: ${{ !cancelled() && steps.smtp_check.outputs.ready == 'true' }}
+        if: ${{ (success() || failure()) && steps.smtp_check.outputs.ready == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
