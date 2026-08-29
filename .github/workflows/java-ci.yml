@@ -68,13 +68,14 @@ jobs:
         shell: bash
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           SMTP_TO: ${{ secrets.SMTP_TO }}
         run: |
           set -euo pipefail
-          if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && [ -n "${SMTP_FROM}" ] && [ -n "${SMTP_TO}" ]; then
+          if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_PORT}" ] && [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && [ -n "${SMTP_FROM}" ] && [ -n "${SMTP_TO}" ]; then
             echo "ready=true" >> "${GITHUB_OUTPUT}"
           else
             echo "ready=false" >> "${GITHUB_OUTPUT}"
