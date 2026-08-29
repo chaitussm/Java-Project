@@ -105,7 +105,7 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
-          SMTP_TO: ${{ secrets.SMTP_USERNAME }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
         run: |
           if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_PORT}" ] && \
              [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && \
@@ -125,7 +125,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
-          to: ${{ secrets.SMTP_USERNAME }}
+          to: ${{ secrets.SMTP_TO }}
           from: ${{ secrets.SMTP_FROM }}
           body: |
             Java End-to-End CI Pipeline Run Summary
