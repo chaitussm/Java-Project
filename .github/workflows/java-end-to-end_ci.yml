@@ -125,7 +125,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
-          to: ${{ secrets.SMTP_TO }}
+          to: ${{ secrets.SMTP_USERNAME }}
           from: ${{ secrets.SMTP_FROM }}
           body: |
             Java End-to-End CI Pipeline Run Summary
