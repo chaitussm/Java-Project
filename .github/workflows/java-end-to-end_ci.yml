@@ -1,6 +1,8 @@
 name: Java End-to-End CI
 
 on:
+  schedule:
+    - cron: '30 18 * * *'
   push:
     branches:
       - main
