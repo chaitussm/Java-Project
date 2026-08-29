@@ -64,7 +64,9 @@ jobs:
         run: mvn -B test
 
       - name: Email test report
-        if: ${{ always() && secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.SMTP_FROM != '' }}
+        if: ${{ always() && env.SMTP_READY == 'true' }}
+        env:
+          SMTP_READY: ${{ secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.SMTP_FROM != '' && secrets.SMTP_TO != '' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -75,6 +77,6 @@ jobs:
           body: |
             The scheduled Java pipeline has completed.
             Please find the test report attached.
-          to: chaitanyassm@outlook.com
+          to: ${{ secrets.SMTP_TO }}
           from: ${{ secrets.SMTP_FROM }}
           attachments: demo/target/surefire-reports/*.xml
