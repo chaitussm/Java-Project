@@ -63,10 +63,26 @@ jobs:
         working-directory: demo
         run: mvn -B test
 
-      - name: Email test report
-        if: ${{ always() && env.SMTP_READY == 'true' }}
+      - name: Check SMTP configuration
+        id: smtp_check
+        shell: bash
         env:
-          SMTP_READY: ${{ secrets.SMTP_SERVER != '' && secrets.SMTP_USERNAME != '' && secrets.SMTP_PASSWORD != '' && secrets.SMTP_FROM != '' && secrets.SMTP_TO != '' }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+        run: |
+          set -euo pipefail
+          if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && [ -n "${SMTP_FROM}" ] && [ -n "${SMTP_TO}" ]; then
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            echo "SMTP secrets not fully configured; skipping email step."
+          fi
+
+      - name: Email test report
+        if: ${{ always() && steps.smtp_check.outputs.ready == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
