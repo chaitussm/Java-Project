@@ -223,3 +223,11 @@ and introduced in 1.4 V
 
 >\n => matches whatever was matched by the n-th capturing group (e.g. \1 refers to group 1)
 
+# Regular Expressions — Pattern Class 
+
+# split()
+
+We can use Pattern class split() to split thew target String according to a particular pattern
+
+
+
