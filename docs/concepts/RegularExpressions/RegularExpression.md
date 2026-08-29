@@ -223,17 +223,180 @@ and introduced in 1.4 V
 
 >\n => matches whatever was matched by the n-th capturing group (e.g. \1 refers to group 1)
 
-# Regular Expressions — Pattern Class 
+---
 
-# split()
+# Regular Expressions — Pattern Class
 
-We can use Pattern class split() to split thew target String according to a particular pattern
+**File:** [splitMethod.java](../../../demo/src/main/java/com/regularExpressions/patternClass/splitMethod.java)
 
-# StringTokenizer 
+## split()
 
-It is specially designed class for tokenization activity 
+We can use `Pattern` class' `split()` method to split the target String according to a particular regex pattern.
 
-StringTokenizer present in java.util package 
+```java
+public String[] split(CharSequence input)
+```
 
+This is more powerful than `String.split()` because the pattern is compiled once (via `Pattern.compile()`) and can be reused across multiple `split()` calls efficiently.
 
+```mermaid
+flowchart TD
+    A["Pattern.compile(regex)"] --> B["pattern object (compiled once)"]
+    B --> C["pattern.split(data)"]
+    C --> D["String[] tokens"]
+```
 
+### Two ways to split a String
+
+| Approach | Method | Notes |
+|---|---|---|
+| `String` class | `input.split(regex)` | Compiles the regex internally on every call |
+| `Pattern` class | `Pattern.compile(regex).split(input)` | Compile once, reuse the pattern multiple times — better for repeated splitting |
+
+### Example
+
+```java
+Pattern pattern = Pattern.compile("\\s+");   // split by one-or-more whitespace
+String[] result = pattern.split("This is an example string");
+// => ["This", "is", "an", "example", "string"]
+
+Pattern dotPattern = Pattern.compile("[.]"); // split by literal dot
+String[] parts = dotPattern.split("www.durgajobs.com");
+// => ["www", "durgajobs", "com"]
+```
+
+> ⚠️ Note the dot is wrapped in a character class `[.]` (or escaped as `\\.`) — an unescaped `.` in regex means "any character", not a literal dot.
+
+---
+
+# StringTokenizer
+
+**Files:**
+- [stringTokenizer.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/stringTokenizer.java)
+- [mobileNumber.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/mobileNumber.java)
+
+## 📌 Concept
+
+> `StringTokenizer` is a class **specially designed for tokenization** — breaking a String into smaller pieces ("tokens") based on delimiter characters.
+
+- Present in the `java.util` package.
+- Considered a **legacy class** — for new code, `String.split()` or `Pattern`/`Matcher` are generally preferred, but `StringTokenizer` is still simple and fast for basic delimiter-based splitting.
+
+```mermaid
+flowchart TD
+    A["StringTokenizer(input)"] --> B["default delimiters:\nspace, tab, newline"]
+    A2["StringTokenizer(input, delimiter)"] --> C["custom delimiter"]
+    B --> D{"hasMoreTokens()"}
+    C --> D
+    D -- true --> E["nextToken()"]
+    E --> D
+    D -- false --> F["done"]
+```
+
+## Key methods
+
+> `StringTokenizer(String input)`
+Creates a tokenizer using the **default delimiters** — space, tab, newline, carriage return, form feed.
+
+> `StringTokenizer(String input, String delimiter)`
+Creates a tokenizer using a **custom delimiter** string.
+
+> `boolean hasMoreTokens()`
+Returns `true` if there are still tokens left to read.
+
+> `String nextToken()`
+Returns the next token and advances the tokenizer.
+
+### Example — default delimiter
+
+```java
+StringTokenizer tokenizer = new StringTokenizer("This is an example string");
+while (tokenizer.hasMoreTokens()) {
+    System.out.println(tokenizer.nextToken());
+}
+// This
+// is
+// an
+// example
+// string
+```
+
+### Example — custom delimiter
+
+```java
+StringTokenizer tokenizer = new StringTokenizer("19-09-2015", "-");
+while (tokenizer.hasMoreTokens()) {
+    System.out.println(tokenizer.nextToken());
+}
+// 19
+// 09
+// 2015
+```
+
+---
+
+## 🔥 Real-world regex — validating a mobile number
+
+**Requirement:** design a regex representing all valid 10-digit mobile numbers.
+
+**Rules:**
+1. Every number must contain **exactly 10 digits**.
+2. The **first digit** must be `7`, `8`, or `9`.
+
+```mermaid
+flowchart LR
+    A["first digit"] -->|"[7-9]"| B["remaining 9 digits"]
+    B -->|"[0-9]{9}"| C["10-digit mobile number"]
+```
+
+| Pattern | Meaning |
+|---|---|
+| `[7-9][0-9]{9}` | Plain 10-digit number starting with 7, 8, or 9 |
+| `0?[7-9][0-9]{9}` | Allows an optional leading `0` → 11 digits total (e.g. trunk prefix) |
+| `(0\|91)?[7-9][0-9]{9}` | Allows an optional `0` **or** `91` STD/ISD prefix → up to 12 digits total |
+
+## 🔥 Real-world regex — validating an email Id
+
+**Rules:**
+1. Should contain exactly **one `@`** symbol.
+2. Should have a **domain name** after `@`.
+3. Can contain alphanumeric characters, dots, and underscores **before** `@`.
+
+```text
+[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}
+```
+
+```mermaid
+flowchart LR
+    A["local part\n[a-zA-Z0-9._%+-]+"] --> B["@"]
+    B --> C["domain name\n[a-zA-Z0-9.-]+"]
+    C --> D["."]
+    D --> E["TLD (2+ letters)\n[a-zA-Z]{2,}"]
+```
+
+| Part | Regex | Meaning |
+|---|---|---|
+| Local part | `[a-zA-Z0-9._%+-]+` | Letters, digits, dot, underscore, `%`, `+`, `-` (one or more) |
+| Separator | `@` | Literal `@` symbol |
+| Domain | `[a-zA-Z0-9.-]+` | Letters, digits, dot, hyphen (one or more) |
+| Dot | `\.` | Literal dot before the TLD |
+| TLD | `[a-zA-Z]{2,}` | At least 2 letters, e.g. `com`, `in`, `org` |
+
+## 🔗 Related Files
+- [splitMethod.java](../../../demo/src/main/java/com/regularExpressions/patternClass/splitMethod.java) — `Pattern.split()` vs `String.split()`.
+- [stringTokenizer.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/stringTokenizer.java) — default and custom delimiter tokenization.
+- [mobileNumber.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/mobileNumber.java) — mobile 
+number and email regex design notes.
+
+# Regular expression to represent YAVA language Identifiers 
+
+>Rules 
+
+Allowed characters are 
+
+1. a-z , A-Z, 0-9, #, $
+2. length of identifier should be atleast 2 
+3. the first character should be lower case alphabet symbol from a to k 
+4. second character should be a digit divisible by 3 (0,3,6,9)
+
+[a-k][0369][a-zA-Z0-9#$]* 
