@@ -229,5 +229,9 @@ and introduced in 1.4 V
 
 We can use Pattern class split() to split thew target String according to a particular pattern
 
+# StringTokenizer 
+
+It is specially designed class for tokenization activity 
+
 
 

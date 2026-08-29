@@ -105,7 +105,7 @@ jobs:
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
-          SMTP_TO: ${{ secrets.SMTP_TO }}
+          SMTP_TO: ${{ secrets.SMTP_USERNAME }}
         run: |
           if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_PORT}" ] && \
              [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && \
