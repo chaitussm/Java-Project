@@ -26,13 +26,9 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Build with Maven
+      - name: Build and test with Maven
         working-directory: demo
-        run: mvn -B clean package
-
-      - name: Run tests
-        working-directory: demo
-        run: mvn -B test
+        run: mvn -B clean verify
 
       - name: Upload Surefire XML test reports
         if: always()
@@ -50,12 +46,18 @@ jobs:
       contents: read
       packages: write
     outputs:
-      image_tag_sha: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-      image_tag_latest: ${{ env.IMAGE_NAME }}:latest
+      image_tag_sha: ${{ steps.image_tags.outputs.image_tag_sha }}
+      image_tag_latest: ${{ steps.image_tags.outputs.image_tag_latest }}
       pushed: ${{ steps.push_flag.outputs.pushed }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set image tag outputs
+        id: image_tags
+        run: |
+          echo "image_tag_sha=ghcr.io/${{ github.repository_owner }}/java-project:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          echo "image_tag_latest=ghcr.io/${{ github.repository_owner }}/java-project:latest" >> "$GITHUB_OUTPUT"
 
       - name: Set push flag
         id: push_flag
