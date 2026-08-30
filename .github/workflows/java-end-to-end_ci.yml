@@ -181,6 +181,28 @@ jobs:
     needs: [build-test, docker]
     if: always()
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Count Java programs
+        id: program_counts
+        shell: bash
+        run: |
+          source_root="demo/src/main/java/com"
+          main_pattern='public[[:space:]]+static[[:space:]]+void[[:space:]]+main[[:space:]]*\('
+          total_programs=$(grep -R -E -h "$main_pattern" "$source_root" | wc -l)
+          folder_counts=""
+
+          for folder in "$source_root"/*; do
+            [ -d "$folder" ] || continue
+            folder_name=$(basename "$folder")
+            program_count=$(grep -R -E -h "$main_pattern" "$folder" | wc -l)
+            folder_counts="${folder_counts}${folder_name}: ${program_count}; "
+          done
+
+          echo "total_programs=$total_programs" >> "$GITHUB_OUTPUT"
+          echo "folder_counts=$folder_counts" >> "$GITHUB_OUTPUT"
+
       - name: Check SMTP configuration
         id: smtp_check
         shell: bash
@@ -225,6 +247,11 @@ jobs:
             -----------
             build-test : ${{ needs.build-test.result }}
             docker     : ${{ needs.docker.result }}
+
+            Java Program Counts
+            -------------------
+            Total main methods in repository : ${{ steps.program_counts.outputs.total_programs }}
+            By top-level source folder        : ${{ steps.program_counts.outputs.folder_counts }}
 
             Docker Image Details
             --------------------
