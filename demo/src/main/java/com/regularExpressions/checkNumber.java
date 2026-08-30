@@ -1,12 +1,14 @@
 package com.regularExpressions;
 
 import java.util.regex.*;
-/*
+/**
  * This class is used to check if a given number is a valid mobile number.
  * Rules for a valid mobile number:
  * 1. Should contain exactly 10 digits.
  * 2. The first digit should be 7, 8, or 9.
  * Example: [7-9][0-9]{9}
+ * Detailed local and CI execution guide:
+ * docs/concepts/RegularExpressions/RegularExpression.md
  */
 
 public class checkNumber {
