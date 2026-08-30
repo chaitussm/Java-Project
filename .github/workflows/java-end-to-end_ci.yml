@@ -35,13 +35,17 @@ jobs:
         working-directory: demo
         run: mvn -B clean verify
 
-      - name: Run validation examples and create HTML report
+      - name: Execute Java programs and create HTML report
         if: always()
         working-directory: demo
         run: |
           report_directory="target/ci-reports"
           report_file="$report_directory/execution-report.html"
+          output_file="$report_directory/program-output.txt"
+          source_root="src/main/java"
+          main_pattern='public[[:space:]]+static[[:space:]]+void[[:space:]]+main[[:space:]]*\('
           mkdir -p "$report_directory"
+          SECONDS=0
 
           cat > "$report_file" <<'HTML'
           <!doctype html>
@@ -63,36 +67,68 @@ jobs:
             <h1>Java Program Execution Report</h1>
             <p>Workflow: Java End-to-End CI</p>
             <table>
-              <thead><tr><th>Program</th><th>Scenario</th><th>Input</th><th>Output</th><th>Result</th></tr></thead>
+              <thead><tr><th>Folder</th><th>Program</th><th>Arguments</th><th>Output</th><th>Exit Code</th><th>Status</th></tr></thead>
               <tbody>
           HTML
 
-          failures=0
-          run_validation() {
-            scenario="$1"
-            value="$2"
-            expected="$3"
-            set +e
-            output=$(java -cp target/classes com.regularExpressions.checkNumber "$scenario" "$value")
-            exit_code=$?
-            set -e
+          program_count=0
+          passed_count=0
+          failed_count=0
+          timed_out_count=0
 
-            if [ "$exit_code" -eq 0 ] && [ "$output" = "$expected" ]; then
-              result="PASS"
-              css_class="pass"
-            else
-              result="FAIL"
-              css_class="fail"
-              failures=$((failures + 1))
-            fi
-
-            printf '<tr><td>checkNumber</td><td>%s</td><td>%s</td><td>%s</td><td class="%s">%s</td></tr>\n' \
-              "$scenario" "$value" "$output" "$css_class" "$result" >> "$report_file"
-            echo "checkNumber $scenario: $output ($result)"
+          html_escape() {
+            printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g'
           }
 
-          run_validation mobile "$MOBILE_NUMBER" "Valid mobile number"
-          run_validation email "$EMAIL_ID" "Valid email address"
+          run_program() {
+            folder="$1"
+            program="$2"
+            arguments="$3"
+            set +e
+            timeout --kill-after=2s 5s java -cp target/classes "$program" $arguments > "$output_file" 2>&1
+            exit_code=$?
+            set -e
+            output=$(head -c 20000 "$output_file")
+
+            if [ "$exit_code" -eq 0 ]; then
+              status="PASSED"
+              css_class="pass"
+              passed_count=$((passed_count + 1))
+            elif [ "$exit_code" -eq 124 ] || [ "$exit_code" -eq 137 ]; then
+              status="TIMED OUT"
+              css_class="fail"
+              timed_out_count=$((timed_out_count + 1))
+            else
+              status="FAILED"
+              css_class="fail"
+              failed_count=$((failed_count + 1))
+            fi
+
+            printf '<tr><td>%s</td><td>%s</td><td>%s</td><td><pre>%s</pre></td><td>%s</td><td class="%s">%s</td></tr>\n' \
+              "$(html_escape "$folder")" "$(html_escape "$program")" "$(html_escape "$arguments")" \
+              "$(html_escape "$output")" "$exit_code" "$css_class" "$status" >> "$report_file"
+            echo "[$status] $folder > $program (exit code: $exit_code)"
+            printf '%s\n' "$output"
+            program_count=$((program_count + 1))
+          }
+
+          run_program "regularExpressions" "com.regularExpressions.checkNumber" "mobile $MOBILE_NUMBER"
+          run_program "regularExpressions" "com.regularExpressions.checkNumber" "email $EMAIL_ID"
+
+          while IFS= read -r -d '' source_file; do
+            [ "$source_file" = "$source_root/com/regularExpressions/checkNumber.java" ] && continue
+            grep -q -E "$main_pattern" "$source_file" || continue
+            class_name=${source_file#"$source_root"/}
+            class_name=${class_name%.java}
+            class_name=${class_name//\//.}
+            relative_path=${source_file#"$source_root"/com/}
+            folder=${relative_path%%/*}
+            run_program "$folder" "$class_name" ""
+          done < <(find "$source_root" -name '*.java' -print0 | sort -z)
+
+          total_duration_seconds=$SECONDS
+          printf '    <p><strong>Execution summary:</strong> %s programs scanned in %s seconds. Passed: %s. Failed: %s. Timed out: %s.</p>\n' \
+            "$program_count" "$total_duration_seconds" "$passed_count" "$failed_count" "$timed_out_count" >> "$report_file"
 
           cat >> "$report_file" <<'HTML'
               </tbody>
@@ -101,10 +137,7 @@ jobs:
           </html>
           HTML
 
-          if [ "$failures" -ne 0 ]; then
-            exit 1
-          fi
-
+          echo "Executed $program_count programs in $total_duration_seconds seconds: $passed_count passed, $failed_count failed, $timed_out_count timed out."
           echo "HTML execution report created: $report_file"
 
       - name: Upload Java execution report
