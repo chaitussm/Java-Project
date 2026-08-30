@@ -217,6 +217,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Download Java execution report
+        if: always()
+        uses: actions/download-artifact@v4
+        with:
+          name: java-execution-report
+          path: ci-report
+
       - name: Count Java programs
         id: program_counts
         shell: bash
@@ -267,6 +274,7 @@ jobs:
           subject: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
           to: ${{ secrets.SMTP_TO }}
           from: ${{ secrets.SMTP_FROM }}
+          attachments: ci-report/execution-report.html
           body: |
             Java End-to-End CI Pipeline Run Summary
             ========================================

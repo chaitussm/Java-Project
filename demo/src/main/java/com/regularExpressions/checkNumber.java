@@ -19,8 +19,9 @@ public class checkNumber {
             System.out.println("Usage: pass a mobile number as a command-line argument");
             return;
         }
-
-        Pattern pattern = Pattern.compile("(0|91)?[7-9][0-9]{9}");
+        
+        String regxMobileNumber = "(0|91)?[7-9][0-9]{9}";
+        Pattern pattern = Pattern.compile(regxMobileNumber);
         Matcher matcher = pattern.matcher(args[0]);
         if (matcher.find() && matcher.group().equals(args[0])) {
             System.out.println("Valid mobile number");
@@ -35,8 +36,8 @@ public class checkNumber {
             System.out.println("Usage: pass an email address as a command-line argument");
             return;
         }
-
-        Pattern pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        String regxEmail = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        Pattern pattern = Pattern.compile(regxEmail);
         Matcher matcher = pattern.matcher(args[0]);
         if (matcher.find() && matcher.group().equals(args[0])) {
             System.out.println("Valid email address");
