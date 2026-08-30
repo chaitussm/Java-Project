@@ -43,8 +43,8 @@ The mobile number and email address are workflow environment variables, not valu
 | Checkout | `actions/checkout@v4` |
 | Set up JDK 21 | Temurin distribution with Maven cache |
 | Build and test | Runs `mvn -B clean verify` in `demo/`; it cleans old output, compiles source, runs configured tests, and verifies the build. |
-| Execute validators | Runs `checkNumber` once for the mobile scenario and once for the email scenario. |
-| Create report | Writes `target/ci-reports/execution-report.html` with each program's input, output, and pass/fail result. |
+| Execute Java programs | Runs the two configured `checkNumber` scenarios, then discovers and runs every Java source file containing a `main` method. |
+| Create report | Writes `target/ci-reports/execution-report.html` with folder, program, arguments, output, exit code, and status for every execution. |
 | Upload artifacts | Uploads the HTML as `java-execution-report` and Surefire XML as `surefire-reports`. |
 
 ### `docker`
@@ -95,43 +95,63 @@ Pull-request runs build the image locally for validation but do **not** push.
 
 ## Program Execution and HTML Report
 
-The validation-report step runs after Maven. It is marked `if: always()`, so it still creates a report if the Maven build fails. This preserves useful failure information rather than skipping the report entirely.
+The `Execute Java programs and create HTML report` step runs with `if: always()`. It creates a report even after a Maven failure, so the workflow retains execution evidence.
 
 ```mermaid
 flowchart TD
-    A["Create execution-report.html"] --> B["Run checkNumber mobile $MOBILE_NUMBER"]
-    B --> C{"Output equals Valid mobile number?"}
-    C -- Yes --> D["Add mobile PASS row"]
-    C -- No --> E["Add mobile FAIL row"]
-    D --> F["Run checkNumber email $EMAIL_ID"]
-    E --> F
-    F --> G{"Output equals Valid email address?"}
-    G -- Yes --> H["Add email PASS row"]
-    G -- No --> I["Add email FAIL row"]
-    H --> J["Close HTML report"]
-    I --> J
-    J --> K{"Any failed rows?"}
-    K -- No --> L["Validation step succeeds"]
-    K -- Yes --> M["Validation step fails after report is saved"]
+    A["Create execution-report.html and start timer"] --> B["Run checkNumber mobile"]
+    B --> C["Run checkNumber email"]
+    C --> D["Find every .java file with a main method"]
+    D --> E["Run program with a 5-second limit"]
+    E --> F["Capture output and exit code"]
+    F --> G["Write folder and program status row"]
+    G --> H{"More programs?"}
+    H -- Yes --> E
+    H -- No --> I["Write totals and elapsed seconds"]
+    I --> J["Upload HTML artifact"]
 ```
 
-### Executed Java commands
+### What is executed
+
+The two `checkNumber` cases run first because they require command-line arguments:
 
 ```bash
 java -cp target/classes com.regularExpressions.checkNumber mobile "$MOBILE_NUMBER"
 java -cp target/classes com.regularExpressions.checkNumber email "$EMAIL_ID"
 ```
 
-| Part | Explanation |
-|---|---|
-| `-cp target/classes` | Uses Maven's compiled class directory as Java's classpath. |
-| `com.regularExpressions.checkNumber` | The fully qualified class name containing `main`. |
-| `mobile` / `email` | Selects the validation path in `checkNumber`. |
-| `$MOBILE_NUMBER` / `$EMAIL_ID` | Provides configurable inputs from the workflow environment. |
-| `output=$(...)` | Captures the text printed by the Java program. |
-| `failures` | Counts unexpected results. The job fails only after both scenarios have been recorded. |
+Afterward, the workflow searches `src/main/java` for files that declare `public static void main(...)`. Each discovered source-file class is converted to its fully qualified class name and executed with no arguments.
 
-The generated HTML table includes the program name, scenario, input, actual output, and a `PASS` or `FAIL` result for each execution.
+| Item | Explanation |
+|---|---|
+| `find "$source_root" -name '*.java'` | Finds all Java source files. |
+| `grep` with `main_pattern` | Keeps only source files containing a `main` method declaration. |
+| `java -cp target/classes <class>` | Starts the compiled Java program. |
+| `timeout --kill-after=2s 5s` | Stops a program that takes more than five seconds; an extra two seconds allows cleanup before it is force-stopped. |
+| `head -c 20000` | Limits captured output to 20,000 bytes per program, keeping the report manageable. |
+| `SECONDS=0` | Starts Bash's elapsed-time timer for the complete program scan. |
+
+### Execution status
+
+Every run is printed to the GitHub Actions log and added to the HTML report.
+
+| Status | Meaning |
+|---|---|
+| `PASSED` | The Java process ended with exit code `0`. |
+| `FAILED` | The program ended with a non-zero exit code. |
+| `TIMED OUT` | The program exceeded the five-second execution limit. |
+
+The workflow records failures and timeouts in the report but continues scanning the remaining programs. This allows one complete inventory instead of stopping at the first failing example.
+
+### HTML report contents
+
+Each HTML row has this structure:
+
+| Folder | Program | Arguments | Output | Exit Code | Status |
+|---|---|---|---|---|---|
+| `regularExpressions` | `com.regularExpressions.checkNumber` | `mobile <value>` | Program console output | `0` | `PASSED` |
+
+At the end, the report includes an execution summary showing the number of scanned programs, passed programs, failed programs, timed-out programs, and the total execution time in seconds.
 
 ### Downloading the report
 
@@ -142,6 +162,26 @@ demo/target/ci-reports/execution-report.html
 ```
 
 Open a completed GitHub Actions run and download `java-execution-report` from the **Artifacts** section. The report is generated on the GitHub runner, so it does not appear as a committed file in the repository.
+
+## Report Attachment in Email
+
+The `build-test` and `notify` jobs use separate GitHub runners. The report must therefore be uploaded by `build-test` and downloaded again in `notify` before it can be attached to an email.
+
+```mermaid
+sequenceDiagram
+    participant B as build-test runner
+    participant A as GitHub Actions artifacts
+    participant N as notify runner
+    participant M as SMTP server
+    B->>B: Create execution-report.html
+    B->>A: Upload java-execution-report
+    N->>A: Download artifact into ci-report/
+    N->>M: Send email with execution-report.html attachment
+```
+
+The notification job uses `actions/download-artifact@v4` to download the artifact to `ci-report/`. The email action attaches `ci-report/execution-report.html`, so the recipient receives the same report available from the GitHub Actions artifact list.
+
+The workflow uses `dawidd6/action-send-mail@v18`, which supports Node 24. This replaces the former v3 action and avoids the Node 20 deprecation warning.
 
 ## Program Counts in the Email
 

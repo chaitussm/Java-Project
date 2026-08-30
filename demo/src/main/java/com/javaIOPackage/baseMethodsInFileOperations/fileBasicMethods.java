@@ -127,6 +127,22 @@ public class fileBasicMethods {
         
     }
 
+    public static Optional<Path> fetchFilePath(String filename)
+    {
+        Path projectRoot = Path.of(System.getProperty("user.dir"));
+
+        try (Stream<Path> pathStream = Files.walk(projectRoot)) {
+            return pathStream
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().equalsIgnoreCase(filename))
+                    .findFirst()
+                    .map(Path::toAbsolutePath);
+        } catch (IOException e) {
+            System.err.println("Unable to search for file: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
     public static Path sampleDataPath(String... parts)
     {
         // Read the directory from which the Java program was started.

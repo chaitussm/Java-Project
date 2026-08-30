@@ -1,0 +1,28 @@
+Contact List - August 2026
+
+1. Priya Sharma
+   Mobile: 9876543210
+   Email: priya.sharma@example.com
+
+2. Arjun Mehta
+   Mobile: 919812345678
+   Email: arjun.mehta@company.org
+
+3. Neha Patel
+   Phone: 8765432109
+   Email: neha.patel_25@mail.net
+
+4. Rahul Kumar
+   Contact number: 7987654321
+   Email address: rahul.kumar+training@example.co.in
+
+5. Aisha Khan
+   Mobile: 09876543210
+   Email: aisha.khan@demo.io
+
+Notes:
+- Team meeting is scheduled for Monday at 10:30 AM.
+- Reception extension: 204
+- Support email: helpdesk@example.com
+- Invalid sample number: 6123456789
+- Invalid sample email: contact-at-example.com
