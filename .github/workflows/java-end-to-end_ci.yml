@@ -9,6 +9,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/java-project
@@ -35,6 +36,7 @@ jobs:
         run: mvn -B clean verify
 
       - name: Run validation examples and create HTML report
+        if: always()
         working-directory: demo
         run: |
           report_directory="target/ci-reports"
@@ -86,7 +88,7 @@ jobs:
 
             printf '<tr><td>checkNumber</td><td>%s</td><td>%s</td><td>%s</td><td class="%s">%s</td></tr>\n' \
               "$scenario" "$value" "$output" "$css_class" "$result" >> "$report_file"
-            echo "$scenario: $output ($result)"
+            echo "checkNumber $scenario: $output ($result)"
           }
 
           run_validation mobile "$MOBILE_NUMBER" "Valid mobile number"
@@ -102,6 +104,8 @@ jobs:
           if [ "$failures" -ne 0 ]; then
             exit 1
           fi
+
+          echo "HTML execution report created: $report_file"
 
       - name: Upload Java execution report
         if: always()
