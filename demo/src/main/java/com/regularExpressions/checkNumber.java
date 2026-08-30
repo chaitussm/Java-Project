@@ -29,8 +29,36 @@ public class checkNumber {
         }
     }
 
+    public static void checkEmail(String[] args) {
+
+        if (args.length == 0) {
+            System.out.println("Usage: pass an email address as a command-line argument");
+            return;
+        }
+
+        Pattern pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        Matcher matcher = pattern.matcher(args[0]);
+        if (matcher.find() && matcher.group().equals(args[0])) {
+            System.out.println("Valid email address");
+        } else {
+            System.out.println("Invalid email address");
+        }
+    }
+
     public static void main(String[] args) {
-        checkMobileNumber(args);
+        if (args.length < 2) {
+            System.out.println("Usage: checkNumber <mobile|email> <value>");
+            return;
+        }
+
+        String[] value = {args[1]};
+        if (args[0].equals("mobile")) {
+            checkMobileNumber(value);
+        } else if (args[0].equals("email")) {
+            checkEmail(value);
+        } else {
+            System.out.println("Type must be either mobile or email");
+        }
     }
     
 }

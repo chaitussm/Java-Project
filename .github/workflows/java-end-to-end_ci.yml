@@ -13,6 +13,7 @@ on:
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/java-project
   MOBILE_NUMBER: 9876543210
+  EMAIL_ID: student@example.com
 
 jobs:
   build-test:
@@ -33,12 +34,82 @@ jobs:
         working-directory: demo
         run: mvn -B clean verify
 
-      - name: Run mobile number validation example
+      - name: Run validation examples and create HTML report
         working-directory: demo
         run: |
-          output=$(java -cp target/classes com.regularExpressions.checkNumber "$MOBILE_NUMBER")
-          echo "$output"
-          test "$output" = "Valid mobile number"
+          report_directory="target/ci-reports"
+          report_file="$report_directory/execution-report.html"
+          mkdir -p "$report_directory"
+
+          cat > "$report_file" <<'HTML'
+          <!doctype html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>Java Program Execution Report</title>
+            <style>
+              body { font-family: sans-serif; margin: 2rem; color: #17212b; }
+              h1 { color: #075985; }
+              table { border-collapse: collapse; width: 100%; max-width: 900px; }
+              th, td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
+              th { background: #e0f2fe; }
+              .pass { color: #166534; font-weight: bold; }
+              .fail { color: #b91c1c; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <h1>Java Program Execution Report</h1>
+            <p>Workflow: Java End-to-End CI</p>
+            <table>
+              <thead><tr><th>Program</th><th>Scenario</th><th>Input</th><th>Output</th><th>Result</th></tr></thead>
+              <tbody>
+          HTML
+
+          failures=0
+          run_validation() {
+            scenario="$1"
+            value="$2"
+            expected="$3"
+            set +e
+            output=$(java -cp target/classes com.regularExpressions.checkNumber "$scenario" "$value")
+            exit_code=$?
+            set -e
+
+            if [ "$exit_code" -eq 0 ] && [ "$output" = "$expected" ]; then
+              result="PASS"
+              css_class="pass"
+            else
+              result="FAIL"
+              css_class="fail"
+              failures=$((failures + 1))
+            fi
+
+            printf '<tr><td>checkNumber</td><td>%s</td><td>%s</td><td>%s</td><td class="%s">%s</td></tr>\n' \
+              "$scenario" "$value" "$output" "$css_class" "$result" >> "$report_file"
+            echo "$scenario: $output ($result)"
+          }
+
+          run_validation mobile "$MOBILE_NUMBER" "Valid mobile number"
+          run_validation email "$EMAIL_ID" "Valid email address"
+
+          cat >> "$report_file" <<'HTML'
+              </tbody>
+            </table>
+          </body>
+          </html>
+          HTML
+
+          if [ "$failures" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload Java execution report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-execution-report
+          path: demo/target/ci-reports/execution-report.html
+          if-no-files-found: warn
 
       - name: Upload Surefire XML test reports
         if: always()
