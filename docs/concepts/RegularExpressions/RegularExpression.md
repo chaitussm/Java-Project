@@ -400,3 +400,164 @@ Allowed characters are
 4. second character should be a digit divisible by 3 (0,3,6,9)
 
 [a-k][0369][a-zA-Z0-9#$]* 
+
+---
+
+# Executing the Mobile Number Validator Locally
+
+**File:** [checkNumber.java](../../../demo/src/main/java/com/regularExpressions/checkNumber.java)
+
+The program accepts a mobile number as a command-line argument and validates it against this regex:
+
+```text
+(0|91)?[7-9][0-9]{9}
+```
+
+| Regex part | Purpose |
+|---|---|
+| `(0|91)?` | Optionally allows the prefix `0` or `91`. The `?` makes the whole prefix optional. |
+| `[7-9]` | Requires the first mobile-number digit to be `7`, `8`, or `9`. |
+| `[0-9]{9}` | Requires exactly nine more digits. |
+
+## Program execution flow
+
+```mermaid
+flowchart TD
+    A["Run checkNumber with an argument"] --> B{"Was a number supplied?"}
+    B -- No --> C["Print usage message and stop"]
+    B -- Yes --> D["Compile the mobile-number regex"]
+    D --> E["Create Matcher for supplied number"]
+    E --> F{"Does the entire input match?"}
+    F -- Yes --> G["Print: Valid mobile number"]
+    F -- No --> H["Print: Invalid mobile number"]
+```
+
+## 1. Build the program
+
+Run this from the project root:
+
+```bash
+cd demo
+mvn clean verify
+```
+
+What each part does:
+
+| Command | Explanation |
+|---|---|
+| `cd demo` | Moves into the Maven project directory containing `pom.xml`. |
+| `mvn clean` | Deletes previous build output from `target/`. |
+| `verify` | Compiles the Java source, runs configured tests, and verifies the build. |
+
+After a successful build, the compiled class is located at:
+
+```text
+demo/target/classes/com/regularExpressions/checkNumber.class
+```
+
+## 2. Run with a valid number
+
+From the project root, run:
+
+```bash
+java -cp demo/target/classes com.regularExpressions.checkNumber 9876543210
+```
+
+Expected output:
+
+```text
+Valid mobile number
+```
+
+`-cp demo/target/classes` tells Java where to find compiled classes. `com.regularExpressions.checkNumber` is the fully qualified class name, and `9876543210` becomes `args[0]` in `main`.
+
+## 3. Try other cases
+
+```bash
+# Valid: optional 91 prefix
+java -cp demo/target/classes com.regularExpressions.checkNumber 919876543210
+
+# Invalid: starts with 6
+java -cp demo/target/classes com.regularExpressions.checkNumber 6876543210
+
+# Invalid: fewer than 10 mobile-number digits
+java -cp demo/target/classes com.regularExpressions.checkNumber 987654321
+
+# No argument: prints usage instead of throwing an exception
+java -cp demo/target/classes com.regularExpressions.checkNumber
+```
+
+> The no-argument check is important: the program checks `args.length` before reading `args[0]`, preventing `ArrayIndexOutOfBoundsException`.
+
+---
+
+# Executing the Validator in the CI Pipeline
+
+**Workflow:** [java-end-to-end_ci.yml](../../../.github/workflows/java-end-to-end_ci.yml)
+
+GitHub Actions runs this workflow automatically on pushes and pull requests to `main`, and every day at `18:30` UTC.
+
+```mermaid
+flowchart TD
+    A["Push, pull request, or scheduled run"] --> B["build-test job"]
+    B --> C["Checkout source"]
+    C --> D["Install JDK 21 and restore Maven cache"]
+    D --> E["mvn -B clean verify"]
+    E --> F["Run checkNumber with $MOBILE_NUMBER"]
+    F --> G{"Output is Valid mobile number?"}
+    G -- Yes --> H["Upload test reports"]
+    G -- No --> I["Fail build-test job"]
+    H --> J["docker job"]
+    J --> K["Build Docker image"]
+    K --> L["Push image on push events"]
+    L --> M["notify job"]
+```
+
+## Workflow configuration
+
+The number is stored once as a workflow environment variable:
+
+```yaml
+env:
+  MOBILE_NUMBER: 9876543210
+```
+
+The execution step references that variable instead of embedding the number in the Java command:
+
+```yaml
+output=$(java -cp target/classes com.regularExpressions.checkNumber "$MOBILE_NUMBER")
+echo "$output"
+test "$output" = "Valid mobile number"
+```
+
+| Line | Explanation |
+|---|---|
+| `output=$(...)` | Runs the validator and stores its printed result in `output`. |
+| `"$MOBILE_NUMBER"` | Supplies the configurable workflow variable as the program argument. |
+| `echo "$output"` | Writes the program result to the GitHub Actions log. |
+| `test ... = ...` | Compares the result with the expected text. A mismatch returns a non-zero exit code, failing the pipeline. |
+
+## CI stages explained
+
+| Stage | What happens | Why it matters |
+|---|---|---|
+| Trigger | GitHub starts the workflow for `main` pushes, pull requests, or the scheduled cron job. | Ensures changes are checked before and after integration. |
+| Checkout | `actions/checkout@v4` downloads the repository onto the GitHub runner. | The runner needs the source and workflow files. |
+| Java setup | `actions/setup-java@v4` installs Temurin JDK 21 and restores the Maven cache. | Uses a consistent Java version and makes builds faster. |
+| Maven build | `mvn -B clean verify` runs inside `demo`. | Compiles Java code and verifies the Maven project before execution. |
+| Regex validation | The pipeline runs `checkNumber` with `$MOBILE_NUMBER`. | Proves the compiled class accepts the expected valid number. |
+| Assertion | Shell `test` checks for `Valid mobile number`. | Turns the example into an automated pass/fail check. |
+| Test reports | Surefire XML reports are uploaded even if the job fails. | Preserves test evidence for debugging. |
+| Docker | Runs only after `build-test` succeeds; builds the application image and pushes it on push events. | Prevents publishing an image from a failed validation. |
+| Notification | The final job evaluates the workflow result and uses SMTP only when all required secrets are configured. | Communicates the outcome without exposing credentials. |
+
+## Changing the pipeline input
+
+To validate another known-good example, edit only `MOBILE_NUMBER` in the `env` section of the workflow. The Java command stays unchanged:
+
+```yaml
+env:
+  MOBILE_NUMBER: 919876543210
+```
+
+For this pipeline check, keep the value valid. An invalid value makes the assertion fail intentionally, which stops the `build-test` job and prevents the dependent Docker job from running.

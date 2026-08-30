@@ -12,6 +12,7 @@ on:
 
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/java-project
+  MOBILE_NUMBER: 9876543210
 
 jobs:
   build-test:
@@ -31,6 +32,13 @@ jobs:
       - name: Build and test with Maven
         working-directory: demo
         run: mvn -B clean verify
+
+      - name: Run mobile number validation example
+        working-directory: demo
+        run: |
+          output=$(java -cp target/classes com.regularExpressions.checkNumber "$MOBILE_NUMBER")
+          echo "$output"
+          test "$output" = "Valid mobile number"
 
       - name: Upload Surefire XML test reports
         if: always()
