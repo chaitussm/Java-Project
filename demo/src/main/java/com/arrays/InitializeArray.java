@@ -1,4 +1,4 @@
-package com.collections.arrays;
+package com.arrays;
 
 public class InitializeArray {
     
