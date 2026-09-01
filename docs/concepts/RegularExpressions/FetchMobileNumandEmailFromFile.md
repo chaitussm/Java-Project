@@ -1,4 +1,13 @@
 # Extracting Mobile Numbers and Email IDs from a File
+//Ctrl and click a Markdown link to open its target.
+<!-- TOC -->
+- [Extracting Mobile Numbers and Email IDs from a File](#extracting-mobile-numbers-and-email-ids-from-a-file)
+    - [Files Used](#files-used)
+    - [Step-by-Step Execution](#step-by-step-execution)
+    - [Example Output](#example-output)
+    - [Run the Program](#run-the-program)
+    - [Error Handling](#error-handling)
+<!-- /TOC -->
 
 **Source:** [FetchMobileNumandEmailFromFile.java](../../../demo/src/main/java/com/regularExpressions/FetchMobileNumandEmailFromFile.java)
 
@@ -17,10 +26,10 @@ flowchart LR
 
 ## Files Used
 
-| File | Purpose |
-|---|---|
-| [fetchdata.txt](../../../demo/sample-data/file-operations/fetchdata.txt) | Input file containing names, text, phone numbers, and email IDs. |
-| [writeFetchedData.txt](../../../demo/sample-data/file-operations/writeFetchedData.txt) | Output file containing only extracted mobile numbers and email IDs. |
+| File                                                                                                                     | Purpose                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| [fetchdata.txt](../../../demo/sample-data/file-operations/fetchdata.txt)                                                 | Input file containing names, text, phone numbers, and email IDs.                     |
+| [writeFetchedData.txt](../../../demo/sample-data/file-operations/writeFetchedData.txt)                                   | Output file containing only extracted mobile numbers and email IDs.                  |
 | [fileBasicMethods.java](../../../demo/src/main/java/com/javaIOPackage/baseMethodsInFileOperations/fileBasicMethods.java) | Provides `sampleDataPath(...)` to build a stable path to files inside `sample-data`. |
 
 ## Step-by-Step Execution
@@ -58,9 +67,9 @@ extractedData.put("Mobile", new LinkedHashSet<>());
 extractedData.put("Email", new LinkedHashSet<>());
 ```
 
-| Collection | Reason for use |
-|---|---|
-| `LinkedHashMap` | Stores the categories in insertion order: `Mobile` followed by `Email`. |
+| Collection      | Reason for use                                                            |
+| --------------- | ------------------------------------------------------------------------- |
+| `LinkedHashMap` | Stores the categories in insertion order: `Mobile` followed by `Email`.   |
 | `LinkedHashSet` | Removes duplicates and preserves the order in which each value was found. |
 
 ```mermaid
@@ -90,9 +99,9 @@ String regxMobileNumber = "(0|91)?[7-9][0-9]{9}";
 String regxEmail = "[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+";
 ```
 
-| Pattern | Explanation |
-|---|---|
-| `(0|91)?[7-9][0-9]{9}` | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits. |
+| Pattern                           | Explanation                                                                                                              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `(0                               | 91)?[7-9][0-9]{9}`                                                                                                       | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits. |
 | `[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+` | Finds an email-like value anywhere in a line. It accepts letters, digits, and common email symbols before and after `@`. |
 
 The email pattern does not use `^` and `$`. Those anchors would require the whole line to be only an email, but the input uses text such as `Email: priya.sharma@example.com`.

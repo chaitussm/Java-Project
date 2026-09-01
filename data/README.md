@@ -1,5 +1,10 @@
 # Data
 
+<!-- TOC -->
+- [Data](#data)
+  - [Folders](#folders)
+<!-- /TOC -->
+
 This folder contains project data files.
 
 ## Folders

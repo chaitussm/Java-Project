@@ -1,8 +1,15 @@
 # The `transient` Keyword — Basics and the `final transient` Edge Case
 
-| Part | File | Scenario |
-|---|---|---|
-| [Part 1](#part-1--transientkeywordjava) | `transientKeyword.java` | `transient` hides a field's value from the serialized file |
+<!-- TOC -->
+- [The `transient` Keyword — Basics and the `final transient` Edge Case](#the-transient-keyword--basics-and-the-final-transient-edge-case)
+  - [Part 1 — transientKeyword.java](#part-1--transientkeywordjava)
+  - [Part 2 — reflectionVsDirectAccess.java](#part-2--reflectionvsdirectaccessjava)
+  - [Related Files](#related-files)
+<!-- /TOC -->
+
+| Part                                            | File                            | Scenario                                                      |
+| ----------------------------------------------- | ------------------------------- | ------------------------------------------------------------- |
+| [Part 1](#part-1--transientkeywordjava)         | `transientKeyword.java`         | `transient` hides a field's value from the serialized file    |
 | [Part 2](#part-2--reflectionvsdirectaccessjava) | `reflectionVsDirectAccess.java` | `final transient` + compiler constant-inlining vs. reflection |
 
 ---
@@ -93,11 +100,11 @@ Expected result: direct access may show 10, reflection shows 0.
 ```
 
 ### ⚠️ Things That Would Change This
-| Change | Effect |
-|---|---|
-| Remove `final` (keep `transient`) | No more compile-time constant folding — `readDirectly()` would also print `0`, matching reflection. |
-| Remove `transient` (keep `final`) | `j = 10` would actually be serialized/restored — both direct access and reflection print `10`. |
-| Initialize `j` from a non-constant expression (e.g. a method call) | Compiler can't inline it — direct access would also read the real (zero) slot. |
+| Change                                                             | Effect                                                                                              |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Remove `final` (keep `transient`)                                  | No more compile-time constant folding — `readDirectly()` would also print `0`, matching reflection. |
+| Remove `transient` (keep `final`)                                  | `j = 10` would actually be serialized/restored — both direct access and reflection print `10`.      |
+| Initialize `j` from a non-constant expression (e.g. a method call) | Compiler can't inline it — direct access would also read the real (zero) slot.                      |
 
 ## 🔗 Related Files
 - [serializationBasics.md](./serializationBasics.md) — the `serializeBase` reflection-based field classifier used across these demos.

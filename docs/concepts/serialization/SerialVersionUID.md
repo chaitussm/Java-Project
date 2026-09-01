@@ -1,11 +1,20 @@
 # `serialVersionUID` — Why It Exists and How It Protects Deserialization
 
-| Part | File | Scenario |
-|---|---|---|
-| [Part 1](#part-1--concept-serialuidbasicsjava) | `serialUIDBasics.java` | Pure concept notes — no runnable code, just the theory |
-| [Part 2](#part-2--dog1java) | `dog1.java` | The `Serializable` class with an explicit `serialVersionUID` |
-| [Part 3](#part-3--senderjava) | `sender.java` | Writes a `dog1` object to a `.ser` file |
-| [Part 4](#part-4--receiverjava) | `receiver.java` | Reads the `.ser` file back into a `dog1` object |
+<!-- TOC -->
+- [`serialVersionUID` — Why It Exists and How It Protects Deserialization](#serialversionuid--why-it-exists-and-how-it-protects-deserialization)
+    - [Part 1 — Concept (`serialUIDBasics.java`)](#part-1--concept-serialuidbasicsjava)
+    - [Part 2 — `dog1.java`](#part-2--dog1java)
+    - [Part 3 — `sender.java`](#part-3--senderjava)
+    - [Part 4 — `receiver.java`](#part-4--receiverjava)
+    - [Related Files](#related-files)
+<!-- /TOC -->
+
+| Part                                           | File                   | Scenario                                                     |
+| ---------------------------------------------- | ---------------------- | ------------------------------------------------------------ |
+| [Part 1](#part-1--concept-serialuidbasicsjava) | `serialUIDBasics.java` | Pure concept notes — no runnable code, just the theory       |
+| [Part 2](#part-2--dog1java)                    | `dog1.java`            | The `Serializable` class with an explicit `serialVersionUID` |
+| [Part 3](#part-3--senderjava)                  | `sender.java`          | Writes a `dog1` object to a `.ser` file                      |
+| [Part 4](#part-4--receiverjava)                | `receiver.java`        | Reads the `.ser` file back into a `dog1` object              |
 
 ---
 

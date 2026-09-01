@@ -1,5 +1,15 @@
 # Object Graph Basics in Java Serialization
 
+<!-- TOC -->
+- [Object Graph Basics in Java Serialization](#object-graph-basics-in-java-serialization)
+	- [Important Rule: Order Matters](#important-rule-order-matters)
+	- [Example Program](#example-program)
+	- [How the File Is Read](#how-the-file-is-read)
+	- [What Happens If the Order Is Wrong?](#what-happens-if-the-order-is-wrong)
+	- [Requirements](#requirements)
+	- [Current Object Graph: `dog -> cat -> rat`](#current-object-graph-dog---cat---rat)
+<!-- /TOC -->
+
 An object graph is the group of objects that a program writes to a serialized file. Java can write multiple objects into the same file, one after another.
 
 ## Important Rule: Order Matters

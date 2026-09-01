@@ -1,5 +1,14 @@
 # Serialization Basics — The Foundation
 
+<!-- TOC -->
+- [Serialization Basics — The Foundation](#serialization-basics--the-foundation)
+  - [Concept](#concept)
+  - [End-to-End Flow (serializationBasics.java)](#end-to-end-flow-serializationbasicsjava)
+  - [Why `deserialize()` uses reflection instead of direct field access](#why-deserialize-uses-reflection-instead-of-direct-field-access)
+  - [Verified Output](#verified-output)
+  - [Related Files](#related-files)
+<!-- /TOC -->
+
 **Files:**
 - [serializationBasics.java](../../../demo/src/main/java/com/advanced/serialization/serializationBasics.java) — the runnable demo.
 - [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java) — the shared parent class every other serialization demo in this package extends. It owns `serialize()`, `deserialize()`, and the file-check helpers used everywhere else.
@@ -51,13 +60,13 @@ flowchart TD
 
 `serializeBase.deserialize()` (see [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java)) walks `getClass()` up to (but excluding) `Object`, and for every `Field` found via `getDeclaredFields()`:
 
-| Modifier combination | Bucket | Why |
-|---|---|---|
-| `static` | Static fields | Belongs to the class, not the object — not part of serialized state at all (`field.get(null)`). |
+| Modifier combination  | Bucket                         | Why                                                                                                         |
+| --------------------- | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `static`              | Static fields                  | Belongs to the class, not the object — not part of serialized state at all (`field.get(null)`).             |
 | `transient` + `final` | Transient **and** Final fields | `final` blocks reassignment; `transient` blocks serialization — both apply, so it's listed in both buckets. |
-| `transient` only | Transient fields | Skipped during serialization; deserialized value is whatever the field's default/initializer produces. |
-| `final` only | Normal **and** Final fields | Serialized normally; also final so it can't be reassigned after construction. |
-| none of the above | Normal fields | Regular serializable state, fully restored from the stream. |
+| `transient` only      | Transient fields               | Skipped during serialization; deserialized value is whatever the field's default/initializer produces.      |
+| `final` only          | Normal **and** Final fields    | Serialized normally; also final so it can't be reassigned after construction.                               |
+| none of the above     | Normal fields                  | Regular serializable state, fully restored from the stream.                                                 |
 
 This reflection-based approach is needed (instead of e.g. `this.i == restoredObject.i`) because **field values alone can't tell you a field's modifiers** — only reflection can answer "is this transient/static/final?".
 

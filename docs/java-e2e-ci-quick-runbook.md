@@ -1,5 +1,15 @@
 # Java E2E CI — Quick Runbook
 
+<!-- TOC -->
+- [Java E2E CI — Quick Runbook](#java-e2e-ci--quick-runbook)
+	- [Trigger the pipeline manually](#trigger-the-pipeline-manually)
+	- [Check build results](#check-build-results)
+	- [Download Surefire test reports](#download-surefire-test-reports)
+	- [Pull the Docker image](#pull-the-docker-image)
+	- [Secrets setup](#secrets-setup)
+	- [Common issues](#common-issues)
+<!-- /TOC -->
+
 ## Trigger the pipeline manually
 
 The workflow runs automatically on:
@@ -36,20 +46,20 @@ docker pull ghcr.io/<owner>/java-project:<git-sha>
 
 Navigate to **Settings → Secrets and variables → Actions** and add:
 
-| Secret | Example value |
-|--------|---------------|
-| `SMTP_SERVER` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_USERNAME` | `you@example.com` |
-| `SMTP_PASSWORD` | `app-password` |
-| `SMTP_FROM` | `ci-bot@example.com` |
-| `SMTP_TO` | `team@example.com` |
+| Secret          | Example value        |
+| --------------- | -------------------- |
+| `SMTP_SERVER`   | `smtp.gmail.com`     |
+| `SMTP_PORT`     | `587`                |
+| `SMTP_USERNAME` | `you@example.com`    |
+| `SMTP_PASSWORD` | `app-password`       |
+| `SMTP_FROM`     | `ci-bot@example.com` |
+| `SMTP_TO`       | `team@example.com`   |
 
 ## Common issues
 
-| Symptom | Fix |
-|---------|-----|
-| Email step skipped | One or more SMTP secrets are missing — add them all |
-| Docker push `unauthorized` | Ensure the repo package visibility allows write via `GITHUB_TOKEN` |
-| Surefire artifact empty | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
-| `mvn -B test` fails | Fix compilation errors or failing unit tests in `demo/` before merging |
+| Symptom                    | Fix                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Email step skipped         | One or more SMTP secrets are missing — add them all                                                        |
+| Docker push `unauthorized` | Ensure the repo package visibility allows write via `GITHUB_TOKEN`                                         |
+| Surefire artifact empty    | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
+| `mvn -B test` fails        | Fix compilation errors or failing unit tests in `demo/` before merging                                     |

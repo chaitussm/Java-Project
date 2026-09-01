@@ -1,5 +1,18 @@
 # Java End-to-End CI Pipeline Guide
 
+<!-- TOC -->
+- [Java End-to-End CI Pipeline Guide](#java-end-to-end-ci-pipeline-guide)
+    - [Pipeline Overview](#pipeline-overview)
+    - [Triggers and Shared Values](#triggers-and-shared-values)
+    - [Job Details](#job-details)
+    - [Required Secrets](#required-secrets)
+    - [Docker Image Registry](#docker-image-registry)
+    - [Program Execution and HTML Report](#program-execution-and-html-report)
+    - [Report Attachment in Email](#report-attachment-in-email)
+    - [Program Counts in the Email](#program-counts-in-the-email)
+    - [Failure Behavior](#failure-behavior)
+<!-- /TOC -->
+
 This document describes the design and behaviour of the
 `.github/workflows/java-end-to-end_ci.yml` workflow.
 
@@ -26,11 +39,11 @@ flowchart TD
 
 The workflow runs for pushes and pull requests to `main`, every day at `18:30` UTC, and when started manually with `workflow_dispatch` from the GitHub Actions page.
 
-| Variable | Purpose |
-|---|---|
-| `IMAGE_NAME` | Base GitHub Container Registry image name. |
+| Variable        | Purpose                                                |
+| --------------- | ------------------------------------------------------ |
+| `IMAGE_NAME`    | Base GitHub Container Registry image name.             |
 | `MOBILE_NUMBER` | Sample input for the mobile-number validation program. |
-| `EMAIL_ID` | Sample input for the email-address validation program. |
+| `EMAIL_ID`      | Sample input for the email-address validation program. |
 
 The mobile number and email address are workflow environment variables, not values hard-coded into the Java command. Update them in the top-level `env` section to try different known-valid examples.
 
@@ -38,23 +51,23 @@ The mobile number and email address are workflow environment variables, not valu
 
 ### `build-test`
 
-| Step | Description |
-|------|-------------|
-| Checkout | `actions/checkout@v4` |
-| Set up JDK 21 | Temurin distribution with Maven cache |
-| Build and test | Runs `mvn -B clean verify` in `demo/`; it cleans old output, compiles source, runs configured tests, and verifies the build. |
-| Execute Java programs | Runs the two configured `checkNumber` scenarios, then discovers and runs every Java source file containing a `main` method. |
-| Create report | Writes `target/ci-reports/execution-report.html` with folder, program, arguments, output, exit code, and status for every execution. |
-| Upload artifacts | Uploads the HTML as `java-execution-report` and Surefire XML as `surefire-reports`. |
+| Step                  | Description                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Checkout              | `actions/checkout@v4`                                                                                                                |
+| Set up JDK 21         | Temurin distribution with Maven cache                                                                                                |
+| Build and test        | Runs `mvn -B clean verify` in `demo/`; it cleans old output, compiles source, runs configured tests, and verifies the build.         |
+| Execute Java programs | Runs the two configured `checkNumber` scenarios, then discovers and runs every Java source file containing a `main` method.          |
+| Create report         | Writes `target/ci-reports/execution-report.html` with folder, program, arguments, output, exit code, and status for every execution. |
+| Upload artifacts      | Uploads the HTML as `java-execution-report` and Surefire XML as `surefire-reports`.                                                  |
 
 ### `docker`
 
-| Step | Description |
-|------|-------------|
-| Set push flag | Output `pushed=true` only on `push` events |
-| GHCR login | `docker/login-action@v3` using `GITHUB_TOKEN` (push only) |
-| Build image | Tags `ghcr.io/<owner>/java-project:<sha>` and `:latest` |
-| Push images | Executed only when `github.event_name == 'push'` |
+| Step          | Description                                               |
+| ------------- | --------------------------------------------------------- |
+| Set push flag | Output `pushed=true` only on `push` events                |
+| GHCR login    | `docker/login-action@v3` using `GITHUB_TOKEN` (push only) |
+| Build image   | Tags `ghcr.io/<owner>/java-project:<sha>` and `:latest`   |
+| Push images   | Executed only when `github.event_name == 'push'`          |
 
 ### `notify`
 
@@ -68,14 +81,14 @@ The email includes:
 
 ## Required Secrets
 
-| Secret | Purpose |
-|--------|---------|
-| `SMTP_SERVER` | SMTP host (e.g. `smtp.gmail.com`) |
-| `SMTP_PORT` | SMTP port (e.g. `587`) |
-| `SMTP_USERNAME` | SMTP login username |
+| Secret          | Purpose                            |
+| --------------- | ---------------------------------- |
+| `SMTP_SERVER`   | SMTP host (e.g. `smtp.gmail.com`)  |
+| `SMTP_PORT`     | SMTP port (e.g. `587`)             |
+| `SMTP_USERNAME` | SMTP login username                |
 | `SMTP_PASSWORD` | SMTP login password / app password |
-| `SMTP_FROM` | Sender email address |
-| `SMTP_TO` | Recipient email address |
+| `SMTP_FROM`     | Sender email address               |
+| `SMTP_TO`       | Recipient email address            |
 
 If any secret is missing the email step is skipped gracefully.
 
@@ -122,23 +135,23 @@ java -cp target/classes com.regularExpressions.checkNumber email "$EMAIL_ID"
 
 Afterward, the workflow searches `src/main/java` for files that declare `public static void main(...)`. Each discovered source-file class is converted to its fully qualified class name and executed with no arguments.
 
-| Item | Explanation |
-|---|---|
-| `find "$source_root" -name '*.java'` | Finds all Java source files. |
-| `grep` with `main_pattern` | Keeps only source files containing a `main` method declaration. |
-| `java -cp target/classes <class>` | Starts the compiled Java program. |
-| `timeout --kill-after=2s 5s` | Stops a program that takes more than five seconds; an extra two seconds allows cleanup before it is force-stopped. |
-| `head -c 20000` | Limits captured output to 20,000 bytes per program, keeping the report manageable. |
-| `SECONDS=0` | Starts Bash's elapsed-time timer for the complete program scan. |
+| Item                                 | Explanation                                                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `find "$source_root" -name '*.java'` | Finds all Java source files.                                                                                       |
+| `grep` with `main_pattern`           | Keeps only source files containing a `main` method declaration.                                                    |
+| `java -cp target/classes <class>`    | Starts the compiled Java program.                                                                                  |
+| `timeout --kill-after=2s 5s`         | Stops a program that takes more than five seconds; an extra two seconds allows cleanup before it is force-stopped. |
+| `head -c 20000`                      | Limits captured output to 20,000 bytes per program, keeping the report manageable.                                 |
+| `SECONDS=0`                          | Starts Bash's elapsed-time timer for the complete program scan.                                                    |
 
 ### Execution status
 
 Every run is printed to the GitHub Actions log and added to the HTML report.
 
-| Status | Meaning |
-|---|---|
-| `PASSED` | The Java process ended with exit code `0`. |
-| `FAILED` | The program ended with a non-zero exit code. |
+| Status      | Meaning                                               |
+| ----------- | ----------------------------------------------------- |
+| `PASSED`    | The Java process ended with exit code `0`.            |
+| `FAILED`    | The program ended with a non-zero exit code.          |
 | `TIMED OUT` | The program exceeded the five-second execution limit. |
 
 The workflow records failures and timeouts in the report but continues scanning the remaining programs. This allows one complete inventory instead of stopping at the first failing example.
@@ -147,9 +160,9 @@ The workflow records failures and timeouts in the report but continues scanning 
 
 Each HTML row has this structure:
 
-| Folder | Program | Arguments | Output | Exit Code | Status |
-|---|---|---|---|---|---|
-| `regularExpressions` | `com.regularExpressions.checkNumber` | `mobile <value>` | Program console output | `0` | `PASSED` |
+| Folder               | Program                              | Arguments        | Output                 | Exit Code | Status   |
+| -------------------- | ------------------------------------ | ---------------- | ---------------------- | --------- | -------- |
+| `regularExpressions` | `com.regularExpressions.checkNumber` | `mobile <value>` | Program console output | `0`       | `PASSED` |
 
 At the end, the report includes an execution summary showing the number of scanned programs, passed programs, failed programs, timed-out programs, and the total execution time in seconds.
 
@@ -203,10 +216,10 @@ flowchart TD
     F -- No --> H["Skip email and log the reason"]
 ```
 
-| Generated value | Meaning |
-|---|---|
-| `total_programs` | Number of declared `main` methods found across the Java source tree. |
-| `folder_counts` | `main`-method totals for each top-level source folder, including `advanced`, `collections`, and `regularExpressions`. |
+| Generated value  | Meaning                                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `total_programs` | Number of declared `main` methods found across the Java source tree.                                                  |
+| `folder_counts`  | `main`-method totals for each top-level source folder, including `advanced`, `collections`, and `regularExpressions`. |
 
 ### How the count is calculated
 
@@ -217,13 +230,13 @@ main_pattern='public[[:space:]]+static[[:space:]]+void[[:space:]]+main[[:space:]
 total_programs=$(grep -R -E -h "$main_pattern" "demo/src/main/java/com" | wc -l)
 ```
 
-| Command part | Explanation |
-|---|---|
+| Command part   | Explanation                                                                       |
+| -------------- | --------------------------------------------------------------------------------- |
 | `main_pattern` | Regex that recognizes `public static void main(` even when spaces or tabs differ. |
-| `grep -R` | Searches recursively through the Java source folders. |
-| `-E` | Enables extended regular-expression syntax. |
-| `-h` | Hides file names so only matching method declarations are counted. |
-| `wc -l` | Counts the matching lines, producing the total number of entry points. |
+| `grep -R`      | Searches recursively through the Java source folders.                             |
+| `-E`           | Enables extended regular-expression syntax.                                       |
+| `-h`           | Hides file names so only matching method declarations are counted.                |
+| `wc -l`        | Counts the matching lines, producing the total number of entry points.            |
 
 The `for folder in "$source_root"/*` loop repeats the same search for every immediate folder under `com`. For example, it separately counts `com/advanced`, `com/collections`, and `com/regularExpressions`, then combines them into `folder_counts`.
 

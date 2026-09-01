@@ -1,11 +1,29 @@
 # Inheritance Serialization Basics
 
+<!-- TOC -->
+- [Inheritance Serialization Basics](#inheritance-serialization-basics)
+    - [Part 1 — Parent IS Serializable](#part-1--parent-is-serializable)
+    - [End-to-End Flow](#end-to-end-flow)
+    - [Step-by-Step Breakdown](#step-by-step-breakdown)
+    - [Sequence Diagram (runtime interaction)](#sequence-diagram-runtime-interaction)
+    - [Expected Output](#expected-output)
+    - [Things That Would Break This](#things-that-would-break-this)
+    - [Related Files](#related-files)
+    - [Part 2 — Parent is NOT Serializable](#part-2--parent-is-not-serializable)
+    - [End-to-End Flow](#end-to-end-flow-1)
+    - [Step-by-Step Breakdown (point by point)](#step-by-step-breakdown-point-by-point)
+    - [Sequence Diagram (runtime interaction)](#sequence-diagram-runtime-interaction-1)
+    - [Expected Output (verified by running the program)](#expected-output-verified-by-running-the-program)
+    - [Serialized vs. Reconstructed — at a glance](#serialized-vs-reconstructed--at-a-glance)
+    - [Things That Would Break This](#things-that-would-break-this-1)
+<!-- /TOC -->
+
 This doc covers **two complementary scenarios** of inheritance + serialization, both living in
 `demo/src/main/java/com/advanced/serialization/inheritanceSerialization/`:
 
-| Part | File | Scenario |
-|---|---|---|
-| [Part 1](#part-1--parent-is-serializable) | `inheritanceSerOne.java` | Parent **implements** `Serializable` → child inherits it for free |
+| Part                                          | File                     | Scenario                                                          |
+| --------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |
+| [Part 1](#part-1--parent-is-serializable)     | `inheritanceSerOne.java` | Parent **implements** `Serializable` → child inherits it for free |
 | [Part 2](#part-2--parent-is-not-serializable) | `inheritanceSerTwo.java` | Parent **does not** implement `Serializable`, only the child does |
 
 ---
@@ -22,10 +40,10 @@ Serializability is an *inherited* trait in Java. It flows from parent to child, 
 
 This file proves that rule using two tiny classes:
 
-| Class | Declaration | Implements `Serializable`? | Fields |
-|---|---|---|---|
-| `engine` | `class engine implements Serializable` | ✅ Yes (explicitly) | `int rpm = 100` |
-| `tata` | `class tata extends engine` | ✅ Yes (inherited from `engine`) | `int cc = 20` |
+| Class    | Declaration                            | Implements `Serializable`?      | Fields          |
+| -------- | -------------------------------------- | ------------------------------- | --------------- |
+| `engine` | `class engine implements Serializable` | ✅ Yes (explicitly)              | `int rpm = 100` |
+| `tata`   | `class tata extends engine`            | ✅ Yes (inherited from `engine`) | `int cc = 20`   |
 
 ```mermaid
 classDiagram
@@ -140,12 +158,12 @@ sequenceDiagram
 
 ## ⚠️ Things That Would Break This
 
-| Change | Effect |
-|---|---|
-| `engine` does **not** implement `Serializable` | `NotSerializableException` on `writeObject(a1)` |
-| `rpm` marked `transient` in `engine` | Output becomes `0-----20` (rpm not restored) |
-| `tata` field `cc` renamed/removed between serialize & deserialize | `readObject()` still works, but `cc` may take its default value or throw depending on `serialVersionUID` mismatch |
-| No explicit `serialVersionUID` on `engine`/`tata` | JVM auto-generates one from class shape; any structural change to either class after serializing risks `InvalidClassException` on deserialize |
+| Change                                                            | Effect                                                                                                                                        |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `engine` does **not** implement `Serializable`                    | `NotSerializableException` on `writeObject(a1)`                                                                                               |
+| `rpm` marked `transient` in `engine`                              | Output becomes `0-----20` (rpm not restored)                                                                                                  |
+| `tata` field `cc` renamed/removed between serialize & deserialize | `readObject()` still works, but `cc` may take its default value or throw depending on `serialVersionUID` mismatch                             |
+| No explicit `serialVersionUID` on `engine`/`tata`                 | JVM auto-generates one from class shape; any structural change to either class after serializing risks `InvalidClassException` on deserialize |
 
 ---
 
@@ -167,10 +185,10 @@ sequenceDiagram
 
 This is the mirror image of Part 1. Here, only the child opts into `Serializable`; the parent stays a plain class.
 
-| Class | Declaration | Implements `Serializable`? | Fields |
-|---|---|---|---|
-| `protein` | `class protein` | ❌ No | `int proteinContent = 25` (+ a no-arg constructor that prints a message) |
-| `concentrate` | `class concentrate extends protein implements Serializable` | ✅ Yes (explicitly) | `int blendContent = 20` (+ a no-arg constructor that prints a message) |
+| Class         | Declaration                                                 | Implements `Serializable`? | Fields                                                                   |
+| ------------- | ----------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `protein`     | `class protein`                                             | ❌ No                       | `int proteinContent = 25` (+ a no-arg constructor that prints a message) |
+| `concentrate` | `class concentrate extends protein implements Serializable` | ✅ Yes (explicitly)         | `int blendContent = 20` (+ a no-arg constructor that prints a message)   |
 
 ```mermaid
 classDiagram
@@ -294,16 +312,16 @@ protein class constructor
 
 ### 📊 Serialized vs. Reconstructed — at a glance
 
-| Field | Declared in | Serializable class? | Value before serialize | Written to stream? | Value after deserialize | How it was restored |
-|---|---|---|---|---|---|---|
-| `proteinContent` | `protein` | ❌ No | `100` | ❌ No | `25` | `protein`'s no-arg constructor + field initializer re-run |
-| `blendContent` | `concentrate` | ✅ Yes | `200` | ✅ Yes | `200` | Read directly from the serialized bytes |
+| Field            | Declared in   | Serializable class? | Value before serialize | Written to stream? | Value after deserialize | How it was restored                                       |
+| ---------------- | ------------- | ------------------- | ---------------------- | ------------------ | ----------------------- | --------------------------------------------------------- |
+| `proteinContent` | `protein`     | ❌ No                | `100`                  | ❌ No               | `25`                    | `protein`'s no-arg constructor + field initializer re-run |
+| `blendContent`   | `concentrate` | ✅ Yes               | `200`                  | ✅ Yes              | `200`                   | Read directly from the serialized bytes                   |
 
 ### ⚠️ Things That Would Break This
 
-| Change | Effect |
-|---|---|
-| `protein` only has a parameterized constructor (no no-arg constructor) | `InvalidClassException: concentrate; no valid constructor` at deserialization |
-| `protein` also implements `Serializable` | `proteinContent` would now be written/restored from the stream too → output becomes `100-----200` (Part 1 behavior) |
-| `blendContent` marked `transient` in `concentrate` | Output becomes `25-----0` (blendContent not restored from stream) |
-| `protein`'s no-arg constructor sets `proteinContent = 999` instead of using a field initializer | Deserialized value would be `999`, not `25` — proving it's "re-run constructor logic," not "reset to default" |
+| Change                                                                                          | Effect                                                                                                              |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `protein` only has a parameterized constructor (no no-arg constructor)                          | `InvalidClassException: concentrate; no valid constructor` at deserialization                                       |
+| `protein` also implements `Serializable`                                                        | `proteinContent` would now be written/restored from the stream too → output becomes `100-----200` (Part 1 behavior) |
+| `blendContent` marked `transient` in `concentrate`                                              | Output becomes `25-----0` (blendContent not restored from stream)                                                   |
+| `protein`'s no-arg constructor sets `proteinContent = 999` instead of using a field initializer | Deserialized value would be `999`, not `25` — proving it's "re-run constructor logic," not "reset to default"       |

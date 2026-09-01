@@ -1,5 +1,25 @@
 # Java Exception Handling: Complete Hierarchy Guide
 
+<!-- TOC -->
+- [Java Exception Handling: Complete Hierarchy Guide](#java-exception-handling-complete-hierarchy-guide)
+    - [Example Programs](#example-programs)
+    - [The Complete Hierarchy](#the-complete-hierarchy)
+    - [What Each Level Means](#what-each-level-means)
+    - [Exception Flow Picture](#exception-flow-picture)
+    - [`try`, `catch`, and `finally`](#try-catch-and-finally)
+    - [Catch Ordering](#catch-ordering)
+    - [`throw` Versus `throws`](#throw-versus-throws)
+    - [Call Stack Picture](#call-stack-picture)
+    - [Custom Exceptions](#custom-exceptions)
+    - [Try-with-Resources](#try-with-resources)
+    - [Printing Exception Information](#printing-exception-information)
+    - [Rethrowing an Exception](#rethrowing-an-exception)
+    - [`finally` Behavior](#finally-behavior)
+    - [Exception Versus Error](#exception-versus-error)
+    - [Recommended Learning Order](#recommended-learning-order)
+    - [Final Summary](#final-summary)
+<!-- /TOC -->
+
 This guide explains Java exception handling from the root of the hierarchy to practical handling syntax. It also provides the exact paths of the related example programs in this project.
 
 ## Example Programs
@@ -10,22 +30,22 @@ The exception-handling programs are located here:
 demo/src/main/java/com/exceptionHandling/
 ```
 
-| Topic | Program or folder |
-|---|---|
-| Abnormal flow | `demo/src/main/java/com/exceptionHandling/abnormalFlowNoExceptionHandling.java` |
-| Exception types | `demo/src/main/java/com/exceptionHandling/exceptionTypes.java` |
-| `try`, `catch`, `finally` basics | `demo/src/main/java/com/exceptionHandling/tryCatchBasics.java` |
-| `try`/`catch` use cases | `demo/src/main/java/com/exceptionHandling/tryCatchUseCases.java` |
-| `finally` block | `demo/src/main/java/com/exceptionHandling/finallyBlock.java` |
-| `throw` keyword | `demo/src/main/java/com/exceptionHandling/throwKeyword.java` |
-| `throws` keyword | `demo/src/main/java/com/exceptionHandling/throwsKeyword.java` |
-| Try-with-resources | `demo/src/main/java/com/exceptionHandling/trywithresources.java` |
-| Custom exception | `demo/src/main/java/com/exceptionHandling/defineOurOwenException.java` |
-| Rethrowing | `demo/src/main/java/com/exceptionHandling/rethrowingExceptions.java` |
-| Printing exception details | `demo/src/main/java/com/exceptionHandling/waysOfPrintingException.java` |
-| Exception rules | `demo/src/main/java/com/exceptionHandling/rulesInExceptionHandling.java` |
-| Runtime examples | `demo/src/main/java/com/exceptionHandling/typeOfExceptions.java` |
-| Special cases | `demo/src/main/java/com/exceptionHandling/specialCases/` |
+| Topic                            | Program or folder                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------- |
+| Abnormal flow                    | `demo/src/main/java/com/exceptionHandling/abnormalFlowNoExceptionHandling.java` |
+| Exception types                  | `demo/src/main/java/com/exceptionHandling/exceptionTypes.java`                  |
+| `try`, `catch`, `finally` basics | `demo/src/main/java/com/exceptionHandling/tryCatchBasics.java`                  |
+| `try`/`catch` use cases          | `demo/src/main/java/com/exceptionHandling/tryCatchUseCases.java`                |
+| `finally` block                  | `demo/src/main/java/com/exceptionHandling/finallyBlock.java`                    |
+| `throw` keyword                  | `demo/src/main/java/com/exceptionHandling/throwKeyword.java`                    |
+| `throws` keyword                 | `demo/src/main/java/com/exceptionHandling/throwsKeyword.java`                   |
+| Try-with-resources               | `demo/src/main/java/com/exceptionHandling/trywithresources.java`                |
+| Custom exception                 | `demo/src/main/java/com/exceptionHandling/defineOurOwenException.java`          |
+| Rethrowing                       | `demo/src/main/java/com/exceptionHandling/rethrowingExceptions.java`            |
+| Printing exception details       | `demo/src/main/java/com/exceptionHandling/waysOfPrintingException.java`         |
+| Exception rules                  | `demo/src/main/java/com/exceptionHandling/rulesInExceptionHandling.java`        |
+| Runtime examples                 | `demo/src/main/java/com/exceptionHandling/typeOfExceptions.java`                |
+| Special cases                    | `demo/src/main/java/com/exceptionHandling/specialCases/`                        |
 
 ## The Complete Hierarchy
 
@@ -390,11 +410,11 @@ It normally executes whether the `try` succeeds or fails. It may not execute if 
 
 ## Exception Versus Error
 
-| Type | Meaning | Usually handle? |
-|---|---|---|
-| Checked `Exception` | Recoverable condition checked by compiler | Yes |
-| `RuntimeException` | Programming or input problem | Sometimes |
-| `Error` | Serious JVM or system problem | Usually no |
+| Type                | Meaning                                   | Usually handle? |
+| ------------------- | ----------------------------------------- | --------------- |
+| Checked `Exception` | Recoverable condition checked by compiler | Yes             |
+| `RuntimeException`  | Programming or input problem              | Sometimes       |
+| `Error`             | Serious JVM or system problem             | Usually no      |
 
 ## Recommended Learning Order
 

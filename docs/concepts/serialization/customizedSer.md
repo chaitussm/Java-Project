@@ -1,11 +1,29 @@
 # Customized Serialization: Complete Flow
 
+<!-- TOC -->
+- [Customized Serialization: Complete Flow](#customized-serialization-complete-flow)
+  - [Source and Output Locations](#source-and-output-locations)
+  - [Classes Used](#classes-used)
+  - [Why Customized Serialization Is Needed](#why-customized-serialization-is-needed)
+  - [Complete Execution Flow](#complete-execution-flow)
+  - [Serialization Phase](#serialization-phase)
+  - [What `defaultWriteObject()` Does](#what-defaultwriteobject-does)
+  - [Important Note About `encryptPwd()`](#important-note-about-encryptpwd)
+  - [Deserialization Phase](#deserialization-phase)
+  - [What `defaultReadObject()` Does](#what-defaultreadobject-does)
+  - [Why the Write and Read Order Must Match](#why-the-write-and-read-order-must-match)
+  - [Expected Output](#expected-output)
+  - [Exception Handling](#exception-handling)
+  - [Final Summary](#final-summary)
+  - [Part 2 — normalSer.java: the baseline without customization](#part-2--normalserjava-the-baseline-without-customization)
+<!-- /TOC -->
+
 This guide explains the customized serialization example and maps it to the Java source file.
 
-| Part | File | Scenario |
-|---|---|---|
-| [Part 1](#source-and-output-locations) | `customizedSer.java` | `writeObject()`/`readObject()` callbacks encode a transient password manually |
-| [Part 2](#part-2--normalserjava-the-baseline-without-customization) | `normalSer.java` | Default serialization only — shows the data loss customization fixes |
+| Part                                                                | File                 | Scenario                                                                      |
+| ------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------- |
+| [Part 1](#source-and-output-locations)                              | `customizedSer.java` | `writeObject()`/`readObject()` callbacks encode a transient password manually |
+| [Part 2](#part-2--normalserjava-the-baseline-without-customization) | `normalSer.java`     | Default serialization only — shows the data loss customization fixes          |
 
 ## Source and Output Locations
 
@@ -309,10 +327,10 @@ Shiva-----null
 
 ### Part 1 vs. Part 2 — the direct comparison
 
-| | `normalSer.java` (Part 2) | `customizedSer.java` (Part 1) |
-|---|---|---|
-| `writeObject()`/`readObject()` defined? | ❌ No | ✅ Yes |
-| Transient `password` after deserialize | `null` (lost) | Restored via manual encode/decode |
-| Output | `Shiva-----null` | `Rama===Sita` |
+|                                         | `normalSer.java` (Part 2) | `customizedSer.java` (Part 1)     |
+| --------------------------------------- | ------------------------- | --------------------------------- |
+| `writeObject()`/`readObject()` defined? | ❌ No                      | ✅ Yes                             |
+| Transient `password` after deserialize  | `null` (lost)             | Restored via manual encode/decode |
+| Output                                  | `Shiva-----null`          | `Rama===Sita`                     |
 
 This pair proves the exact problem statement in `normalSer.java`'s own comment: *"During default serialization there may be a chance of loss of information because of transient keyword."* `customizedSer.java` is the fix.

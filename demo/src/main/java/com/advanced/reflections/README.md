@@ -1,5 +1,11 @@
 # Java Reflection Basics
 
+<!-- TOC -->
+- [Java Reflection Basics](#java-reflection-basics)
+	- [Learning order](#learning-order)
+	- [Important terms](#important-terms)
+<!-- /TOC -->
+
 This package teaches Java Reflection from the beginning. Reflection lets a running program inspect classes, fields, constructors, methods, modifiers, and arrays at runtime.
 
 ## Learning order

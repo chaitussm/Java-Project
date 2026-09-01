@@ -1,19 +1,30 @@
 # Externalization Basics
 
+<!-- TOC -->
+- [Externalization Basics](#externalization-basics)
+    - [Concept](#concept)
+    - [Why Externalization Exists — The Problem It Solves](#why-externalization-exists--the-problem-it-solves)
+    - [How It Works — The Two Callback Methods](#how-it-works--the-two-callback-methods)
+    - [Important Rule: Public No-Arg Constructor Required](#important-rule-public-no-arg-constructor-required)
+    - [Summary](#summary)
+    - [Worked Example — Complete Execution Summary](#worked-example--complete-execution-summary)
+    - [Serializable vs. Externalizable — Final Comparison](#serializable-vs-externalizable--final-comparison)
+<!-- /TOC -->
+
 **File:** [externalizationbasics.java](../../../demo/src/main/java/com/advanced/serialization/externalization/externalizationbasics.java)
 
 ## 📌 Concept
 
 > **Serialization gives the JVM full control over what gets saved — always the whole object. Externalization gives the programmer full control instead, so only the required part of the object needs to be saved, which can improve performance.**
 
-| | `Serializable` | `Externalizable` |
-|---|---|---|
-| Who controls what gets saved? | JVM (automatic, default mechanism) | Programmer (manual, explicit code) |
-| Can you save only part of an object? | ❌ No — always the total object | ✅ Yes — save only what you choose |
-| Performance for large/partial objects | Can be worse (saves everything) | Can be better (saves only what's needed) |
-| Methods to implement | None required (marker interface) | `writeExternal()` and `readExternal()` (compulsory) |
-| Introduced in | Java 1.1 | Java 1.1 |
-| Interface type | Marker interface (no methods) | Regular interface (2 methods to override) |
+|                                       | `Serializable`                     | `Externalizable`                                    |
+| ------------------------------------- | ---------------------------------- | --------------------------------------------------- |
+| Who controls what gets saved?         | JVM (automatic, default mechanism) | Programmer (manual, explicit code)                  |
+| Can you save only part of an object?  | ❌ No — always the total object     | ✅ Yes — save only what you choose                   |
+| Performance for large/partial objects | Can be worse (saves everything)    | Can be better (saves only what's needed)            |
+| Methods to implement                  | None required (marker interface)   | `writeExternal()` and `readExternal()` (compulsory) |
+| Introduced in                         | Java 1.1                           | Java 1.1                                            |
+| Interface type                        | Marker interface (no methods)      | Regular interface (2 methods to override)           |
 
 ```mermaid
 classDiagram
@@ -177,11 +188,11 @@ durga-----123-----25
 - `durga-----123-----25` → proves `readExternal()` correctly restored all three fields, in the same order `writeExternal()` wrote them.
 
 ### ⚠️ What would break this
-| Change | Effect |
-|---|---|
-| Remove the public no-arg constructor | `readObject()` throws `InvalidClassException` — the JVM has no way to create the blank object before calling `readExternal()`. |
-| Swap the read order in `readExternal()` (e.g. read `number` before `name`) | Stream corruption / wrong values or `StreamCorruptedException`, since `writeExternal()` wrote `name` first. |
-| Forget to write a field in `writeExternal()` | That field is never restored — `readExternal()` would have nothing to read for it, so it stays at its constructor-assigned value (here, the no-arg constructor leaves it at Java's default: `null`/`0`). |
+| Change                                                                     | Effect                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remove the public no-arg constructor                                       | `readObject()` throws `InvalidClassException` — the JVM has no way to create the blank object before calling `readExternal()`.                                                                           |
+| Swap the read order in `readExternal()` (e.g. read `number` before `name`) | Stream corruption / wrong values or `StreamCorruptedException`, since `writeExternal()` wrote `name` first.                                                                                              |
+| Forget to write a field in `writeExternal()`                               | That field is never restored — `readExternal()` would have nothing to read for it, so it stays at its constructor-assigned value (here, the no-arg constructor leaves it at Java's default: `null`/`0`). |
 
 > 📎 This confirms empirically: **Externalizable deserialization = (1) call the no-arg constructor to get a blank object, then (2) call `readExternal()` to populate exactly what `writeExternal()` chose to save.** Contrast this with plain `Serializable`, which never calls the class's own constructor at all — it reconstructs the object directly from the stream's full field snapshot.
 
@@ -189,16 +200,16 @@ durga-----123-----25
 
 ## 📊 Serializable vs. Externalizable — Final Comparison
 
-| Serializable | Externalizable |
-|---|---|
-| Used to implement default serialization. | Used to implement externalization. |
-| A marker interface — it does not declare any method. | Not a marker interface — it declares two methods, `writeExternal()` and `readExternal()`. |
-| Hands the responsibility of saving the object to the JVM; the programmer has no control, and the JVM follows its own default algorithm. | Hands the entire responsibility of saving the object to the programmer; the JVM has no control over the process. |
-| Generally has weaker performance, since the JVM always processes every non-`transient` field. | Generally has better performance, since only the fields the programmer chooses are written. |
-| Does not require any no-arg constructor. | Requires a public no-arg constructor — the JVM calls it before `readExternal()` runs. |
-| Harder to safely change the class structure later, since altering fields can silently break existing serialized data. | Easier to safely change the class structure later, since the programmer has complete control over the read/write logic. |
-| Always saves the total object — saving only part of it is not possible. | Can save either the total object or only part of it, based on what the programmer writes. |
-| The `transient` keyword plays an important role, since it is the only way to exclude a field. | The `transient` keyword plays no role at all, since the programmer already decides exactly what gets written. |
+| Serializable                                                                                                                            | Externalizable                                                                                                          |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Used to implement default serialization.                                                                                                | Used to implement externalization.                                                                                      |
+| A marker interface — it does not declare any method.                                                                                    | Not a marker interface — it declares two methods, `writeExternal()` and `readExternal()`.                               |
+| Hands the responsibility of saving the object to the JVM; the programmer has no control, and the JVM follows its own default algorithm. | Hands the entire responsibility of saving the object to the programmer; the JVM has no control over the process.        |
+| Generally has weaker performance, since the JVM always processes every non-`transient` field.                                           | Generally has better performance, since only the fields the programmer chooses are written.                             |
+| Does not require any no-arg constructor.                                                                                                | Requires a public no-arg constructor — the JVM calls it before `readExternal()` runs.                                   |
+| Harder to safely change the class structure later, since altering fields can silently break existing serialized data.                   | Easier to safely change the class structure later, since the programmer has complete control over the read/write logic. |
+| Always saves the total object — saving only part of it is not possible.                                                                 | Can save either the total object or only part of it, based on what the programmer writes.                               |
+| The `transient` keyword plays an important role, since it is the only way to exclude a field.                                           | The `transient` keyword plays no role at all, since the programmer already decides exactly what gets written.           |
 
 ```mermaid
 mindmap

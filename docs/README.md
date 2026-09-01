@@ -1,5 +1,10 @@
 # Documentation
 
+<!-- TOC -->
+- [Documentation](#documentation)
+  - [Folders](#folders)
+<!-- /TOC -->
+
 This folder contains all project documentation organized by category.
 
 ## Folders

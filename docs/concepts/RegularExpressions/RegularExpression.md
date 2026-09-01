@@ -1,5 +1,34 @@
 # Regular Expressions — Basics
 
+<!-- TOC -->
+- [Regular Expressions — Basics](#regular-expressions--basics)
+  - [Concept](#concept)
+  - [Execution Summary of the Program](#execution-summary-of-the-program)
+  - [Important Methods of Matcher class](#important-methods-of-matcher-class)
+  - [Related Files](#related-files)
+- [character classes](#character-classes)
+- [predefined character classes](#predefined-character-classes)
+- [quantifiers](#quantifiers)
+- [boundary matchers](#boundary-matchers)
+- [logical operators](#logical-operators)
+- [back references](#back-references)
+- [Regular Expressions — Pattern Class](#regular-expressions--pattern-class)
+  - [split()](#split)
+- [StringTokenizer](#stringtokenizer)
+  - [Concept](#concept-1)
+  - [Key methods](#key-methods)
+  - [Real-world regex — validating a mobile number](#real-world-regex--validating-a-mobile-number)
+  - [Real-world regex — validating an email Id](#real-world-regex--validating-an-email-id)
+  - [Related Files](#related-files-1)
+- [Regular expression to represent YAVA language Identifiers](#regular-expression-to-represent-yava-language-identifiers)
+- [Executing the Mobile Number Validator Locally](#executing-the-mobile-number-validator-locally)
+  - [Program execution flow](#program-execution-flow)
+- [Executing the Validator in the CI Pipeline](#executing-the-validator-in-the-ci-pipeline)
+  - [Workflow configuration](#workflow-configuration)
+  - [CI stages explained](#ci-stages-explained)
+  - [Changing the pipeline input](#changing-the-pipeline-input)
+<!-- /TOC -->
+
 **File:** [regularExpressionBasics.java](../../../demo/src/main/java/com/regularExpressions/regularExpressionBasics.java)
 
 ## 📌 Concept
@@ -41,7 +70,7 @@ mindmap
       UDP
 ```
 
-## � Execution Summary of the Program
+## Execution Summary of the Program
 
 This file demonstrates the core idea of regex matching using `Pattern` and `Matcher`.
 
@@ -248,9 +277,9 @@ flowchart TD
 
 ### Two ways to split a String
 
-| Approach | Method | Notes |
-|---|---|---|
-| `String` class | `input.split(regex)` | Compiles the regex internally on every call |
+| Approach        | Method                                | Notes                                                                          |
+| --------------- | ------------------------------------- | ------------------------------------------------------------------------------ |
+| `String` class  | `input.split(regex)`                  | Compiles the regex internally on every call                                    |
 | `Pattern` class | `Pattern.compile(regex).split(input)` | Compile once, reuse the pattern multiple times — better for repeated splitting |
 
 ### Example
@@ -349,10 +378,10 @@ flowchart LR
     B -->|"[0-9]{9}"| C["10-digit mobile number"]
 ```
 
-| Pattern | Meaning |
-|---|---|
-| `[7-9][0-9]{9}` | Plain 10-digit number starting with 7, 8, or 9 |
-| `0?[7-9][0-9]{9}` | Allows an optional leading `0` → 11 digits total (e.g. trunk prefix) |
+| Pattern                 | Meaning                                                                   |
+| ----------------------- | ------------------------------------------------------------------------- |
+| `[7-9][0-9]{9}`         | Plain 10-digit number starting with 7, 8, or 9                            |
+| `0?[7-9][0-9]{9}`       | Allows an optional leading `0` → 11 digits total (e.g. trunk prefix)      |
 | `(0\|91)?[7-9][0-9]{9}` | Allows an optional `0` **or** `91` STD/ISD prefix → up to 12 digits total |
 
 ## 🔥 Real-world regex — validating an email Id
@@ -374,13 +403,13 @@ flowchart LR
     D --> E["TLD (2+ letters)\n[a-zA-Z]{2,}"]
 ```
 
-| Part | Regex | Meaning |
-|---|---|---|
+| Part       | Regex               | Meaning                                                       |
+| ---------- | ------------------- | ------------------------------------------------------------- |
 | Local part | `[a-zA-Z0-9._%+-]+` | Letters, digits, dot, underscore, `%`, `+`, `-` (one or more) |
-| Separator | `@` | Literal `@` symbol |
-| Domain | `[a-zA-Z0-9.-]+` | Letters, digits, dot, hyphen (one or more) |
-| Dot | `\.` | Literal dot before the TLD |
-| TLD | `[a-zA-Z]{2,}` | At least 2 letters, e.g. `com`, `in`, `org` |
+| Separator  | `@`                 | Literal `@` symbol                                            |
+| Domain     | `[a-zA-Z0-9.-]+`    | Letters, digits, dot, hyphen (one or more)                    |
+| Dot        | `\.`                | Literal dot before the TLD                                    |
+| TLD        | `[a-zA-Z]{2,}`      | At least 2 letters, e.g. `com`, `in`, `org`                   |
 
 ## 🔗 Related Files
 - [splitMethod.java](../../../demo/src/main/java/com/regularExpressions/patternClass/splitMethod.java) — `Pattern.split()` vs `String.split()`.
@@ -413,11 +442,11 @@ The program accepts a mobile number as a command-line argument and validates it 
 (0|91)?[7-9][0-9]{9}
 ```
 
-| Regex part | Purpose |
-|---|---|
-| `(0|91)?` | Optionally allows the prefix `0` or `91`. The `?` makes the whole prefix optional. |
-| `[7-9]` | Requires the first mobile-number digit to be `7`, `8`, or `9`. |
-| `[0-9]{9}` | Requires exactly nine more digits. |
+| Regex part | Purpose                                                        |
+| ---------- | -------------------------------------------------------------- |
+| `(0        | 91)?`                                                          | Optionally allows the prefix `0` or `91`. The `?` makes the whole prefix optional. |
+| `[7-9]`    | Requires the first mobile-number digit to be `7`, `8`, or `9`. |
+| `[0-9]{9}` | Requires exactly nine more digits.                             |
 
 ## Program execution flow
 
@@ -443,11 +472,11 @@ mvn clean verify
 
 What each part does:
 
-| Command | Explanation |
-|---|---|
-| `cd demo` | Moves into the Maven project directory containing `pom.xml`. |
-| `mvn clean` | Deletes previous build output from `target/`. |
-| `verify` | Compiles the Java source, runs configured tests, and verifies the build. |
+| Command     | Explanation                                                              |
+| ----------- | ------------------------------------------------------------------------ |
+| `cd demo`   | Moves into the Maven project directory containing `pom.xml`.             |
+| `mvn clean` | Deletes previous build output from `target/`.                            |
+| `verify`    | Compiles the Java source, runs configured tests, and verifies the build. |
 
 After a successful build, the compiled class is located at:
 
@@ -530,26 +559,26 @@ echo "$output"
 test "$output" = "Valid mobile number"
 ```
 
-| Line | Explanation |
-|---|---|
-| `output=$(...)` | Runs the validator and stores its printed result in `output`. |
-| `"$MOBILE_NUMBER"` | Supplies the configurable workflow variable as the program argument. |
-| `echo "$output"` | Writes the program result to the GitHub Actions log. |
-| `test ... = ...` | Compares the result with the expected text. A mismatch returns a non-zero exit code, failing the pipeline. |
+| Line               | Explanation                                                                                                |
+| ------------------ | ---------------------------------------------------------------------------------------------------------- |
+| `output=$(...)`    | Runs the validator and stores its printed result in `output`.                                              |
+| `"$MOBILE_NUMBER"` | Supplies the configurable workflow variable as the program argument.                                       |
+| `echo "$output"`   | Writes the program result to the GitHub Actions log.                                                       |
+| `test ... = ...`   | Compares the result with the expected text. A mismatch returns a non-zero exit code, failing the pipeline. |
 
 ## CI stages explained
 
-| Stage | What happens | Why it matters |
-|---|---|---|
-| Trigger | GitHub starts the workflow for `main` pushes, pull requests, or the scheduled cron job. | Ensures changes are checked before and after integration. |
-| Checkout | `actions/checkout@v4` downloads the repository onto the GitHub runner. | The runner needs the source and workflow files. |
-| Java setup | `actions/setup-java@v4` installs Temurin JDK 21 and restores the Maven cache. | Uses a consistent Java version and makes builds faster. |
-| Maven build | `mvn -B clean verify` runs inside `demo`. | Compiles Java code and verifies the Maven project before execution. |
-| Regex validation | The pipeline runs `checkNumber` with `$MOBILE_NUMBER`. | Proves the compiled class accepts the expected valid number. |
-| Assertion | Shell `test` checks for `Valid mobile number`. | Turns the example into an automated pass/fail check. |
-| Test reports | Surefire XML reports are uploaded even if the job fails. | Preserves test evidence for debugging. |
-| Docker | Runs only after `build-test` succeeds; builds the application image and pushes it on push events. | Prevents publishing an image from a failed validation. |
-| Notification | The final job evaluates the workflow result and uses SMTP only when all required secrets are configured. | Communicates the outcome without exposing credentials. |
+| Stage            | What happens                                                                                             | Why it matters                                                      |
+| ---------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Trigger          | GitHub starts the workflow for `main` pushes, pull requests, or the scheduled cron job.                  | Ensures changes are checked before and after integration.           |
+| Checkout         | `actions/checkout@v4` downloads the repository onto the GitHub runner.                                   | The runner needs the source and workflow files.                     |
+| Java setup       | `actions/setup-java@v4` installs Temurin JDK 21 and restores the Maven cache.                            | Uses a consistent Java version and makes builds faster.             |
+| Maven build      | `mvn -B clean verify` runs inside `demo`.                                                                | Compiles Java code and verifies the Maven project before execution. |
+| Regex validation | The pipeline runs `checkNumber` with `$MOBILE_NUMBER`.                                                   | Proves the compiled class accepts the expected valid number.        |
+| Assertion        | Shell `test` checks for `Valid mobile number`.                                                           | Turns the example into an automated pass/fail check.                |
+| Test reports     | Surefire XML reports are uploaded even if the job fails.                                                 | Preserves test evidence for debugging.                              |
+| Docker           | Runs only after `build-test` succeeds; builds the application image and pushes it on push events.        | Prevents publishing an image from a failed validation.              |
+| Notification     | The final job evaluates the workflow result and uses SMTP only when all required secrets are configured. | Communicates the outcome without exposing credentials.              |
 
 ## Changing the pipeline input
 

@@ -1,9 +1,16 @@
 # Serializing Multiple Objects to One File
 
-| Part | File | Scenario |
-|---|---|---|
-| [Part 1](#part-1--sequenceofmultpleobjectsjava) | `sequenceOfMultpleObjects.java` | Two known, fixed types (`Dog`, `Cat`) written and read back in strict order |
-| [Part 2](#part-2--instanceofmultipleobjectsjava) | `instanceOfMultipleObjects.java` | An unknown mix of types, safely identified with `instanceof` after reading |
+<!-- TOC -->
+- [Serializing Multiple Objects to One File](#serializing-multiple-objects-to-one-file)
+    - [Part 1 — sequenceOfMultpleObjects.java](#part-1--sequenceofmultpleobjectsjava)
+    - [Part 2 — instanceOfMultipleObjects.java](#part-2--instanceofmultipleobjectsjava)
+    - [Related Files](#related-files)
+<!-- /TOC -->
+
+| Part                                             | File                             | Scenario                                                                    |
+| ------------------------------------------------ | -------------------------------- | --------------------------------------------------------------------------- |
+| [Part 1](#part-1--sequenceofmultpleobjectsjava)  | `sequenceOfMultpleObjects.java`  | Two known, fixed types (`Dog`, `Cat`) written and read back in strict order |
+| [Part 2](#part-2--instanceofmultipleobjectsjava) | `instanceOfMultipleObjects.java` | An unknown mix of types, safely identified with `instanceof` after reading  |
 
 ---
 
@@ -82,11 +89,11 @@ Student-specific method: study()
 ```
 
 ### Part 1 vs. Part 2 — when to use which
-| | Part 1 (`sequenceOfMultpleObjects`) | Part 2 (`instanceOfMultipleObjects`) |
-|---|---|---|
-| Reader knows the type at each position ahead of time | ✅ Yes — casts directly | ❌ No — discovers type at runtime |
-| Safety mechanism | None (relies on programmer discipline) | `instanceof` before every cast |
-| Best for | Fixed, well-known schemas | Polymorphic / mixed-type streams |
+|                                                      | Part 1 (`sequenceOfMultpleObjects`)    | Part 2 (`instanceOfMultipleObjects`) |
+| ---------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| Reader knows the type at each position ahead of time | ✅ Yes — casts directly                 | ❌ No — discovers type at runtime     |
+| Safety mechanism                                     | None (relies on programmer discipline) | `instanceof` before every cast       |
+| Best for                                             | Fixed, well-known schemas              | Polymorphic / mixed-type streams     |
 
 ## 🔗 Related Files
 - [objectGraphBasics.md](./objectGraphBasics.md) — covers *nested* object graphs (an object referencing other objects), a different multi-object scenario than these top-level sequential writes.

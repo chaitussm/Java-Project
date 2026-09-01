@@ -1,5 +1,46 @@
 # Java Reflection: Complete Basics Guide
 
+<!-- TOC -->
+- [Java Reflection: Complete Basics Guide](#java-reflection-complete-basics-guide)
+  - [Where the Example Programs Are](#where-the-example-programs-are)
+  - [Final Topic Index](#final-topic-index)
+    - [Exact Program Locations](#exact-program-locations)
+    - [Arrays with Reflection: Theory](#arrays-with-reflection-theory)
+  - [Reflection Picture](#reflection-picture)
+  - [1. The Class Object](#1-the-class-object)
+    - [Path](#path)
+    - [Example](#example)
+    - [Three common ways to obtain Class\<?\>](#three-common-ways-to-obtain-class)
+  - [2. Inspecting Fields](#2-inspecting-fields)
+    - [Path](#path-1)
+    - [Example](#example-1)
+    - [Important methods](#important-methods)
+  - [3. Inspecting Constructors](#3-inspecting-constructors)
+    - [Path](#path-2)
+    - [Example](#example-2)
+    - [Important methods](#important-methods-1)
+  - [4. Inspecting and Invoking Methods](#4-inspecting-and-invoking-methods)
+    - [Path](#path-3)
+    - [Example](#example-3)
+    - [Important methods](#important-methods-2)
+  - [5. Understanding Modifiers](#5-understanding-modifiers)
+    - [Path](#path-4)
+    - [Example](#example-4)
+    - [Common modifiers](#common-modifiers)
+  - [6. Reflection and Arrays](#6-reflection-and-arrays)
+    - [Path](#path-5)
+    - [Example](#example-5)
+    - [Important methods](#important-methods-3)
+  - [7. Complete Reflection Flow](#7-complete-reflection-flow)
+    - [Path](#path-6)
+  - [`getDeclared...()` Versus `get...()`](#getdeclared-versus-get)
+  - [What `setAccessible(true)` Means](#what-setaccessibletrue-means)
+  - [Reflection Exceptions](#reflection-exceptions)
+  - [Reflection Versus Normal Java Code](#reflection-versus-normal-java-code)
+  - [Common Uses](#common-uses)
+  - [Final Summary](#final-summary)
+<!-- /TOC -->
+
 Reflection allows a Java program to inspect and use classes, constructors, fields, methods, modifiers, and arrays while the program is running.
 
 Normally, Java knows these things during compilation. With reflection, the program can discover them dynamically at runtime.
@@ -12,15 +53,15 @@ All reflection examples are inside this package folder:
 demo/src/main/java/com/advanced/reflections/
 ```
 
-| Topic | Program path |
-|---|---|
-| Class information | `demo/src/main/java/com/advanced/reflections/classBasics/ClassInspectionBasics.java` |
-| Constructors | `demo/src/main/java/com/advanced/reflections/constructors/ConstructorReflectionBasics.java` |
-| Fields | `demo/src/main/java/com/advanced/reflections/fields/FieldReflectionBasics.java` |
-| Methods | `demo/src/main/java/com/advanced/reflections/methods/MethodReflectionBasics.java` |
-| Modifiers | `demo/src/main/java/com/advanced/reflections/modifiers/ModifierReflectionBasics.java` |
-| Arrays | `demo/src/main/java/com/advanced/reflections/arrays/ArrayReflectionBasics.java` |
-| Complete example | `demo/src/main/java/com/advanced/reflections/complete/CompleteReflectionExample.java` |
+| Topic             | Program path                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| Class information | `demo/src/main/java/com/advanced/reflections/classBasics/ClassInspectionBasics.java`        |
+| Constructors      | `demo/src/main/java/com/advanced/reflections/constructors/ConstructorReflectionBasics.java` |
+| Fields            | `demo/src/main/java/com/advanced/reflections/fields/FieldReflectionBasics.java`             |
+| Methods           | `demo/src/main/java/com/advanced/reflections/methods/MethodReflectionBasics.java`           |
+| Modifiers         | `demo/src/main/java/com/advanced/reflections/modifiers/ModifierReflectionBasics.java`       |
+| Arrays            | `demo/src/main/java/com/advanced/reflections/arrays/ArrayReflectionBasics.java`             |
+| Complete example  | `demo/src/main/java/com/advanced/reflections/complete/CompleteReflectionExample.java`       |
 
 The package declaration must match the folder structure. For example:
 
@@ -32,15 +73,15 @@ package com.javalangPackage.reflections.modifiers;
 
 Use this table as a quick reference when returning to the examples later.
 
-| Topic theory | Folder name | Program name | What the program demonstrates |
-|---|---|---|---|
-| Class metadata | `classBasics` | `ClassInspectionBasics.java` | Obtains `Class<?>` using an object, `.class`, and `Class.forName()`; lists declared fields. |
-| Constructor reflection | `constructors` | `ConstructorReflectionBasics.java` | Finds constructors, accesses a private constructor, and creates an object with `newInstance()`. |
-| Field reflection | `fields` | `FieldReflectionBasics.java` | Finds, reads, and changes instance fields; also reads a static field. |
-| Method reflection | `methods` | `MethodReflectionBasics.java` | Finds methods, accesses a private method, and calls methods with `invoke()`. |
-| Modifier reflection | `modifiers` | `ModifierReflectionBasics.java` | Identifies `private`, `static`, `final`, and `transient` field modifiers. |
-| Array reflection | `arrays` | `ArrayReflectionBasics.java` | Reads array length and elements, changes values, and creates arrays dynamically. |
-| Complete reflection flow | `complete` | `CompleteReflectionExample.java` | Combines class, constructor, field, method, and modifier reflection. |
+| Topic theory             | Folder name    | Program name                       | What the program demonstrates                                                                   |
+| ------------------------ | -------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Class metadata           | `classBasics`  | `ClassInspectionBasics.java`       | Obtains `Class<?>` using an object, `.class`, and `Class.forName()`; lists declared fields.     |
+| Constructor reflection   | `constructors` | `ConstructorReflectionBasics.java` | Finds constructors, accesses a private constructor, and creates an object with `newInstance()`. |
+| Field reflection         | `fields`       | `FieldReflectionBasics.java`       | Finds, reads, and changes instance fields; also reads a static field.                           |
+| Method reflection        | `methods`      | `MethodReflectionBasics.java`      | Finds methods, accesses a private method, and calls methods with `invoke()`.                    |
+| Modifier reflection      | `modifiers`    | `ModifierReflectionBasics.java`    | Identifies `private`, `static`, `final`, and `transient` field modifiers.                       |
+| Array reflection         | `arrays`       | `ArrayReflectionBasics.java`       | Reads array length and elements, changes values, and creates arrays dynamically.                |
+| Complete reflection flow | `complete`     | `CompleteReflectionExample.java`   | Combines class, constructor, field, method, and modifier reflection.                            |
 
 ### Exact Program Locations
 
@@ -305,16 +346,16 @@ boolean transientField = Modifier.isTransient(flags);
 
 ### Common modifiers
 
-| Modifier | Meaning |
-|---|---|
-| `public` | Accessible from anywhere allowed by the class design |
-| `private` | Accessible directly only inside its declaring class |
-| `protected` | Accessible through inheritance and package rules |
-| `static` | Belongs to the class rather than one object |
-| `final` | Cannot be reassigned after initialization |
-| `transient` | Excluded from normal Java serialization |
-| `abstract` | Requires implementation by a child class |
-| `synchronized` | Controls synchronized method access |
+| Modifier       | Meaning                                              |
+| -------------- | ---------------------------------------------------- |
+| `public`       | Accessible from anywhere allowed by the class design |
+| `private`      | Accessible directly only inside its declaring class  |
+| `protected`    | Accessible through inheritance and package rules     |
+| `static`       | Belongs to the class rather than one object          |
+| `final`        | Cannot be reassigned after initialization            |
+| `transient`    | Excluded from normal Java serialization              |
+| `abstract`     | Requires implementation by a child class             |
+| `synchronized` | Controls synchronized method access                  |
 
 The `Modifier` class converts reflection's internal bit flags into understandable information.
 
@@ -449,12 +490,12 @@ Using `throws Exception` is convenient for learning examples. Production code sh
 
 ## Reflection Versus Normal Java Code
 
-| Normal Java | Reflection |
-|---|---|
-| Names are checked during compilation | Names may be supplied at runtime |
-| Fast and type-safe | Flexible but easier to misuse |
-| Private access is restricted | Non-public access can be requested |
-| Usually easier to understand | Useful for frameworks and tools |
+| Normal Java                          | Reflection                            |
+| ------------------------------------ | ------------------------------------- |
+| Names are checked during compilation | Names may be supplied at runtime      |
+| Fast and type-safe                   | Flexible but easier to misuse         |
+| Private access is restricted         | Non-public access can be requested    |
+| Usually easier to understand         | Useful for frameworks and tools       |
 | Errors are often compile-time errors | Many errors become runtime exceptions |
 
 ## Common Uses

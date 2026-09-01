@@ -1,11 +1,17 @@
 # CI Documentation
 
+<!-- TOC -->
+- [CI Documentation](#ci-documentation)
+	- [Workflow file](#workflow-file)
+	- [Pipeline stages](#pipeline-stages)
+<!-- /TOC -->
+
 This directory contains documentation for the Java End-to-End CI pipeline.
 
-| File | Description |
-|------|-------------|
-| [java-e2e-ci-pipeline-guide.md](java-e2e-ci-pipeline-guide.md) | Full pipeline design, job details, secrets reference, and Docker tagging strategy |
-| [java-e2e-ci-quick-runbook.md](java-e2e-ci-quick-runbook.md) | Day-to-day runbook: triggering runs, pulling images, configuring secrets, troubleshooting |
+| File                                                           | Description                                                                               |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [java-e2e-ci-pipeline-guide.md](java-e2e-ci-pipeline-guide.md) | Full pipeline design, job details, secrets reference, and Docker tagging strategy         |
+| [java-e2e-ci-quick-runbook.md](java-e2e-ci-quick-runbook.md)   | Day-to-day runbook: triggering runs, pulling images, configuring secrets, troubleshooting |
 
 ## Workflow file
 
