@@ -230,13 +230,20 @@ jobs:
         run: |
           source_root="demo/src/main/java/com"
           main_pattern='public[[:space:]]+static[[:space:]]+void[[:space:]]+main[[:space:]]*\('
-          total_programs=$(grep -R -E -h "$main_pattern" "$source_root" | wc -l)
+
+          # grep exits 1 when there are no matches. Actions runs bash with
+          # -o pipefail, so that would fail the step for empty folders.
+          count_mains() {
+            grep -R -E -h --include='*.java' "$main_pattern" "$1" 2>/dev/null | wc -l | tr -d ' ' || true
+          }
+
+          total_programs=$(count_mains "$source_root")
           folder_counts=""
 
           for folder in "$source_root"/*; do
             [ -d "$folder" ] || continue
             folder_name=$(basename "$folder")
-            program_count=$(grep -R -E -h "$main_pattern" "$folder" | wc -l)
+            program_count=$(count_mains "$folder")
             folder_counts="${folder_counts}${folder_name}: ${program_count}; "
           done
 
