@@ -11,9 +11,16 @@
     - [Report Attachment in Email](#report-attachment-in-email)
     - [Program Counts in the Email](#program-counts-in-the-email)
     - [Failure Behavior](#failure-behavior)
-    - [Troubleshooting Known Failures](#troubleshooting-known-failures)
-        - [Gmail SMTP: 535 BadCredentials](#gmail-smtp-535-badcredentials)
-        - [GHCR Docker Push: unknown blob](#ghcr-docker-push-unknown-blob)
+    - [Troubleshooting and Resolution Guide](#troubleshooting-and-resolution-guide)
+        - [Resolution timeline](#resolution-timeline)
+        - [Error summary](#error-summary)
+        - [1. Gmail SMTP: 535 BadCredentials (invalid App Password)](#1-gmail-smtp-535-badcredentials-invalid-app-password)
+        - [2. Gmail SMTP: ENETUNREACH (IPv6)](#2-gmail-smtp-enetunreach-ipv6)
+        - [3. Python SMTP: starttls TypeError](#3-python-smtp-starttls-typeerror)
+        - [4. Gmail SMTP: 535 from GitHub Actions IPs](#4-gmail-smtp-535-from-github-actions-ips)
+        - [5. Resend API (recommended email provider)](#5-resend-api-recommended-email-provider)
+        - [6. GHCR Docker push: unknown blob](#6-ghcr-docker-push-unknown-blob)
+        - [7. Verifying a healthy run](#7-verifying-a-healthy-run)
 <!-- /TOC -->
 
 This document describes the design and behaviour of the
@@ -28,22 +35,22 @@ flowchart TD
     C["Scheduled run: 18:30 UTC"] --> E
     D["Manual workflow dispatch"] --> E
     E --> F["Maven clean verify"]
-    F --> G["Run mobile and email validation"]
-    G --> H["Create and upload HTML report"]
-    H --> I["docker"]
-    I --> J["Set up Docker Buildx"]
-    J --> K["Build image with build-push-action\nprovenance: false"]
-    K --> L{"Push event?"}
-    L -- Yes --> M["Push to GHCR\n:sha and :latest"]
-    L -- No --> N["Build only\nno push"]
-    M --> O["notify"]
-    N --> O
-    O --> P["Normalize SMTP secrets"]
-    P --> Q["Count Java main methods"]
-    Q --> R{"SMTP configured?"}
-    R -- Yes --> S["Send email\ncontinue-on-error"]
-    R -- No --> T["Skip email"]
-    S --> U["Report auth failure checklist\nif email fails"]
+    F --> G["Run Java programs + HTML report"]
+    G --> H["docker"]
+    H --> I["docker/build-push-action@v6\nprovenance: false"]
+    I --> J{"Push event?"}
+    J -- Yes --> K["Push to GHCR"]
+    J -- No --> L["Build only"]
+    K --> M["notify"]
+    L --> M
+    M --> N["Check email configuration"]
+    N --> O{"RESEND_API_KEY set?"}
+    O -- Yes --> P["Send via Resend API"]
+    O -- No --> Q{"SMTP secrets set?"}
+    Q -- Yes --> R["Send via Python smtplib\nIPv4 + STARTTLS"]
+    Q -- No --> S["Skip email"]
+    P --> T["Email with HTML report attachment"]
+    R --> T
 ```
 
 ## Triggers and Shared Values
@@ -98,13 +105,31 @@ flowchart LR
 
 Runs after both previous jobs regardless of their outcome (`if: always()`).
 
-| Step                    | Description                                                                                       |
-| ----------------------- | ------------------------------------------------------------------------------------------------- |
-| Download artifact       | Retrieves `java-execution-report` from `build-test` into `ci-report/`                             |
-| Count programs          | Scans `demo/src/main/java/com` for `public static void main(...)` declarations                    |
-| Check SMTP config       | Trims whitespace from secrets; aligns `SMTP_FROM` with `SMTP_USERNAME` for Gmail                  |
-| Send email              | `dawidd6/action-send-mail@v18` with `continue-on-error: true` so auth failures do not fail the job |
-| Report delivery failure | Prints a Gmail App Password checklist when SMTP authentication is rejected                        |
+| Step                      | Description                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------- |
+| Download artifact         | Retrieves `java-execution-report` from `build-test` into `ci-report/`                             |
+| Count programs            | Scans `demo/src/main/java/com` for `public static void main(...)` declarations                    |
+| Check email configuration | Selects **Resend API** (preferred) or **Gmail SMTP** (fallback); validates secrets                |
+| Send email notification   | Python script sends via Resend HTTP API or `smtplib` over IPv4; `continue-on-error: true`         |
+| Report delivery failure   | Prints provider-specific fix guidance when sending fails                                          |
+
+```mermaid
+flowchart TD
+    A["Check email configuration"] --> B{"RESEND_API_KEY\n+ SMTP_TO set?"}
+    B -- Yes --> C["provider = resend"]
+    B -- No --> D{"All SMTP_* secrets set?"}
+    D -- No --> E["Skip email"]
+    D -- Yes --> F["provider = smtp\nValidate Gmail format"]
+    C --> G["Send email notification"]
+    F --> G
+    G --> H{"Provider?"}
+    H -- Resend --> I["POST api.resend.com/emails\n+ HTML attachment"]
+    H -- SMTP --> J["Python smtplib\nIPv4 connect + STARTTLS\n+ HTML attachment"]
+    I --> K{"Success?"}
+    J --> K
+    K -- No --> L["Report email delivery failure"]
+    K -- Yes --> M["Email delivered"]
+```
 
 The email includes:
 - Repo, branch, commit SHA, trigger event
@@ -116,18 +141,30 @@ The email includes:
 
 ## Required Secrets
 
-| Secret          | Purpose                            |
-| --------------- | ---------------------------------- |
-| `SMTP_SERVER`   | SMTP host (e.g. `smtp.gmail.com`)  |
-| `SMTP_PORT`     | SMTP port (e.g. `587`)             |
-| `SMTP_USERNAME` | SMTP login username (full email)   |
-| `SMTP_PASSWORD` | Gmail **App Password** (16 chars)  |
-| `SMTP_FROM`     | Sender email (must match username for Gmail) |
-| `SMTP_TO`       | Recipient email address            |
+### Recommended: Resend API (reliable from GitHub Actions)
 
-If any secret is missing the email step is skipped gracefully.
+| Secret           | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| `RESEND_API_KEY` | API key from [resend.com/api-keys](https://resend.com/api-keys) |
+| `RESEND_FROM`    | Optional sender (defaults to `Java E2E CI <onboarding@resend.dev>`) |
+| `SMTP_TO`        | Recipient email address                              |
 
-For Gmail, see [Gmail SMTP: 535 BadCredentials](#gmail-smtp-535-badcredentials) for setup and troubleshooting.
+When `RESEND_API_KEY` is set, the workflow uses Resend and **does not use Gmail SMTP**.
+
+### Legacy fallback: Gmail SMTP
+
+| Secret          | Purpose                                      |
+| --------------- | -------------------------------------------- |
+| `SMTP_SERVER`   | `smtp.gmail.com`                             |
+| `SMTP_PORT`     | `587` (STARTTLS) or `465` (SSL)              |
+| `SMTP_USERNAME` | Full `@gmail.com` address                    |
+| `SMTP_PASSWORD` | 16-character Gmail App Password              |
+| `SMTP_FROM`     | Same as `SMTP_USERNAME`                      |
+| `SMTP_TO`       | Recipient email address                      |
+
+Gmail SMTP often returns `535 BadCredentials` from GitHub-hosted runners even with a valid App Password. Prefer Resend for CI notifications.
+
+See [Troubleshooting and Resolution Guide](#troubleshooting-and-resolution-guide) for every error encountered and its fix.
 
 ## Docker Image Registry
 
@@ -282,16 +319,18 @@ sequenceDiagram
     participant B as build-test runner
     participant A as GitHub Actions artifacts
     participant N as notify runner
-    participant M as SMTP server
+    participant E as Email provider
     B->>B: Create execution-report.html
     B->>A: Upload java-execution-report
     N->>A: Download artifact into ci-report/
-    N->>M: Send email with execution-report.html attachment
+    alt RESEND_API_KEY set
+        N->>E: POST api.resend.com/emails\nwith base64 attachment
+    else SMTP secrets set
+        N->>E: Python smtplib over IPv4\nwith MIME attachment
+    end
 ```
 
-The notification job uses `actions/download-artifact@v4` to download the artifact to `ci-report/`. The email action attaches `ci-report/execution-report.html`, so the recipient receives the same report available from the GitHub Actions artifact list.
-
-The workflow uses `dawidd6/action-send-mail@v18`, which supports Node 24. This replaces the former v3 action and avoids the Node 20 deprecation warning.
+The notification job uses `actions/download-artifact@v4` to download the artifact to `ci-report/`. The Python send step attaches `ci-report/execution-report.html` via Resend API or SMTP MIME, so the recipient receives the same report available from the GitHub Actions artifact list.
 
 ## Program Counts in the Email
 
@@ -308,8 +347,8 @@ flowchart TD
     B --> D["Calculate folder_counts for each com/* folder"]
     C --> E["Write values to GITHUB_OUTPUT"]
     D --> E
-    E --> F{"Are all SMTP secrets configured?"}
-    F -- Yes --> G["Send email with counts and pipeline results"]
+    E --> F{"RESEND_API_KEY or\nSMTP secrets configured?"}
+    F -- Yes --> G["Send email with counts\nand pipeline results"]
     F -- No --> H["Skip email and log the reason"]
 ```
 
@@ -360,120 +399,312 @@ The email now contains a **Java Program Counts** section with the total and per-
 
 ```mermaid
 flowchart TD
-    A["Maven build or validator result fails"] --> B["build-test is marked failed"]
-    B --> C["HTML execution report still uploads"]
-    C --> D["docker job is skipped\nneeds: build-test"]
-    D --> E["notify runs because of if: always()"]
-    E --> F["Email reports job result when SMTP is configured"]
+    A["Maven build fails"] --> B["build-test: failed"]
+    B --> C["HTML report still uploads"]
+    C --> D["docker skipped"]
+    D --> E["notify runs\nif: always()"]
 
-    G["Docker push fails\nunknown blob"] --> H["docker job marked failed"]
-    H --> E
+    F["Docker unknown blob"] --> G["docker: failed"]
+    G --> E
 
-    I["SMTP auth fails\n535 BadCredentials"] --> J["Send email step fails\ncontinue-on-error: true"]
-    J --> K["notify job still succeeds"]
-    K --> L["Checklist printed in workflow log"]
-    E --> I
+    H["Email send fails"] --> I["send_mail: failed\ncontinue-on-error: true"]
+    I --> J["notify job: success"]
+    J --> K["Report email delivery failure\nprints fix guidance"]
+    E --> H
+    E --> F
 ```
 
-This behavior makes failures diagnosable: execution output is visible in the workflow log, the HTML artifact records each validator result, Surefire XML is retained when available, and the email can report the final status. Email and Docker failures are isolated so one subsystem does not silently block diagnostics from the other.
+The pipeline isolates failures so diagnostics remain available: the HTML artifact uploads even when Maven fails, Docker and email failures do not block each other, and the notify job prints actionable fix guidance when email delivery fails.
 
-## Troubleshooting Known Failures
+## Troubleshooting and Resolution Guide
 
-This section documents production failures observed in `.github/workflows/java-end-to-end_ci.yml`, their root causes, and the workflow changes that resolve them.
+This section documents every production failure encountered in `.github/workflows/java-end-to-end_ci.yml`, the root cause, the workflow fix applied, and what you must configure in GitHub secrets.
 
-### Summary
+Workflow file: `.github/workflows/java-end-to-end_ci.yml`
 
-| Error | Job | Root cause | Resolution |
-| ----- | --- | ---------- | ---------- |
-| `535-5.7.8 BadCredentials` (`gsmtp`) | `notify` | Gmail rejects regular passwords or stale App Passwords | Use a current Gmail App Password; align `SMTP_FROM` with `SMTP_USERNAME` |
-| `unknown blob` | `docker` | BuildKit provenance attestation manifests rejected by GHCR | `provenance: false` and `sbom: false` in `docker/build-push-action@v6` |
-| Email step skipped | `notify` | One or more SMTP secrets missing | Configure all six SMTP secrets in repository settings |
-| Docker push `unauthorized` | `docker` | `GITHUB_TOKEN` lacks package write permission | Ensure `permissions: packages: write` and GHCR package visibility |
+### Resolution timeline
+
+The CI pipeline was hardened through a sequence of failures and fixes:
+
+```mermaid
+flowchart LR
+    A["535 BadCredentials\nGmail App Password"] --> B["unknown blob\nGHCR push"]
+    B --> C["ENETUNREACH\nIPv6 to Gmail"]
+    C --> D["starttls TypeError\nPython version"]
+    D --> E["535 persists\nvalid credentials"]
+    E --> F["Resend API\nfinal solution"]
+
+    A -.->|"trim secrets,\nvalidate format"| A1["Fixed format"]
+    B -.->|"provenance: false"| B1["Fixed push"]
+    C -.->|"IPv4 smtplib"| C1["Fixed network"]
+    D -.->|"smtp._host + connect"| D1["Fixed TLS"]
+    E -.->|"datacenter IP block"| E1["Not fixable\nvia SMTP"]
+    F -.->|"RESEND_API_KEY"| F1["Reliable email"]
+```
+
+### Error summary
+
+| # | Error | Job | Root cause | Workflow fix | User action |
+| - | ----- | --- | ---------- | ------------ | ----------- |
+| 1 | `535 BadCredentials` | `notify` | Wrong or stale Gmail App Password | Trim/normalize secrets; validate 16-char length | Update `SMTP_PASSWORD` with current App Password |
+| 2 | `unknown blob` | `docker` | BuildKit provenance attestation rejected by GHCR | `provenance: false`, `sbom: false` | None — merge latest workflow |
+| 3 | `ENETUNREACH 2607:f8b0:...` | `notify` | Runner tried Gmail over unreachable IPv6 | Python `smtplib` with explicit IPv4 | None — merge latest workflow |
+| 4 | `starttls() unexpected keyword 'server_hostname'` | `notify` | GitHub runner Python lacks that parameter | `smtp._host = host` + `smtp.connect(ipv4, port)` | None — merge latest workflow |
+| 5 | `535` with valid 16-char password | `notify` | Gmail rejects SMTP from datacenter IPs | Added **Resend API** provider | Add `RESEND_API_KEY` secret |
+| 6 | Email step skipped | `notify` | No email secrets configured | Graceful skip with log message | Add `RESEND_API_KEY` or all SMTP secrets |
 
 ---
 
-### Gmail SMTP: 535 BadCredentials
+### 1. Gmail SMTP: 535 BadCredentials (invalid App Password)
 
 #### Symptom
 
-The `Send email notification` step fails with:
-
 ```text
-Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
-535 5.7.8  https://support.google.com/mail/?p=BadCredentials ... - gsmtp
-```
-
-The `gsmtp` suffix confirms traffic is going through **Google SMTP** (`smtp.gmail.com`).
-
-#### Failure flow
-
-```mermaid
-sequenceDiagram
-    participant W as GitHub Actions
-    participant A as dawidd6/action-send-mail
-    participant G as Gmail SMTP (gsmtp)
-
-    W->>W: Read SMTP_USERNAME and SMTP_PASSWORD secrets
-    W->>W: Trim whitespace from credentials
-    W->>A: server_address, username, password, from, to
-    A->>G: AUTH LOGIN over STARTTLS (port 587)
-    G-->>A: 535-5.7.8 BadCredentials
-    A-->>W: Step failed
-    Note over W: continue-on-error: true\nnotify job still succeeds
-    W->>W: Print Gmail App Password checklist
+Invalid login: 535-5.7.8 Username and Password not accepted ... - gsmtp
 ```
 
 #### Root causes
 
 | Cause | Explanation |
 | ----- | ----------- |
-| Regular Gmail password used | Google no longer accepts account login passwords for SMTP; an **App Password** is required. |
-| Stale App Password | Generating a new App Password **immediately revokes** the previous one. GitHub secrets must be updated at the same time. |
-| `SMTP_FROM` mismatch | Gmail requires the sender address to match the authenticated account. |
-| Whitespace in secret | App Passwords are shown as four groups (`abcd efgh ijkl mnop`). Extra spaces in the secret can break auth if not trimmed. |
-| 2-Step Verification off | App Passwords cannot be created without 2-Step Verification enabled on the Google account. |
+| Regular Gmail password used | Google requires a 16-character **App Password**, not your login password |
+| Stale App Password | Creating a new App Password **revokes** the previous one immediately |
+| `SMTP_FROM` mismatch | Sender must match the authenticated Gmail account |
+| Whitespace or quotes in secret | App Password pasted as `abcd efgh ijkl mnop` or wrapped in quotes |
+| Wrong account | App Password created on a different Google account than `SMTP_USERNAME` |
 
 #### Resolution
 
 ```mermaid
 flowchart TD
-    A["535 BadCredentials in notify job"] --> B{"Using smtp.gmail.com?"}
-    B -- No --> C["Verify SMTP_SERVER, username,\npassword with your provider"]
-    B -- Yes --> D["Enable 2-Step Verification"]
-    D --> E["Create App Password at\nmyaccount.google.com/apppasswords"]
-    E --> F["Update SMTP_PASSWORD secret\nwith new 16-char password"]
-    F --> G["Set SMTP_USERNAME and SMTP_FROM\nto the same Gmail address"]
-    G --> H["Re-run workflow"]
-    H --> I{"Send email step\nsucceeds?"}
-    I -- Yes --> J["Done — email delivered"]
-    I -- No --> K["Check workflow log for\nApp Password length warning\nshould be 16 chars"]
+    A["535 BadCredentials"] --> B{"password_length = 16\nin workflow log?"}
+    B -- No --> C["Update SMTP_PASSWORD\nwith 16-char App Password"]
+    B -- Yes --> D{"Still failing\nafter IPv4 fix?"}
+    D -- Yes --> E["Switch to Resend API\nsee section 5"]
+    D -- No --> F["Verify SMTP_USERNAME = SMTP_FROM\nsame @gmail.com account"]
+    C --> G["Re-run workflow"]
+    F --> G
 ```
 
 **Steps:**
 
-1. Enable [2-Step Verification](https://myaccount.google.com/signinoptions/two-step-verification).
-2. Create an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (App: **Mail**, Device: **Other** → `GitHub Actions`).
-3. Update **`SMTP_PASSWORD`** in **Settings → Secrets and variables → Actions**.
-4. Set **`SMTP_USERNAME`** and **`SMTP_FROM`** to the same full address (e.g. `you@gmail.com`).
-5. Re-run the workflow.
+1. Enable [2-Step Verification](https://myaccount.google.com/signinoptions/two-step-verification)
+2. Create an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+3. Update `SMTP_PASSWORD` in **Settings → Secrets and variables → Actions**
+4. Set `SMTP_USERNAME` and `SMTP_FROM` to the same `@gmail.com` address
 
-**Workflow safeguards already in place:**
+**Workflow safeguards:**
 
-| Safeguard | YAML location | Effect |
-| --------- | ------------- | ------ |
-| Whitespace trimming | `Check SMTP configuration` step | Removes spaces from pasted App Passwords |
-| From-address alignment | Same step, Gmail branch | Forces `SMTP_FROM = SMTP_USERNAME` when using Gmail |
-| Length warning | Same step | Warns if password is not 16 characters after trimming |
-| `continue-on-error: true` | `Send email notification` step | SMTP failure does not fail the entire `notify` job |
-| Failure checklist | `Report email delivery failure` step | Prints actionable steps in the workflow log |
+| Safeguard | Effect |
+| --------- | ------ |
+| Whitespace/quote stripping | Cleans pasted App Passwords |
+| 16-character validation | Fails fast before send attempt |
+| Password fingerprint in log | e.g. `ne********sl` — verify first/last two chars match your App Password |
 
 ---
 
-### GHCR Docker Push: unknown blob
+### 2. Gmail SMTP: ENETUNREACH (IPv6)
 
 #### Symptom
 
-The `Build and push Docker image` step fails during push:
+```text
+Error: connect ENETUNREACH 2607:f8b0:4004:c19::6d:587 - Local (:::0)
+```
+
+#### Root cause
+
+GitHub-hosted runners resolve `smtp.gmail.com` to an **IPv6** address (AAAA record). The runner has no working IPv6 route to Google, so the connection fails before authentication.
+
+#### Failure flow
+
+```mermaid
+sequenceDiagram
+    participant R as GitHub Runner
+    participant DNS as DNS resolver
+    participant G as Gmail SMTP
+
+    R->>DNS: Resolve smtp.gmail.com
+    DNS-->>R: IPv6 2607:f8b0:...
+    R->>G: Connect via IPv6
+    G-->>R: ENETUNREACH
+    Note over R: IPv6 route unavailable\non ubuntu-latest runner
+```
+
+#### Resolution
+
+```mermaid
+flowchart TD
+    A["ENETUNREACH IPv6 error"] --> B["Workflow resolves Gmail\nto IPv4 only"]
+    B --> C["socket.getaddrinfo\nAF_INET"]
+    C --> D["smtp.connect ipv4, port"]
+    D --> E["STARTTLS with smtp._host\nfor certificate verification"]
+```
+
+**Workflow fix:** Replaced `dawidd6/action-send-mail` with Python `smtplib` that resolves Gmail to IPv4 via `socket.getaddrinfo(host, port, socket.AF_INET)` and connects to the IPv4 address directly.
+
+No secret changes required.
+
+---
+
+### 3. Python SMTP: starttls TypeError
+
+#### Symptom
+
+```text
+TypeError: SMTP.starttls() got an unexpected keyword argument 'server_hostname'
+```
+
+#### Root cause
+
+The GitHub runner Python version does not accept `server_hostname` as a keyword argument on `SMTP.starttls()`.
+
+#### Resolution
+
+```mermaid
+flowchart LR
+    A["Set smtp._host = smtp.gmail.com"] --> B["smtp.connect ipv4, 587"]
+    B --> C["smtp.starttls(context)"]
+    C --> D["TLS uses smtp._host\nfor certificate SNI"]
+```
+
+**Workflow fix:**
+
+```python
+with smtplib.SMTP(timeout=60) as smtp:
+    smtp._host = host          # smtp.gmail.com for TLS certificate
+    smtp.connect(ipv4, port)   # connect to IPv4 address
+    smtp.ehlo()
+    smtp.starttls(context=context)
+    smtp.ehlo()
+    smtp.login(user, password)
+```
+
+No secret changes required.
+
+---
+
+### 4. Gmail SMTP: 535 from GitHub Actions IPs
+
+#### Symptom
+
+Network and TLS succeed, credentials look correct, but Gmail still rejects login:
+
+```text
+Authenticating as q***2@gmail.com with app-password fingerprint ne********sl
+Connecting to smtp.gmail.com via IPv4 142.251.167.109:587
+SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted ... gsmtp')
+```
+
+Workflow diagnostics show `username_domain=@gmail.com`, `password_length=16`, `from_matches_user=yes`.
+
+#### Root cause
+
+Gmail frequently **rejects App Password SMTP authentication from cloud datacenter IPs** (including GitHub Actions runners), even when:
+
+- The App Password is valid and freshly generated
+- The same credentials work on a local machine
+- All secret formatting is correct
+
+This is a Google-side policy restriction, not a workflow bug.
+
+#### Failure flow
+
+```mermaid
+sequenceDiagram
+    participant W as GitHub Actions runner
+    participant G as Gmail SMTP (gsmtp)
+
+    W->>G: TCP connect IPv4 142.251.x.x:587
+    G-->>W: Connected
+    W->>G: STARTTLS + EHLO
+    G-->>W: TLS established
+    W->>G: AUTH LOGIN with App Password
+    Note over W: password_length=16\nfingerprint matches secret
+    G-->>W: 535 BadCredentials
+    Note over G: Datacenter IP rejected\neven with valid credentials
+```
+
+#### Resolution
+
+```mermaid
+flowchart TD
+    A["535 with valid credentials\nfrom GitHub Actions"] --> B["Do NOT keep retrying\nGmail SMTP secrets"]
+    B --> C["Add RESEND_API_KEY secret"]
+    C --> D["Keep SMTP_TO as recipient"]
+    D --> E["Re-run workflow"]
+    E --> F["Email sent via\nResend HTTP API"]
+```
+
+**This cannot be fixed by changing Gmail App Passwords alone.** Switch to Resend (section 5).
+
+---
+
+### 5. Resend API (recommended email provider)
+
+#### Why Resend
+
+| Approach | Works from GitHub Actions? | Setup complexity |
+| -------- | -------------------------- | ---------------- |
+| Gmail SMTP + App Password | Often **no** (535 from datacenter IPs) | Medium |
+| **Resend API** | **Yes** | Low (one API key) |
+
+#### Setup
+
+```mermaid
+flowchart TD
+    A["Sign up at resend.com"] --> B["Create API key\nresend.com/api-keys"]
+    B --> C["Add GitHub secrets"]
+    C --> D["RESEND_API_KEY = re_..."]
+    C --> E["SMTP_TO = recipient@example.com"]
+    C --> F["RESEND_FROM optional\nafter domain verification"]
+    D --> G["Push or re-run workflow"]
+    G --> H["Log: Sending email via Resend API"]
+    H --> I["Email delivered with\nexecution-report.html attached"]
+```
+
+**GitHub secrets:**
+
+| Secret | Required | Example |
+| ------ | -------- | ------- |
+| `RESEND_API_KEY` | Yes | `re_xxxxxxxxxxxx` |
+| `SMTP_TO` | Yes | `team@example.com` |
+| `RESEND_FROM` | No | `Java CI <notifications@yourdomain.com>` |
+
+If `RESEND_FROM` is omitted, the workflow uses `Java E2E CI <onboarding@resend.dev>`.
+
+#### Email provider selection in workflow
+
+```mermaid
+flowchart TD
+    A["Check email configuration"] --> B{"RESEND_API_KEY\nand SMTP_TO set?"}
+    B -- Yes --> C["Use Resend API\n(skip Gmail SMTP)"]
+    B -- No --> D{"All SMTP_* secrets set?"}
+    D -- Yes --> E["Use Gmail SMTP fallback\nmay fail with 535"]
+    D -- No --> F["Skip email step"]
+```
+
+**Workflow code (Resend path):**
+
+```python
+request = urllib.request.Request(
+    "https://api.resend.com/emails",
+    data=json.dumps({
+        "from": from_addr,
+        "to": [to_addr],
+        "subject": subject,
+        "text": body,
+        "attachments": [{"filename": "execution-report.html", "content": base64_content}],
+    }).encode(),
+    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+    method="POST",
+)
+```
+
+---
+
+### 6. GHCR Docker push: unknown blob
+
+#### Symptom
 
 ```text
 168f4b64baaa: Pushed
@@ -481,7 +712,11 @@ unknown blob
 Error: Process completed with exit code 1.
 ```
 
-Image **layers upload successfully**, but the **manifest push** fails. This is not an authentication error.
+Image layers upload successfully; the **manifest push** fails.
+
+#### Root cause
+
+Docker BuildKit attaches **SLSA provenance attestation manifests** by default on GitHub `ubuntu-latest` runners (Docker 25+). GHCR rejects the extra blob references.
 
 #### Failure flow
 
@@ -489,39 +724,27 @@ Image **layers upload successfully**, but the **manifest push** fails. This is n
 sequenceDiagram
     participant R as GitHub Runner
     participant BK as Docker BuildKit
-    participant GH as GHCR (ghcr.io)
+    participant GH as GHCR
 
-    R->>BK: docker build (BuildKit enabled)
-    BK->>BK: Build image layers
-    BK->>BK: Attach provenance attestation manifest\n(default on Docker 25+)
-    BK->>GH: Push layers
-    GH-->>BK: Layer accepted
-    BK->>GH: Push manifest referencing attestation blob
+    R->>BK: docker build (BuildKit)
+    BK->>BK: Attach provenance attestation
+    BK->>GH: Push layers OK
+    BK->>GH: Push manifest with attestation blob
     GH-->>BK: unknown blob
-    Note over GH: Registry cannot verify\nattestation blob reference
 ```
-
-#### Root cause
-
-Recent Docker / BuildKit versions attach **SLSA provenance attestation manifests** by default. GHCR rejects the extra blob references during manifest upload, producing `unknown blob` even when all image layers were pushed.
-
-This became visible when GitHub `ubuntu-latest` runners upgraded to Docker 25+, which changed BuildKit's default manifest generation.
 
 #### Resolution
 
 ```mermaid
 flowchart TD
-    A["unknown blob on docker push"] --> B["Root cause:\nBuildKit provenance attestation"]
-    B --> C["Replace raw docker build/push\nwith docker/build-push-action@v6"]
-    C --> D["Set provenance: false"]
-    C --> E["Set sbom: false"]
-    D --> F["Plain Docker v2 manifest\nGHCR accepts reliably"]
-    E --> F
-    F --> G["Re-run workflow on main"]
-    G --> H["Verify tags in GHCR:\n:sha and :latest"]
+    A["unknown blob on push"] --> B["Use docker/build-push-action@v6"]
+    B --> C["provenance: false"]
+    B --> D["sbom: false"]
+    C --> E["GHCR accepts plain manifest"]
+    D --> E
 ```
 
-**Workflow configuration (current):**
+**Workflow configuration:**
 
 ```yaml
 - name: Set up Docker Buildx
@@ -539,55 +762,65 @@ flowchart TD
     sbom: false
 ```
 
-| Setting | Purpose |
-| ------- | ------- |
-| `docker/setup-buildx-action@v3` | Enables BuildKit builder on the runner |
-| `docker/build-push-action@v6` | Atomic build-and-push with attestation control |
-| `provenance: false` | Disables SLSA provenance manifest that triggers `unknown blob` |
-| `sbom: false` | Disables SBOM attestation for the same class of GHCR issues |
-| `push: ${{ github.event_name == 'push' }}` | Preserves existing behaviour: push only on `main` pushes, not PRs |
-
 #### Before vs after
 
 ```mermaid
 flowchart LR
     subgraph before ["Before (failed)"]
-        B1["docker build\nno provenance flag"] --> B2["docker push :sha"]
-        B2 --> B3["docker push :latest"]
-        B3 --> B4["unknown blob"]
+        B1["docker build"] --> B2["docker push"]
+        B2 --> B3["unknown blob"]
     end
 
     subgraph after ["After (fixed)"]
-        A1["docker/build-push-action@v6\nprovenance: false"] --> A2["Single atomic push"]
-        A2 --> A3["GHCR accepts manifest"]
+        A1["build-push-action@v6\nprovenance: false"] --> A2["Atomic push to GHCR"]
+        A2 --> A3["Success"]
     end
 ```
 
+No secret changes required.
+
 ---
 
-### Verifying a healthy run
+### 7. Verifying a healthy run
 
-After both fixes are applied, a successful `main` push run should show:
+After all fixes are applied and `RESEND_API_KEY` is configured:
 
 ```mermaid
 flowchart TD
-    A["Workflow triggered on main push"] --> B["build-test: success"]
+    A["Push to main"] --> B["build-test: success"]
     B --> C["docker: success"]
-    C --> D["Images visible in GHCR\n:sha and :latest"]
+    C --> D["GHCR tags :sha and :latest"]
     B --> E["notify: success"]
-    E --> F["Send email notification: success"]
-    F --> G["Email received with\nHTML report attached"]
+    E --> F["Check email configuration:\nEmail provider: Resend API"]
+    F --> G["Send email notification:\nSending email via Resend API"]
+    G --> H["Email sent successfully"]
+    H --> I["Recipient receives email\nwith execution-report.html"]
 ```
 
-| Job | Expected step outcome |
-| --- | --------------------- |
+| Job | Expected log / outcome |
+| --- | ---------------------- |
 | `Build & Test` | `success` |
 | `Docker Build & Push` | `Build and push Docker image` → `success` |
-| `Notify via Email` | `Send email notification` → `success` |
+| `Notify via Email` | `Email provider: Resend API` → `Email sent successfully` |
 
-Check results:
+**Verify from the command line:**
 
 ```bash
 gh run list --workflow java-end-to-end_ci.yml --limit 3
 gh run view <run-id> --json conclusion,jobs --jq '.jobs[] | {name,conclusion}'
+gh run view <run-id> --log | rg "Email provider|Email sent|Resend API response"
 ```
+
+**Verify Docker images:**
+
+```bash
+docker pull ghcr.io/<owner>/java-project:latest
+```
+
+**Minimum secrets for a fully passing pipeline:**
+
+| Secret | Purpose |
+| ------ | ------- |
+| `RESEND_API_KEY` | Send CI notification emails |
+| `SMTP_TO` | Email recipient |
+| *(none extra for Docker)* | `GITHUB_TOKEN` handles GHCR push automatically |
