@@ -73,6 +73,7 @@ Google rejects regular account passwords with error `535-5.7.8 BadCredentials`. 
 | `535-5.7.8 BadCredentials` | Use a Gmail **App Password**, not your login password. Ensure `SMTP_FROM` matches `SMTP_USERNAME`.        |
 | Email step skipped         | One or more SMTP secrets are missing — add them all                                                        |
 | Docker push `unknown blob` | GHCR rejects BuildKit provenance manifests — workflow uses `provenance: false` on build-push |
+| `ENETUNREACH 2607:f8b0:...` | Runner tried Gmail over IPv6 — workflow sends mail via Python smtplib over explicit IPv4 |
 | Docker push `unauthorized` | Ensure the repo package visibility allows write via `GITHUB_TOKEN`                                         |
 | Surefire artifact empty    | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
 | `mvn -B test` fails        | Fix compilation errors or failing unit tests in `demo/` before merging                                     |
