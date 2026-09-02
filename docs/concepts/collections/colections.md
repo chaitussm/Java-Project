@@ -11,6 +11,15 @@
   - [List Interface Hierarchy](#list-interface-hierarchy)
     - [Modern implementations](#modern-implementations)
     - [Legacy classes](#legacy-classes)
+  - [List Methods](#list-methods)
+    - [Index-based List operations](#index-based-list-operations)
+    - [`Collection` operations available on every List](#collection-operations-available-on-every-list)
+    - [Java 21 ordered-end methods](#java-21-ordered-end-methods)
+    - [Static factory methods](#static-factory-methods)
+  - [List Cursors](#list-cursors)
+    - [`Iterator<E>` methods](#iteratore-methods)
+    - [`ListIterator<E>` additional methods](#listiteratore-additional-methods)
+    - [Legacy `Enumeration<E>` methods](#legacy-enumeratione-methods)
 - [Set(I) Interface](#seti-interface)
   - [Set Interface Hierarchy](#set-interface-hierarchy)
     - [Common implementations](#common-implementations)
@@ -25,7 +34,7 @@
     - [Classes](#classes)
   - [Map Collection Views](#map-collection-views)
   - [Choosing a Map Implementation](#choosing-a-map-implementation)
-- [SortedMap](#sortedmap)
+- [List(I)](#listi)
 <!-- /TOC -->
 
 An array is an indexed collection of fixed number of homogeneous data elements 
@@ -201,6 +210,126 @@ classDiagram
 - **`Stack`**: a LIFO stack that extends `Vector`. Prefer `Deque`, for example `ArrayDeque`, for new stack implementations.
 
 > `CopyOnWriteArrayList` is another `List` implementation in `java.util.concurrent`. It is designed for thread-safe, read-heavy situations and does not extend `AbstractList`.
+
+## List Methods
+
+`List<E>` includes the methods inherited from `Collection<E>` and adds index-based operations. In Java 21, `List` also inherits ordered-end operations from `SequencedCollection<E>`. Indexes start at `0`; an index used to **read, replace, or remove** must be from `0` through `size() - 1`, while an index used to **insert** may also be `size()`.
+
+### Index-based List operations
+
+| Method                                        | Definition                                                                                                                                                                                        |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `E get(int index)`                            | Returns the element at `index`.                                                                                                                                                                   |
+| `E set(int index, E element)`                 | Replaces the element at `index` and returns the element that was replaced.                                                                                                                        |
+| `void add(int index, E element)`              | Inserts an element before the current element at `index`. Existing elements at and after that position shift right.                                                                               |
+| `boolean add(E element)`                      | Appends an element to the end of the list and returns `true` if it changed.                                                                                                                       |
+| `E remove(int index)`                         | Removes and returns the element at `index`. Remaining elements shift left.                                                                                                                        |
+| `boolean remove(Object value)`                | Removes the first occurrence equal to `value`; returns whether an element was removed.                                                                                                            |
+| `int indexOf(Object value)`                   | Returns the index of the first matching value, or `-1` when absent.                                                                                                                               |
+| `int lastIndexOf(Object value)`               | Returns the index of the last matching value, or `-1` when absent.                                                                                                                                |
+| `List<E> subList(int fromIndex, int toIndex)` | Returns a backed view containing positions `fromIndex` (inclusive) through `toIndex` (exclusive). Structural changes to the original list outside that view make later view operations undefined. |
+| `ListIterator<E> listIterator()`              | Returns a bidirectional cursor positioned before index `0`.                                                                                                                                       |
+| `ListIterator<E> listIterator(int index)`     | Returns a bidirectional cursor positioned before the specified `index`.                                                                                                                           |
+| `void replaceAll(UnaryOperator<E> operator)`  | Replaces every element with the result of applying `operator`; a default method.                                                                                                                  |
+| `void sort(Comparator<? super E> comparator)` | Sorts the list in place. Passing `null` uses natural ordering; a default method.                                                                                                                  |
+
+### `Collection` operations available on every List
+
+| Method                                                      | Definition                                                              |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `int size()`                                                | Returns the number of elements.                                         |
+| `boolean isEmpty()`                                         | Returns `true` when `size()` is `0`.                                    |
+| `boolean contains(Object value)`                            | Tests whether a matching value is present.                              |
+| `Iterator<E> iterator()`                                    | Returns the standard forward-only cursor.                               |
+| `Object[] toArray()`                                        | Copies list elements into a new `Object[]`.                             |
+| `<T> T[] toArray(T[] array)`                                | Copies elements into a compatible array, reusing it when large enough.  |
+| `boolean addAll(Collection<? extends E> values)`            | Appends all values from a collection; returns whether the list changed. |
+| `boolean addAll(int index, Collection<? extends E> values)` | Inserts all values before `index`; this overload is declared by `List`. |
+| `boolean containsAll(Collection<?> values)`                 | Tests whether every supplied value is present.                          |
+| `boolean removeAll(Collection<?> values)`                   | Removes every element that also occurs in `values`.                     |
+| `boolean retainAll(Collection<?> values)`                   | Keeps only elements that occur in `values`.                             |
+| `void clear()`                                              | Removes all elements.                                                   |
+| `boolean removeIf(Predicate<? super E> filter)`             | Removes elements matching the predicate; a default method.              |
+| `Spliterator<E> spliterator()`                              | Returns a spliterator for sequential or parallel traversal.             |
+| `Stream<E> stream()`                                        | Returns a sequential stream of the elements.                            |
+| `Stream<E> parallelStream()`                                | Returns a parallel stream of the elements.                              |
+| `boolean equals(Object other)`                              | Tests list equality: same size and equal elements in the same order.    |
+| `int hashCode()`                                            | Returns the hash code defined consistently with `equals()`.             |
+
+### Java 21 ordered-end methods
+
+These methods are inherited from `SequencedCollection<E>`, which `List<E>` extends in Java 21.
+
+| Method                     | Definition                                                           |
+| -------------------------- | -------------------------------------------------------------------- |
+| `E getFirst()`             | Returns the first element; throws `NoSuchElementException` if empty. |
+| `E getLast()`              | Returns the last element; throws `NoSuchElementException` if empty.  |
+| `void addFirst(E element)` | Inserts an element at index `0`.                                     |
+| `void addLast(E element)`  | Appends an element at the end.                                       |
+| `E removeFirst()`          | Removes and returns the first element.                               |
+| `E removeLast()`           | Removes and returns the last element.                                |
+| `List<E> reversed()`       | Returns a reverse-ordered view backed by the original list.          |
+
+### Static factory methods
+
+| Method                                        | Definition                                                                                          |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `List.of()`                                   | Creates an unmodifiable list. Overloads accept zero or more elements; `null` elements are rejected. |
+| `List.copyOf(Collection<? extends E> values)` | Creates an unmodifiable list containing the supplied values; `null` elements are rejected.          |
+
+> Methods that modify a list can throw `UnsupportedOperationException` for an unmodifiable or fixed-size list, such as a list made with `List.of(...)` or `Arrays.asList(...)`.
+
+## List Cursors
+
+A **cursor** moves through a collection and reads, and sometimes modifies, its elements. Java provides `Iterator` for all collections, `ListIterator` specifically for lists, and the legacy `Enumeration` cursor for `Vector`.
+
+| Cursor            | Obtained from         | Direction            | Can modify?                      | Definition                                                                      |
+| ----------------- | --------------------- | -------------------- | -------------------------------- | ------------------------------------------------------------------------------- |
+| `Iterator<E>`     | `list.iterator()`     | Forward only         | `remove()` only                  | Standard cursor available for every `Collection`.                               |
+| `ListIterator<E>` | `list.listIterator()` | Forward and backward | `add()`, `set()`, and `remove()` | List-specific cursor that knows its position.                                   |
+| `Enumeration<E>`  | `vector.elements()`   | Forward only         | No                               | Legacy read-only cursor for `Vector` and older APIs; it is not a `List` method. |
+
+### `Iterator<E>` methods
+
+| Method                                              | Definition                                                                                                     |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `boolean hasNext()`                                 | Returns whether another element exists in the forward direction.                                               |
+| `E next()`                                          | Returns the next element and advances the cursor. Throws `NoSuchElementException` if there is no next element. |
+| `void remove()`                                     | Removes the last element returned by `next()`. It can be called only once per successful `next()` call.        |
+| `void forEachRemaining(Consumer<? super E> action)` | Applies `action` to all remaining elements; a default method.                                                  |
+
+### `ListIterator<E>` additional methods
+
+`ListIterator` inherits every `Iterator` method and adds the following operations.
+
+| Method                  | Definition                                                                              |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `boolean hasPrevious()` | Returns whether an element exists in the backward direction.                            |
+| `E previous()`          | Returns the previous element and moves the cursor backward.                             |
+| `int nextIndex()`       | Returns the index that a following `next()` would return.                               |
+| `int previousIndex()`   | Returns the index that a following `previous()` would return, or `-1` at the beginning. |
+| `void add(E element)`   | Inserts an element at the cursor position.                                              |
+| `void set(E element)`   | Replaces the last element returned by `next()` or `previous()`.                         |
+| `void remove()`         | Removes the last element returned by `next()` or `previous()`.                          |
+
+### Legacy `Enumeration<E>` methods
+
+| Method                      | Definition                                                                 |
+| --------------------------- | -------------------------------------------------------------------------- |
+| `boolean hasMoreElements()` | Returns whether another element is available.                              |
+| `E nextElement()`           | Returns the next element. Throws `NoSuchElementException` if none remains. |
+
+```mermaid
+flowchart LR
+  A["List&lt;E&gt;"] --> B["iterator()"]
+  A --> C["listIterator()"]
+  D["Vector&lt;E&gt; (legacy)"] --> E["elements()"]
+  B --> F["Iterator\nforward: hasNext(), next()\noptional remove()"]
+  C --> G["ListIterator\nforward and backward\nadd(), set(), remove()"]
+  E --> H["Enumeration\nforward and read-only\nhasMoreElements(), nextElement()"]
+```
+
+> Do not structurally modify a normal list directly while iterating over it. Use `Iterator.remove()` or `ListIterator` methods instead; otherwise a fail-fast iterator commonly throws `ConcurrentModificationException`.
 
 # Set(I) Interface
 
@@ -695,7 +824,7 @@ flowchart TD
   J -- Yes --> K["ConcurrentHashMap"]
   J -- No --> L["HashMap"]
 ```
-# SortedMap 
+# List(I)
 
 
 

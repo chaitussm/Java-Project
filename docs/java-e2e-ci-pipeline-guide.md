@@ -133,7 +133,7 @@ java -cp target/classes com.regularExpressions.checkNumber mobile "$MOBILE_NUMBE
 java -cp target/classes com.regularExpressions.checkNumber email "$EMAIL_ID"
 ```
 
-Afterward, the workflow searches `src/main/java` for files that declare `public static void main(...)`. Each discovered source-file class is converted to its fully qualified class name and executed with no arguments.
+Afterward, the workflow searches `src/main/java` for files that declare `public static void main(...)`. Each eligible source-file class is converted to its fully qualified class name and executed with no arguments, unless that program was already run earlier with required command-line arguments.
 
 | Item                                 | Explanation                                                                                                        |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
@@ -143,6 +143,66 @@ Afterward, the workflow searches `src/main/java` for files that declare `public 
 | `timeout --kill-after=2s 5s`         | Stops a program that takes more than five seconds; an extra two seconds allows cleanup before it is force-stopped. |
 | `head -c 20000`                      | Limits captured output to 20,000 bytes per program, keeping the report manageable.                                 |
 | `SECONDS=0`                          | Starts Bash's elapsed-time timer for the complete program scan.                                                    |
+
+### Dynamic entry-point detection and base classes
+
+The pipeline does **not** hard-code a source filename to decide whether a class should run. It uses the Java entry-point declaration as the rule:
+
+```text
+public static void main(...)
+```
+
+Every `.java` file is compiled during `mvn -B clean verify`, including reusable base classes, parent classes, helpers, models, and interfaces. The later runtime scan only starts classes that independently declare `main()`. Therefore, a reusable base class such as `collectionBasics`, even when many child classes inherit it, is compiled and available to its children but is never started as a Java application when it has no `main()` method.
+
+```mermaid
+flowchart TD
+    A["Find every .java source file"] --> B["Maven compiles every class"]
+    B --> C{"Declares public static\nvoid main(...)?"}
+    C -- No --> D["Support/base/helper class\nDo not execute\nCannot produce a Main method not found failure"]
+    C -- Yes --> E{"Already executed with\nrequired arguments?"}
+    E -- Yes --> F["Skip no-argument rerun\nAvoid an invalid duplicate invocation"]
+    E -- No --> G["Run with no arguments\nmaximum 5 seconds"]
+    G --> H["Capture output and status\nin HTML report"]
+```
+
+#### Why inheritance is not used as the filter
+
+The workflow deliberately does not infer that a class is non-runnable merely because other classes extend it. A base class can legally contain its own `main()` method for a demonstration or standalone tool. The presence of an entry point is the safe and objective rule.
+
+| Source-file type                                       | Maven compile | Runtime scan                    | Reason                                                                                |
+| ------------------------------------------------------ | ------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
+| Base/parent class with no `main()`                     | Yes           | Skipped                         | It supplies inherited behavior, not an application entry point.                       |
+| Helper, model, or interface with no `main()`           | Yes           | Skipped                         | It cannot be launched with `java <class>`.                                            |
+| Runnable class with `main()`                           | Yes           | Executed once without arguments | It is a standalone Java application.                                                  |
+| Runnable class already started with required arguments | Yes           | Not rerun without arguments     | The workflow records the earlier configured invocation and prevents a duplicate call. |
+
+#### Argument-driven program registry
+
+Some programs require command-line arguments. For example, the validator is deliberately executed twice: once with the `mobile` scenario and once with the `email` scenario. Whenever `run_program` receives a non-empty argument string, it records the fully qualified class name in `programs_run_with_arguments`.
+
+```mermaid
+sequenceDiagram
+    participant W as Workflow
+    participant R as run_program()
+    participant Registry as programs_run_with_arguments
+    participant Scan as Source discovery scan
+    participant JVM as Java process
+
+    W->>R: Run class with required arguments
+    R->>Registry: Record fully qualified class name
+    R->>JVM: java -cp target/classes class arguments
+    W->>Scan: Discover classes declaring main()
+    Scan->>Registry: Was this class already run with arguments?
+    alt Already registered
+        Registry-->>Scan: Yes
+        Scan-->>W: Skip no-argument duplicate
+    else Not registered
+        Registry-->>Scan: No
+        Scan->>JVM: Run class with no arguments
+    end
+```
+
+This is dynamic: adding another argument-driven program only requires calling `run_program` with its arguments. No source-file path or class-name exception needs to be added to the discovery loop.
 
 ### Execution status
 

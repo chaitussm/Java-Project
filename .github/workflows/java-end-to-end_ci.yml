@@ -2,7 +2,7 @@ name: Java End-to-End CI
 
 on:
   schedule:
-    - cron: '30 18 * * *'
+    - cron: "30 18 * * *"
   push:
     branches:
       - main
@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: "21"
           cache: maven
 
       - name: Build and test with Maven
@@ -75,6 +75,7 @@ jobs:
           passed_count=0
           failed_count=0
           timed_out_count=0
+          programs_run_with_arguments=()
 
           html_escape() {
             printf '%s' "$1" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g' -e 's/"/\&quot;/g'
@@ -84,6 +85,13 @@ jobs:
             folder="$1"
             program="$2"
             arguments="$3"
+
+            # A program that needs arguments must not be invoked again by the
+            # later no-argument discovery scan.
+            if [ -n "$arguments" ]; then
+              programs_run_with_arguments+=("$program")
+            fi
+
             set +e
             timeout --kill-after=2s 5s java -cp target/classes "$program" $arguments > "$output_file" 2>&1
             exit_code=$?
@@ -115,12 +123,26 @@ jobs:
           run_program "regularExpressions" "com.regularExpressions.checkNumber" "mobile $MOBILE_NUMBER"
           run_program "regularExpressions" "com.regularExpressions.checkNumber" "email $EMAIL_ID"
 
+          # Only execute source files that declare a Java application entry point.
+          # Base, helper, model, and collection-support classes without main() are
+          # compiled by Maven but intentionally never passed to the java command.
+          has_main_method() {
+            grep -q -E "$main_pattern" "$1"
+          }
+
+          was_run_with_arguments() {
+            for configured_program in "${programs_run_with_arguments[@]}"; do
+              [ "$configured_program" = "$1" ] && return 0
+            done
+            return 1
+          }
+
           while IFS= read -r -d '' source_file; do
-            [ "$source_file" = "$source_root/com/regularExpressions/checkNumber.java" ] && continue
-            grep -q -E "$main_pattern" "$source_file" || continue
+            has_main_method "$source_file" || continue
             class_name=${source_file#"$source_root"/}
             class_name=${class_name%.java}
             class_name=${class_name//\//.}
+            was_run_with_arguments "$class_name" && continue
             relative_path=${source_file#"$source_root"/com/}
             folder=${relative_path%%/*}
             run_program "$folder" "$class_name" ""
