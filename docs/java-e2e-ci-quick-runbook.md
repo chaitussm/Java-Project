@@ -45,7 +45,29 @@ docker pull ghcr.io/<owner>/java-project:<git-sha>
 
 ## Secrets setup
 
-Navigate to **Settings → Secrets and variables → Actions** and add:
+Navigate to **Settings → Secrets and variables → Actions**.
+
+### Recommended: Resend API (works reliably from GitHub Actions)
+
+Gmail SMTP often returns `535 BadCredentials` from GitHub-hosted runners even with a valid App Password. Use Resend instead:
+
+| Secret            | Example value                          |
+| ----------------- | -------------------------------------- |
+| `RESEND_API_KEY`  | `re_xxxxxxxxxxxx`                      |
+| `RESEND_FROM`     | `Java CI <onboarding@resend.dev>`      |
+| `SMTP_TO`         | `team@example.com`                     |
+
+**Setup:**
+
+1. Create a free account at [resend.com](https://resend.com)
+2. Create an API key at [resend.com/api-keys](https://resend.com/api-keys)
+3. Add `RESEND_API_KEY` to GitHub secrets
+4. Keep `SMTP_TO` as the recipient address
+5. Optional: set `RESEND_FROM` after verifying your domain; otherwise the workflow uses `Java E2E CI <onboarding@resend.dev>`
+
+When `RESEND_API_KEY` is set, the workflow uses Resend and **ignores Gmail SMTP secrets**.
+
+### Legacy: Gmail SMTP (often fails from CI)
 
 | Secret          | Example value        |
 | --------------- | -------------------- |
@@ -70,11 +92,10 @@ Google rejects regular account passwords with error `535-5.7.8 BadCredentials`. 
 
 | Symptom                    | Fix                                                                                                        |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `535-5.7.8 BadCredentials` | Use a Gmail **App Password**, not your login password. Ensure `SMTP_FROM` matches `SMTP_USERNAME`.        |
-| Email step skipped         | One or more SMTP secrets are missing — add them all                                                        |
-| Docker push `unknown blob` | GHCR rejects BuildKit provenance manifests — workflow uses `provenance: false` on build-push |
-| `ENETUNREACH 2607:f8b0:...` | Runner tried Gmail over IPv6 — workflow sends mail via Python smtplib over explicit IPv4 |
-| Docker push `unauthorized` | Ensure the repo package visibility allows write via `GITHUB_TOKEN`                                         |
+| `535 BadCredentials` (Gmail) | Gmail SMTP is unreliable from GitHub Actions — add **`RESEND_API_KEY`** instead (see above)              |
+| `ENETUNREACH 2607:f8b0:...` | Runner tried Gmail over IPv6 — fixed in workflow; prefer **Resend API**                                    |
+| Email step skipped         | Add `RESEND_API_KEY` + `SMTP_TO`, or all legacy SMTP_* secrets                                             |
+| Docker push `unknown blob` | GHCR rejects BuildKit provenance manifests — workflow uses `provenance: false` on build-push                 |
 | Surefire artifact empty    | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
 | `mvn -B test` fails        | Fix compilation errors or failing unit tests in `demo/` before merging                                     |
 

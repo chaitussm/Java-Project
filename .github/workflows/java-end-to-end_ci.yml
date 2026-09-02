@@ -272,10 +272,12 @@ jobs:
           echo "total_programs=$total_programs" >> "$GITHUB_OUTPUT"
           echo "folder_counts=$folder_counts" >> "$GITHUB_OUTPUT"
 
-      - name: Check SMTP configuration
-        id: smtp_check
+      - name: Check email configuration
+        id: email_check
         shell: bash
         env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
@@ -294,11 +296,21 @@ jobs:
             printf '%s' "$value"
           }
 
+          if [ -n "${RESEND_API_KEY}" ] && [ -n "${SMTP_TO}" ]; then
+            echo "provider=resend" >> "${GITHUB_OUTPUT}"
+            echo "ready=true" >> "${GITHUB_OUTPUT}"
+            echo "Email provider: Resend API (recommended for GitHub Actions)."
+            exit 0
+          fi
+
+          echo "provider=smtp" >> "${GITHUB_OUTPUT}"
+          echo "is_gmail=false" >> "${GITHUB_OUTPUT}"
+
           if [ -z "${SMTP_SERVER}" ] || [ -z "${SMTP_PORT}" ] || \
              [ -z "${SMTP_USERNAME}" ] || [ -z "${SMTP_PASSWORD}" ] || \
              [ -z "${SMTP_FROM}" ] || [ -z "${SMTP_TO}" ]; then
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "SMTP secrets not fully configured; skipping email step."
+            echo "Email not configured. Add RESEND_API_KEY (recommended) or all SMTP_* secrets."
             exit 0
           fi
 
@@ -310,38 +322,31 @@ jobs:
 
           user_lower=$(printf '%s' "$user" | tr '[:upper:]' '[:lower:]')
           user_domain="${user_lower##*@}"
+          pass=$(printf '%s' "$pass" | tr -cd '[:alnum:]')
           pass_len=${#pass}
 
           echo "username_domain=${user_domain}" >> "${GITHUB_OUTPUT}"
           echo "password_length=${pass_len}" >> "${GITHUB_OUTPUT}"
-          echo "is_gmail=false" >> "${GITHUB_OUTPUT}"
 
           if [[ "${server}" == *"gmail.com"* ]]; then
             echo "is_gmail=true" >> "${GITHUB_OUTPUT}"
-            pass=$(printf '%s' "$pass" | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')
-            pass_len=${#pass}
-
             if [[ "${user_lower}" != *"@gmail.com" && "${user_lower}" != *"@googlemail.com" ]]; then
-              echo "::error::SMTP_SERVER is Gmail (smtp.gmail.com) but SMTP_USERNAME uses @${user_domain}. Gmail SMTP only accepts @gmail.com or @googlemail.com accounts with a Gmail App Password from that same account."
-              echo "::error::If you want to send from @${user_domain}, change SMTP_SERVER to your provider (e.g. smtp-mail.outlook.com for Outlook)."
+              echo "::error::Gmail SMTP requires @gmail.com in SMTP_USERNAME (got @${user_domain})."
+              echo "::error::Gmail SMTP often fails from GitHub Actions with 535 even with valid App Passwords."
+              echo "::error::Use RESEND_API_KEY instead (see docs/java-e2e-ci-quick-runbook.md)."
               echo "ready=false" >> "${GITHUB_OUTPUT}"
               exit 0
             fi
-
-            if [[ "${from,,}" != "${user_lower}" ]]; then
-              echo "::warning::SMTP_FROM (${from}) does not match SMTP_USERNAME (${user}). Gmail requires the same address; using SMTP_USERNAME."
-              from="$user"
-            fi
-
             if [[ "${pass_len}" -ne 16 ]]; then
-              echo "::error::Gmail App Password must be exactly 16 letters/numbers (current length after cleanup: ${pass_len}). Update SMTP_PASSWORD in Settings → Secrets → Actions with a new App Password from https://myaccount.google.com/apppasswords"
+              echo "::error::Gmail App Password must be 16 characters (got ${pass_len})."
               echo "ready=false" >> "${GITHUB_OUTPUT}"
               exit 0
             fi
           fi
 
           echo "::add-mask::${pass}"
-          echo "SMTP diagnostics: server=${server}, port=${port}, username_domain=@${user_domain}, password_length=${pass_len}, from_matches_user=$([[ "${from,,}" == "${user_lower}" ]] && echo yes || echo no)"
+          echo "Email provider: Gmail SMTP (may fail from cloud CI runners)."
+          echo "SMTP diagnostics: server=${server}, port=${port}, username_domain=@${user_domain}, password_length=${pass_len}"
           if [[ "${pass_len}" -ge 4 ]]; then
             echo "password_fingerprint=${pass:0:2}********${pass: -2}" >> "${GITHUB_OUTPUT}"
           fi
@@ -349,10 +354,13 @@ jobs:
 
       - name: Send email notification
         id: send_mail
-        if: steps.smtp_check.outputs.ready == 'true'
+        if: steps.email_check.outputs.ready == 'true'
         continue-on-error: true
         shell: bash
         env:
+          EMAIL_PROVIDER: ${{ steps.email_check.outputs.provider }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
@@ -395,12 +403,16 @@ jobs:
           EOF
 
           python3 <<'PY'
+          import base64
+          import json
           import os
           import re
           import smtplib
           import socket
           import ssl
           import sys
+          import urllib.error
+          import urllib.request
           from email.mime.application import MIMEApplication
           from email.mime.multipart import MIMEMultipart
           from email.mime.text import MIMEText
@@ -410,93 +422,128 @@ jobs:
               value = value.strip().strip('"').strip("'")
               return re.sub(r"\s+", "", value)
 
-          def clean_gmail_password(value: str) -> str:
-              return re.sub(r"[^a-zA-Z0-9]", "", clean(value)).lower()
+          def clean_password(value: str) -> str:
+              return re.sub(r"[^a-zA-Z0-9]", "", clean(value))
 
-          host = clean(os.environ["SMTP_SERVER"])
-          port = int(clean(os.environ["SMTP_PORT"]))
-          user = clean(os.environ["SMTP_USERNAME"]).lower()
-          password = clean_gmail_password(os.environ["SMTP_PASSWORD"])
-          from_addr = clean(os.environ["SMTP_FROM"])
-          if from_addr.lower() != user:
-              print(f"Using SMTP_USERNAME as From address ({user})")
-              from_addr = user
-          to_addr = clean(os.environ["SMTP_TO"])
           subject = os.environ["EMAIL_SUBJECT"]
           body = Path("ci-report/email-body.txt").read_text(encoding="utf-8")
           attachment = Path("ci-report/execution-report.html")
+          to_addr = clean(os.environ["SMTP_TO"])
+          provider = os.environ.get("EMAIL_PROVIDER", "smtp")
 
-          if "gmail.com" in host and len(password) != 16:
-              print(f"::error::Gmail App Password must be 16 characters after cleanup (got {len(password)}).")
-              sys.exit(1)
+          def send_via_resend() -> None:
+              api_key = clean(os.environ["RESEND_API_KEY"])
+              from_addr = os.environ.get("RESEND_FROM", "").strip()
+              if not from_addr:
+                  from_addr = "Java E2E CI <onboarding@resend.dev>"
+              payload = {
+                  "from": from_addr,
+                  "to": [to_addr],
+                  "subject": subject,
+                  "text": body,
+              }
+              if attachment.is_file():
+                  payload["attachments"] = [{
+                      "filename": attachment.name,
+                      "content": base64.b64encode(attachment.read_bytes()).decode(),
+                  }]
+              request = urllib.request.Request(
+                  "https://api.resend.com/emails",
+                  data=json.dumps(payload).encode(),
+                  headers={
+                      "Authorization": f"Bearer {api_key}",
+                      "Content-Type": "application/json",
+                  },
+                  method="POST",
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      print(f"Resend API response: {response.read().decode()}")
+              except urllib.error.HTTPError as exc:
+                  detail = exc.read().decode()
+                  print(f"::error::Resend API failed ({exc.code}): {detail}")
+                  raise SystemExit(detail) from exc
 
-          local, _, domain = user.partition("@")
-          masked_user = f"{local[0]}***{local[-1]}@{domain}" if len(local) > 1 else user
-          print(f"Authenticating as {masked_user} with app-password fingerprint {password[:2]}********{password[-2:]}")
+          def send_via_smtp() -> None:
+              host = clean(os.environ["SMTP_SERVER"])
+              port = int(clean(os.environ["SMTP_PORT"]))
+              user = clean(os.environ["SMTP_USERNAME"]).lower()
+              password = clean_password(os.environ["SMTP_PASSWORD"])
+              from_addr = clean(os.environ["SMTP_FROM"])
+              if from_addr.lower() != user:
+                  print(f"Using SMTP_USERNAME as From address ({user})")
+                  from_addr = user
 
-          ipv4 = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4][0]
-          print(f"Connecting to {host} via IPv4 {ipv4}:{port}")
+              if "gmail.com" in host and len(password) != 16:
+                  print(f"::error::Gmail App Password must be 16 characters after cleanup (got {len(password)}).")
+                  sys.exit(1)
 
-          msg = MIMEMultipart()
-          msg["From"] = from_addr
-          msg["To"] = to_addr
-          msg["Subject"] = subject
-          msg.attach(MIMEText(body, "plain", "utf-8"))
+              local, _, domain = user.partition("@")
+              masked_user = f"{local[0]}***{local[-1]}@{domain}" if len(local) > 1 else user
+              print(f"Authenticating as {masked_user} with app-password fingerprint {password[:2]}********{password[-2:]}")
 
-          if attachment.is_file():
-              part = MIMEApplication(attachment.read_bytes(), Name=attachment.name)
-              part["Content-Disposition"] = f'attachment; filename="{attachment.name}"'
-              msg.attach(part)
+              ipv4 = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4][0]
+              print(f"Connecting to {host} via IPv4 {ipv4}:{port}")
 
-          context = ssl.create_default_context()
-          try:
-              if port == 465:
-                  with socket.create_connection((ipv4, port), timeout=60) as raw:
-                      with context.wrap_socket(raw, server_hostname=host) as tls_sock:
-                          with smtplib.SMTP(timeout=60) as smtp:
-                              smtp._host = host
-                              smtp.sock = tls_sock
-                              smtp.file = tls_sock.makefile("rb")
-                              smtp.ehlo()
-                              smtp.login(user, password)
-                              smtp.send_message(msg)
-              else:
-                  with smtplib.SMTP(timeout=60) as smtp:
-                      smtp._host = host
-                      smtp.connect(ipv4, port)
-                      smtp.ehlo()
-                      smtp.starttls(context=context)
-                      smtp.ehlo()
-                      smtp.login(user, password)
-                      smtp.send_message(msg)
-          except smtplib.SMTPAuthenticationError as exc:
-              print("::error::Gmail rejected the App Password (535 BadCredentials).")
-              print("The network connection works; the SMTP_PASSWORD secret does not match SMTP_USERNAME.")
-              print("Fix: sign in to the SAME Gmail account as SMTP_USERNAME, create a NEW App Password at")
-              print("https://myaccount.google.com/apppasswords and replace SMTP_PASSWORD immediately.")
-              print("Note: changing your Google account password revokes ALL existing App Passwords.")
-              raise SystemExit(str(exc)) from exc
+              msg = MIMEMultipart()
+              msg["From"] = from_addr
+              msg["To"] = to_addr
+              msg["Subject"] = subject
+              msg.attach(MIMEText(body, "plain", "utf-8"))
+
+              if attachment.is_file():
+                  part = MIMEApplication(attachment.read_bytes(), Name=attachment.name)
+                  part["Content-Disposition"] = f'attachment; filename="{attachment.name}"'
+                  msg.attach(part)
+
+              context = ssl.create_default_context()
+              try:
+                  if port == 465:
+                      with socket.create_connection((ipv4, port), timeout=60) as raw:
+                          with context.wrap_socket(raw, server_hostname=host) as tls_sock:
+                              with smtplib.SMTP(timeout=60) as smtp:
+                                  smtp._host = host
+                                  smtp.sock = tls_sock
+                                  smtp.file = tls_sock.makefile("rb")
+                                  smtp.ehlo()
+                                  smtp.login(user, password)
+                                  smtp.send_message(msg)
+                  else:
+                      with smtplib.SMTP(timeout=60) as smtp:
+                          smtp._host = host
+                          smtp.connect(ipv4, port)
+                          smtp.ehlo()
+                          smtp.starttls(context=context)
+                          smtp.ehlo()
+                          smtp.login(user, password)
+                          smtp.send_message(msg)
+              except smtplib.SMTPAuthenticationError as exc:
+                  print("::error::Gmail rejected SMTP login (535 BadCredentials).")
+                  print("Gmail SMTP often fails from GitHub Actions even with a valid App Password.")
+                  print("Recommended fix: add RESEND_API_KEY secret and use Resend instead of Gmail SMTP.")
+                  print("See docs/java-e2e-ci-quick-runbook.md")
+                  raise SystemExit(str(exc)) from exc
+
+          if provider == "resend":
+              print("Sending email via Resend API.")
+              send_via_resend()
+          else:
+              print("Sending email via SMTP.")
+              send_via_smtp()
 
           print("Email sent successfully.")
           PY
 
       - name: Report email delivery failure
-        if: steps.smtp_check.outputs.ready == 'true' && steps.send_mail.outcome == 'failure'
+        if: steps.email_check.outputs.ready == 'true' && steps.send_mail.outcome == 'failure'
         shell: bash
         run: |
           echo "::error::Email notification failed."
-          echo "Diagnostics: username_domain=@${{ steps.smtp_check.outputs.username_domain }}, password_length=${{ steps.smtp_check.outputs.password_length }}, fingerprint=${{ steps.smtp_check.outputs.password_fingerprint }}"
-          if [ "${{ steps.smtp_check.outputs.is_gmail }}" = "true" ]; then
-            echo "If the log shows ENETUNREACH with an IPv6 address (2607:f8b0:...), the runner could not reach Gmail over IPv6."
-            echo "This workflow sends mail via Python smtplib using an explicit IPv4 connection."
-            echo ""
-            echo "If the log shows 535 BadCredentials, verify ALL of the following:"
-            echo "1. SMTP_USERNAME is the full Gmail address that owns the App Password (@gmail.com)."
-            echo "2. SMTP_PASSWORD is the 16-character App Password (not your login password)."
-            echo "3. After generating a NEW App Password, update the GitHub secret immediately (old one is revoked)."
-            echo "4. SMTP_FROM must match SMTP_USERNAME exactly."
-            echo "5. Create App Password at https://myaccount.google.com/apppasswords (2-Step Verification required)."
-            echo "6. Do not wrap the password in quotes when saving the secret."
+          if [ "${{ steps.email_check.outputs.provider }}" = "resend" ]; then
+            echo "Resend failed. Verify RESEND_API_KEY and RESEND_FROM in Settings → Secrets → Actions."
+            echo "Create a free API key at https://resend.com/api-keys"
           else
-            echo "Verify SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM, and SMTP_SERVER match your email provider."
+            echo "Diagnostics: username_domain=@${{ steps.email_check.outputs.username_domain }}, password_length=${{ steps.email_check.outputs.password_length }}, fingerprint=${{ steps.email_check.outputs.password_fingerprint }}"
+            echo "Gmail SMTP frequently returns 535 from GitHub Actions datacenter IPs."
+            echo "Recommended: add RESEND_API_KEY (see docs/java-e2e-ci-quick-runbook.md) instead of Gmail SMTP."
           fi
