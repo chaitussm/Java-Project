@@ -348,73 +348,121 @@ jobs:
           echo "SMTP_USERNAME=${user}" >> "${GITHUB_ENV}"
           echo "SMTP_PASSWORD=${pass}" >> "${GITHUB_ENV}"
           echo "SMTP_FROM=${from}" >> "${GITHUB_ENV}"
-
-          connection_url=$(SMTP_USERNAME="$user" SMTP_PASSWORD="$pass" SMTP_SERVER="$server" SMTP_PORT="$port" python3 <<'PY'
-          import os
-          import urllib.parse
-
-          user = urllib.parse.quote(os.environ["SMTP_USERNAME"], safe="")
-          password = urllib.parse.quote(os.environ["SMTP_PASSWORD"], safe="")
-          server = os.environ["SMTP_SERVER"]
-          port = os.environ["SMTP_PORT"]
-          scheme = "smtps" if port == "465" else "smtp+starttls"
-          print(f"{scheme}://{user}:{password}@{server}:{port}")
-          PY
-          )
-          echo "::add-mask::${connection_url}"
-          echo "SMTP_CONNECTION_URL=${connection_url}" >> "${GITHUB_ENV}"
           echo "ready=true" >> "${GITHUB_OUTPUT}"
 
       - name: Send email notification
         id: send_mail
         if: steps.smtp_check.outputs.ready == 'true'
         continue-on-error: true
-        uses: dawidd6/action-send-mail@v18
-        with:
-          connection_url: ${{ env.SMTP_CONNECTION_URL }}
-          subject: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
-          to: ${{ secrets.SMTP_TO }}
-          from: ${{ env.SMTP_FROM }}
-          attachments: ci-report/execution-report.html
-          body: |
-            Java End-to-End CI Pipeline Run Summary
-            ========================================
+        shell: bash
+        env:
+          SMTP_SERVER: ${{ env.SMTP_SERVER }}
+          SMTP_PORT: ${{ env.SMTP_PORT }}
+          SMTP_USERNAME: ${{ env.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ env.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ env.SMTP_FROM }}
+          SMTP_TO: ${{ secrets.SMTP_TO }}
+          EMAIL_SUBJECT: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
+        run: |
+          mkdir -p ci-report
+          cat > ci-report/email-body.txt <<EOF
+          Java End-to-End CI Pipeline Run Summary
+          ========================================
 
-            Repository : ${{ github.repository }}
-            Branch     : ${{ github.ref_name }}
-            Commit SHA : ${{ github.sha }}
-            Triggered by: ${{ github.event_name }}
+          Repository : ${{ github.repository }}
+          Branch     : ${{ github.ref_name }}
+          Commit SHA : ${{ github.sha }}
+          Triggered by: ${{ github.event_name }}
 
-            Job Results
-            -----------
-            build-test : ${{ needs.build-test.result }}
-            docker     : ${{ needs.docker.result }}
+          Job Results
+          -----------
+          build-test : ${{ needs.build-test.result }}
+          docker     : ${{ needs.docker.result }}
 
-            Java Program Counts
-            -------------------
-            Total main methods in repository : ${{ steps.program_counts.outputs.total_programs }}
-            By top-level source folder        : ${{ steps.program_counts.outputs.folder_counts }}
+          Java Program Counts
+          -------------------
+          Total main methods in repository : ${{ steps.program_counts.outputs.total_programs }}
+          By top-level source folder        : ${{ steps.program_counts.outputs.folder_counts }}
 
-            Docker Image Details
-            --------------------
-            Image name : ghcr.io/${{ github.repository_owner }}/java-project
-            SHA tag    : ghcr.io/${{ github.repository_owner }}/java-project:${{ github.sha }}
-            Latest tag : ghcr.io/${{ github.repository_owner }}/java-project:latest
-            Pushed     : ${{ needs.docker.outputs.pushed }}
+          Docker Image Details
+          --------------------
+          Image name : ghcr.io/${{ github.repository_owner }}/java-project
+          SHA tag    : ghcr.io/${{ github.repository_owner }}/java-project:${{ github.sha }}
+          Latest tag : ghcr.io/${{ github.repository_owner }}/java-project:latest
+          Pushed     : ${{ needs.docker.outputs.pushed }}
 
-            Note: Images are pushed to GHCR only on push events (not on pull requests).
+          Note: Images are pushed to GHCR only on push events (not on pull requests).
 
-            View workflow run:
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          View workflow run:
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EOF
+
+          python3 <<'PY'
+          import os
+          import smtplib
+          import socket
+          import ssl
+          from email.mime.application import MIMEApplication
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from pathlib import Path
+
+          host = os.environ["SMTP_SERVER"]
+          port = int(os.environ["SMTP_PORT"])
+          user = os.environ["SMTP_USERNAME"]
+          password = os.environ["SMTP_PASSWORD"]
+          from_addr = os.environ["SMTP_FROM"]
+          to_addr = os.environ["SMTP_TO"]
+          subject = os.environ["EMAIL_SUBJECT"]
+          body = Path("ci-report/email-body.txt").read_text(encoding="utf-8")
+          attachment = Path("ci-report/execution-report.html")
+
+          ipv4 = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4][0]
+          print(f"Connecting to {host} via IPv4 {ipv4}:{port}")
+
+          msg = MIMEMultipart()
+          msg["From"] = from_addr
+          msg["To"] = to_addr
+          msg["Subject"] = subject
+          msg.attach(MIMEText(body, "plain", "utf-8"))
+
+          if attachment.is_file():
+              part = MIMEApplication(attachment.read_bytes(), Name=attachment.name)
+              part["Content-Disposition"] = f'attachment; filename="{attachment.name}"'
+              msg.attach(part)
+
+          context = ssl.create_default_context()
+          if port == 465:
+              with socket.create_connection((ipv4, port), timeout=60) as raw:
+                  with context.wrap_socket(raw, server_hostname=host) as tls_sock:
+                      with smtplib.SMTP(timeout=60) as smtp:
+                          smtp.sock = tls_sock
+                          smtp.file = tls_sock.makefile("rb")
+                          smtp.ehlo()
+                          smtp.login(user, password)
+                          smtp.send_message(msg)
+          else:
+              with smtplib.SMTP(ipv4, port, timeout=60) as smtp:
+                  smtp.ehlo()
+                  smtp.starttls(context=context, server_hostname=host)
+                  smtp.ehlo()
+                  smtp.login(user, password)
+                  smtp.send_message(msg)
+
+          print("Email sent successfully.")
+          PY
 
       - name: Report email delivery failure
         if: steps.smtp_check.outputs.ready == 'true' && steps.send_mail.outcome == 'failure'
         shell: bash
         run: |
-          echo "::error::Email notification failed (SMTP authentication rejected)."
+          echo "::error::Email notification failed."
           echo "Diagnostics: username_domain=@${{ steps.smtp_check.outputs.username_domain }}, password_length=${{ steps.smtp_check.outputs.password_length }}"
           if [ "${{ steps.smtp_check.outputs.is_gmail }}" = "true" ]; then
-            echo "Gmail 535 BadCredentials — verify ALL of the following:"
+            echo "If the log shows ENETUNREACH with an IPv6 address (2607:f8b0:...), the runner could not reach Gmail over IPv6."
+            echo "This workflow sends mail via Python smtplib using an explicit IPv4 connection."
+            echo ""
+            echo "If the log shows 535 BadCredentials, verify ALL of the following:"
             echo "1. SMTP_USERNAME is the full Gmail address that owns the App Password (@gmail.com)."
             echo "2. SMTP_PASSWORD is the 16-character App Password (not your login password)."
             echo "3. After generating a NEW App Password, update the GitHub secret immediately (old one is revoked)."
