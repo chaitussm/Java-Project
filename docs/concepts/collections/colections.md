@@ -824,7 +824,66 @@ flowchart TD
   J -- Yes --> K["ConcurrentHashMap"]
   J -- No --> L["HashMap"]
 ```
-# List(I)
+
+## Checking Whether a Collection Type Is a Class or an Interface
+
+**File:** [`CollectionTypeInspector.java`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java)
+
+Every `listDemo`, `setDemo`, `queueDemo`, and `mapDemo` method calls `CollectionTypeInspector.printTypeInfo(...)` before running its methods/cursors. It uses `java.lang.reflect` to classify each supplied type as `INTERFACE`, `ABSTRACT CLASS`, or `CLASS`, and prints a boxed, column-aligned table.
+
+```mermaid
+flowchart TD
+  A["printTypeInfo(Class...&lt;types&gt;)"] --> B["For each type: call classify(type)"]
+  B --> C{"type.isInterface()?"}
+  C -- Yes --> D["INTERFACE"]
+  C -- No --> E{"Modifier.isAbstract(type.getModifiers())?"}
+  E -- Yes --> F["ABSTRACT CLASS"]
+  E -- No --> G["CLASS"]
+  D --> H["printf row: name padded to 20 chars -> classification"]
+  F --> H
+  G --> H
+```
+
+### The formatting line — `CollectionTypeInspector.java` line 15
+
+> 🔎 **Highlighted line:** [`CollectionTypeInspector.java#L15`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java#L15)
+
+```java
+System.out.printf("  %-20s -> %s%n", type.getSimpleName(), classify(type));
+```
+
+This is a `printf`-style formatted print: a format string containing placeholders, followed by the arguments that fill them in, in order.
+
+| Format piece | Meaning                                                                                |
+| ------------ | -------------------------------------------------------------------------------------- |
+| `  `         | Two literal spaces of indentation before the column starts.                            |
+| `%-20s`      | Insert a `String`, left-justified (`-`), padded to a minimum width of `20` characters. |
+| ` -> `       | Literal arrow separating the two columns.                                              |
+| `%s`         | Insert the second `String`, with no padding.                                           |
+| `%n`         | Platform-specific newline (safer than a hardcoded `\n`).                               |
+
+| Argument               | Fills placeholder | Value comes from                                                                        |
+| ---------------------- | ----------------- | --------------------------------------------------------------------------------------- |
+| `type.getSimpleName()` | first `%-20s`     | The unqualified name, e.g. `ArrayList` instead of `java.util.ArrayList`.                |
+| `classify(type)`       | second `%s`       | The private helper method that returns `"INTERFACE"`, `"ABSTRACT CLASS"`, or `"CLASS"`. |
+
+For `ArrayList.class`, this line prints:
+
+```text
+  ArrayList            -> CLASS
+```
+
+The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same column, even when class names have very different lengths (for example `Set` vs. `LinkedHashSet`).
+
+### Example output
+
+```text
+----- Type Classification -----
+  ArrayList            -> CLASS
+  List                 -> INTERFACE
+--------------------------------
+```
+
 
 
 
