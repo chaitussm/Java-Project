@@ -310,7 +310,7 @@ jobs:
              [ -z "${SMTP_USERNAME}" ] || [ -z "${SMTP_PASSWORD}" ] || \
              [ -z "${SMTP_FROM}" ] || [ -z "${SMTP_TO}" ]; then
             echo "ready=false" >> "${GITHUB_OUTPUT}"
-            echo "Email not configured. Add RESEND_API_KEY (recommended) or all SMTP_* secrets."
+            echo "Email not configured. Add RESEND_API_KEY + SMTP_TO (required for CI email)."
             exit 0
           fi
 
@@ -330,18 +330,11 @@ jobs:
 
           if [[ "${server}" == *"gmail.com"* ]]; then
             echo "is_gmail=true" >> "${GITHUB_OUTPUT}"
-            if [[ "${user_lower}" != *"@gmail.com" && "${user_lower}" != *"@googlemail.com" ]]; then
-              echo "::error::Gmail SMTP requires @gmail.com in SMTP_USERNAME (got @${user_domain})."
-              echo "::error::Gmail SMTP often fails from GitHub Actions with 535 even with valid App Passwords."
-              echo "::error::Use RESEND_API_KEY instead (see docs/java-e2e-ci-quick-runbook.md)."
-              echo "ready=false" >> "${GITHUB_OUTPUT}"
-              exit 0
-            fi
-            if [[ "${pass_len}" -ne 16 ]]; then
-              echo "::error::Gmail App Password must be 16 characters (got ${pass_len})."
-              echo "ready=false" >> "${GITHUB_OUTPUT}"
-              exit 0
-            fi
+            echo "::error::Gmail SMTP cannot be used from GitHub Actions — Google returns 535 BadCredentials from datacenter IPs even with a valid App Password."
+            echo "::error::Add RESEND_API_KEY (https://resend.com/api-keys) and keep SMTP_TO as the recipient."
+            echo "::error::See docs/java-e2e-ci-quick-runbook.md"
+            echo "ready=false" >> "${GITHUB_OUTPUT}"
+            exit 0
           fi
 
           echo "::add-mask::${pass}"
@@ -543,7 +536,16 @@ jobs:
             echo "Resend failed. Verify RESEND_API_KEY and RESEND_FROM in Settings → Secrets → Actions."
             echo "Create a free API key at https://resend.com/api-keys"
           else
-            echo "Diagnostics: username_domain=@${{ steps.email_check.outputs.username_domain }}, password_length=${{ steps.email_check.outputs.password_length }}, fingerprint=${{ steps.email_check.outputs.password_fingerprint }}"
-            echo "Gmail SMTP frequently returns 535 from GitHub Actions datacenter IPs."
-            echo "Recommended: add RESEND_API_KEY (see docs/java-e2e-ci-quick-runbook.md) instead of Gmail SMTP."
+            echo "Non-Gmail SMTP failed. Verify SMTP_* secrets or switch to RESEND_API_KEY."
           fi
+
+      - name: Report missing Resend configuration
+        if: steps.email_check.outputs.ready == 'false' && steps.email_check.outputs.is_gmail == 'true'
+        shell: bash
+        run: |
+          echo "::error::Email skipped — Gmail SMTP is not supported from GitHub Actions."
+          echo "Add these secrets in Settings → Secrets and variables → Actions:"
+          echo "  RESEND_API_KEY  = re_... from https://resend.com/api-keys"
+          echo "  SMTP_TO         = your recipient email (keep existing value)"
+          echo "Optional: RESEND_FROM = Java CI <you@yourdomain.com> after verifying a domain at resend.com"
+          echo "Then re-run the workflow. Gmail SMTP_* secrets are no longer used for CI email."
