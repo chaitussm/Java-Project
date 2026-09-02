@@ -11,6 +11,9 @@
     - [Report Attachment in Email](#report-attachment-in-email)
     - [Program Counts in the Email](#program-counts-in-the-email)
     - [Failure Behavior](#failure-behavior)
+    - [Troubleshooting Known Failures](#troubleshooting-known-failures)
+        - [Gmail SMTP: 535 BadCredentials](#gmail-smtp-535-badcredentials)
+        - [GHCR Docker Push: unknown blob](#ghcr-docker-push-unknown-blob)
 <!-- /TOC -->
 
 This document describes the design and behaviour of the
@@ -28,11 +31,19 @@ flowchart TD
     F --> G["Run mobile and email validation"]
     G --> H["Create and upload HTML report"]
     H --> I["docker"]
-    I --> J["Build Docker image"]
-    J --> K["Push image only on push events"]
-    K --> L["notify"]
-    L --> M["Count Java main methods"]
-    M --> N["Send email when SMTP secrets exist"]
+    I --> J["Set up Docker Buildx"]
+    J --> K["Build image with build-push-action\nprovenance: false"]
+    K --> L{"Push event?"}
+    L -- Yes --> M["Push to GHCR\n:sha and :latest"]
+    L -- No --> N["Build only\nno push"]
+    M --> O["notify"]
+    N --> O
+    O --> P["Normalize SMTP secrets"]
+    P --> Q["Count Java main methods"]
+    Q --> R{"SMTP configured?"}
+    R -- Yes --> S["Send email\ncontinue-on-error"]
+    R -- No --> T["Skip email"]
+    S --> U["Report auth failure checklist\nif email fails"]
 ```
 
 ## Triggers and Shared Values
@@ -62,22 +73,46 @@ The mobile number and email address are workflow environment variables, not valu
 
 ### `docker`
 
-| Step          | Description                                               |
-| ------------- | --------------------------------------------------------- |
-| Set push flag | Output `pushed=true` only on `push` events                |
-| GHCR login    | `docker/login-action@v3` using `GITHUB_TOKEN` (push only) |
-| Build image   | Tags `ghcr.io/<owner>/java-project:<sha>` and `:latest`   |
-| Push images   | Executed only when `github.event_name == 'push'`          |
+| Step              | Description                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------ |
+| Set push flag     | Output `pushed=true` only on `push` events                                                       |
+| GHCR login        | `docker/login-action@v3` using `GITHUB_TOKEN` (push only)                                        |
+| Set up Buildx     | `docker/setup-buildx-action@v3` enables BuildKit-based builds                                    |
+| Build and push    | `docker/build-push-action@v6` tags `:sha` and `:latest`; pushes only on `push` events            |
+| Provenance off    | `provenance: false` and `sbom: false` prevent GHCR `unknown blob` push failures (see below)     |
+
+```mermaid
+flowchart LR
+    A["Checkout demo/"] --> B["docker/login-action\npush events only"]
+    B --> C["docker/setup-buildx-action"]
+    C --> D["docker/build-push-action@v6"]
+    D --> E["context: demo"]
+    D --> F["tags: :sha, :latest"]
+    D --> G["provenance: false\nsbom: false"]
+    D --> H{"github.event_name\n== push?"}
+    H -- Yes --> I["Push to ghcr.io"]
+    H -- No --> J["Build locally\nno registry push"]
+```
 
 ### `notify`
 
 Runs after both previous jobs regardless of their outcome (`if: always()`).
+
+| Step                    | Description                                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| Download artifact       | Retrieves `java-execution-report` from `build-test` into `ci-report/`                             |
+| Count programs          | Scans `demo/src/main/java/com` for `public static void main(...)` declarations                    |
+| Check SMTP config       | Trims whitespace from secrets; aligns `SMTP_FROM` with `SMTP_USERNAME` for Gmail                  |
+| Send email              | `dawidd6/action-send-mail@v18` with `continue-on-error: true` so auth failures do not fail the job |
+| Report delivery failure | Prints a Gmail App Password checklist when SMTP authentication is rejected                        |
 
 The email includes:
 - Repo, branch, commit SHA, trigger event
 - Result of each upstream job
 - Full Docker image name and both tags
 - Whether images were pushed
+- Java program counts (total and per-folder)
+- HTML execution report attached as `execution-report.html`
 
 ## Required Secrets
 
@@ -85,12 +120,14 @@ The email includes:
 | --------------- | ---------------------------------- |
 | `SMTP_SERVER`   | SMTP host (e.g. `smtp.gmail.com`)  |
 | `SMTP_PORT`     | SMTP port (e.g. `587`)             |
-| `SMTP_USERNAME` | SMTP login username                |
-| `SMTP_PASSWORD` | SMTP login password / app password |
-| `SMTP_FROM`     | Sender email address               |
+| `SMTP_USERNAME` | SMTP login username (full email)   |
+| `SMTP_PASSWORD` | Gmail **App Password** (16 chars)  |
+| `SMTP_FROM`     | Sender email (must match username for Gmail) |
 | `SMTP_TO`       | Recipient email address            |
 
 If any secret is missing the email step is skipped gracefully.
+
+For Gmail, see [Gmail SMTP: 535 BadCredentials](#gmail-smtp-535-badcredentials) for setup and troubleshooting.
 
 ## Docker Image Registry
 
@@ -325,9 +362,232 @@ The email now contains a **Java Program Counts** section with the total and per-
 flowchart TD
     A["Maven build or validator result fails"] --> B["build-test is marked failed"]
     B --> C["HTML execution report still uploads"]
-    C --> D["docker job is skipped"]
+    C --> D["docker job is skipped\nneeds: build-test"]
     D --> E["notify runs because of if: always()"]
     E --> F["Email reports job result when SMTP is configured"]
+
+    G["Docker push fails\nunknown blob"] --> H["docker job marked failed"]
+    H --> E
+
+    I["SMTP auth fails\n535 BadCredentials"] --> J["Send email step fails\ncontinue-on-error: true"]
+    J --> K["notify job still succeeds"]
+    K --> L["Checklist printed in workflow log"]
+    E --> I
 ```
 
-This behavior makes failures diagnosable: execution output is visible in the workflow log, the HTML artifact records each validator result, Surefire XML is retained when available, and the email can report the final status.
+This behavior makes failures diagnosable: execution output is visible in the workflow log, the HTML artifact records each validator result, Surefire XML is retained when available, and the email can report the final status. Email and Docker failures are isolated so one subsystem does not silently block diagnostics from the other.
+
+## Troubleshooting Known Failures
+
+This section documents production failures observed in `.github/workflows/java-end-to-end_ci.yml`, their root causes, and the workflow changes that resolve them.
+
+### Summary
+
+| Error | Job | Root cause | Resolution |
+| ----- | --- | ---------- | ---------- |
+| `535-5.7.8 BadCredentials` (`gsmtp`) | `notify` | Gmail rejects regular passwords or stale App Passwords | Use a current Gmail App Password; align `SMTP_FROM` with `SMTP_USERNAME` |
+| `unknown blob` | `docker` | BuildKit provenance attestation manifests rejected by GHCR | `provenance: false` and `sbom: false` in `docker/build-push-action@v6` |
+| Email step skipped | `notify` | One or more SMTP secrets missing | Configure all six SMTP secrets in repository settings |
+| Docker push `unauthorized` | `docker` | `GITHUB_TOKEN` lacks package write permission | Ensure `permissions: packages: write` and GHCR package visibility |
+
+---
+
+### Gmail SMTP: 535 BadCredentials
+
+#### Symptom
+
+The `Send email notification` step fails with:
+
+```text
+Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials ... - gsmtp
+```
+
+The `gsmtp` suffix confirms traffic is going through **Google SMTP** (`smtp.gmail.com`).
+
+#### Failure flow
+
+```mermaid
+sequenceDiagram
+    participant W as GitHub Actions
+    participant A as dawidd6/action-send-mail
+    participant G as Gmail SMTP (gsmtp)
+
+    W->>W: Read SMTP_USERNAME and SMTP_PASSWORD secrets
+    W->>W: Trim whitespace from credentials
+    W->>A: server_address, username, password, from, to
+    A->>G: AUTH LOGIN over STARTTLS (port 587)
+    G-->>A: 535-5.7.8 BadCredentials
+    A-->>W: Step failed
+    Note over W: continue-on-error: true\nnotify job still succeeds
+    W->>W: Print Gmail App Password checklist
+```
+
+#### Root causes
+
+| Cause | Explanation |
+| ----- | ----------- |
+| Regular Gmail password used | Google no longer accepts account login passwords for SMTP; an **App Password** is required. |
+| Stale App Password | Generating a new App Password **immediately revokes** the previous one. GitHub secrets must be updated at the same time. |
+| `SMTP_FROM` mismatch | Gmail requires the sender address to match the authenticated account. |
+| Whitespace in secret | App Passwords are shown as four groups (`abcd efgh ijkl mnop`). Extra spaces in the secret can break auth if not trimmed. |
+| 2-Step Verification off | App Passwords cannot be created without 2-Step Verification enabled on the Google account. |
+
+#### Resolution
+
+```mermaid
+flowchart TD
+    A["535 BadCredentials in notify job"] --> B{"Using smtp.gmail.com?"}
+    B -- No --> C["Verify SMTP_SERVER, username,\npassword with your provider"]
+    B -- Yes --> D["Enable 2-Step Verification"]
+    D --> E["Create App Password at\nmyaccount.google.com/apppasswords"]
+    E --> F["Update SMTP_PASSWORD secret\nwith new 16-char password"]
+    F --> G["Set SMTP_USERNAME and SMTP_FROM\nto the same Gmail address"]
+    G --> H["Re-run workflow"]
+    H --> I{"Send email step\nsucceeds?"}
+    I -- Yes --> J["Done — email delivered"]
+    I -- No --> K["Check workflow log for\nApp Password length warning\nshould be 16 chars"]
+```
+
+**Steps:**
+
+1. Enable [2-Step Verification](https://myaccount.google.com/signinoptions/two-step-verification).
+2. Create an App Password at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (App: **Mail**, Device: **Other** → `GitHub Actions`).
+3. Update **`SMTP_PASSWORD`** in **Settings → Secrets and variables → Actions**.
+4. Set **`SMTP_USERNAME`** and **`SMTP_FROM`** to the same full address (e.g. `you@gmail.com`).
+5. Re-run the workflow.
+
+**Workflow safeguards already in place:**
+
+| Safeguard | YAML location | Effect |
+| --------- | ------------- | ------ |
+| Whitespace trimming | `Check SMTP configuration` step | Removes spaces from pasted App Passwords |
+| From-address alignment | Same step, Gmail branch | Forces `SMTP_FROM = SMTP_USERNAME` when using Gmail |
+| Length warning | Same step | Warns if password is not 16 characters after trimming |
+| `continue-on-error: true` | `Send email notification` step | SMTP failure does not fail the entire `notify` job |
+| Failure checklist | `Report email delivery failure` step | Prints actionable steps in the workflow log |
+
+---
+
+### GHCR Docker Push: unknown blob
+
+#### Symptom
+
+The `Build and push Docker image` step fails during push:
+
+```text
+168f4b64baaa: Pushed
+unknown blob
+Error: Process completed with exit code 1.
+```
+
+Image **layers upload successfully**, but the **manifest push** fails. This is not an authentication error.
+
+#### Failure flow
+
+```mermaid
+sequenceDiagram
+    participant R as GitHub Runner
+    participant BK as Docker BuildKit
+    participant GH as GHCR (ghcr.io)
+
+    R->>BK: docker build (BuildKit enabled)
+    BK->>BK: Build image layers
+    BK->>BK: Attach provenance attestation manifest\n(default on Docker 25+)
+    BK->>GH: Push layers
+    GH-->>BK: Layer accepted
+    BK->>GH: Push manifest referencing attestation blob
+    GH-->>BK: unknown blob
+    Note over GH: Registry cannot verify\nattestation blob reference
+```
+
+#### Root cause
+
+Recent Docker / BuildKit versions attach **SLSA provenance attestation manifests** by default. GHCR rejects the extra blob references during manifest upload, producing `unknown blob` even when all image layers were pushed.
+
+This became visible when GitHub `ubuntu-latest` runners upgraded to Docker 25+, which changed BuildKit's default manifest generation.
+
+#### Resolution
+
+```mermaid
+flowchart TD
+    A["unknown blob on docker push"] --> B["Root cause:\nBuildKit provenance attestation"]
+    B --> C["Replace raw docker build/push\nwith docker/build-push-action@v6"]
+    C --> D["Set provenance: false"]
+    C --> E["Set sbom: false"]
+    D --> F["Plain Docker v2 manifest\nGHCR accepts reliably"]
+    E --> F
+    F --> G["Re-run workflow on main"]
+    G --> H["Verify tags in GHCR:\n:sha and :latest"]
+```
+
+**Workflow configuration (current):**
+
+```yaml
+- name: Set up Docker Buildx
+  uses: docker/setup-buildx-action@v3
+
+- name: Build and push Docker image
+  uses: docker/build-push-action@v6
+  with:
+    context: demo
+    push: ${{ github.event_name == 'push' }}
+    tags: |
+      ghcr.io/${{ github.repository_owner }}/java-project:${{ github.sha }}
+      ghcr.io/${{ github.repository_owner }}/java-project:latest
+    provenance: false
+    sbom: false
+```
+
+| Setting | Purpose |
+| ------- | ------- |
+| `docker/setup-buildx-action@v3` | Enables BuildKit builder on the runner |
+| `docker/build-push-action@v6` | Atomic build-and-push with attestation control |
+| `provenance: false` | Disables SLSA provenance manifest that triggers `unknown blob` |
+| `sbom: false` | Disables SBOM attestation for the same class of GHCR issues |
+| `push: ${{ github.event_name == 'push' }}` | Preserves existing behaviour: push only on `main` pushes, not PRs |
+
+#### Before vs after
+
+```mermaid
+flowchart LR
+    subgraph before ["Before (failed)"]
+        B1["docker build\nno provenance flag"] --> B2["docker push :sha"]
+        B2 --> B3["docker push :latest"]
+        B3 --> B4["unknown blob"]
+    end
+
+    subgraph after ["After (fixed)"]
+        A1["docker/build-push-action@v6\nprovenance: false"] --> A2["Single atomic push"]
+        A2 --> A3["GHCR accepts manifest"]
+    end
+```
+
+---
+
+### Verifying a healthy run
+
+After both fixes are applied, a successful `main` push run should show:
+
+```mermaid
+flowchart TD
+    A["Workflow triggered on main push"] --> B["build-test: success"]
+    B --> C["docker: success"]
+    C --> D["Images visible in GHCR\n:sha and :latest"]
+    B --> E["notify: success"]
+    E --> F["Send email notification: success"]
+    F --> G["Email received with\nHTML report attached"]
+```
+
+| Job | Expected step outcome |
+| --- | --------------------- |
+| `Build & Test` | `success` |
+| `Docker Build & Push` | `Build and push Docker image` → `success` |
+| `Notify via Email` | `Send email notification` → `success` |
+
+Check results:
+
+```bash
+gh run list --workflow java-end-to-end_ci.yml --limit 3
+gh run view <run-id> --json conclusion,jobs --jq '.jobs[] | {name,conclusion}'
+```
