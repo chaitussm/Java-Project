@@ -261,26 +261,56 @@ jobs:
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           SMTP_TO: ${{ secrets.SMTP_TO }}
         run: |
+          trim() { printf '%s' "$1" | tr -d '[:space:]'; }
+
           if [ -n "${SMTP_SERVER}" ] && [ -n "${SMTP_PORT}" ] && \
              [ -n "${SMTP_USERNAME}" ] && [ -n "${SMTP_PASSWORD}" ] && \
              [ -n "${SMTP_FROM}" ] && [ -n "${SMTP_TO}" ]; then
+            server=$(trim "${SMTP_SERVER}")
+            port=$(trim "${SMTP_PORT}")
+            user=$(trim "${SMTP_USERNAME}")
+            pass=$(trim "${SMTP_PASSWORD}")
+            from=$(trim "${SMTP_FROM}")
+
+            echo "::add-mask::${pass}"
+            echo "SMTP_SERVER=${server}" >> "${GITHUB_ENV}"
+            echo "SMTP_PORT=${port}" >> "${GITHUB_ENV}"
+            echo "SMTP_USERNAME=${user}" >> "${GITHUB_ENV}"
+            echo "SMTP_PASSWORD=${pass}" >> "${GITHUB_ENV}"
+            echo "SMTP_FROM=${from}" >> "${GITHUB_ENV}"
+
             echo "ready=true" >> "${GITHUB_OUTPUT}"
+            echo "is_gmail=false" >> "${GITHUB_OUTPUT}"
+
+            if [[ "${server}" == *"gmail.com"* ]]; then
+              echo "is_gmail=true" >> "${GITHUB_OUTPUT}"
+              if [[ "${from}" != "${user}" ]]; then
+                echo "::warning::SMTP_FROM (${from}) does not match SMTP_USERNAME (${user}). Gmail requires the sender to match the authenticated account; using SMTP_USERNAME as From."
+                echo "SMTP_FROM=${user}" >> "${GITHUB_ENV}"
+              fi
+              if [[ "${#pass}" -ne 16 ]]; then
+                echo "::warning::Gmail App Passwords are 16 characters after removing spaces. Current length: ${#pass}. Create one at https://myaccount.google.com/apppasswords (2-Step Verification required)."
+              fi
+            fi
           else
             echo "ready=false" >> "${GITHUB_OUTPUT}"
             echo "SMTP secrets not fully configured; skipping email step."
           fi
 
       - name: Send email notification
+        id: send_mail
         if: steps.smtp_check.outputs.ready == 'true'
+        continue-on-error: true
         uses: dawidd6/action-send-mail@v18
         with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
+          server_address: ${{ env.SMTP_SERVER }}
+          server_port: ${{ env.SMTP_PORT }}
+          username: ${{ env.SMTP_USERNAME }}
+          password: ${{ env.SMTP_PASSWORD }}
+          secure: ${{ env.SMTP_PORT == '465' }}
           subject: "Java E2E CI Pipeline — ${{ github.ref_name }} (${{ github.sha }})"
           to: ${{ secrets.SMTP_TO }}
-          from: ${{ secrets.SMTP_FROM }}
+          from: ${{ env.SMTP_FROM }}
           attachments: ci-report/execution-report.html
           body: |
             Java End-to-End CI Pipeline Run Summary
@@ -312,3 +342,22 @@ jobs:
 
             View workflow run:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Report email delivery failure
+        if: steps.smtp_check.outputs.ready == 'true' && steps.send_mail.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "::warning::Email notification failed (SMTP authentication rejected)."
+          if [ "${{ steps.smtp_check.outputs.is_gmail }}" = "true" ]; then
+            echo "Gmail SMTP fix checklist:"
+            echo "1. Enable 2-Step Verification on the Google account."
+            echo "2. Create an App Password at https://myaccount.google.com/apppasswords"
+            echo "   (choose Mail and Other, name it GitHub Actions)."
+            echo "3. Update SMTP_PASSWORD with the 16-character app password"
+            echo "   (paste with or without spaces; the workflow strips whitespace)."
+            echo "4. Set SMTP_USERNAME and SMTP_FROM to the same full Gmail address."
+            echo "5. Use SMTP_SERVER=smtp.gmail.com and SMTP_PORT=587 (or 465)."
+            echo "Do NOT use your regular Gmail account password."
+          else
+            echo "Verify SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM, and SMTP_SERVER in repository secrets."
+          fi
