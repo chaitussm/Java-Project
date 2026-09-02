@@ -436,15 +436,18 @@ jobs:
               with socket.create_connection((ipv4, port), timeout=60) as raw:
                   with context.wrap_socket(raw, server_hostname=host) as tls_sock:
                       with smtplib.SMTP(timeout=60) as smtp:
+                          smtp._host = host
                           smtp.sock = tls_sock
                           smtp.file = tls_sock.makefile("rb")
                           smtp.ehlo()
                           smtp.login(user, password)
                           smtp.send_message(msg)
           else:
-              with smtplib.SMTP(ipv4, port, timeout=60) as smtp:
+              with smtplib.SMTP(timeout=60) as smtp:
+                  smtp._host = host
+                  smtp.connect(ipv4, port)
                   smtp.ehlo()
-                  smtp.starttls(context=context, server_hostname=host)
+                  smtp.starttls(context=context)
                   smtp.ehlo()
                   smtp.login(user, password)
                   smtp.send_message(msg)
