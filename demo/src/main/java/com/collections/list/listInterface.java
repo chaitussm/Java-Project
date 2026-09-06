@@ -1,6 +1,4 @@
-package com.collections;
-
-import com.collections.collectionBaseClasses.listDemo;
+package com.collections.list;
 
 public class listInterface extends listDemo {
 

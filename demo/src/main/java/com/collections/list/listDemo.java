@@ -1,4 +1,4 @@
-package com.collections.collectionBaseClasses;
+package com.collections.list;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 import java.util.Vector;
+
+import com.collections.collectionBaseClasses.CollectionTypeInspector;
 
 public class listDemo {
 
