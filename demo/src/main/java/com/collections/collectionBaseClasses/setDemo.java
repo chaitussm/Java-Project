@@ -28,7 +28,7 @@ public class setDemo {
     private static void demonstrateHashSet() {
         System.out.println("===== HashSet =====");
         CollectionTypeInspector.printTypeInfo(HashSet.class, Set.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("HashSet: 16 buckets, load factor 0.75 (backed by a HashMap)");
+        CollectionTypeInspector.printDefaultInitialCapacity("HashSet");
         Set<String> set = new HashSet<>();
 
         // Basic methods
@@ -59,7 +59,7 @@ public class setDemo {
     private static void demonstrateLinkedHashSet() {
         System.out.println("===== LinkedHashSet =====");
         CollectionTypeInspector.printTypeInfo(LinkedHashSet.class, Set.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("LinkedHashSet: 16 buckets, load factor 0.75 (backed by a LinkedHashMap)");
+        CollectionTypeInspector.printDefaultInitialCapacity("LinkedHashSet");
         Set<String> set = new LinkedHashSet<>();
 
         // Basic methods
@@ -87,7 +87,7 @@ public class setDemo {
     private static void demonstrateTreeSet() {
         System.out.println("===== TreeSet =====");
         CollectionTypeInspector.printTypeInfo(TreeSet.class, Set.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("TreeSet: no capacity concept (backed by a TreeMap red-black tree)");
+        CollectionTypeInspector.printDefaultInitialCapacity("TreeSet");
         Set<String> set = new TreeSet<>();
 
         // Basic methods

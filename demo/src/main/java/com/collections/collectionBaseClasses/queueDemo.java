@@ -28,7 +28,7 @@ public class queueDemo {
     private static void demonstrateLinkedListQueue() {
         System.out.println("===== LinkedList (as Queue) =====");
         CollectionTypeInspector.printTypeInfo(LinkedList.class, Queue.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("LinkedList: no capacity concept (node-based; grows/shrinks one node at a time)");
+        CollectionTypeInspector.printDefaultInitialCapacity("LinkedList");
         Queue<String> queue = new LinkedList<>();
 
         // Basic methods
@@ -56,7 +56,7 @@ public class queueDemo {
     private static void demonstrateArrayDeque() {
         System.out.println("===== ArrayDeque =====");
         CollectionTypeInspector.printTypeInfo(ArrayDeque.class, Queue.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("ArrayDeque: 16 elements (internal array capacity is always kept a power of two)");
+        CollectionTypeInspector.printDefaultInitialCapacity("ArrayDeque");
         Queue<String> queue = new ArrayDeque<>();
 
         // Basic methods
@@ -84,7 +84,7 @@ public class queueDemo {
     private static void demonstratePriorityQueue() {
         System.out.println("===== PriorityQueue =====");
         CollectionTypeInspector.printTypeInfo(PriorityQueue.class, Queue.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("PriorityQueue: 11 elements (binary heap backing array)");
+        CollectionTypeInspector.printDefaultInitialCapacity("PriorityQueue");
         Queue<String> queue = new PriorityQueue<>();
 
         // Basic methods

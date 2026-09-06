@@ -32,7 +32,7 @@ public class mapDemo {
     private static void demonstrateHashMap() {
         System.out.println("===== HashMap =====");
         CollectionTypeInspector.printTypeInfo(HashMap.class, Map.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("HashMap: 16 buckets, load factor 0.75 (resizes/doubles at 12 entries)");
+        CollectionTypeInspector.printDefaultInitialCapacity("HashMap");
         Map<String, Integer> map = new HashMap<>();
 
         // Basic methods
@@ -65,7 +65,7 @@ public class mapDemo {
     private static void demonstrateLinkedHashMap() {
         System.out.println("===== LinkedHashMap =====");
         CollectionTypeInspector.printTypeInfo(LinkedHashMap.class, Map.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("LinkedHashMap: 16 buckets, load factor 0.75 (same growth rule as HashMap)");
+        CollectionTypeInspector.printDefaultInitialCapacity("LinkedHashMap");
         Map<String, Integer> map = new LinkedHashMap<>();
 
         // Basic methods
@@ -94,7 +94,7 @@ public class mapDemo {
     private static void demonstrateTreeMap() {
         System.out.println("===== TreeMap =====");
         CollectionTypeInspector.printTypeInfo(TreeMap.class, Map.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("TreeMap: no capacity concept (red-black tree; grows one node at a time)");
+        CollectionTypeInspector.printDefaultInitialCapacity("TreeMap");
         Map<String, Integer> map = new TreeMap<>();
 
         // Basic methods
@@ -125,7 +125,7 @@ public class mapDemo {
     private static void demonstrateHashtable() {
         System.out.println("===== Hashtable (legacy) =====");
         CollectionTypeInspector.printTypeInfo(Hashtable.class, Map.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("Hashtable: 11 buckets, load factor 0.75 (doubles+1 when resizing, unlike HashMap's power-of-two)");
+        CollectionTypeInspector.printDefaultInitialCapacity("Hashtable");
         Map<String, Integer> map = new Hashtable<>();
 
         // Basic methods

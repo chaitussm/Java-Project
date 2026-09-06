@@ -35,7 +35,7 @@ public class listDemo {
     private static void demonstrateArrayList() {
         System.out.println("===== ArrayList =====");
         CollectionTypeInspector.printTypeInfo(ArrayList.class, List.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("ArrayList: 10 elements (new Object[10] backing array)");
+        CollectionTypeInspector.printDefaultInitialCapacity("ArrayList");
         List<String> list = new ArrayList<>();
 
         // Basic methods
@@ -81,7 +81,7 @@ public class listDemo {
     private static void demonstrateLinkedList() {
         System.out.println("===== LinkedList =====");
         CollectionTypeInspector.printTypeInfo(LinkedList.class, List.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("LinkedList: no capacity concept (node-based; grows/shrinks one node at a time)");
+        CollectionTypeInspector.printDefaultInitialCapacity("LinkedList");
         LinkedList<String> list = new LinkedList<>();
 
         // Basic methods
@@ -125,7 +125,7 @@ public class listDemo {
     private static void demonstrateVector() {
         System.out.println("===== Vector (legacy) =====");
         CollectionTypeInspector.printTypeInfo(Vector.class, List.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("Vector: 10 elements (doubles its size when full, unlike ArrayList's 1.5x growth)");
+        CollectionTypeInspector.printDefaultInitialCapacity("Vector");
         Vector<String> list = new Vector<>();
 
         // Basic methods
@@ -174,7 +174,7 @@ public class listDemo {
     private static void demonstrateStack() {
         System.out.println("===== Stack (legacy, extends Vector) =====");
         CollectionTypeInspector.printTypeInfo(Stack.class, Vector.class, List.class);
-        CollectionTypeInspector.printDefaultInitialCapacity("Stack: 10 elements (inherited from Vector's no-arg constructor)");
+        CollectionTypeInspector.printDefaultInitialCapacity("Stack");
         Stack<String> stack = new Stack<>();
 
         // Basic methods

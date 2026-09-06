@@ -381,6 +381,8 @@ These methods are inherited from `SequencedCollection<E>`, which `List<E>` exten
 
 A **cursor** moves through a collection and reads, and sometimes modifies, its elements. Java provides `Iterator` for all collections, `ListIterator` specifically for lists, and the legacy `Enumeration` cursor for `Vector`.
 
+For complete runnable examples, use the Ctrl+clickable section links: [`Iterator<E>`](cursors.md#1-iteratore), [`ListIterator<E>`](cursors.md#2-listiteratore), [`Enumeration<E>`](cursors.md#3-enumeratione), and [`Spliterator<E>`](cursors.md#4-spliteratore). The complete guide is [Cursors in Java Collections](cursors.md), and the source is [cursors.java](../../../demo/src/main/java/com/collections/cursors.java).
+
 | Cursor            | Obtained from         | Direction            | Can modify?                      | Definition                                                                      |
 | ----------------- | --------------------- | -------------------- | -------------------------------- | ------------------------------------------------------------------------------- |
 | `Iterator<E>`     | `list.iterator()`     | Forward only         | `remove()` only                  | Standard cursor available for every `Collection`.                               |
@@ -428,6 +430,19 @@ flowchart LR
 ```
 
 > Do not structurally modify a normal list directly while iterating over it. Use `Iterator.remove()` or `ListIterator` methods instead; otherwise a fail-fast iterator commonly throws `ConcurrentModificationException`.
+
+# Vector 
+
+1. The underlying data structure is resizeble or growable array 
+2. Insertion order is preserved 
+3. Duplicates are allowed.
+4. Heterogeneous objects are allowed
+5. null insertion is possible 
+6. It implements Serializable ,Cloneable and RandomAccess interfaces
+7. Every method present in the vector is synchronized and hence vector object is thread safe
+
+
+
 
 # Set(I) Interface
 
