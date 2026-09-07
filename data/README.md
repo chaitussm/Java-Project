@@ -6,6 +6,8 @@
   - [Files](#files)
 <!-- /TOC -->
 
+> Project data files used by the Java demonstrations and serialization examples.
+
 This folder contains project data files used by demo programs and tests.
 
 ## Folders

@@ -1,5 +1,9 @@
 # Doubly Linked List — Step by Step
 
+> A visual study guide to node links, traversal, deletion, and Java's `LinkedList` implementation.
+
+> **Preview tip:** Open this page in **Markdown Preview** (`Ctrl+Shift+V`) to follow each linked-list diagram.
+
 <!-- TOC -->
 - [Doubly Linked List — Step by Step](#doubly-linked-list--step-by-step)
   - [What is a Doubly Linked List](#what-is-a-doubly-linked-list)

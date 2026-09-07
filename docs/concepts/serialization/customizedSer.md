@@ -1,5 +1,9 @@
 # Customized Serialization: Complete Flow
 
+> A step-by-step guide to Java serialization callbacks that safely persist selected transient state.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) to follow the read/write flow and compare the two examples.
+
 <!-- TOC -->
 - [Customized Serialization: Complete Flow](#customized-serialization-complete-flow)
   - [Source and Output Locations](#source-and-output-locations)
@@ -19,6 +23,8 @@
 <!-- /TOC -->
 
 This guide explains the customized serialization example and maps it to the Java source file.
+
+---
 
 | Part                                                                | File                 | Scenario                                                                      |
 | ------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------- |

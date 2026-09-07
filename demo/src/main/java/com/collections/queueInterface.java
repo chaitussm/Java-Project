@@ -14,6 +14,6 @@ public class queueInterface extends queueDemo{
         demonstrateQueue("LinkedList");
         demonstrateQueue("ArrayDeque");
         demonstrateQueue("PriorityQueue");
-        CollectionTypeInspector.printDefaultCapacitySummary();
+        CollectionTypeInspector.printDefaultCapacitySummary("LinkedList", "ArrayDeque", "PriorityQueue");
     }
 }

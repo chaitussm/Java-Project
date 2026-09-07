@@ -1,5 +1,7 @@
 # Java E2E CI — Quick Runbook
 
+> A fast operational reference for running, checking, and troubleshooting the Java CI pipeline.
+
 <!-- TOC -->
 - [Java E2E CI — Quick Runbook](#java-e2e-ci--quick-runbook)
   - [Trigger the pipeline manually](#trigger-the-pipeline-manually)
@@ -10,6 +12,10 @@
   - [Common issues](#common-issues)
   - [Failure resolution guide](#failure-resolution-guide)
 <!-- /TOC -->
+
+    > **Preview tip:** Use Markdown Preview (`Ctrl+Shift+V`) for the checklists, tables, and flow diagrams.
+
+    ---
 
 ## Trigger the pipeline manually
 
@@ -51,11 +57,11 @@ Navigate to **Settings → Secrets and variables → Actions**.
 
 Gmail SMTP often returns `535 BadCredentials` from GitHub-hosted runners even with a valid App Password. Use Resend instead:
 
-| Secret            | Example value                          |
-| ----------------- | -------------------------------------- |
-| `RESEND_API_KEY`  | `re_xxxxxxxxxxxx`                      |
-| `RESEND_FROM`     | `Java CI <onboarding@resend.dev>`      |
-| `SMTP_TO`         | `team@example.com`                     |
+| Secret           | Example value                     |
+| ---------------- | --------------------------------- |
+| `RESEND_API_KEY` | `re_xxxxxxxxxxxx`                 |
+| `RESEND_FROM`    | `Java CI <onboarding@resend.dev>` |
+| `SMTP_TO`        | `team@example.com`                |
 
 **Setup:**
 
@@ -69,14 +75,14 @@ When `RESEND_API_KEY` is set, the workflow uses Resend and **ignores Gmail SMTP 
 
 ### Legacy: Gmail SMTP (often fails from CI)
 
-| Secret          | Example value        |
-| --------------- | -------------------- |
-| `SMTP_SERVER`   | `smtp.gmail.com`     |
-| `SMTP_PORT`     | `587`                |
-| `SMTP_USERNAME` | `you@gmail.com`      |
-| `SMTP_PASSWORD` | `abcdefghijklmnop`   |
-| `SMTP_FROM`     | `you@gmail.com`      |
-| `SMTP_TO`       | `team@example.com`   |
+| Secret          | Example value      |
+| --------------- | ------------------ |
+| `SMTP_SERVER`   | `smtp.gmail.com`   |
+| `SMTP_PORT`     | `587`              |
+| `SMTP_USERNAME` | `you@gmail.com`    |
+| `SMTP_PASSWORD` | `abcdefghijklmnop` |
+| `SMTP_FROM`     | `you@gmail.com`    |
+| `SMTP_TO`       | `team@example.com` |
 
 ### Gmail setup (required for `smtp.gmail.com`)
 
@@ -90,14 +96,14 @@ Google rejects regular account passwords with error `535-5.7.8 BadCredentials`. 
 
 ## Common issues
 
-| Symptom                    | Fix                                                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `535 BadCredentials` (Gmail) | Gmail SMTP is unreliable from GitHub Actions — add **`RESEND_API_KEY`** instead (see above)              |
-| `ENETUNREACH 2607:f8b0:...` | Runner tried Gmail over IPv6 — fixed in workflow; prefer **Resend API**                                    |
-| Email step skipped         | Add `RESEND_API_KEY` + `SMTP_TO`, or all legacy SMTP_* secrets                                             |
-| Docker push `unknown blob` | GHCR rejects BuildKit provenance manifests — workflow uses `provenance: false` on build-push                 |
-| Surefire artifact empty    | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
-| `mvn -B test` fails        | Fix compilation errors or failing unit tests in `demo/` before merging                                     |
+| Symptom                      | Fix                                                                                                        |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `535 BadCredentials` (Gmail) | Gmail SMTP is unreliable from GitHub Actions — add **`RESEND_API_KEY`** instead (see above)                |
+| `ENETUNREACH 2607:f8b0:...`  | Runner tried Gmail over IPv6 — fixed in workflow; prefer **Resend API**                                    |
+| Email step skipped           | Add `RESEND_API_KEY` + `SMTP_TO`, or all legacy SMTP_* secrets                                             |
+| Docker push `unknown blob`   | GHCR rejects BuildKit provenance manifests — workflow uses `provenance: false` on build-push               |
+| Surefire artifact empty      | No `*.xml` files found — this is normal when there are no tests; the step uses `if-no-files-found: ignore` |
+| `mvn -B test` fails          | Fix compilation errors or failing unit tests in `demo/` before merging                                     |
 
 For full failure analysis with diagrams, see [java-e2e-ci-pipeline-guide.md — Troubleshooting Known Failures](java-e2e-ci-pipeline-guide.md#troubleshooting-known-failures).
 

@@ -1,5 +1,9 @@
 # Serialization Basics — The Foundation
 
+> A foundational study guide to Java object serialization, deserialization, and field-state inspection.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) to explore the class diagram, flowchart, and linked examples.
+
 <!-- TOC -->
 - [Serialization Basics — The Foundation](#serialization-basics--the-foundation)
   - [Concept](#concept)

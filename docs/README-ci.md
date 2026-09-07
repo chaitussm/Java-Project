@@ -1,5 +1,7 @@
 # CI Documentation
 
+> A practical reference for the Java end-to-end CI workflow, its artifacts, and common recovery steps.
+
 <!-- TOC -->
 - [CI Documentation](#ci-documentation)
   - [Guides](#guides)
@@ -9,6 +11,8 @@
 <!-- /TOC -->
 
 This directory contains documentation for the Java End-to-End CI pipeline.
+
+> **Preview tip:** Open the linked guides in Markdown Preview (`Ctrl+Shift+V`) to view the workflow diagrams and tables.
 
 ## Guides
 

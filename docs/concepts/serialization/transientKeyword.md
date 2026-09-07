@@ -1,5 +1,9 @@
 # The `transient` Keyword — Basics and the `final transient` Edge Case
 
+> A practical guide to fields excluded from Java serialization and the surprising constant-inlining edge case.
+
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to view the lifecycle diagrams and comparisons.
+
 <!-- TOC -->
 - [The `transient` Keyword — Basics and the `final transient` Edge Case](#the-transient-keyword--basics-and-the-final-transient-edge-case)
   - [Part 1 — transientKeyword.java](#part-1--transientkeywordjava)

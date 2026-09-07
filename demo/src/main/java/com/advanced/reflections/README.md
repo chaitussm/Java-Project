@@ -1,5 +1,7 @@
 # Java Reflection Basics
 
+> A concise learning path for the runnable Java Reflection examples in this package.
+
 <!-- TOC -->
 - [Java Reflection Basics](#java-reflection-basics)
   - [Learning order](#learning-order)

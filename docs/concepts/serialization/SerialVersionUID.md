@@ -1,5 +1,9 @@
 # `serialVersionUID` — Why It Exists and How It Protects Deserialization
 
+> A focused study guide to serialization compatibility, explicit version identifiers, and safe deserialization.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) for the diagrams, source links, and part-by-part navigation.
+
 <!-- TOC -->
 - [`serialVersionUID` — Why It Exists and How It Protects Deserialization](#serialversionuid--why-it-exists-and-how-it-protects-deserialization)
     - [Part 1 — Concept (`serialUIDBasics.java`)](#part-1--concept-serialuidbasicsjava)

@@ -1,6 +1,7 @@
 package com.collections.list;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class listDemo {
     }
 
     private static void demonstrateVectorConstructors() {
-        List<String> source = List.of("A", "B");
+        Collection<String> source = List.of("A", "B");
         System.out.println("Vector(): " + new Vector<String>());
         System.out.println("Vector(int): capacity 20 -> " + new Vector<String>(20));
         System.out.println("Vector(int, int): capacity 20, increment 5 -> " + new Vector<String>(20, 5));
@@ -168,34 +169,34 @@ public class listDemo {
     // Vector: legacy synchronized resizable array. Same growth model as ArrayList but every method is synchronized.
     private static void demonstrateVector() {
         System.out.println("===== Vector (legacy) =====");
-        CollectionTypeInspector.printTypeInfo(Vector.class, List.class);
+        CollectionTypeInspector.printTypeInfo(Vector.class);
         CollectionTypeInspector.printDefaultInitialCapacity("Vector");
-        Vector<String> list = new Vector<>();
+        Vector<String> vector = new Vector<>();
 
         // Basic methods
-        list.add("Ram");                 // synchronized add(E), O(1) amortized
-        list.add("Shyam");
-        list.add("Geeta");
-        list.add(1, "Sita");             // synchronized add(index, E), O(n)
-        System.out.println("After add(): " + list);
+        vector.add("Ram");                 // synchronized add(E), O(1) amortized
+        vector.add("Shyam");
+        vector.add("Geeta");
+        vector.add(1, "Sita");             // synchronized add(index, E), O(n)
+        System.out.println("After add(): " + vector);
 
-        System.out.println("get(0): " + list.get(0));            // synchronized, O(1)
-        list.set(2, "Shyam-Updated");    // synchronized set(index, E), O(1)
-        System.out.println("After set(2, ...): " + list);
+        System.out.println("get(0): " + vector.get(0));            // synchronized, O(1)
+        vector.set(2, "Shyam-Updated");    // synchronized set(index, E), O(1)
+        System.out.println("After set(2, ...): " + vector);
 
-        list.remove("Sita");             // synchronized remove(Object), O(n)
-        System.out.println("After remove(\"Sita\"): " + list);
+        vector.remove("Sita");             // synchronized remove(Object), O(n)
+        System.out.println("After remove(\"Sita\"): " + vector);
 
         // Cursor 1: Iterator - forward-only, can remove() while iterating
         System.out.println("Iterator traversal:");
-        Iterator<String> iterator = list.iterator();
+        Iterator<String> iterator = vector.iterator();
         while (iterator.hasNext()) {
             System.out.println("  " + iterator.next());
         }
 
         // Cursor 2: ListIterator - bidirectional cursor
         System.out.println("ListIterator traversal (forward then backward):");
-        ListIterator<String> listIterator = list.listIterator();
+        ListIterator<String> listIterator = vector.listIterator();
         while (listIterator.hasNext()) {
             System.out.println("  forward -> " + listIterator.next());
         }
@@ -205,7 +206,7 @@ public class listDemo {
 
         // Cursor 3: legacy Enumeration - forward-only, read-only, unique to Vector
         System.out.println("Enumeration traversal (legacy):");
-        java.util.Enumeration<String> enumeration = list.elements();
+        java.util.Enumeration<String> enumeration = vector.elements();
         while (enumeration.hasMoreElements()) {
             System.out.println("  " + enumeration.nextElement());
         }

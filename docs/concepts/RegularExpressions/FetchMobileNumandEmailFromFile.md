@@ -1,5 +1,9 @@
 # Extracting Mobile Numbers and Email IDs from a File
 
+> A file-processing study guide that uses regular expressions to collect unique mobile numbers and email IDs.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`), then `Ctrl+click` a Markdown link to open its target.
+
 <!-- TOC -->
 - [Extracting Mobile Numbers and Email IDs from a File](#extracting-mobile-numbers-and-email-ids-from-a-file)
     - [Files Used](#files-used)
@@ -10,6 +14,8 @@
 <!-- /TOC -->
 
 **Source:** [FetchMobileNumandEmailFromFile.java](../../../demo/src/main/java/com/regularExpressions/FetchMobileNumandEmailFromFile.java)
+
+---
 
 This program reads mixed text from `fetchdata.txt`, finds mobile numbers and email IDs with regular expressions, stores them in collections, and writes the extracted values to `writeFetchedData.txt`.
 

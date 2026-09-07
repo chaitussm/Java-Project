@@ -9,7 +9,9 @@
 
 ## Overview
 
-This project contains Java learning materials, runnable examples, and CI pipeline documentation.
+> A hands-on Java study project covering core programs, data files, and CI/CD learning material.
+
+This project contains Java learning materials, runnable examples, and CI pipeline documentation. Explore Java fundamentals and the accompanying pipeline documentation with complete YAML steps and explanations.
 
 ## What this repository contains
 

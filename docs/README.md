@@ -6,7 +6,7 @@
   - [Quick links](#quick-links)
 <!-- /TOC -->
 
-This folder contains all project documentation organized by category.
+> A categorized study library for the Java examples, concepts, and delivery workflow.
 
 ## Folders
 

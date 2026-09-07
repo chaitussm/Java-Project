@@ -1,5 +1,9 @@
 # Cursors in Java Collections
 
+> A practical study guide to Java collection cursors, their traversal directions, and safe modification rules.
+
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to use the diagrams and clickable navigation.
+
 <!-- TOC -->
 - [Cursors in Java Collections](#cursors-in-java-collections)
   - [Source program](#source-program)

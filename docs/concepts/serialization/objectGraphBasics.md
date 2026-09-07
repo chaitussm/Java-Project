@@ -1,5 +1,9 @@
 # Object Graph Basics in Java Serialization
 
+> A visual study guide to serializing connected Java objects and restoring their reachable state.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) to view the graph illustrations and follow the read-order examples.
+
 <!-- TOC -->
 - [Object Graph Basics in Java Serialization](#object-graph-basics-in-java-serialization)
   - [Important Rule: Order Matters](#important-rule-order-matters)
@@ -11,6 +15,8 @@
 <!-- /TOC -->
 
 An object graph is the group of objects that a program writes to a serialized file. Java can write multiple objects into the same file, one after another.
+
+---
 
 ## Important Rule: Order Matters
 
