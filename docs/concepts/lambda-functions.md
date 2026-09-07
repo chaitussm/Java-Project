@@ -4,27 +4,26 @@
 
 > **Preview tip:** Open this file in **Markdown Preview** (`Ctrl+Shift+V`) to explore the diagrams and linked sections.
 
----
-
-## Quick navigation
-
-- [Source program](#source-program)
-- [What is a lambda expression?](#what-is-a-lambda-expression)
-- [Lambda syntax](#lambda-syntax)
-- [Built-in functional interfaces](#built-in-functional-interfaces)
-  - [`Predicate<T>`](#predicatet)
-  - [`Consumer<T>`](#consumert)
-  - [`Function<T, R>`](#functiont-r)
-  - [`Supplier<T>`](#suppliert)
-  - [`UnaryOperator<T>`](#unaryoperatort)
-  - [`BiFunction<T, U, R>`](#bifunctiont-u-r)
-- [Lambdas with collections](#lambdas-with-collections)
-- [Method references](#method-references)
-- [Combining lambdas](#combining-lambdas)
-- [Lambda execution flow](#lambda-execution-flow)
-- [Lambda rules and limitations](#lambda-rules-and-limitations)
-- [Anonymous class comparison](#anonymous-class-comparison)
-- [Summary](#summary)
+<!-- TOC -->
+- [Lambda Functions in Java](#lambda-functions-in-java)
+  - [Source program](#source-program)
+  - [What is a lambda expression?](#what-is-a-lambda-expression)
+  - [Lambda syntax](#lambda-syntax)
+  - [Built-in functional interfaces](#built-in-functional-interfaces)
+    - [`Predicate<T>`](#predicatet)
+    - [`Consumer<T>`](#consumert)
+    - [`Function<T, R>`](#functiont-r)
+    - [`Supplier<T>`](#suppliert)
+    - [`UnaryOperator<T>`](#unaryoperatort)
+    - [`BiFunction<T, U, R>`](#bifunctiont-u-r)
+  - [Lambdas with collections](#lambdas-with-collections)
+  - [Method references](#method-references)
+  - [Combining lambdas](#combining-lambdas)
+  - [Lambda execution flow](#lambda-execution-flow)
+  - [Lambda rules and limitations](#lambda-rules-and-limitations)
+  - [Anonymous class comparison](#anonymous-class-comparison)
+  - [Summary](#summary)
+<!-- /TOC -->
 
 ## Source program
 

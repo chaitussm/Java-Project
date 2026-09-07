@@ -6,12 +6,12 @@
 
 <!-- TOC -->
 - [Object Graph Basics in Java Serialization](#object-graph-basics-in-java-serialization)
-	- [Important Rule: Order Matters](#important-rule-order-matters)
-	- [Example Program](#example-program)
-	- [How the File Is Read](#how-the-file-is-read)
-	- [What Happens If the Order Is Wrong?](#what-happens-if-the-order-is-wrong)
-	- [Requirements](#requirements)
-	- [Current Object Graph: `dog -> cat -> rat`](#current-object-graph-dog---cat---rat)
+  - [Important Rule: Order Matters](#important-rule-order-matters)
+  - [Example Program](#example-program)
+  - [How the File Is Read](#how-the-file-is-read)
+  - [What Happens If the Order Is Wrong?](#what-happens-if-the-order-is-wrong)
+  - [Requirements](#requirements)
+  - [Current Object Graph: `dog -> cat -> rat`](#current-object-graph-dog---cat---rat)
 <!-- /TOC -->
 
 An object graph is the group of objects that a program writes to a serialized file. Java can write multiple objects into the same file, one after another.
@@ -25,7 +25,7 @@ Objects must be deserialized in exactly the same order in which they were serial
 ```text
 Serialization order:    Dog -> Cat
 Deserialization order:  Dog -> Cat
-```
+```text
 
 If the program writes a `Dog` first and a `Cat` second, the first `readObject()` must be cast to `Dog`, and the second `readObject()` must be cast to `Cat`.
 
@@ -35,19 +35,19 @@ The complete commented Java program is kept in the source file below:
 
 ```text
 demo/src/main/java/com/advanced/serialization/objectGraphs/objectGraphBasics.java
-```
+```text
 
 Open that file to study the code line by line. It creates a `dog` object containing a `cat`, which contains a `rat`, then writes and restores the complete connected graph.
 
 ## How the File Is Read
 
+```mermaid
+flowchart TD
+  A["objectGraph.ser"] --> B["readObject() -> dog d1"]
+  B --> C["d1.c -> cat c"]
+  C --> D["c.r -> rat r"]
+  D --> E["r.j = 20"]
 ```text
-objectGraph.ser
-	|
-	+-- readObject() -> dog d1 -> cat c -> rat r
-	|
-	                       -> rat.j = 20
-```
 
 ## What Happens If the Order Is Wrong?
 
@@ -55,7 +55,7 @@ Suppose the file contains:
 
 ```text
 Dog -> Cat
-```
+```text
 
 but the program tries to read:
 
@@ -67,11 +67,10 @@ The first object is still a `Dog`, so the cast is invalid and Java can throw a `
 
 The read order must match the write order:
 
-```text
-writeObject(dog) -> writeObject(cat)
-readObject()    -> readObject()
-Dog             -> Cat
-```
+| Write order | Read order | Restored type |
+| ----------- | ---------- | ------------- |
+| `writeObject(dog)` | `readObject()` | `Dog` |
+| `writeObject(cat)` | `readObject()` | `Cat` |
 
 ## Requirements
 
@@ -87,15 +86,12 @@ The program handles `IOException` for file and stream problems, and `ClassNotFou
 
 The current Java program has one root object, `dog`. Its `c` field refers to a `cat`, and the cat's `r` field refers to a `rat`:
 
+```mermaid
+flowchart TD
+  D["dog d"] --> C["cat c"]
+  C --> R["rat r"]
+  R --> J["int j = 20"]
 ```text
-dog d
- |
- +-- cat c
-	 |
-	 +-- rat r
-		 |
-		 +-- int j = 20
-```
 
 When the program executes `oos.writeObject(d)`, Java follows these reachable references and serializes the complete graph. The `dog`, `cat`, and `rat` classes must all implement `Serializable`; otherwise Java throws `NotSerializableException`.
 
@@ -106,5 +102,3 @@ The complete implementation is available at:
 ```text
 demo/src/main/java/com/advanced/serialization/objectGraphs/objectGraphBasics.java
 ```
-
-

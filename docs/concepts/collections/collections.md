@@ -66,54 +66,49 @@
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
 
-An array is an indexed collection of fixed number of homogeneous data elements 
+An array is an indexed collection of a fixed number of homogeneous data elements.
 
-The main advantage of arrays is we can represent multiple values by using single variable so that readability of the 
-code will be improved
+The main advantage of arrays is that we can represent multiple values by using a single variable, so the readability of the code will be improved.
 
-> **Limitations of arrays**
+### Limitations of arrays
 
-1. Arrays are fixed in size i.e once we create an array there is no chance of increasing or decreasing the size 
-  based on our requirement due to this, to use arrays concept compulsory we should know the size in advance which may 
-  not possible always.
-2. Array can hold only homogeneous datatype elements.
+1. Arrays are fixed in size. Once we create an array, there is no chance of increasing or decreasing the size based on our requirement. Because of this, to use the array concept we must know the size in advance, which may not always be possible.
+2. An array can hold only homogeneous data-type elements.
 
    ```java
    Student[] s = new Student[10000];
-   s[0] = new Student(); // Valid
+   s[0] = new Student(); // valid
    s[1] = new Customer(); // incompatible types | found: Customer | required: Student
-
-   // We can solve this problem by using Object type arrays.
-   Object[] a = new Object[10000];
-   a[0] = new Student(); // Valid
-   a[1] = new Customer(); // Valid
    ```
 
-3. Arrays concept is not implemented based on some standard data structures and hence ready made method support 
-  is not available, for every requirement we have to write the code explicitly which increases complexity of 
-  programming.
+   We can solve this problem by using object-type arrays:
+
+   ```java
+   Object[] a = new Object[10000];
+   a[0] = new Student(); // valid
+   a[1] = new Customer(); // valid
+   ```
+
+3. The array concept is not implemented based on a standard data structure, so ready-made method support is not available. For every requirement we have to write the code explicitly, which increases the complexity of programming.
 
 ---
 
-## Collections 
+## Collections
 
-1. Collections are growable in nature i.e based on our requirement we can increase or decrease the size.
-2. Collections can hold both homgeneous and heterogeneous elements.
-3. Every collection class is implemented based on some stanadard data structure, hence for every requirement ready made 
-  method support is available
-4.Being a programmer we are responsible to use those methods and we are not responsible to implement those methods
-5.Usually we can use collections to hold and transfer objects from one location to another location(container)
-  to provide support for this requirement every collection class by default implements serailizable and cloneable 
-  interfaces.
-6.ArrayList and Vector classes implements RandomAccess interface so that any randon element we can access with the same 
-  speed.
-## Collection Definition 
+1. Collections are growable in nature; based on our requirement we can increase or decrease the size.
+2. Collections can hold both homogeneous and heterogeneous elements.
+3. Every collection class is implemented based on some standard data structure, so ready-made method support is available for every requirement.
+4. As programmers, we are responsible for using those methods; we are not responsible for implementing them.
+5. Usually we can use collections to hold and transfer objects from one location to another location (container). To support this requirement, every collection class by default implements `Serializable` and `Cloneable` interfaces.
+6. `ArrayList` and `Vector` classes implement the `RandomAccess` interface so that any random element can be accessed with the same speed.
 
-If we want to represent a group of individual objects as a single entity then we should go for collection 
+## Collection Definition
 
-## Collection Framework 
+If we want to represent a group of individual objects as a single entity, then we should go for a collection.
 
-It contains several classes and interfaces which can be used to represent a group of individual objects as a single entity 
+## Collection Framework
+
+It contains several classes and interfaces that can be used to represent a group of individual objects as a single entity.
 
 ## 9 key interfaces of Collection Framework 
 
@@ -131,17 +126,15 @@ It contains several classes and interfaces which can be used to represent a grou
 8. `SortedMap`
 9. `NavigableMap`
 
-## Collection vs Collections 
+## Collection vs Collections
 
-Collection is a interface , if we want to represent a group of individual objects as a single entity then we should go for collection 
+`Collection` is an interface. If we want to represent a group of individual objects as a single entity, then we should go for a collection.
 
-Collections is an utility class present in java.util package to define several utility methods for collection objects 
-(like sorting, searching etc.)
+`Collections` is a utility class present in the `java.util` package used to define several utility methods for collection objects (like sorting, searching, and so on).
 
-## RandomAccess Interface 
+## RandomAccess Interface
 
-RandomAccess interface is present in java.util package and it doesnt contain any methods it is a marker interface
-where require ability will be provided automatically by the JVM 
+`RandomAccess` is present in the `java.util` package. It does not contain any methods; it is a marker interface where the required ability is provided automatically by the JVM.
 
 ---
 
@@ -154,78 +147,86 @@ where duplicates are allowed and insertion order must be preserved. Then we shou
 
 The following diagram shows the main interfaces, abstract classes, concrete implementations, and legacy classes related to `java.util.List`. A solid arrow means **extends** and a dashed arrow means **implements**.
 
-### ArrayList 
+### ArrayList
 
- Arraylist is the best choice for retrieval operation because arraylist implements RandomAccess interface 
- Arraylist is the worst choice if our frequent operation is insertion and deletion in the middle
+`ArrayList` is the best choice for retrieval operations because `ArrayList` implements the `RandomAccess` interface.
+
+`ArrayList` is the worst choice if the frequent operation is insertion and deletion in the middle.
 
 ### Difference between ArrayList and Vector
 
-| `ArrayList`                                                                                                | `Vector`                                                                                          |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| 1. Everfy method present in the ArrayList is non-synchronized.                                             | 1. Every method present in vector is synchronized.                                                |
-| 2. At atime multiple threads are allowed to operate on arraylist object and hence it is thread safe.       | 2. At atime only one thread is allowed to operate on vector object and hence it is thread safe.   |
-| 3. Relatively performance is high because threads are not required to wait to operate on arraylist object. | 3. Relatively performace is low because threads are required to wait to operate on vector Object. |
-| 4. Introduced in 1.2 v and it is non-legacy.                                                               | 4. Introduced in 1.0 v and it is legacy.                                                          |
+| Topic | `ArrayList` | `Vector` |
+| ----- | ----------- | -------- |
+| Synchronization | Every method present in `ArrayList` is non-synchronized. | Every method present in `Vector` is synchronized. |
+| Thread safety | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
+| Performance | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object. | Relatively low performance because threads are required to wait to operate on a `Vector` object. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.0 v and it is legacy. |
 
-   By default arraylist is non-synchronized but we can get synchronized version of arraylist object by using synchronizedList() method of collections class 
+By default, `ArrayList` is non-synchronized, but we can get a synchronized version of an `ArrayList` object by using the `synchronizedList()` method of the `Collections` class:
 
-> public static List synchronizedList(List l)
-  
-  refer this example : [synchornizedCollections.java](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) file in collections folder 
+```java
+public static List synchronizedList(List l)
+```
 
-  ArrayList l = new ArrayList();
-  List l1 = Collections.synchronizedList(l)
-  l is non-synchronized 
-  l1is synchronized
+Refer to this example: [synchornizedCollections.java](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) in the collections folder.
 
-  similarly we can get synchronized version of Set and Map objects by using the following methods of Collections class 
+```java
+ArrayList l = new ArrayList();
+List l1 = Collections.synchronizedList(l);
+// l is non-synchronized
+// l1 is synchronized
+```
 
-> public static Set synchronizedSet(Set s)
-> public static Map synchronizedMap(Map m)
+Similarly, we can get synchronized versions of `Set` and `Map` objects by using the following methods of the `Collections` class:
 
-### LinkedList 
+```java
+public static Set synchronizedSet(Set s)
+public static Map synchronizedMap(Map m)
+```
 
-  The underlying datastructure is doubly linked list 
-  insertion oder is preserved 
-  duplicate objects are allowed 
-  heterogeneous objects are allowed
-  null insertion is possible
-  LinkedList implements Serializable , Cloneable interfaces but not RandomAccess
-  LinkedList is the best choice if our frequent operation is insertion or deletion in the middle.
-  LinkedList is the worst choice if our frequent operation is retreival operation
+### LinkedList
 
->constructors 
- 
-   LinkedList l = new LinkedList(); creates an empty list object 
-   LinkedList l = new LinkedList(Collection c); creates an equivalent linkedlist object for the given collection
+- The underlying data structure is a doubly linked list.
+- Insertion order is preserved.
+- Duplicate objects are allowed.
+- Heterogeneous objects are allowed.
+- `null` insertion is possible.
+- `LinkedList` implements `Serializable` and `Cloneable` interfaces but not `RandomAccess`.
+- `LinkedList` is the best choice if the frequent operation is insertion or deletion in the middle.
+- `LinkedList` is the worst choice if the frequent operation is retrieval.
 
->LinkedList class specific methods 
+#### Constructors
 
- usually we can use linkedlist to develop stacks and queues to provide support for this requirement linkedlist class 
- defines the following specific methods 
+| Constructor | Description |
+| ----------- | ----------- |
+| `LinkedList l = new LinkedList();` | Creates an empty list object. |
+| `LinkedList l = new LinkedList(Collection c);` | Creates an equivalent `LinkedList` object for the given collection. |
 
->void addFirst(Object o)
->void addLast(Object o)
->Object getFirst()
->Object getLast()
->Object removeFirst()
->Object removeLast()
+#### LinkedList class-specific methods
 
+Usually we can use `LinkedList` to develop stacks and queues. To provide support for this requirement, the `LinkedList` class defines the following specific methods:
 
+| Method | Description |
+| ------ | ----------- |
+| `void addFirst(Object o)` | Inserts an element at the beginning. |
+| `void addLast(Object o)` | Inserts an element at the end. |
+| `Object getFirst()` | Returns the first element. |
+| `Object getLast()` | Returns the last element. |
+| `Object removeFirst()` | Removes and returns the first element. |
+| `Object removeLast()` | Removes and returns the last element. |
 
 ### Difference between ArrayList and LinkedList
 
-| `ArrayList`                                                                                                                                 | `LinkedList`                                                                                                                                                         |
-| ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1. ArrayList internally uses resizable array data structure.                                                                                | 1. LinkedList internally uses doubly linked list data structure.                                                                                                     |
-| 2. ArrayList is the best choice if our frequent operation is retrieval.                                                                     | 2. LinkedList is the best choice if our frequent operation is insertion or deletion in the middle.                                                                   |
-| 3. ArrayList is the worst choice if our frequent operation is insertion or deletion in the middle because it requires shifting of elements. | 3. LinkedList is the worst choice if our frequent operation is retrieval because it doesnt support index based access; it has to traverse from the beginning or end. |
-| 4. ArrayList implements RandomAccess interface hence any random element we can access with the same speed.                                  | 4. LinkedList doesnt implement RandomAccess interface hence random access performance is poor.                                                                       |
-| 5. ArrayList consumes less memory because it just holds the elements.                                                                       | 5. LinkedList consumes more memory because for every element it has to hold data, previous node reference and next node reference.                                   |
-| 6. Introduced in 1.2 v and it is non-legacy.                                                                                                | 6. Introduced in 1.2 v and it is non-legacy.                                                                                                                         |
+| Topic | `ArrayList` | `LinkedList` |
+| ----- | ----------- | ------------ |
+| Data structure | Internally uses a resizable array data structure. | Internally uses a doubly linked list data structure. |
+| Best for | Retrieval operations. | Insertion or deletion in the middle. |
+| Worst for | Insertion or deletion in the middle because it requires shifting of elements. | Retrieval because it does not support index-based access; it has to traverse from the beginning or end. |
+| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor. |
+| Memory usage | Consumes less memory because it just holds the elements. | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.2 v and it is non-legacy. |
 
-refer this example : [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) file in list folder
+Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
 
                                                 
  

@@ -4,25 +4,21 @@
 
 > **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to use the diagrams and clickable navigation.
 
----
-
-## Quick navigation
-
+<!-- TOC -->
 - [Cursors in Java Collections](#cursors-in-java-collections)
-  - [Quick navigation](#quick-navigation)
   - [Source program](#source-program)
   - [What is a cursor?](#what-is-a-cursor)
   - [1. `Iterator<E>`](#1-iteratore)
     - [Main methods](#main-methods)
     - [Internal position](#internal-position)
     - [Safe removal process](#safe-removal-process)
-- [limitations of iterator](#limitations-of-iterator)
+  - [Limitations of `Iterator`](#limitations-of-iterator)
   - [2. `ListIterator<E>`](#2-listiteratore)
     - [Main methods](#main-methods-1)
     - [Cursor position model](#cursor-position-model)
     - [`set()`, `add()`, and `remove()` example](#set-add-and-remove-example)
   - [3. `Enumeration<E>`](#3-enumeratione)
-- [limitations of enumeration](#limitations-of-enumeration)
+  - [Limitations of `Enumeration`](#limitations-of-enumeration)
   - [4. `Spliterator<E>`](#4-spliteratore)
     - [Complete lambda expression equivalent](#complete-lambda-expression-equivalent)
   - [Cursor comparison](#cursor-comparison)
@@ -30,6 +26,7 @@
   - [Complexity](#complexity)
   - [Choosing the right cursor](#choosing-the-right-cursor)
   - [Summary](#summary)
+<!-- /TOC -->
 
 ## Source program
 
@@ -104,21 +101,20 @@ Do not call `names.remove(...)` directly inside this loop. Use `iterator.remove(
 
 ## Limitations of `Iterator`
 
-1. `Enumeration` and `Iterator` move only forward; they cannot move backward.
-2. They are single-direction cursors, not bidirectional cursors.
-3. `Iterator` supports reading and removal, but not replacement or insertion of new objects.
-4. Use `ListIterator` when those additional list operations are required.
+1. By using `Enumeration` and `Iterator`, we can always move only in the forward direction; we cannot move in the backward direction.
+2. These are single-direction cursors, not bi-directional cursors.
+3. By using `Iterator`, we can perform only read and remove operations; we cannot perform replacement and addition of new objects.
+4. To overcome the above limitations, we should go for `ListIterator`.
 
 ## 2. `ListIterator<E>`
 
 `ListIterator` is a specialized cursor for `List`. It extends `Iterator` and supports movement in both directions and list modifications.
 
-`ListIterator` is a child interface of `Iterator`; therefore, all `Iterator` methods are available to a `ListIterator`.
+`ListIterator` is the child interface of `Iterator`, and hence all methods present in `Iterator` are by default available to `ListIterator`.
 
-```text
-Iterator (interface)
-  |
-  +-- ListIterator (interface)
+```mermaid
+flowchart TD
+  I["Iterator&lt;E&gt;"] --> LI["ListIterator&lt;E&gt;"]
 ```
 
 
@@ -185,9 +181,9 @@ while (enumeration.hasMoreElements()) {
 ```
 ## Limitations of `Enumeration`
 
-1. `Enumeration` applies only to legacy classes; it is not a universal cursor.
-2. It provides read-only access and cannot remove elements.
-3. Use `Iterator` to overcome these limitations.
+1. We can apply the `Enumeration` concept only for legacy classes; it is not a universal cursor.
+2. By using `Enumeration`, we can get only read access; we cannot perform remove operations.
+3. To overcome the above limitations, we should go for `Iterator`.
 
 
 For new code, prefer `Iterator` or `ListIterator` because they use the modern collection API and support safe removal where appropriate.

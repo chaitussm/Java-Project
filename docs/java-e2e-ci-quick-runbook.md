@@ -4,13 +4,13 @@
 
 <!-- TOC -->
 - [Java E2E CI — Quick Runbook](#java-e2e-ci--quick-runbook)
-	- [Trigger the pipeline manually](#trigger-the-pipeline-manually)
-	- [Check build results](#check-build-results)
-	- [Download Surefire test reports](#download-surefire-test-reports)
-	- [Pull the Docker image](#pull-the-docker-image)
-	- [Secrets setup](#secrets-setup)
-	- [Common issues](#common-issues)
-	- [Failure resolution guide](#failure-resolution-guide)
+  - [Trigger the pipeline manually](#trigger-the-pipeline-manually)
+  - [Check build results](#check-build-results)
+  - [Download Surefire test reports](#download-surefire-test-reports)
+  - [Pull the Docker image](#pull-the-docker-image)
+  - [Secrets setup](#secrets-setup)
+  - [Common issues](#common-issues)
+  - [Failure resolution guide](#failure-resolution-guide)
 <!-- /TOC -->
 
     > **Preview tip:** Use Markdown Preview (`Ctrl+Shift+V`) for the checklists, tables, and flow diagrams.

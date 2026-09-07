@@ -55,39 +55,74 @@ demo/src/main/java/com/exceptionHandling/
 
 All throwable problems in Java begin at `java.lang.Throwable`.
 
-```text
-java.lang.Object
-        |
-        v
-java.lang.Throwable
-        |
-        +-----------------------------+
-        |                             |
-        v                             v
-java.lang.Exception               java.lang.Error
-        |                             |
-        |                             +-- VirtualMachineError
-        |                             |       +-- OutOfMemoryError
-        |                             |       +-- StackOverflowError
-        |                             |
-        |                             +-- LinkageError
-        |                             +-- AssertionError
-        |                             +-- ExceptionInInitializerError
-        |
-        +-- RuntimeException
-        |       +-- ArithmeticException
-        |       +-- NullPointerException
-        |       +-- ClassCastException
-        |       +-- IllegalArgumentException
-        |       |       +-- NumberFormatException
-        |       +-- IndexOutOfBoundsException
-        |               +-- ArrayIndexOutOfBoundsException
-        |               +-- StringIndexOutOfBoundsException
-        |
-        +-- IOException
-        +-- SQLException
-        +-- InterruptedException
-        +-- ClassNotFoundException
+```mermaid
+classDiagram
+  direction TB
+
+  class Throwable {
+    <<class>>
+    +getMessage()
+    +printStackTrace()
+    +getCause()
+  }
+
+  class Exception {
+    <<class>>
+  }
+
+  class Error {
+    <<class>>
+  }
+
+  class RuntimeException {
+    <<class>>
+  }
+
+  class IOException
+  class SQLException
+  class InterruptedException
+  class ClassNotFoundException
+
+  class ArithmeticException
+  class NullPointerException
+  class ClassCastException
+  class IllegalArgumentException
+  class NumberFormatException
+  class IndexOutOfBoundsException
+  class ArrayIndexOutOfBoundsException
+  class StringIndexOutOfBoundsException
+
+  class VirtualMachineError
+  class OutOfMemoryError
+  class StackOverflowError
+  class LinkageError
+  class AssertionError
+  class ExceptionInInitializerError
+
+  Throwable <|-- Exception
+  Throwable <|-- Error
+
+  Exception <|-- RuntimeException
+  Exception <|-- IOException
+  Exception <|-- SQLException
+  Exception <|-- InterruptedException
+  Exception <|-- ClassNotFoundException
+
+  RuntimeException <|-- ArithmeticException
+  RuntimeException <|-- NullPointerException
+  RuntimeException <|-- ClassCastException
+  RuntimeException <|-- IllegalArgumentException
+  IllegalArgumentException <|-- NumberFormatException
+  RuntimeException <|-- IndexOutOfBoundsException
+  IndexOutOfBoundsException <|-- ArrayIndexOutOfBoundsException
+  IndexOutOfBoundsException <|-- StringIndexOutOfBoundsException
+
+  Error <|-- VirtualMachineError
+  VirtualMachineError <|-- OutOfMemoryError
+  VirtualMachineError <|-- StackOverflowError
+  Error <|-- LinkageError
+  Error <|-- AssertionError
+  Error <|-- ExceptionInInitializerError
 ```
 
 ## What Each Level Means
@@ -183,31 +218,15 @@ Throwable
 
 ## Exception Flow Picture
 
-```text
-Program starts
-      |
-      v
-+------------------+
-| Execute try code |
-+--------+---------+
-         |
-         | no exception
-         v
-+------------------+
-| Skip catch block |
-+--------+---------+
-         |
-         v
-+------------------+
-| Execute finally  |
-+--------+---------+
-         |
-         v
-   Continue program
-
-If exception occurs:
-
-try code --exception--> matching catch --> finally --> continue or terminate
+```mermaid
+flowchart TD
+  A["Program starts"] --> B["Execute try code"]
+  B --> C{"Exception?"}
+  C -- No --> D["Skip catch block"]
+  D --> E["Execute finally"]
+  E --> F["Continue program"]
+  C -- Yes --> G["Matching catch block"]
+  G --> E
 ```
 
 ## `try`, `catch`, and `finally`
@@ -284,17 +303,12 @@ void readFile() throws IOException {
 
 ## Call Stack Picture
 
-```text
-main()
-  |
-  +--> method1()
-          |
-          +--> method2()
-                  |
-                  +--> exception occurs
-
-JVM searches upward:
-method2 -> method1 -> main -> default JVM handler
+```mermaid
+flowchart TD
+  A["main()"] --> B["method1()"]
+  B --> C["method2()"]
+  C --> D["exception occurs"]
+  D --> E["JVM searches upward:\nmethod2 -> method1 -> main -> default handler"]
 ```
 
 If a matching `catch` is found, control moves there. If no handler is found, the JVM unwinds the stack and terminates the program.
@@ -340,11 +354,11 @@ try (BufferedReader reader = new BufferedReader(
 
 Execution picture:
 
-```text
-Open resource -> execute try body -> close resource automatically
-                                      |
-                                      v
-                              even when exception occurs
+```mermaid
+flowchart LR
+  A["Open resource"] --> B["Execute try body"]
+  B --> C["Close resource automatically"]
+  C --> D["Even when exception occurs"]
 ```
 
 This is safer and shorter than manually closing resources in `finally`.

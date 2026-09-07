@@ -105,9 +105,9 @@ String regxMobileNumber = "(0|91)?[7-9][0-9]{9}";
 String regxEmail = "[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+";
 ```
 
-| Pattern                           | Explanation                                                                                                              |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `(0\|91)?[7-9][0-9]{9}`           | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits.                         |
+| Pattern | Explanation |
+| ------- | ----------- |
+| `(0\|91)?[7-9][0-9]{9}` | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits. |
 | `[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+` | Finds an email-like value anywhere in a line. It accepts letters, digits, and common email symbols before and after `@`. |
 
 The email pattern does not use `^` and `$`. Those anchors would require the whole line to be only an email, but the input uses text such as `Email: priya.sharma@example.com`.

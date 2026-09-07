@@ -14,12 +14,13 @@
 <!-- /TOC -->
 
 **Files:**
-- [serializationBasics.java](../../../demo/src/main/java/com/advanced/serialization/serializationBasics.java) — the runnable demo.
-- [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java) — the shared parent class every other serialization demo in this package extends. It owns `serialize()`, `deserialize()`, and the file-check helpers used everywhere else.
 
----
+| File | Description |
+| ---- | ----------- |
+| [serializationBasics.java](../../../demo/src/main/java/com/advanced/serialization/serializationBasics.java) | The runnable demo |
+| [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java) | Shared parent class with `serialize()`, `deserialize()`, and file-check helpers |
 
-## 📌 Concept
+## Concept
 
 > Serialization converts an in-memory Java object into a stream of bytes; deserialization reverses that process. Only classes that implement `Serializable` (directly or via inheritance) are eligible.
 
@@ -45,9 +46,9 @@ classDiagram
     serializeBase <|-- serializationBasics
     serializeBase <|-- transientKeyword
     note for serializeBase "Every other serialization demo\nreuses these methods instead\nof rewriting stream code"
-```
+```text
 
-## 🧭 End-to-End Flow (serializationBasics.java)
+## End-to-End Flow (serializationBasics.java)
 
 ```mermaid
 flowchart TD
@@ -60,9 +61,9 @@ flowchart TD
     G --> H["Reflection walks class hierarchy\n(current class -> superclass -> ... -> Object)"]
     H --> I["Classify every declared field:\nstatic / transient+final / transient / final / normal"]
     I --> J["Print each category separately"]
-```
+```text
 
-## 🔍 Why `deserialize()` uses reflection instead of direct field access
+## Why `deserialize()` uses reflection instead of direct field access
 
 `serializeBase.deserialize()` (see [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java)) walks `getClass()` up to (but excluding) `Object`, and for every `Field` found via `getDeclaredFields()`:
 
@@ -76,9 +77,9 @@ flowchart TD
 
 This reflection-based approach is needed (instead of e.g. `this.i == restoredObject.i`) because **field values alone can't tell you a field's modifiers** — only reflection can answer "is this transient/static/final?".
 
-## ✅ Verified Output
+## Verified Output
 
-```
+```text
 Serialization file location: .../demo/sample-data/serialization/fileObject.ser
 Serialization file was created successfully.
 Normal serialized fields:
@@ -98,7 +99,7 @@ Final fields:
 - `m` → `transient final`, same story: default `0` (its initializer `= 15` never gets a chance to run because deserialization for a *serializable* class does **not** re-invoke field initializers/constructors — this is the key difference from Part 2 of [inheritanceSerializationbasics.md](./inheritanceSerializationbasics.md), where the parent is *non-serializable* and its constructor **does** re-run).
 - `x` → `static`, printed from the class itself (`field.get(null)`), never touched by (de)serialization.
 
-## 🔗 Related Files
+## Related Files
 
 - [inheritanceSerializationbasics.md](./inheritanceSerializationbasics.md) — contrasts what happens when a class in the hierarchy is *not* serializable (constructor re-runs) vs. this file's case where everything is serializable (defaults are used instead).
 - [transientKeyword.md](./transientKeyword.md) — deep dive on `transient`/`final` semantics.

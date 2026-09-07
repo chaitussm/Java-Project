@@ -10,12 +10,12 @@
   - [Execution Summary of the Program](#execution-summary-of-the-program)
   - [Important Methods of Matcher class](#important-methods-of-matcher-class)
   - [Related Files](#related-files)
-- [character classes](#character-classes)
-- [predefined character classes](#predefined-character-classes)
-- [quantifiers](#quantifiers)
-- [boundary matchers](#boundary-matchers)
-- [logical operators](#logical-operators)
-- [back references](#back-references)
+  - [Character classes](#character-classes)
+  - [Predefined character classes](#predefined-character-classes)
+  - [Quantifiers](#quantifiers)
+  - [Boundary matchers](#boundary-matchers)
+  - [Logical operators](#logical-operators)
+  - [Back references](#back-references)
 - [Regular Expressions — Pattern Class](#regular-expressions--pattern-class)
   - [split()](#split)
 - [StringTokenizer](#stringtokenizer)
@@ -24,7 +24,7 @@
   - [Real-world regex — validating a mobile number](#real-world-regex--validating-a-mobile-number)
   - [Real-world regex — validating an email Id](#real-world-regex--validating-an-email-id)
   - [Related Files](#related-files-1)
-- [Regular expression to represent YAVA language Identifiers](#regular-expression-to-represent-yava-language-identifiers)
+- [Regular expression to represent Java language identifiers](#regular-expression-to-represent-java-language-identifiers)
 - [Executing the Mobile Number Validator Locally](#executing-the-mobile-number-validator-locally)
   - [Program execution flow](#program-execution-flow)
 - [Executing the Validator in the CI Pipeline](#executing-the-validator-in-the-ci-pipeline)
@@ -156,6 +156,8 @@ Even though the actual match is only two characters long.
 
 ### `Pattern` and `Matcher` API summary
 
+`Pattern.compile(String regex)` compiles the given regular expression into a `Pattern` object.
+
 ```java
 public static Pattern compile(String regex)
 public Matcher matcher(CharSequence target)
@@ -165,12 +167,12 @@ Use a `Matcher` object to check a compiled pattern against a target string. Crea
 
 ## Important Methods of `Matcher`
 
-| Method           | Purpose                                                                   |
-| ---------------- | ------------------------------------------------------------------------- |
+| Method | Description |
+| ------ | ----------- |
 | `boolean find()` | Attempts to find the next match and returns `true` when one is available. |
-| `int start()`    | Returns the inclusive start index of the match.                           |
-| `int end()`      | Returns the exclusive end index of the match.                             |
-| `String group()` | Returns the matched text.                                                 |
+| `int start()` | Returns the inclusive start index of the match. |
+| `int end()` | Returns the exclusive end index of the match. |
+| `String group()` | Returns the matched text. |
 
 > **Note:** `Pattern` and `Matcher` are in the `java.util.regex` package and were introduced in Java 1.4.
 
@@ -179,83 +181,67 @@ Use a `Matcher` object to check a compiled pattern against a target string. Crea
 
 ## Character classes
 
->[abc] => either 'a' or 'b' or 'c'
-
->[^abc] => any character except 'a', 'b' or 'c' (negation)
-
->[a-z] => any character from 'a' to 'z' (lowercase range)
-
->[A-Z] => any character from 'A' to 'Z' (uppercase range)
-
->[a-zA-Z] => any character from 'a' to 'z' or 'A' to 'Z' (a letter, either case)
-
->[0-9] => any digit from '0' to '9'
-
->[a-d[m-p]] => union: either 'a' to 'd' or 'm' to 'p'
-
->[a-z&&[def]] => intersection: only 'd', 'e' or 'f' (letters common to both classes)
-
->[a-z&&[^bc]] => subtraction: 'a' to 'z' except 'b' and 'c'
-
->[a-z&&[^m-p]] => subtraction: 'a' to 'z' except 'm' to 'p'
+| Pattern | Meaning |
+| ------- | ------- |
+| `[abc]` | Either `a`, `b`, or `c`. |
+| `[^abc]` | Any character except `a`, `b`, or `c` (negation). |
+| `[a-z]` | Any character from `a` to `z` (lowercase range). |
+| `[A-Z]` | Any character from `A` to `Z` (uppercase range). |
+| `[a-zA-Z]` | Any character from `a` to `z` or `A` to `Z` (a letter, either case). |
+| `[0-9]` | Any digit from `0` to `9`. |
+| `[a-d[m-p]]` | Union: either `a` to `d` or `m` to `p`. |
+| `[a-z&&[def]]` | Intersection: only `d`, `e`, or `f` (letters common to both classes). |
+| `[a-z&&[^bc]]` | Subtraction: `a` to `z` except `b` and `c`. |
+| `[a-z&&[^m-p]]` | Subtraction: `a` to `z` except `m` to `p`. |
 
 ## Predefined character classes
 
->. => any character (except line terminator)
-
->\d => any digit, same as [0-9]
-
->\D => any non-digit, same as [^0-9]
-
->\s => any whitespace character (space, tab, newline), same as [ \t\n\x0B\f\r]
-
->\S => any non-whitespace character, same as [^\s]
-
->\w => any word character, same as [a-zA-Z_0-9]
-
->\W => any non-word character, same as [^\w]
+| Pattern | Meaning |
+| ------- | ------- |
+| `.` | Any character (except line terminator). |
+| `\d` | Any digit, same as `[0-9]`. |
+| `\D` | Any non-digit, same as `[^0-9]`. |
+| `\s` | Any whitespace character (space, tab, newline), same as `[ \t\n\x0B\f\r]`. |
+| `\S` | Any non-whitespace character, same as `[^\s]`. |
+| `\w` | Any word character, same as `[a-zA-Z_0-9]`. |
+| `\W` | Any non-word character, same as `[^\w]`. |
 
 ## Quantifiers
 
->X? => X occurs zero or one time (optional)
-
->X* => X occurs zero or more times
-
->X+ => X occurs one or more times
-
->X{n} => X occurs exactly n times
-
->X{n,} => X occurs at least n times
-
->X{n,m} => X occurs at least n but not more than m times
+| Pattern | Meaning |
+| ------- | ------- |
+| `X?` | `X` occurs zero or one time (optional). |
+| `X*` | `X` occurs zero or more times. |
+| `X+` | `X` occurs one or more times. |
+| `X{n}` | `X` occurs exactly `n` times. |
+| `X{n,}` | `X` occurs at least `n` times. |
+| `X{n,m}` | `X` occurs at least `n` but not more than `m` times. |
 
 ## Boundary matchers
 
->^ => matches at the beginning of a line
-
->$ => matches at the end of a line
-
->\b => matches a word boundary
-
->\B => matches a non-word boundary
-
->\A => matches at the beginning of the input
-
->\Z => matches at the end of the input, before the final line terminator (if any)
-
->\z => matches at the very end of the input
+| Pattern | Meaning |
+| ------- | ------- |
+| `^` | Matches at the beginning of a line. |
+| `$` | Matches at the end of a line. |
+| `\b` | Matches a word boundary. |
+| `\B` | Matches a non-word boundary. |
+| `\A` | Matches at the beginning of the input. |
+| `\Z` | Matches at the end of the input, before the final line terminator (if any). |
+| `\z` | Matches at the very end of the input. |
 
 ## Logical operators
 
->XY => X followed by Y (concatenation)
-
->X|Y => either X or Y (alternation)
-
->(X) => X as a capturing group
+| Pattern | Meaning |
+| ------- | ------- |
+| `XY` | `X` followed by `Y` (concatenation). |
+| `X\|Y` | Either `X` or `Y` (alternation). |
+| `(X)` | `X` as a capturing group. |
 
 ## Back references
 
->\n => matches whatever was matched by the n-th capturing group (e.g. \1 refers to group 1)
+| Pattern | Meaning |
+| ------- | ------- |
+| `\n` | Matches whatever was matched by the n-th capturing group (for example, `\1` refers to group 1). |
 
 ---
 
@@ -329,17 +315,12 @@ flowchart TD
 
 ## Key methods
 
-> `StringTokenizer(String input)`
-Creates a tokenizer using the **default delimiters** — space, tab, newline, carriage return, form feed.
-
-> `StringTokenizer(String input, String delimiter)`
-Creates a tokenizer using a **custom delimiter** string.
-
-> `boolean hasMoreTokens()`
-Returns `true` if there are still tokens left to read.
-
-> `String nextToken()`
-Returns the next token and advances the tokenizer.
+| Method | Description |
+| ------ | ----------- |
+| `StringTokenizer(String input)` | Creates a tokenizer using the **default delimiters** — space, tab, newline, carriage return, form feed. |
+| `StringTokenizer(String input, String delimiter)` | Creates a tokenizer using a **custom delimiter** string. |
+| `boolean hasMoreTokens()` | Returns `true` if there are still tokens left to read. |
+| `String nextToken()` | Returns the next token and advances the tokenizer. |
 
 ### Example — default delimiter
 
@@ -428,10 +409,10 @@ number and email regex design notes.
 
 Allowed characters are:
 
-1. a-z , A-Z, 0-9, #, $
-2. length of identifier should be atleast 2 
-3. the first character should be lower case alphabet symbol from a to k 
-4. second character should be a digit divisible by 3 (0,3,6,9)
+1. `a-z`, `A-Z`, `0-9`, `#`, `$`
+2. Length of the identifier should be at least 2.
+3. The first character should be a lowercase alphabet symbol from `a` to `k`.
+4. The second character should be a digit divisible by 3 (`0`, `3`, `6`, `9`).
 
 ```text
 [a-k][0369][a-zA-Z0-9#$]*

@@ -37,25 +37,26 @@ Java source file:
 
 ```text
 demo/src/main/java/com/advanced/serialization/customizedSerialization/customizedSer.java
-```
+```text
 
 Serialized output file created by the current program:
 
 ```text
 demo/sample-data/serialization/custom,ser
-```
+```text
 
 The comma in `custom,ser` is part of the current filename. The extension is only a naming convention; `.ser` or `.dat` would also work.
 
 ## Classes Used
 
-```text
-customizedSer
-      |
-      +-- account
-            |
-            +-- username = "Rama"
-            +-- password = "Sita"       transient
+```mermaid
+classDiagram
+  class customizedSer
+  class account {
+    +String username = "Rama"
+    +transient String password = "Sita"
+  }
+  customizedSer --> account : contains
 ```
 
 The `account` class extends `serializeBase`, so it inherits the common serialization helper methods. It also implements customized serialization callbacks named `writeObject()` and `readObject()`.
@@ -67,65 +68,29 @@ Normally, Java's default serialization writes non-transient fields and skips tra
 ```java
 String username = "Rama";       // Written normally
 transient String password = "Sita"; // Skipped normally
-```
+```text
 
 The password is marked `transient` so its plain value is not written automatically. The custom callback writes a transformed representation instead.
 
 ## Complete Execution Flow
 
+```mermaid
+flowchart TD
+  A["main()"] --> B["Create account a1"]
+  B --> C["Open custom,ser for writing"]
+  C --> D["writeObject(a1) called by JVM"]
+  D --> E["defaultWriteObject()\nusername written, password skipped"]
+  D --> F["encryptPwd(password)\n'Sita' -> 'U2l0YQ=='"]
+  F --> G["os.writeObject(encryptedText)"]
+  G --> H["Close output streams"]
+  H --> I["Open custom,ser for reading"]
+  I --> J["readObject() called by JVM"]
+  J --> K["defaultReadObject()\nusername restored, password null"]
+  J --> L["is.readObject() -> 'U2l0YQ=='"]
+  L --> M["decryptPwd() -> 'Sita'"]
+  M --> N["password assigned restored value"]
+  N --> O["Print: Rama===Sita"]
 ```text
-main()
-  |
-  v
-Create account a1
-  |
-  v
-Open custom,ser for writing
-  |
-  v
-writeObject(a1) is called by the JVM
-  |
-  +--> defaultWriteObject()
-  |       |
-  |       +--> username is written
-  |       +--> password is skipped because it is transient
-  |
-  +--> encryptPwd(password)
-  |       |
-  |       +--> "Sita" becomes Base64 text "U2l0YQ=="
-  |
-  +--> os.writeObject(encryptedText)
-          |
-          +--> transformed password is written manually
-  |
-  v
-Close output streams
-  |
-  v
-Open custom,ser for reading
-  |
-  v
-readObject() is called by the JVM
-  |
-  +--> defaultReadObject()
-  |       |
-  |       +--> username is restored as "Rama"
-  |       +--> password remains null because it was transient
-  |
-  +--> is.readObject()
-  |       |
-  |       +--> read "U2l0YQ=="
-  |
-  +--> decryptPwd(encryptedpwd)
-          |
-          +--> "U2l0YQ==" becomes "Sita"
-  |
-  v
-password is assigned the restored value
-  |
-  v
-Print: Rama===Sita
-```
 
 ## Serialization Phase
 
@@ -133,7 +98,7 @@ The main method creates the object:
 
 ```java
 account a1 = new account();
-```
+```text
 
 Then it opens the output streams and writes the object:
 
@@ -148,7 +113,7 @@ When `oos.writeObject(a1)` runs, Java automatically looks for this private callb
 
 ```java
 private void writeObject(ObjectOutputStream os)
-```
+```text
 
 The callback is not called directly by `main()`. Java's serialization mechanism calls it automatically.
 
@@ -156,7 +121,7 @@ The callback is not called directly by `main()`. Java's serialization mechanism 
 
 ```java
 os.defaultWriteObject();
-```
+```text
 
 This asks Java to perform its normal serialization behavior for the current object:
 
@@ -168,7 +133,7 @@ After that, the program handles the password manually:
 ```java
 String encryptedText = encryptPwd(password);
 os.writeObject(encryptedText);
-```
+```text
 
 The transformed password must be explicitly written because `password` itself was excluded by `transient`.
 
@@ -178,7 +143,7 @@ In the current `serializeBase` implementation, `encryptPwd()` uses Base64 encodi
 
 ```java
 Base64.getEncoder().encodeToString(password.getBytes())
-```
+```text
 
 Base64 is not encryption. It is an encoding technique that can be decoded by anyone.
 
@@ -186,7 +151,7 @@ Base64 is not encryption. It is an encoding technique that can be decoded by any
 Original text:  Sita
 Encoded text:  U2l0YQ==
 Decoded text:  Sita
-```
+```text
 
 This example is useful for learning customized serialization and callback methods, but real password protection should use a proper password-hashing or encryption design.
 
@@ -199,13 +164,13 @@ try (FileInputStream fos = new FileInputStream(filename);
      ObjectInputStream ois = new ObjectInputStream(fos)) {
     account a2 = (account) ois.readObject();
 }
-```
+```text
 
 When `ois.readObject()` runs, Java automatically calls:
 
 ```java
 private void readObject(ObjectInputStream is)
-```
+```text
 
 The callback performs the reverse custom process.
 
@@ -213,26 +178,26 @@ The callback performs the reverse custom process.
 
 ```java
 is.defaultReadObject();
-```
+```text
 
 This restores the fields that were written by `defaultWriteObject()`:
 
 ```text
 username -> "Rama"
 password -> not restored because it was transient
-```
+```text
 
 Then the manually written transformed password is read:
 
 ```java
 String encryptedpwd = (String) is.readObject();
-```
+```text
 
 Finally, the value is decoded and assigned:
 
 ```java
 password = decryptPwd(encryptedpwd);
-```
+```text
 
 ## Why the Write and Read Order Must Match
 
@@ -241,14 +206,14 @@ The custom stream contains data in this order:
 ```text
 defaultWriteObject() data
 transformed password
-```
+```text
 
 The read callback must consume data in the same order:
 
 ```text
 defaultReadObject() data
 transformed password
-```
+```text
 
 If `is.readObject()` is called before `defaultReadObject()`, or if the extra password value is not written, the stream becomes unbalanced and deserialization can fail.
 
@@ -259,7 +224,7 @@ Encoded: U2l0YQ==
 Encrypted (Base64): U2l0YQ==
 Decoded: Sita
 Rama===Sita
-```
+```text
 
 The final line proves that:
 
@@ -313,7 +278,7 @@ The central lesson is:
 
 **File:** [normalSer.java](../../../demo/src/main/java/com/advanced/serialization/customizedSerialization/normalSer.java)
 
-### 📌 Concept
+### Concept
 
 > This is the "before" picture: `normalAccount` has the exact same shape as `account` (a normal `username` field and a `transient password` field) but defines **no** `writeObject()`/`readObject()` callbacks. Default serialization silently drops the transient field — there is no way to recover it after deserialization.
 
@@ -324,9 +289,9 @@ flowchart TD
     C --> D["ois.readObject()\n-> normalAccount a2"]
     D --> E["a2.username = 'Shiva' (restored)\na2.password = null (never written, never restored)"]
     E --> F["print a2.username + '-----' + a2.password"]
-```
+```text
 
-### ✅ Verified Output
+### Verified Output
 ```
 Shiva-----null
 ```

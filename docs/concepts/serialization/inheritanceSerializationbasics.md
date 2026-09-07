@@ -38,7 +38,7 @@ This doc covers **two complementary scenarios** of inheritance + serialization, 
 
 **File:** [inheritanceSerOne.java](../../../demo/src/main/java/com/advanced/serialization/inheritanceSerialization/inheritanceSerOne.java)
 
-### 📌 Concept
+### Concept
 
 > **If a parent class implements `Serializable`, every child class is serializable automatically — even if the child class does not implement `Serializable` itself.**
 
@@ -65,11 +65,11 @@ classDiagram
     Serializable <|.. engine : implements
     engine <|-- tata : extends
     note for tata "tata never declares\n'implements Serializable'\nbut inherits it from engine"
-```
+```text
 
 ---
 
-## 🧭 End-to-End Flow
+## End-to-End Flow
 
 ```mermaid
 flowchart TD
@@ -86,22 +86,22 @@ flowchart TD
     G --> H
     J --> L["main() ends"]
     K --> L
-```
+```text
 
 ---
 
-## 🔍 Step-by-Step Breakdown
+## Step-by-Step Breakdown
 
 ### 1. Object creation
 ```java
 tata a1 = new tata();
-```
+```text
 - `a1` is a `tata` object containing **both** `rpm` (inherited from `engine`) and `cc` (declared in `tata`).
 
 ### 2. Resolve the target file
 ```java
 String filename = sampleDataPath("serialization","engine.ser").toString();
-```
+```text
 - `sampleDataPath(...)` (inherited from `fileBasicMethods` via `serializeBase`) resolves to:
   `demo/sample-data/serialization/engine.ser` (or `sample-data/serialization/engine.ser` if run from repo root).
 
@@ -123,7 +123,7 @@ try (FileInputStream fis = new FileInputStream(filename);
     tata a2 = (tata) ois.readObject();
     System.out.println(a2.rpm + "-----" + a2.cc);
 }
-```
+```text
 - `readObject()` rebuilds a brand-new `tata` instance from the bytes, restoring both `rpm` and `cc`.
 - Cast back to `tata` since `readObject()` returns `Object`.
 
@@ -152,17 +152,17 @@ sequenceDiagram
     OIS->>A2: reconstruct tata(rpm=100, cc=20)
     OIS-->>Main: return a2 (cast to tata)
     Main->>Main: print "100-----20"
-```
+```text
 
 ---
 
-## ✅ Expected Output
+## Expected Output
 
 ```
 100-----20
 ```
 
-## ⚠️ Things That Would Break This
+## Things That Would Break This
 
 | Change                                                            | Effect                                                                                                                                        |
 | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -173,7 +173,7 @@ sequenceDiagram
 
 ---
 
-## 🔗 Related Files
+## Related Files
 
 - [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java) — parent class providing `sampleDataPath()`, `serialize()`, and reflection-based helpers.
 - [fileBasicMethods.java](../../../demo/src/main/java/com/javaIOPackage/baseMethodsInFileOperations/fileBasicMethods.java) — defines `sampleDataPath(String...)`.
@@ -185,7 +185,7 @@ sequenceDiagram
 
 **File:** [inheritanceSerTwo.java](../../../demo/src/main/java/com/advanced/serialization/inheritanceSerialization/inheritanceSerTwo.java)
 
-### 📌 Concept
+### Concept
 
 > **A child class can be serialized even if its parent does NOT implement `Serializable` — but only the child's own state survives the round-trip. The parent's state is always rebuilt from scratch by re-running the parent's no-arg constructor (and its field initializers / instance blocks) during deserialization.**
 
@@ -212,11 +212,11 @@ classDiagram
     Serializable <|.. concentrate : implements
     protein <|-- concentrate : extends
     note for protein "NOT Serializable\nits no-arg constructor\nwill be re-invoked on deserialize"
-```
+```text
 
 ---
 
-### 🧭 End-to-End Flow
+### End-to-End Flow
 
 ```mermaid
 flowchart TD
@@ -231,17 +231,17 @@ flowchart TD
     I --> J["JVM restores concentrate's serialized bytes\n-> blendContent = 200 (from stream, NOT constructor)"]
     J --> K["Print co2.proteinContent + '-----' + co2.blendContent"]
     K --> L["main() ends"]
-```
+```text
 
 ---
 
-### 🔍 Step-by-Step Breakdown (point by point)
+### Step-by-Step Breakdown (point by point)
 
 #### 1. Parent does NOT need to be `Serializable` for the child to be serializable
 ```java
 class protein { ... }                                   // no "implements Serializable"
 class concentrate extends protein implements Serializable { ... }
-```
+```text
 - Only `concentrate` needs to implement `Serializable`. Serializability does **not** need to flow from parent → child here; the child declares it itself.
 
 #### 2. What happens at SERIALIZATION time
@@ -250,7 +250,7 @@ concentrate co = new concentrate();
 co.proteinContent = 100;   // inherited field, belongs to non-serializable protein
 co.blendContent  = 200;    // own field, belongs to serializable concentrate
 oos.writeObject(co);
-```
+```text
 - `ObjectOutputStream` only writes fields declared in `concentrate` (the serializable part of the hierarchy).
 - `proteinContent` (declared in the **non-serializable** `protein`) is **skipped entirely** — its current value of `100` is never written to `concentrate.ser`. Only `blendContent = 200` goes into the stream.
 
@@ -303,11 +303,11 @@ sequenceDiagram
     OIS->>Disk: read blendContent bytes
     OIS-->>Main: return concentrate co2 (proteinContent=25, blendContent=200)
     Main->>Main: print "25-----200"
-```
+```text
 
 ---
 
-### ✅ Expected Output (verified by running the program)
+### Expected Output (verified by running the program)
 
 ```
 protein class constructor
@@ -316,14 +316,14 @@ protein class constructor
 25-----200
 ```
 
-### 📊 Serialized vs. Reconstructed — at a glance
+### Serialized vs. Reconstructed — at a glance
 
 | Field            | Declared in   | Serializable class? | Value before serialize | Written to stream? | Value after deserialize | How it was restored                                       |
 | ---------------- | ------------- | ------------------- | ---------------------- | ------------------ | ----------------------- | --------------------------------------------------------- |
 | `proteinContent` | `protein`     | ❌ No                | `100`                  | ❌ No               | `25`                    | `protein`'s no-arg constructor + field initializer re-run |
 | `blendContent`   | `concentrate` | ✅ Yes               | `200`                  | ✅ Yes              | `200`                   | Read directly from the serialized bytes                   |
 
-### ⚠️ Things That Would Break This
+### Things That Would Break This
 
 | Change                                                                                          | Effect                                                                                                              |
 | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |

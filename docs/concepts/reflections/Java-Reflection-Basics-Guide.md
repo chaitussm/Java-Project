@@ -134,27 +134,21 @@ It demonstrates three important ideas:
 
 ## Reflection Picture
 
-```text
-+-----------------------+
-| Java class or object  |
-+-----------+-----------+
-            |
-            | Reflection API
-            v
-+-----------------------+
-| Class<?>               |
-| Field                 |
-| Constructor           |
-| Method                |
-| Modifier              |
-| Array                 |
-+-----------+-----------+
-            |
-            v
-+-----------------------+
-| Inspect or use data   |
-| at runtime            |
-+-----------------------+
+```mermaid
+flowchart TD
+  A["Java class or object"] --> B["Reflection API"]
+  B --> C["Class&lt;?&gt;"]
+  B --> D["Field"]
+  B --> E["Constructor"]
+  B --> F["Method"]
+  B --> G["Modifier"]
+  B --> H["Array"]
+  C --> I["Inspect or use data at runtime"]
+  D --> I
+  E --> I
+  F --> I
+  G --> I
+  H --> I
 ```
 
 ## 1. The Class Object
