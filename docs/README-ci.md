@@ -2,16 +2,20 @@
 
 <!-- TOC -->
 - [CI Documentation](#ci-documentation)
-	- [Workflow file](#workflow-file)
-	- [Pipeline stages](#pipeline-stages)
+  - [Guides](#guides)
+  - [Workflow file](#workflow-file)
+  - [Pipeline stages](#pipeline-stages)
+  - [Known failure resolutions](#known-failure-resolutions)
 <!-- /TOC -->
 
 This directory contains documentation for the Java End-to-End CI pipeline.
 
-| File                                                           | Description                                                                               |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [java-e2e-ci-pipeline-guide.md](java-e2e-ci-pipeline-guide.md) | Full pipeline design, job details, secrets reference, Docker tagging, and **troubleshooting with diagrams** |
-| [java-e2e-ci-quick-runbook.md](java-e2e-ci-quick-runbook.md)   | Day-to-day runbook: triggering runs, pulling images, configuring secrets, quick troubleshooting               |
+## Guides
+
+| File | Description |
+| ---- | ----------- |
+| [java-e2e-ci-pipeline-guide.md](java-e2e-ci-pipeline-guide.md) | Full pipeline design, job details, secrets reference, Docker tagging, and troubleshooting with diagrams |
+| [java-e2e-ci-quick-runbook.md](java-e2e-ci-quick-runbook.md) | Day-to-day runbook: triggering runs, pulling images, configuring secrets, quick troubleshooting |
 
 ## Workflow file
 
@@ -19,13 +23,17 @@ This directory contains documentation for the Java End-to-End CI pipeline.
 
 ## Pipeline stages
 
-```
-build-test  →  docker  →  notify
+```mermaid
+flowchart LR
+  A["build-test"] --> B["docker"]
+  B --> C["notify"]
 ```
 
-- **build-test**: Maven build and unit tests; uploads Surefire XML reports as a GitHub Actions artifact.
-- **docker**: Builds with `docker/build-push-action@v6` (`provenance: false`); pushes to GHCR on `push` events only.
-- **notify**: Sends email via **Resend API** (preferred) or Gmail SMTP fallback; attaches the HTML execution report.
+| Stage | Description |
+| ----- | ----------- |
+| **build-test** | Maven build and unit tests; uploads Surefire XML reports as a GitHub Actions artifact |
+| **docker** | Builds with `docker/build-push-action@v6` (`provenance: false`); pushes to GHCR on `push` events only |
+| **notify** | Sends email via **Resend API** (preferred) or Gmail SMTP fallback; attaches the HTML execution report |
 
 ## Known failure resolutions
 

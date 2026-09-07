@@ -1,9 +1,7 @@
 # Cursors in Java Collections
 
-## Quick navigation
-
+<!-- TOC -->
 - [Cursors in Java Collections](#cursors-in-java-collections)
-  - [Quick navigation](#quick-navigation)
   - [Source program](#source-program)
   - [What is a cursor?](#what-is-a-cursor)
   - [1. `Iterator<E>`](#1-iteratore)
@@ -24,6 +22,7 @@
   - [Complexity](#complexity)
   - [Choosing the right cursor](#choosing-the-right-cursor)
   - [Summary](#summary)
+<!-- /TOC -->
 
 ## Source program
 

@@ -1,5 +1,20 @@
 # Doubly Linked List — Step by Step
 
+<!-- TOC -->
+- [Doubly Linked List — Step by Step](#doubly-linked-list--step-by-step)
+  - [What is a Doubly Linked List](#what-is-a-doubly-linked-list)
+  - [Structure](#structure)
+  - [Step-by-Step Example: Building the list [10, 20, 30]](#step-by-step-example-building-the-list-10-20-30)
+    - [Step 1 — Insert 10 (empty list)](#step-1--insert-10-empty-list)
+    - [Step 2 — Insert 20 at the end](#step-2--insert-20-at-the-end)
+    - [Step 3 — Insert 30 at the end](#step-3--insert-30-at-the-end)
+    - [Step 4 — Traverse forward](#step-4--traverse-forward)
+    - [Step 5 — Traverse backward](#step-5--traverse-backward)
+    - [Step 6 — Delete the middle node (20)](#step-6--delete-the-middle-node-20)
+  - [Time Complexity Summary](#time-complexity-summary)
+  - [Java's `LinkedList` as a Doubly Linked List](#javas-linkedlist-as-a-doubly-linked-list)
+<!-- /TOC -->
+
 ## What is a Doubly Linked List
 
 A doubly linked list is a linear data structure made up of **nodes**, where each node stores:

@@ -19,7 +19,7 @@ Objects must be deserialized in exactly the same order in which they were serial
 ```text
 Serialization order:    Dog -> Cat
 Deserialization order:  Dog -> Cat
-```
+```text
 
 If the program writes a `Dog` first and a `Cat` second, the first `readObject()` must be cast to `Dog`, and the second `readObject()` must be cast to `Cat`.
 
@@ -29,7 +29,7 @@ The complete commented Java program is kept in the source file below:
 
 ```text
 demo/src/main/java/com/advanced/serialization/objectGraphs/objectGraphBasics.java
-```
+```text
 
 Open that file to study the code line by line. It creates a `dog` object containing a `cat`, which contains a `rat`, then writes and restores the complete connected graph.
 
@@ -41,7 +41,7 @@ flowchart TD
   B --> C["d1.c -> cat c"]
   C --> D["c.r -> rat r"]
   D --> E["r.j = 20"]
-```
+```text
 
 ## What Happens If the Order Is Wrong?
 
@@ -49,7 +49,7 @@ Suppose the file contains:
 
 ```text
 Dog -> Cat
-```
+```text
 
 but the program tries to read:
 
@@ -85,7 +85,7 @@ flowchart TD
   D["dog d"] --> C["cat c"]
   C --> R["rat r"]
   R --> J["int j = 20"]
-```
+```text
 
 When the program executes `oos.writeObject(d)`, Java follows these reachable references and serializes the complete graph. The `dog`, `cat`, and `rat` classes must all implement `Serializable`; otherwise Java throws `NotSerializableException`.
 

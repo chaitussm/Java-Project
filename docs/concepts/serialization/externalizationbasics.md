@@ -13,7 +13,7 @@
 
 **File:** [externalizationbasics.java](../../../demo/src/main/java/com/advanced/serialization/externalization/externalizationbasics.java)
 
-## 📌 Concept
+## Concept
 
 > **Serialization gives the JVM full control over what gets saved — always the whole object. Externalization gives the programmer full control instead, so only the required part of the object needs to be saved, which can improve performance.**
 
@@ -39,13 +39,13 @@ classDiagram
     Serializable <|-- Externalizable : extends
     note for Serializable "No methods.\nJVM decides everything automatically."
     note for Externalizable "Programmer decides everything\nvia these two methods."
-```
+```text
 
 > `Externalizable` actually **extends** `Serializable` — every `Externalizable` object is still a `Serializable` object, but it overrides the JVM's automatic behavior with its own explicit read/write logic.
 
 ---
 
-## 🧭 Why Externalization Exists — The Problem It Solves
+## Why Externalization Exists — The Problem It Solves
 
 ```mermaid
 flowchart TD
@@ -57,11 +57,11 @@ flowchart TD
     F["Class implements Externalizable"] --> G["Programmer writes writeExternal()\nand readExternal() explicitly"]
     G --> H["Only the chosen fields/data\nare written and read"]
     H --> I["Smaller, purpose-built stream\n-> better performance"]
-```
+```text
 
 ---
 
-## 🔍 How It Works — The Two Callback Methods
+## How It Works — The Two Callback Methods
 
 ```mermaid
 sequenceDiagram
@@ -86,7 +86,7 @@ sequenceDiagram
 
 ---
 
-## ⚠️ Important Rule: Public No-Arg Constructor Required
+## Important Rule: Public No-Arg Constructor Required
 
 Unlike normal serialization (which can rebuild an object without ever calling its constructor), **`Externalizable` classes are re-constructed using the public no-arg constructor first**, and only then does `readExternal()` populate the fields.
 
@@ -104,7 +104,7 @@ flowchart LR
 
 ---
 
-## ✅ Summary
+## Summary
 
 - Both interfaces exist since Java 1.1.
 - `Serializable` = automatic, all-or-nothing, JVM-controlled.
@@ -113,7 +113,7 @@ flowchart LR
 
 ---
 
-## 🧪 Worked Example — Complete Execution Summary
+## Worked Example — Complete Execution Summary
 
 The class fields are `String name`, `int number`, `int age`, and the demo runs:
 
@@ -122,7 +122,7 @@ externalizationbasics eb = new externalizationbasics("durga", 123, 25);
 oos.writeObject(eb);
 ...
 externalizationbasics eb2 = (externalizationbasics) ois.readObject();
-```
+```text
 
 ```mermaid
 flowchart TD
@@ -136,7 +136,7 @@ flowchart TD
     H --> I["JVM then calls eb2.readExternal(in)\n-> name = in.readObject()\n-> number = in.readInt()\n-> age = in.readInt()"]
     I --> J["eb2 now holds the restored values\nin the SAME order they were written"]
     J --> K["print eb2.name + '-----' + eb2.number + '-----' + eb2.age"]
-```
+```text
 
 ```mermaid
 sequenceDiagram
@@ -159,7 +159,7 @@ sequenceDiagram
     EB2->>Disk: readObject()->name, readInt()->number, readInt()->age
     OIS-->>Main: return eb2
     Main->>Main: print "durga-----123-----25"
-```
+```text
 
 ```mermaid
 stateDiagram-v2
@@ -171,7 +171,7 @@ stateDiagram-v2
         so JVM can't skip straight to Populated.
         It must pass through Blank first.
     end note
-```
+```text
 
 ### 🔑 The key deserialization rule (why the no-arg constructor runs)
 
@@ -187,7 +187,7 @@ durga-----123-----25
 - `"Default constructor"` → printed a second time, purely because `ObjectInputStream.readObject()` had to invoke the **no-arg constructor** to build `eb2` before `readExternal()` could fill it in.
 - `durga-----123-----25` → proves `readExternal()` correctly restored all three fields, in the same order `writeExternal()` wrote them.
 
-### ⚠️ What would break this
+### What would break this
 | Change                                                                     | Effect                                                                                                                                                                                                   |
 | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Remove the public no-arg constructor                                       | `readObject()` throws `InvalidClassException` — the JVM has no way to create the blank object before calling `readExternal()`.                                                                           |
@@ -198,7 +198,7 @@ durga-----123-----25
 
 ---
 
-## 📊 Serializable vs. Externalizable — Final Comparison
+## Serializable vs. Externalizable — Final Comparison
 
 | Serializable                                                                                                                            | Externalizable                                                                                                          |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
