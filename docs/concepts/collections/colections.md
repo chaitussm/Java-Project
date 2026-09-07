@@ -51,165 +51,162 @@
     - [Example output](#example-output)
 <!-- /TOC -->
 
-An array is an indexed collection of fixed number of homogeneous data elements 
+An array is an indexed collection of a fixed number of homogeneous data elements.
 
-The main advantage of arrays is we can represent multiple values by using single variable so that readability of the 
-code will be improved
+The main advantage of arrays is that we can represent multiple values by using a single variable, so the readability of the code will be improved.
 
->limitations of arrays 
+### Limitations of arrays
 
-1.Arrays are fixed in size i.e once we create an array there is no chance of increasing or decreasing the size 
-  based on our requirement due to this, to use arrays concept compulsory we should know the size in advance which may 
-  not possible always.
-2.Array can hold only homogeneous datatype elements 
-  Student[] s = new Student[10000];
-  s[0] = new Student(); valid 
-  s[1] = new Customer(); 
-  incompatible types | found : customer | required : Student
-  We can solve this problem by using object type arrays 
-  Object[] a = new Object[10000];
-  a[0] = new Student(); |Valid
-  a[1] = new Customer();|Valid
-3.Arrays concept is not implemented based on some standard data structures and hence ready made method support 
-  is not available, for every requirement we have to write the code explicitly which increases complexity of 
-  programming.
+1. Arrays are fixed in size. Once we create an array, there is no chance of increasing or decreasing the size based on our requirement. Because of this, to use the array concept we must know the size in advance, which may not always be possible.
+2. An array can hold only homogeneous data-type elements.
 
-# Collections 
+   ```java
+   Student[] s = new Student[10000];
+   s[0] = new Student(); // valid
+   s[1] = new Customer(); // incompatible types | found: Customer | required: Student
+   ```
 
-1.Collections are growable in nature i.e based on our requirement we can increase or decrease the size 
-2.Collections can hold both homgeneous and heterogeneous elements 
-3.Every collection class is implemented based on some stanadard data structure, hence for every requirement ready made 
-  method support is available
-4.Being a programmer we are responsible to use those methods and we are not responsible to implement those methods
-5.Usually we can use collections to hold and transfer objects from one location to another location(container)
-  to provide support for this requirement every collection class by default implements serailizable and cloneable 
-  interfaces.
-6.ArrayList and Vector classes implements RandomAccess interface so that any randon element we can access with the same 
-  speed.
-# Collection Definition 
+   We can solve this problem by using object-type arrays:
 
-If we want to represent a group of individual objects as a single entity then we should go for collection 
+   ```java
+   Object[] a = new Object[10000];
+   a[0] = new Student(); // valid
+   a[1] = new Customer(); // valid
+   ```
 
-# Collection Framework 
+3. The array concept is not implemented based on a standard data structure, so ready-made method support is not available. For every requirement we have to write the code explicitly, which increases the complexity of programming.
 
-It contains several classes and interfaces which can be used to represent a group of individual objects as a single entity 
+# Collections
 
-# 9 key interfaces of Collection Framework 
+1. Collections are growable in nature; based on our requirement we can increase or decrease the size.
+2. Collections can hold both homogeneous and heterogeneous elements.
+3. Every collection class is implemented based on some standard data structure, so ready-made method support is available for every requirement.
+4. As programmers, we are responsible for using those methods; we are not responsible for implementing them.
+5. Usually we can use collections to hold and transfer objects from one location to another location (container). To support this requirement, every collection class by default implements `Serializable` and `Cloneable` interfaces.
+6. `ArrayList` and `Vector` classes implement the `RandomAccess` interface so that any random element can be accessed with the same speed.
 
-1.Collection(I)
-  a.If we want to represent a group of individual objects as a single entity then we should go for collection
-  b.It defines the most coomon methods which are applicable for any coolection object 
-  c.In general collection Interface is considered as root interface of collection Framework 
-  d.There is no concvrete class which implements collection interace directly
-2.List
-3.Set
-4.SortedSet
-5.NavigableSet
-6.Queue
-7.Map
-8.SortedMap
-9.NavigableMap
+# Collection Definition
 
-# Collection vs Collections 
+If we want to represent a group of individual objects as a single entity, then we should go for a collection.
 
-Collection is a interface , if we want to represent a group of individual objects as a single entity then we should go for collection 
+# Collection Framework
 
-Collections is an utility class present in java.util package to define several utility methods for collection objects 
-(like sorting, searching etc.)
+It contains several classes and interfaces that can be used to represent a group of individual objects as a single entity.
 
-# RandomAccess Interface 
+# 9 key interfaces of Collection Framework
 
-RandomAccess interface is present in java.util package and it doesnt contain any methods it is a marker interface
-where require ability will be provided automatically by the JVM 
+1. **Collection (I)**
+   - If we want to represent a group of individual objects as a single entity, then we should go for a collection.
+   - It defines the most common methods that are applicable for any collection object.
+   - In general, the `Collection` interface is considered the root interface of the Collection Framework.
+   - There is no concrete class that implements the `Collection` interface directly.
+2. **List**
+3. **Set**
+4. **SortedSet**
+5. **NavigableSet**
+6. **Queue**
+7. **Map**
+8. **SortedMap**
+9. **NavigableMap**
+
+# Collection vs Collections
+
+`Collection` is an interface. If we want to represent a group of individual objects as a single entity, then we should go for a collection.
+
+`Collections` is a utility class present in the `java.util` package used to define several utility methods for collection objects (like sorting, searching, and so on).
+
+# RandomAccess Interface
+
+`RandomAccess` is present in the `java.util` package. It does not contain any methods; it is a marker interface where the required ability is provided automatically by the JVM.
 
 # List Interface
 
-It is the child interface of collection, if we want to represent a group of individual objects with as a single entity 
-where duplicates are allowed and insertion order must be preserved. Then we should go for List
+It is the child interface of `Collection`. If we want to represent a group of individual objects as a single entity where duplicates are allowed and insertion order must be preserved, then we should go for `List`.
 
 ## List Interface Hierarchy
 
 The following diagram shows the main interfaces, abstract classes, concrete implementations, and legacy classes related to `java.util.List`. A solid arrow means **extends** and a dashed arrow means **implements**.
 
-# ArrayList 
+# ArrayList
 
- Arraylist is the best choice for retrieval operation because arraylist implements RandomAccess interface 
- Arraylist is the worst choice if our frequent operation is insertion and deletion in the middle
+`ArrayList` is the best choice for retrieval operations because `ArrayList` implements the `RandomAccess` interface.
 
-# difference between ArrayList and vector 
+`ArrayList` is the worst choice if the frequent operation is insertion and deletion in the middle.
 
->ArrayList                                                   |                      >Vector
+# difference between ArrayList and vector
 
-1. Everfy method present in the ArrayList is non-synchronized|1. Every method present in vector is synchronized 
-2. At atime multiple threads are allowed to operate on       |2. At atime only one thread is allowed to operate 
-   arraylist object and hence it is thread safe.             |   on vector object and hence it is thread safe.
-3. Relatively performance is high because threads are not    |3. Relatively performace is low because threads are required
-   required to wait to operate on arraylist object           |   to operate on vector Object  
-4. Introduced in 1.2 v and it is non-legacy                  |4. Introduced in 1.0 v and it is legacy
+| Topic | `ArrayList` | `Vector` |
+| ----- | ----------- | -------- |
+| Synchronization | Every method present in `ArrayList` is non-synchronized. | Every method present in `Vector` is synchronized. |
+| Thread safety | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
+| Performance | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object. | Relatively low performance because threads are required to wait to operate on a `Vector` object. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.0 v and it is legacy. |
 
-   By default arraylist is non-synchronized but we can get synchronized version of arraylist object by using synchronizedList() method of collections class 
+By default, `ArrayList` is non-synchronized, but we can get a synchronized version of an `ArrayList` object by using the `synchronizedList()` method of the `Collections` class:
 
-> public static List synchronizedList(List l)
-  
-  refer this example : [synchornizedCollections.java](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) file in collections folder 
+```java
+public static List synchronizedList(List l)
+```
 
-  ArrayList l = new ArrayList();
-  List l1 = Collections.synchronizedList(l)
-  l is non-synchronized 
-  l1is synchronized
+Refer to this example: [synchornizedCollections.java](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) in the collections folder.
 
-  similarly we can get synchronized version of Set and Map objects by using the following methods of Collections class 
+```java
+ArrayList l = new ArrayList();
+List l1 = Collections.synchronizedList(l);
+// l is non-synchronized
+// l1 is synchronized
+```
 
-> public static Set synchronizedSet(Set s)
-> public static Map synchronizedMap(Map m)
+Similarly, we can get synchronized versions of `Set` and `Map` objects by using the following methods of the `Collections` class:
 
-# LinkedList 
+```java
+public static Set synchronizedSet(Set s)
+public static Map synchronizedMap(Map m)
+```
 
-  The underlying datastructure is doubly linked list 
-  insertion oder is preserved 
-  duplicate objects are allowed 
-  heterogeneous objects are allowed
-  null insertion is possible
-  LinkedList implements Serializable , Cloneable interfaces but not RandomAccess
-  LinkedList is the best choice if our frequent operation is insertion or deletion in the middle.
-  LinkedList is the worst choice if our frequent operation is retreival operation
+# LinkedList
 
->constructors 
- 
-   LinkedList l = new LinkedList(); creates an empty list object 
-   LinkedList l = new LinkedList(Collection c); creates an equivalent linkedlist object for the given collection
+- The underlying data structure is a doubly linked list.
+- Insertion order is preserved.
+- Duplicate objects are allowed.
+- Heterogeneous objects are allowed.
+- `null` insertion is possible.
+- `LinkedList` implements `Serializable` and `Cloneable` interfaces but not `RandomAccess`.
+- `LinkedList` is the best choice if the frequent operation is insertion or deletion in the middle.
+- `LinkedList` is the worst choice if the frequent operation is retrieval.
 
->LinkedList class specific methods 
+### Constructors
 
- usually we can use linkedlist to develop stacks and queues to provide support for this requirement linkedlist class 
- defines the following specific methods 
+| Constructor | Description |
+| ----------- | ----------- |
+| `LinkedList l = new LinkedList();` | Creates an empty list object. |
+| `LinkedList l = new LinkedList(Collection c);` | Creates an equivalent `LinkedList` object for the given collection. |
 
->void addFirst(Object o)
->void addLast(Object o)
->Object getFirst()
->Object getLast()
->Object removeFirst()
->Object removeLast()
+### LinkedList class-specific methods
 
+Usually we can use `LinkedList` to develop stacks and queues. To provide support for this requirement, the `LinkedList` class defines the following specific methods:
 
+| Method | Description |
+| ------ | ----------- |
+| `void addFirst(Object o)` | Inserts an element at the beginning. |
+| `void addLast(Object o)` | Inserts an element at the end. |
+| `Object getFirst()` | Returns the first element. |
+| `Object getLast()` | Returns the last element. |
+| `Object removeFirst()` | Removes and returns the first element. |
+| `Object removeLast()` | Removes and returns the last element. |
 
 # difference between ArrayList and LinkedList
 
->ArrayList                                                     |                      >LinkedList
+| Topic | `ArrayList` | `LinkedList` |
+| ----- | ----------- | ------------ |
+| Data structure | Internally uses a resizable array data structure. | Internally uses a doubly linked list data structure. |
+| Best for | Retrieval operations. | Insertion or deletion in the middle. |
+| Worst for | Insertion or deletion in the middle because it requires shifting of elements. | Retrieval because it does not support index-based access; it has to traverse from the beginning or end. |
+| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor. |
+| Memory usage | Consumes less memory because it just holds the elements. | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.2 v and it is non-legacy. |
 
-1. ArrayList internally uses resizable array data structure    |1. LinkedList internally uses doubly linked list data structure
-2. ArrayList is the best choice if our frequent operation is   |2. LinkedList is the best choice if our frequent operation is
-   retrieval                                                   |   insertion or deletion in the middle
-3. ArrayList is the worst choice if our frequent operation is   |3. LinkedList is the worst choice if our frequent operation is
-   insertion or deletion in the middle because it requires     |   retrieval because it doesnt support index based access,
-   shifting of elements                                        |   it has to traverse from the beginning or end
-4. ArrayList implements RandomAccess interface hence any       |4. LinkedList doesnt implement RandomAccess interface hence
-   random element we can access with the same speed            |   random access performance is poor
-5. ArrayList consumes less memory because it just holds        |5. LinkedList consumes more memory because for every element
-   the elements                                                |   it has to hold data, previous node reference and next node reference
-6. Introduced in 1.2 v and it is non-legacy                     |6. Introduced in 1.2 v and it is non-legacy;
-
-refer this example : [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) file in list folder
+Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
 
                                                 
  
@@ -438,30 +435,24 @@ flowchart LR
 
 > Do not structurally modify a normal list directly while iterating over it. Use `Iterator.remove()` or `ListIterator` methods instead; otherwise a fail-fast iterator commonly throws `ConcurrentModificationException`.
 
-# Vector 
+# Vector
 
-1. The underlying data structure is resizeble or growable array 
-2. Insertion order is preserved 
+1. The underlying data structure is a resizable or growable array.
+2. Insertion order is preserved.
 3. Duplicates are allowed.
-4. Heterogeneous objects are allowed
-5. null insertion is possible 
-6. It implements Serializable ,Cloneable and RandomAccess interfaces
-7. Every method present in the vector is synchronized and hence vector object is thread safe
+4. Heterogeneous objects are allowed.
+5. `null` insertion is possible.
+6. It implements `Serializable`, `Cloneable`, and `RandomAccess` interfaces.
+7. Every method present in `Vector` is synchronized, and hence a `Vector` object is thread-safe.
 
-Constructors
+### Constructors
 
->Vector v = new Vector();
-
->Vector v = new Vector(int initialCapacity);
-
-Creates an empty vector object with specified initial capacity 
-
->Vector v = new Vector(int initialCapacity, int incrementalCapacity);
-
->Vector v = new Vector(Collection c);
-
-Creates an equivalent vector Object for the given collection this constructor meant for interconvertion between
-collection objects
+| Constructor | Description |
+| ----------- | ----------- |
+| `Vector v = new Vector();` | Creates an empty vector object. |
+| `Vector v = new Vector(int initialCapacity);` | Creates an empty vector object with the specified initial capacity. |
+| `Vector v = new Vector(int initialCapacity, int incrementalCapacity);` | Creates a vector with the specified initial capacity and capacity increment. |
+| `Vector v = new Vector(Collection c);` | Creates an equivalent `Vector` object for the given collection. This constructor is meant for interconversion between collection objects. |
 
 # Constructors for all collection data structures
 
@@ -487,13 +478,15 @@ new Vector<>(collection);
 
 
 ```
-# Stack 
+# Stack
 
-It is the child class of vector , it is a specially designed class for last in firsat out order(LIFO) 
+It is the child class of `Vector`. It is a specially designed class for last-in-first-out order (LIFO).
 
-Constructor 
+### Constructor
 
+```java
 Stack s = new Stack<>();
+```
 
 
 `Stack` has only its no-argument constructor. It inherits the vector-based storage behavior from `Vector`.
@@ -580,9 +573,8 @@ The integer argument controls initial capacity, the `float` argument controls lo
 
 # Set(I) Interface
 
-1.It is the child interface of collection 
-2.If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion 
-  order not required then we should go for Set.
+1. It is the child interface of `Collection`.
+2. If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion order is not required, then we should go for `Set`.
 
 - [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/setDemo.java)
 
@@ -709,15 +701,13 @@ classDiagram
 
 # SortedSet (I)
 
-It is the child interface of Set if we want to represent a group of individual objects as a single entity where 
-duplicates are not allowed and all objects should be inserted according to some sorting order then we should go for Sorted Set 
+It is the child interface of `Set`. If we want to represent a group of individual objects as a single entity where duplicates are not allowed and all objects should be inserted according to some sorting order, then we should go for `SortedSet`.
 
 # Queue(I)
 
 `Queue` is a child interface of `Collection` used to hold elements before processing. Most queue implementations process elements in **FIFO** (first-in, first-out) order. However, some implementations use a different ordering rule: for example, `PriorityQueue` processes the highest-priority element first.
 
-Before sending a mail all mailId's we have to store in some data structure in which order we added mailId's in the same 
-order only mail should be delivered.For this requirement Queue is best choice
+Before sending a mail, all mail IDs have to be stored in some data structure. In the same order in which we added the mail IDs, the mail should be delivered. For this requirement, `Queue` is the best choice.
 
 `Queue` provides paired operations: one method throws an exception when it cannot complete the operation, while the other returns a special value instead.
 
@@ -890,8 +880,7 @@ classDiagram
 
 # MAP (I)
 
-Map is not child interface of Collection (I) , if we want to represent a group objects as Key Value pairs 
-then we should go for map.Duplicate Keys are not allowed but Values can be duplicated.
+`Map` is not a child interface of `Collection`. If we want to represent a group of objects as key-value pairs, then we should go for `Map`. Duplicate keys are not allowed, but values can be duplicated.
 
 ## Map Interface Hierarchy
 
@@ -1023,11 +1012,10 @@ classDiagram
 - **`Map<K, V>`**: base key-value interface.
 - **`Map.Entry<K, V>`**: nested interface representing one key-value pair, normally accessed through `entrySet()`.
 - **`SortedMap<K, V>`**: map whose keys remain sorted.
-- It is the child interface of Map interface if we want to represent a group of Key value pairs according to some        - sorting of Keys then we should go for SortedMap
-- In SortedMap the sorting should be based on Key but not based on Value.
+  - It is the child interface of `Map`. If we want to represent a group of key-value pairs according to some sorting of keys, then we should go for `SortedMap`.
+  - In `SortedMap`, the sorting should be based on the key, not on the value.
 - **`NavigableMap<K, V>`**: sorted map with closest-match operations such as `lowerEntry()` and `ceilingEntry()`.
-- It is the child interface of SortedMap it defines several methods for navigation purposes its implementation class is 
-- TreeMap
+  - It is the child interface of `SortedMap`. It defines several methods for navigation purposes. Its implementation class is `TreeMap`.
 - **`ConcurrentMap<K, V>`**: map with atomic concurrent operations such as `putIfAbsent()`.
 - **`ConcurrentNavigableMap<K, V>`**: concurrent map with sorted-key navigation.
 

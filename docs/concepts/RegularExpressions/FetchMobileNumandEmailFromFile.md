@@ -1,5 +1,5 @@
 # Extracting Mobile Numbers and Email IDs from a File
-//Ctrl and click a Markdown link to open its target.
+
 <!-- TOC -->
 - [Extracting Mobile Numbers and Email IDs from a File](#extracting-mobile-numbers-and-email-ids-from-a-file)
     - [Files Used](#files-used)
