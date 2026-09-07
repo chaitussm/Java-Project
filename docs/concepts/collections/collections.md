@@ -11,6 +11,7 @@
 <!-- TOC -->
 - [Java Collections Guide](#java-collections-guide)
   - [Introduction](#introduction)
+    - [Limitations of arrays](#limitations-of-arrays)
   - [Collections](#collections)
   - [Collection Definition](#collection-definition)
   - [Collection Framework](#collection-framework)
@@ -22,6 +23,8 @@
     - [ArrayList](#arraylist)
     - [Difference between ArrayList and Vector](#difference-between-arraylist-and-vector)
     - [LinkedList](#linkedlist)
+      - [Constructors](#constructors)
+      - [LinkedList class-specific methods](#linkedlist-class-specific-methods)
     - [Difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
     - [Modern implementations](#modern-implementations)
     - [Legacy classes](#legacy-classes)
@@ -43,6 +46,10 @@
   - [Map constructor examples](#map-constructor-examples)
   - [Set (I) Interface](#set-i-interface)
   - [Set Interface Hierarchy](#set-interface-hierarchy)
+- [TreeSet](#treeset)
+- [null acceptance in TreeSet](#null-acceptance-in-treeset)
+- [comparable Concept](#comparable-concept)
+- [Comparator](#comparator)
     - [Common implementations](#common-implementations)
     - [Thread-safe implementations](#thread-safe-implementations)
     - [HashSet (C)](#hashset-c)
@@ -155,12 +162,12 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 
 ### Difference between ArrayList and Vector
 
-| Topic | `ArrayList` | `Vector` |
-| ----- | ----------- | -------- |
-| Synchronization | Every method present in `ArrayList` is non-synchronized. | Every method present in `Vector` is synchronized. |
-| Thread safety | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
-| Performance | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object. | Relatively low performance because threads are required to wait to operate on a `Vector` object. |
-| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.0 v and it is legacy. |
+| Topic           | `ArrayList`                                                                                                   | `Vector`                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Synchronization | Every method present in `ArrayList` is non-synchronized.                                                      | Every method present in `Vector` is synchronized.                                                   |
+| Thread safety   | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
+| Performance     | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object.     | Relatively low performance because threads are required to wait to operate on a `Vector` object.    |
+| Version         | Introduced in 1.2 v and it is non-legacy.                                                                     | Introduced in 1.0 v and it is legacy.                                                               |
 
 By default, `ArrayList` is non-synchronized, but we can get a synchronized version of an `ArrayList` object by using the `synchronizedList()` method of the `Collections` class:
 
@@ -197,34 +204,34 @@ public static Map synchronizedMap(Map m)
 
 #### Constructors
 
-| Constructor | Description |
-| ----------- | ----------- |
-| `LinkedList l = new LinkedList();` | Creates an empty list object. |
+| Constructor                                    | Description                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| `LinkedList l = new LinkedList();`             | Creates an empty list object.                                       |
 | `LinkedList l = new LinkedList(Collection c);` | Creates an equivalent `LinkedList` object for the given collection. |
 
 #### LinkedList class-specific methods
 
 Usually we can use `LinkedList` to develop stacks and queues. To provide support for this requirement, the `LinkedList` class defines the following specific methods:
 
-| Method | Description |
-| ------ | ----------- |
-| `void addFirst(Object o)` | Inserts an element at the beginning. |
-| `void addLast(Object o)` | Inserts an element at the end. |
-| `Object getFirst()` | Returns the first element. |
-| `Object getLast()` | Returns the last element. |
-| `Object removeFirst()` | Removes and returns the first element. |
-| `Object removeLast()` | Removes and returns the last element. |
+| Method                    | Description                            |
+| ------------------------- | -------------------------------------- |
+| `void addFirst(Object o)` | Inserts an element at the beginning.   |
+| `void addLast(Object o)`  | Inserts an element at the end.         |
+| `Object getFirst()`       | Returns the first element.             |
+| `Object getLast()`        | Returns the last element.              |
+| `Object removeFirst()`    | Removes and returns the first element. |
+| `Object removeLast()`     | Removes and returns the last element.  |
 
 ### Difference between ArrayList and LinkedList
 
-| Topic | `ArrayList` | `LinkedList` |
-| ----- | ----------- | ------------ |
-| Data structure | Internally uses a resizable array data structure. | Internally uses a doubly linked list data structure. |
-| Best for | Retrieval operations. | Insertion or deletion in the middle. |
-| Worst for | Insertion or deletion in the middle because it requires shifting of elements. | Retrieval because it does not support index-based access; it has to traverse from the beginning or end. |
-| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor. |
-| Memory usage | Consumes less memory because it just holds the elements. | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
-| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.2 v and it is non-legacy. |
+| Topic          | `ArrayList`                                                                           | `LinkedList`                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Data structure | Internally uses a resizable array data structure.                                     | Internally uses a doubly linked list data structure.                                                                      |
+| Best for       | Retrieval operations.                                                                 | Insertion or deletion in the middle.                                                                                      |
+| Worst for      | Insertion or deletion in the middle because it requires shifting of elements.         | Retrieval because it does not support index-based access; it has to traverse from the beginning or end.                   |
+| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor.                                                  |
+| Memory usage   | Consumes less memory because it just holds the elements.                              | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
+| Version        | Introduced in 1.2 v and it is non-legacy.                                             | Introduced in 1.2 v and it is non-legacy.                                                                                 |
 
 Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
 
@@ -629,6 +636,79 @@ Collection(I)
 1. Set is child interface of collection 
 2. If we want to represent a group of individual objects as a single entity where duplicates are not allowed 
    and insertion order not preseved.
+
+
+# TreeSet 
+
+1. the underlying datastructure is balanced tree
+2. Duplicates are not allowed 
+3. Insertion order is not preserved 
+4. heterogeneous objects are not allowed other wise we will get runtime
+  ClassCastException 
+5. Null inserstion is allowed but only once 
+6. Implements Serializable and Cloneable but not RandomAccess interface.
+7. All objects will be inserted based on some sorting order it may be default nautal sorting order or customized sorting order.
+
+>TreeSet t = new TreeSet();
+
+Creates an empty TreeSet object where the elements will be inserted according to default natural sorting order 
+
+>TreeSet t = new TreeSet(Comparator c);
+
+Creates an empty TreeSet object where the elements will be inserted according to customized sorting order specfied by comparator object 
+
+>TreeSet t = new TreeSet(Collection c);
+
+>TreeSet t = new TreeSet(SortedSet s);
+
+# null acceptance in TreeSet 
+
+1. for non-empty TreeSet if we are trying to insert null then we will get NullPointerException
+2. For empty TreeSet as the first element null is allowed but after inserting the null if we are trying to insert any other then we will get runtime exception saying NullPointerException
+3. Unitll 1.6 version null is allowed as the first element to the empty TreeSet but from 1.7 version null is not allowed even as the first element i.e "null" such type of story not applicable for TreeSet from 1.7 onwards.
+
+# comparable Concept 
+
+1. If we are depending default natural sorting order compulsory the object should be homogeneous and comparable otherwise we will get 
+runtime exception saying ClassCastException
+2. An object is said to be comparable if and only if corresponding class implements comparable interface 
+3. String class and all wrappr classes already implement comparable interface 
+4. But StringBuffer and StringBuilder classes doesn't implement comparable interface, hence we got ClassCastException in treeSetexample1 
+5. comparable interface is in java.lang package and it contains only one method compareTo()
+syntax 
+>public int compareTo(Object obj1)
+>obj1.compareTo(obj2)
+
+
+Here obj1 is which we are trying to insert to TreeSet 
+obj2 which is already inserted
+
+returns -ve if obj1 comes before obj2 
+returns +ve if obj1 comes after obj2 
+returns 0 if obj1 and obj2 are equal 
+
+If we are depending on default natural sorting order then while while adding object to the TreeSet JVM will call compareTo() 
+
+If default natural sorting order not available or if we are not satisfied with default natural sorting order then we can go for customized sorting by using comparator 
+
+
+refer example "treeSetexample1" in "Java-Project/demo/src/main/java/com/collections/set/"
+
+the Tree diagram will be 
+
+                  z
+                 /
+                k
+               /
+              c
+# Comparator
+
+
+
+
+
+
+
 
 ```mermaid
 classDiagram
