@@ -22,6 +22,10 @@
 
 This guide explains Java exception handling from the root of the hierarchy to practical handling syntax. It also provides the exact paths of the related example programs in this project.
 
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) to view the hierarchy diagrams and navigate the guide quickly.
+
+---
+
 ## Example Programs
 
 The exception-handling programs are located here:

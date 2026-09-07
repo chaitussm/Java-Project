@@ -45,6 +45,10 @@ Reflection allows a Java program to inspect and use classes, constructors, field
 
 Normally, Java knows these things during compilation. With reflection, the program can discover them dynamically at runtime.
 
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) for the full diagrams, tables, and clickable topic index.
+
+---
+
 ## Where the Example Programs Are
 
 All reflection examples are inside this package folder:

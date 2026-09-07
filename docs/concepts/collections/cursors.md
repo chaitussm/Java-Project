@@ -1,5 +1,11 @@
 # Cursors in Java Collections
 
+> A practical study guide to Java collection cursors, their traversal directions, and safe modification rules.
+
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to use the diagrams and clickable navigation.
+
+---
+
 ## Quick navigation
 
 - [Cursors in Java Collections](#cursors-in-java-collections)
@@ -96,24 +102,24 @@ while (iterator.hasNext()) {
 
 Do not call `names.remove(...)` directly inside this loop. Use `iterator.remove()` so the cursor can update its internal state safely.
 
-# limitations of iterator 
-1. By using enumeration and iterator we can always move only towards forward direction and we can't move towards back     ward direction 
-2. these are single direction cursors but not bi-directional cursors 
-3. By using iterator we can peform only read and remove operations and we can't peform replacement and additon of new objects 
-4. To overcome above limitations we should got for listiterator 
+## Limitations of `Iterator`
+
+1. `Enumeration` and `Iterator` move only forward; they cannot move backward.
+2. They are single-direction cursors, not bidirectional cursors.
+3. `Iterator` supports reading and removal, but not replacement or insertion of new objects.
+4. Use `ListIterator` when those additional list operations are required.
 
 ## 2. `ListIterator<E>`
 
 `ListIterator` is a specialized cursor for `List`. It extends `Iterator` and supports movement in both directions and list modifications.
 
-listiterator is the child interface of iterator and hence all methods present in the iterator by dfault available to the 
-listiterator
+`ListIterator` is a child interface of `Iterator`; therefore, all `Iterator` methods are available to a `ListIterator`.
 
-Iterator(I)
-    |
-    |
-    |
-ListIterator(I)
+```text
+Iterator (interface)
+  |
+  +-- ListIterator (interface)
+```
 
 
 ### Main methods
@@ -177,11 +183,11 @@ while (enumeration.hasMoreElements()) {
     System.out.println(enumeration.nextElement());
 }
 ```
-# limitations of enumeration 
+## Limitations of `Enumeration`
 
-1. We can apply enumeration concept only for legacy classes and it is a not a universal cursor 
-2. By using enumeration we can get only read access and we can't perform remove operation 
-3. To overcome above limitations we should go for iterator.
+1. `Enumeration` applies only to legacy classes; it is not a universal cursor.
+2. It provides read-only access and cannot remove elements.
+3. Use `Iterator` to overcome these limitations.
 
 
 For new code, prefer `Iterator` or `ListIterator` because they use the modern collection API and support safe removal where appropriate.

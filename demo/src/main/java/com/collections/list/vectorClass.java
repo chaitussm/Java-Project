@@ -2,7 +2,7 @@ package com.collections.list;
 
 import com.collections.collectionBaseClasses.CollectionTypeInspector;
 
-public class listInterface extends listDemo {
+public class vectorClass extends listDemo {
 
     public static void demonstrateList(String collectionType) {
         listCollectionType(collectionType);
@@ -10,10 +10,7 @@ public class listInterface extends listDemo {
     }
 
     public static void main(String[] args) {
-        demonstrateList("ArrayList");
-        demonstrateList("LinkedList");
         demonstrateList("Vector");
-        demonstrateList("Stack");
-        CollectionTypeInspector.printDefaultCapacitySummary();
+        CollectionTypeInspector.printDefaultCapacitySummary("Vector");
     }
 }

@@ -1,11 +1,15 @@
-package com.collections.collectionBaseClasses;
+package com.collections.set;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Comparator;
+import java.util.NavigableSet;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
+
+import com.collections.collectionBaseClasses.CollectionTypeInspector;
 
 public class setDemo {
 
@@ -14,6 +18,12 @@ public class setDemo {
         switch (collectionType) {
             case "LinkedHashSet":
                 demonstrateLinkedHashSet();
+                break;
+            case "SortedSet":
+                demonstrateSortedSet();
+                break;
+            case "NavigableSet":
+                demonstrateNavigableSet();
                 break;
             case "TreeSet":
                 demonstrateTreeSet();
@@ -30,6 +40,8 @@ public class setDemo {
             case "LinkedHashSet":
                 demonstrateLinkedHashSetConstructors();
                 break;
+            case "SortedSet":
+            case "NavigableSet":
             case "TreeSet":
                 demonstrateTreeSetConstructors();
                 break;
@@ -38,6 +50,72 @@ public class setDemo {
                 demonstrateHashSetConstructors();
                 break;
         }
+    }
+
+    public static void setLoadFactor(String collectionType) {
+        switch (collectionType) {
+            case "HashSet":
+            case "LinkedHashSet":
+                CollectionTypeInspector.printLoadFactorDetails(collectionType);
+                break;
+            default:
+                throw new IllegalArgumentException("Load factor is not applicable to: " + collectionType);
+        }
+    }
+
+    public static void setComparator(String collectionType) {
+        switch (collectionType) {
+            case "SortedSet":
+            case "NavigableSet":
+            case "TreeSet":
+                demonstrateTreeSetComparator();
+                break;
+            default:
+                throw new IllegalArgumentException("Comparator demonstration is only applicable to: " + collectionType);
+        }
+    }
+
+    private static void demonstrateTreeSetComparator() {
+        System.out.println("===== TreeSet Comparator =====");
+
+        TreeSet<String> naturalOrder = new TreeSet<>();
+        naturalOrder.add("Banana");
+        naturalOrder.add("Apple");
+        naturalOrder.add("Cherry");
+        System.out.println("Natural ordering: " + naturalOrder);
+        System.out.println("Natural comparator: " + naturalOrder.comparator());
+
+        TreeSet<String> reverseOrder = new TreeSet<>(Comparator.reverseOrder());
+        reverseOrder.addAll(naturalOrder);
+        System.out.println("Reverse ordering: " + reverseOrder);
+        System.out.println("Reverse comparator: " + reverseOrder.comparator());
+
+        Comparator<String> byLengthThenName = Comparator.comparingInt(String::length)
+                .thenComparing(Comparator.naturalOrder());
+        TreeSet<String> lengthOrder = new TreeSet<>(byLengthThenName);
+        lengthOrder.add("Java");
+        lengthOrder.add("C");
+        lengthOrder.add("Python");
+        lengthOrder.add("Go");
+        lengthOrder.add("Ruby");
+        System.out.println("Length, then alphabetical ordering: " + lengthOrder);
+        System.out.println("Custom comparator: " + lengthOrder.comparator());
+        System.out.println("First element: " + lengthOrder.first());
+        System.out.println("Last element: " + lengthOrder.last());
+        System.out.println("Elements from length 1 through length 3: " + lengthOrder.subSet("C", "Java"));
+
+        TreeSet<String> lengthOnly = new TreeSet<>(Comparator.comparingInt(String::length));
+        lengthOnly.add("Java");
+        boolean addedSameLength = lengthOnly.add("Ruby");
+        System.out.println("Length-only TreeSet: " + lengthOnly);
+        System.out.println("Was Ruby added? " + addedSameLength
+                + " (false because compare(\"Java\", \"Ruby\") == 0)");
+
+        System.out.println("Comparator flow: compare two values -> negative, zero, or positive");
+        System.out.println("  negative: first value comes before second");
+        System.out.println("  zero: values are treated as duplicates by TreeSet");
+        System.out.println("  positive: first value comes after second");
+        System.out.println("Use Comparator.naturalOrder() or null for natural ordering.");
     }
 
     private static void demonstrateHashSetConstructors() {
@@ -66,10 +144,53 @@ public class setDemo {
         System.out.println("TreeSet(SortedSet): " + new TreeSet<>(sortedSource));
     }
 
+    // SortedSet is an interface. TreeSet provides its sorted-order implementation.
+    private static void demonstrateSortedSet() {
+        System.out.println("===== SortedSet (implemented by TreeSet) =====");
+        CollectionTypeInspector.printTypeInfo(SortedSet.class, TreeSet.class);
+        CollectionTypeInspector.printDefaultInitialCapacity("SortedSet");
+        SortedSet<String> set = new TreeSet<>();
+        set.add("Ram");
+        set.add("Shyam");
+        set.add("Geeta");
+        set.add("Sita");
+
+        System.out.println("Elements in natural sorted order: " + set);
+        System.out.println("first(): " + set.first());
+        System.out.println("last(): " + set.last());
+        System.out.println("headSet(\"Ram\"): " + set.headSet("Ram"));
+        System.out.println("tailSet(\"Ram\"): " + set.tailSet("Ram"));
+        System.out.println("subSet(\"Geeta\", \"Shyam\"): " + set.subSet("Geeta", "Shyam"));
+        System.out.println("comparator(): " + set.comparator() + " (null means natural ordering)");
+        System.out.println("Core characteristic: SortedSet guarantees ascending element order and range views.");
+    }
+
+    // NavigableSet extends SortedSet. TreeSet adds nearest-match and descending-view operations.
+    private static void demonstrateNavigableSet() {
+        System.out.println("===== NavigableSet (implemented by TreeSet) =====");
+        CollectionTypeInspector.printTypeInfo(NavigableSet.class, SortedSet.class, TreeSet.class);
+        CollectionTypeInspector.printDefaultInitialCapacity("NavigableSet");
+        NavigableSet<String> set = new TreeSet<>();
+        set.add("Apple");
+        set.add("Banana");
+        set.add("Cherry");
+        set.add("Mango");
+
+        System.out.println("Elements in natural sorted order: " + set);
+        System.out.println("lower(\"Cherry\"): " + set.lower("Cherry"));
+        System.out.println("floor(\"Cherry\"): " + set.floor("Cherry"));
+        System.out.println("ceiling(\"Coconut\"): " + set.ceiling("Coconut"));
+        System.out.println("higher(\"Cherry\"): " + set.higher("Cherry"));
+        System.out.println("descendingSet(): " + set.descendingSet());
+        System.out.println("subSet(\"Banana\", true, \"Mango\", false): "
+                + set.subSet("Banana", true, "Mango", false));
+        System.out.println("Core characteristic: NavigableSet adds nearest-match searches and descending views.");
+    }
+
     // HashSet: hash-table backed. No insertion order guarantee; add/contains/remove are average O(1).
     private static void demonstrateHashSet() {
         System.out.println("===== HashSet =====");
-        CollectionTypeInspector.printTypeInfo(HashSet.class, Set.class);
+        CollectionTypeInspector.printTypeInfo(HashSet.class);
         CollectionTypeInspector.printDefaultInitialCapacity("HashSet");
         Set<String> set = new HashSet<>();
 
@@ -100,7 +221,7 @@ public class setDemo {
     // LinkedHashSet: HashSet + a linked list running through entries. Preserves insertion order at a small cost.
     private static void demonstrateLinkedHashSet() {
         System.out.println("===== LinkedHashSet =====");
-        CollectionTypeInspector.printTypeInfo(LinkedHashSet.class, Set.class);
+        CollectionTypeInspector.printTypeInfo(LinkedHashSet.class);
         CollectionTypeInspector.printDefaultInitialCapacity("LinkedHashSet");
         Set<String> set = new LinkedHashSet<>();
 
@@ -128,7 +249,7 @@ public class setDemo {
     // TreeSet: red-black tree backed. Keeps elements in sorted order; operations are O(log n).
     private static void demonstrateTreeSet() {
         System.out.println("===== TreeSet =====");
-        CollectionTypeInspector.printTypeInfo(TreeSet.class, Set.class);
+        CollectionTypeInspector.printTypeInfo(TreeSet.class);
         CollectionTypeInspector.printDefaultInitialCapacity("TreeSet");
         Set<String> set = new TreeSet<>();
 

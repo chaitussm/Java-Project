@@ -4,7 +4,6 @@
 - [Java Project](#java-project)
 <!-- /TOC -->
 
-This project contains basics 
+> A hands-on Java study project covering core programs, data files, and CI/CD learning material.
 
-Java programs basics 
-pipleline creation with all YAML steps ans explanation
+Explore Java fundamentals and the accompanying pipeline documentation with complete YAML steps and explanations.

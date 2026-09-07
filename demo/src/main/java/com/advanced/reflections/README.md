@@ -1,9 +1,11 @@
 # Java Reflection Basics
 
+> A concise learning path for the runnable Java Reflection examples in this package.
+
 <!-- TOC -->
 - [Java Reflection Basics](#java-reflection-basics)
-	- [Learning order](#learning-order)
-	- [Important terms](#important-terms)
+  - [Learning order](#learning-order)
+  - [Important terms](#important-terms)
 <!-- /TOC -->
 
 This package teaches Java Reflection from the beginning. Reflection lets a running program inspect classes, fields, constructors, methods, modifiers, and arrays at runtime.

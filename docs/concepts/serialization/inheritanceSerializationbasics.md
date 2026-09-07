@@ -1,5 +1,9 @@
 # Inheritance Serialization Basics
 
+> A comparative study guide showing how serialization behaves when a parent class is serializable—and when it is not.
+
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) for the side-by-side flows and sequence diagrams.
+
 <!-- TOC -->
 - [Inheritance Serialization Basics](#inheritance-serialization-basics)
     - [Part 1 — Parent IS Serializable](#part-1--parent-is-serializable)
@@ -20,6 +24,8 @@
 
 This doc covers **two complementary scenarios** of inheritance + serialization, both living in
 `demo/src/main/java/com/advanced/serialization/inheritanceSerialization/`:
+
+---
 
 | Part                                          | File                     | Scenario                                                          |
 | --------------------------------------------- | ------------------------ | ----------------------------------------------------------------- |

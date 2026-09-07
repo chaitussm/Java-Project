@@ -47,6 +47,18 @@ public class mapDemo {
         }
     }
 
+    public static void mapLoadFactor(String collectionType) {
+        switch (collectionType) {
+            case "HashMap":
+            case "LinkedHashMap":
+            case "Hashtable":
+                CollectionTypeInspector.printLoadFactorDetails(collectionType);
+                break;
+            default:
+                throw new IllegalArgumentException("Load factor is not applicable to: " + collectionType);
+        }
+    }
+
     private static void demonstrateHashMapConstructors() {
         Map<String, Integer> source = Map.of("A", 1, "B", 2);
         System.out.println("HashMap(): " + new HashMap<String, Integer>());

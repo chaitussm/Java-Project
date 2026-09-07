@@ -1,19 +1,28 @@
-# Introduction 
+# Java Collections Guide
+
+> A practical study guide to Java collection interfaces, implementations, constructors, methods, cursors, capacities, and selection rules.
+
+> **Tip:** Open this file in **Markdown Preview** (`Ctrl+Shift+V`) to view formatted tables, diagrams, and clickable links.
+
+---
+
+## Introduction 
 
 <!-- TOC -->
-- [Introduction](#introduction)
-- [Collections](#collections)
-- [Collection Definition](#collection-definition)
-- [Collection Framework](#collection-framework)
-- [9 key interfaces of Collection Framework](#9-key-interfaces-of-collection-framework)
-- [Collection vs Collections](#collection-vs-collections)
-- [RandomAccess Interface](#randomaccess-interface)
-- [List Interface](#list-interface)
+- [Java Collections Guide](#java-collections-guide)
+  - [Introduction](#introduction)
+  - [Collections](#collections)
+  - [Collection Definition](#collection-definition)
+  - [Collection Framework](#collection-framework)
+  - [9 key interfaces of Collection Framework](#9-key-interfaces-of-collection-framework)
+  - [Collection vs Collections](#collection-vs-collections)
+  - [RandomAccess Interface](#randomaccess-interface)
+  - [List Interface](#list-interface)
   - [List Interface Hierarchy](#list-interface-hierarchy)
-- [ArrayList](#arraylist)
-- [difference between ArrayList and vector](#difference-between-arraylist-and-vector)
-- [LinkedList](#linkedlist)
-- [difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
+    - [ArrayList](#arraylist)
+    - [Difference between ArrayList and Vector](#difference-between-arraylist-and-vector)
+    - [LinkedList](#linkedlist)
+    - [Difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
     - [Modern implementations](#modern-implementations)
     - [Legacy classes](#legacy-classes)
   - [List Methods](#list-methods)
@@ -25,22 +34,26 @@
     - [`Iterator<E>` methods](#iteratore-methods)
     - [`ListIterator<E>` additional methods](#listiteratore-additional-methods)
     - [Legacy `Enumeration<E>` methods](#legacy-enumeratione-methods)
-- [Vector](#vector)
-- [Constructors for all collection data structures](#constructors-for-all-collection-data-structures)
+  - [Vector](#vector)
+  - [Constructors for all collection data structures](#constructors-for-all-collection-data-structures)
   - [List constructor examples](#list-constructor-examples)
-- [Stack](#stack)
+  - [Stack](#stack)
   - [Set constructor examples](#set-constructor-examples)
   - [Queue constructor examples](#queue-constructor-examples)
   - [Map constructor examples](#map-constructor-examples)
-- [Set(I) Interface](#seti-interface)
+  - [Set (I) Interface](#set-i-interface)
   - [Set Interface Hierarchy](#set-interface-hierarchy)
     - [Common implementations](#common-implementations)
     - [Thread-safe implementations](#thread-safe-implementations)
-- [SortedSet (I)](#sortedset-i)
-- [Queue(I)](#queuei)
+    - [HashSet (C)](#hashset-c)
+    - [Fill Ratio | Load Factor](#fill-ratio--load-factor)
+  - [HashSet vs LinkedHashSet](#hashset-vs-linkedhashset)
+    - [Shared properties](#shared-properties)
+    - [SortedSet (I)](#sortedset-i)
+  - [Queue (I)](#queue-i)
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
-- [MAP (I)](#map-i)
+  - [Map (I)](#map-i)
   - [Map Interface Hierarchy](#map-interface-hierarchy)
     - [Interfaces](#interfaces)
     - [Classes](#classes)
@@ -51,34 +64,42 @@
     - [Example output](#example-output)
 <!-- /TOC -->
 
+> **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
+
 An array is an indexed collection of fixed number of homogeneous data elements 
 
 The main advantage of arrays is we can represent multiple values by using single variable so that readability of the 
 code will be improved
 
->limitations of arrays 
+> **Limitations of arrays**
 
-1.Arrays are fixed in size i.e once we create an array there is no chance of increasing or decreasing the size 
+1. Arrays are fixed in size i.e once we create an array there is no chance of increasing or decreasing the size 
   based on our requirement due to this, to use arrays concept compulsory we should know the size in advance which may 
   not possible always.
-2.Array can hold only homogeneous datatype elements 
-  Student[] s = new Student[10000];
-  s[0] = new Student(); valid 
-  s[1] = new Customer(); 
-  incompatible types | found : customer | required : Student
-  We can solve this problem by using object type arrays 
-  Object[] a = new Object[10000];
-  a[0] = new Student(); |Valid
-  a[1] = new Customer();|Valid
-3.Arrays concept is not implemented based on some standard data structures and hence ready made method support 
+2. Array can hold only homogeneous datatype elements.
+
+   ```java
+   Student[] s = new Student[10000];
+   s[0] = new Student(); // Valid
+   s[1] = new Customer(); // incompatible types | found: Customer | required: Student
+
+   // We can solve this problem by using Object type arrays.
+   Object[] a = new Object[10000];
+   a[0] = new Student(); // Valid
+   a[1] = new Customer(); // Valid
+   ```
+
+3. Arrays concept is not implemented based on some standard data structures and hence ready made method support 
   is not available, for every requirement we have to write the code explicitly which increases complexity of 
   programming.
 
-# Collections 
+---
 
-1.Collections are growable in nature i.e based on our requirement we can increase or decrease the size 
-2.Collections can hold both homgeneous and heterogeneous elements 
-3.Every collection class is implemented based on some stanadard data structure, hence for every requirement ready made 
+## Collections 
+
+1. Collections are growable in nature i.e based on our requirement we can increase or decrease the size.
+2. Collections can hold both homgeneous and heterogeneous elements.
+3. Every collection class is implemented based on some stanadard data structure, hence for every requirement ready made 
   method support is available
 4.Being a programmer we are responsible to use those methods and we are not responsible to implement those methods
 5.Usually we can use collections to hold and transfer objects from one location to another location(container)
@@ -86,43 +107,45 @@ code will be improved
   interfaces.
 6.ArrayList and Vector classes implements RandomAccess interface so that any randon element we can access with the same 
   speed.
-# Collection Definition 
+## Collection Definition 
 
 If we want to represent a group of individual objects as a single entity then we should go for collection 
 
-# Collection Framework 
+## Collection Framework 
 
 It contains several classes and interfaces which can be used to represent a group of individual objects as a single entity 
 
-# 9 key interfaces of Collection Framework 
+## 9 key interfaces of Collection Framework 
 
-1.Collection(I)
-  a.If we want to represent a group of individual objects as a single entity then we should go for collection
-  b.It defines the most coomon methods which are applicable for any coolection object 
-  c.In general collection Interface is considered as root interface of collection Framework 
-  d.There is no concvrete class which implements collection interace directly
-2.List
-3.Set
-4.SortedSet
-5.NavigableSet
-6.Queue
-7.Map
-8.SortedMap
-9.NavigableMap
+1. `Collection` (I)
+   - If we want to represent a group of individual objects as a single entity then we should go for collection.
+   - It defines the most coomon methods which are applicable for any coolection object.
+   - In general collection Interface is considered as root interface of collection Framework.
+   - There is no concvrete class which implements collection interace directly.
+2. `List`
+3. `Set`
+4. `SortedSet`
+5. `NavigableSet`
+6. `Queue`
+7. `Map`
+8. `SortedMap`
+9. `NavigableMap`
 
-# Collection vs Collections 
+## Collection vs Collections 
 
 Collection is a interface , if we want to represent a group of individual objects as a single entity then we should go for collection 
 
 Collections is an utility class present in java.util package to define several utility methods for collection objects 
 (like sorting, searching etc.)
 
-# RandomAccess Interface 
+## RandomAccess Interface 
 
 RandomAccess interface is present in java.util package and it doesnt contain any methods it is a marker interface
 where require ability will be provided automatically by the JVM 
 
-# List Interface
+---
+
+## List Interface
 
 It is the child interface of collection, if we want to represent a group of individual objects with as a single entity 
 where duplicates are allowed and insertion order must be preserved. Then we should go for List
@@ -131,21 +154,19 @@ where duplicates are allowed and insertion order must be preserved. Then we shou
 
 The following diagram shows the main interfaces, abstract classes, concrete implementations, and legacy classes related to `java.util.List`. A solid arrow means **extends** and a dashed arrow means **implements**.
 
-# ArrayList 
+### ArrayList 
 
  Arraylist is the best choice for retrieval operation because arraylist implements RandomAccess interface 
  Arraylist is the worst choice if our frequent operation is insertion and deletion in the middle
 
-# difference between ArrayList and vector 
+### Difference between ArrayList and Vector
 
->ArrayList                                                   |                      >Vector
-
-1. Everfy method present in the ArrayList is non-synchronized|1. Every method present in vector is synchronized 
-2. At atime multiple threads are allowed to operate on       |2. At atime only one thread is allowed to operate 
-   arraylist object and hence it is thread safe.             |   on vector object and hence it is thread safe.
-3. Relatively performance is high because threads are not    |3. Relatively performace is low because threads are required
-   required to wait to operate on arraylist object           |   to operate on vector Object  
-4. Introduced in 1.2 v and it is non-legacy                  |4. Introduced in 1.0 v and it is legacy
+| `ArrayList`                                                                                                | `Vector`                                                                                          |
+| ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1. Everfy method present in the ArrayList is non-synchronized.                                             | 1. Every method present in vector is synchronized.                                                |
+| 2. At atime multiple threads are allowed to operate on arraylist object and hence it is thread safe.       | 2. At atime only one thread is allowed to operate on vector object and hence it is thread safe.   |
+| 3. Relatively performance is high because threads are not required to wait to operate on arraylist object. | 3. Relatively performace is low because threads are required to wait to operate on vector Object. |
+| 4. Introduced in 1.2 v and it is non-legacy.                                                               | 4. Introduced in 1.0 v and it is legacy.                                                          |
 
    By default arraylist is non-synchronized but we can get synchronized version of arraylist object by using synchronizedList() method of collections class 
 
@@ -163,7 +184,7 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 > public static Set synchronizedSet(Set s)
 > public static Map synchronizedMap(Map m)
 
-# LinkedList 
+### LinkedList 
 
   The underlying datastructure is doubly linked list 
   insertion oder is preserved 
@@ -193,21 +214,16 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 
 
 
-# difference between ArrayList and LinkedList
+### Difference between ArrayList and LinkedList
 
->ArrayList                                                     |                      >LinkedList
-
-1. ArrayList internally uses resizable array data structure    |1. LinkedList internally uses doubly linked list data structure
-2. ArrayList is the best choice if our frequent operation is   |2. LinkedList is the best choice if our frequent operation is
-   retrieval                                                   |   insertion or deletion in the middle
-3. ArrayList is the worst choice if our frequent operation is   |3. LinkedList is the worst choice if our frequent operation is
-   insertion or deletion in the middle because it requires     |   retrieval because it doesnt support index based access,
-   shifting of elements                                        |   it has to traverse from the beginning or end
-4. ArrayList implements RandomAccess interface hence any       |4. LinkedList doesnt implement RandomAccess interface hence
-   random element we can access with the same speed            |   random access performance is poor
-5. ArrayList consumes less memory because it just holds        |5. LinkedList consumes more memory because for every element
-   the elements                                                |   it has to hold data, previous node reference and next node reference
-6. Introduced in 1.2 v and it is non-legacy                     |6. Introduced in 1.2 v and it is non-legacy;
+| `ArrayList`                                                                                                                                 | `LinkedList`                                                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. ArrayList internally uses resizable array data structure.                                                                                | 1. LinkedList internally uses doubly linked list data structure.                                                                                                     |
+| 2. ArrayList is the best choice if our frequent operation is retrieval.                                                                     | 2. LinkedList is the best choice if our frequent operation is insertion or deletion in the middle.                                                                   |
+| 3. ArrayList is the worst choice if our frequent operation is insertion or deletion in the middle because it requires shifting of elements. | 3. LinkedList is the worst choice if our frequent operation is retrieval because it doesnt support index based access; it has to traverse from the beginning or end. |
+| 4. ArrayList implements RandomAccess interface hence any random element we can access with the same speed.                                  | 4. LinkedList doesnt implement RandomAccess interface hence random access performance is poor.                                                                       |
+| 5. ArrayList consumes less memory because it just holds the elements.                                                                       | 5. LinkedList consumes more memory because for every element it has to hold data, previous node reference and next node reference.                                   |
+| 6. Introduced in 1.2 v and it is non-legacy.                                                                                                | 6. Introduced in 1.2 v and it is non-legacy.                                                                                                                         |
 
 refer this example : [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) file in list folder
 
@@ -438,7 +454,9 @@ flowchart LR
 
 > Do not structurally modify a normal list directly while iterating over it. Use `Iterator.remove()` or `ListIterator` methods instead; otherwise a fail-fast iterator commonly throws `ConcurrentModificationException`.
 
-# Vector 
+---
+
+## Vector 
 
 1. The underlying data structure is resizeble or growable array 
 2. Insertion order is preserved 
@@ -463,7 +481,9 @@ Creates an empty vector object with specified initial capacity
 Creates an equivalent vector Object for the given collection this constructor meant for interconvertion between
 collection objects
 
-# Constructors for all collection data structures
+---
+
+## Constructors for all collection data structures
 
 The following methods demonstrate the constructors for each data structure. Ctrl+click a method name to open its Java implementation:
 
@@ -487,7 +507,9 @@ new Vector<>(collection);
 
 
 ```
-# Stack 
+---
+
+## Stack 
 
 It is the child class of vector , it is a specially designed class for last in firsat out order(LIFO) 
 
@@ -578,7 +600,9 @@ The integer argument controls initial capacity, the `float` argument controls lo
 
 
 
-# Set(I) Interface
+---
+
+## Set (I) Interface
 
 1.It is the child interface of collection 
 2.If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion 
@@ -589,6 +613,21 @@ The integer argument controls initial capacity, the `float` argument controls lo
 ## Set Interface Hierarchy
 
 The following diagram shows the public, general-purpose Set interfaces and implementations. A solid arrow means **extends** and a dashed arrow means **implements**.
+
+
+Collection(I)
+     \
+     Set(I)
+     /     \
+  HashSet  SortedSet(I)
+     |            \
+  LinkedHashSet   NavigableSet(I)
+                              \
+                              TreeSet(I)
+
+1. Set is child interface of collection 
+2. If we want to represent a group of individual objects as a single entity where duplicates are not allowed 
+   and insertion order not preseved.
 
 ```mermaid
 classDiagram
@@ -707,12 +746,96 @@ classDiagram
 
 > `BitSet` is not a `Set` implementation. It stores bits efficiently and has a different API. Sets returned by `Map.keySet()` are also views rather than separately declared, general-purpose Set implementation classes.
 
-# SortedSet (I)
+### HashSet (C)
+
+1. The underlying datastrutcure is Hashtable 
+2. Duplicate objects are not allowed 
+3. Insertion order is not preserved and it is based on hashcode of objects
+4. Null insetion possible but only one time
+5. Heterogenous Objects are allowed
+6. Implements Serializable, Cloneable but not RandomAccess interface
+7. HashSet is the best choice if our ferquent operation is Search operation
+  
+**NOTE : In HashSet duplicates are not allowed if we are trying to insert duplicates then we won't get any compile-time or 
+run-time errors and add method returns simply returns false.**
+
+>HashSet h = new HashSet();
+
+creates an empty HashSet Object with default initial capacity 16 and default fill ratio 0.75
+
+>HashSet h = new HashSet(int initialcapacity);
+
+creates an empty HashSet Object with specified initial capacity and default fill ratio 0.75
+
+>HashSet h = new HashSet(int initialcapacity, float fillratio);
+
+>HashSet h = new HashSet(Collection c);
+
+Creates an equivalent HashSet for the given collection 
+
+### Fill Ratio | Load Factor
+
+After filling how much ratio a new hashSet obejct will be created, this ratio is called fill ratio or load factor 
+ex: fill ratio 0.75 means after filling 75% ratio a new HashSet Object will be created
+
+## HashSet vs LinkedHashSet
+
+> For a cleaner, single-page comparison table and a selection guide, see **[HashSet vs LinkedHashSet — Quick Comparison](hashset-vs-linkedhashset.md)**.
+
+`LinkedHashSet<E>` extends `HashSet<E>`. Both prevent duplicates, use `hashCode()` and `equals()` to identify matching elements, and use a hash-table lookup model. The key difference is that `LinkedHashSet` also maintains links between entries, giving it a predictable encounter order.
+
+| Aspect                           | `HashSet<E>`                                                                                                   | `LinkedHashSet<E>`                                                                                                                                         |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inheritance                      | Extends `AbstractSet<E>`.                                                                                      | Extends `HashSet<E>`.                                                                                                                                      |
+| Internal structure               | Hash table; current JDKs back it with a `HashMap`.                                                             | Hash table plus links between entries; current JDKs back it with a `LinkedHashMap`.                                                                        |
+| Iteration / encounter order      | **No order guarantee.** Order can change after resizing or across JVM versions.                                | **Insertion order is preserved.** Re-adding an existing element does not move it to the end.                                                               |
+| Sorting                          | Does not sort elements.                                                                                        | Does not sort elements; it preserves insertion order. Use `TreeSet` for sorted order.                                                                      |
+| `Iterator` and `forEach` order   | Unspecified encounter order.                                                                                   | Insertion encounter order.                                                                                                                                 |
+| Java 21 sequenced API            | Does not implement `SequencedSet`.                                                                             | Implements `SequencedSet`; provides `addFirst`, `addLast`, `getFirst`, `getLast`, `removeFirst`, `removeLast`, and `reversed`.                             |
+| Main operation time              | `add`, `contains`, and `remove` are $O(1)$ on average; collisions can make an operation slower.                | Same average $O(1)$ operations, with a small extra cost to maintain links.                                                                                 |
+| Iteration time                   | Typically proportional to **size + table capacity**, because empty buckets may be visited.                     | Proportional to **size**, because iteration follows the linked entries; helpful for a sparse, oversized set.                                               |
+| Memory use                       | Lower per-entry memory overhead.                                                                               | Higher per-entry memory overhead for before/after entry links.                                                                                             |
+| Initial capacity and load factor | Default capacity is `16` and default load factor is `0.75`; initial resize threshold is $16 \times 0.75 = 12$. | Uses the same capacity and load-factor rules.                                                                                                              |
+| Constructors                     | `HashSet()`, `HashSet(int)`, `HashSet(int, float)`, `HashSet(Collection)`.                                     | `LinkedHashSet()`, `LinkedHashSet(int)`, `LinkedHashSet(int, float)`, `LinkedHashSet(Collection)`; Java 21 also has `LinkedHashSet.newLinkedHashSet(int)`. |
+| Best use                         | Uniqueness and fast membership checks when display/iteration order does not matter.                            | Stable insertion-order output, logs, predictable tests, or de-duplicating input without rearranging it.                                                    |
+
+### Shared properties
+
+- **Duplicates:** `add(element)` returns `false` when an equal element already exists; no exception is thrown.
+- **Null:** both allow one `null` element.
+- **Custom objects:** duplicate detection requires correct, consistent `equals()` and `hashCode()` methods.
+- **Thread safety:** neither is synchronized. For concurrent modification, use external synchronization, `Collections.synchronizedSet(...)`, or an appropriate concurrent set.
+- **Iterators:** both are fail-fast on a best-effort basis. Do not structurally modify the set during iteration except through `Iterator.remove()`.
+- **Interfaces:** both implement `Set`, `Cloneable`, and `Serializable`; neither implements `RandomAccess`.
+- **Equality:** set equality ignores iteration order. A `HashSet` and `LinkedHashSet` containing the same elements are equal.
+
+```java
+Set<String> hashSet = new HashSet<>();
+hashSet.add("Banana");
+hashSet.add("Apple");
+hashSet.add("Cherry");
+// Iteration order is unspecified.
+
+Set<String> linkedHashSet = new LinkedHashSet<>();
+linkedHashSet.add("Banana");
+linkedHashSet.add("Apple");
+linkedHashSet.add("Cherry");
+// Always iterates as: [Banana, Apple, Cherry]
+```
+
+> **Rule of thumb:** use `HashSet` for the lowest-overhead unordered set. Choose `LinkedHashSet` when users, tests, files, or APIs need stable insertion-order output. Neither class provides sorted order.
+
+
+
+
+### SortedSet (I)
 
 It is the child interface of Set if we want to represent a group of individual objects as a single entity where 
 duplicates are not allowed and all objects should be inserted according to some sorting order then we should go for Sorted Set 
 
-# Queue(I)
+---
+
+## Queue (I)
 
 `Queue` is a child interface of `Collection` used to hold elements before processing. Most queue implementations process elements in **FIFO** (first-in, first-out) order. However, some implementations use a different ordering rule: for example, `PriorityQueue` processes the highest-priority element first.
 
@@ -888,7 +1011,9 @@ classDiagram
 
 > The legacy `Stack` class is not a `Queue` implementation. For new LIFO stack code, use `Deque`, normally `ArrayDeque`.
 
-# MAP (I)
+---
+
+## Map (I)
 
 Map is not child interface of Collection (I) , if we want to represent a group objects as Key Value pairs 
 then we should go for map.Duplicate Keys are not allowed but Values can be duplicated.

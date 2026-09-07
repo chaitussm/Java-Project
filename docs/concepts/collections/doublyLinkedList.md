@@ -1,5 +1,11 @@
 # Doubly Linked List — Step by Step
 
+> A visual study guide to node links, traversal, deletion, and Java's `LinkedList` implementation.
+
+> **Preview tip:** Open this page in **Markdown Preview** (`Ctrl+Shift+V`) to follow each linked-list diagram.
+
+---
+
 ## What is a Doubly Linked List
 
 A doubly linked list is a linear data structure made up of **nodes**, where each node stores:

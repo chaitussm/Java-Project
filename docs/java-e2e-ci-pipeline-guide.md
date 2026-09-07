@@ -26,6 +26,10 @@
 This document describes the design and behaviour of the
 `.github/workflows/java-end-to-end_ci.yml` workflow.
 
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to follow the pipeline diagrams and linked troubleshooting steps.
+
+---
+
 ## Pipeline Overview
 
 ```mermaid
@@ -80,13 +84,13 @@ The mobile number and email address are workflow environment variables, not valu
 
 ### `docker`
 
-| Step              | Description                                                                                      |
-| ----------------- | ------------------------------------------------------------------------------------------------ |
-| Set push flag     | Output `pushed=true` only on `push` events                                                       |
-| GHCR login        | `docker/login-action@v3` using `GITHUB_TOKEN` (push only)                                        |
-| Set up Buildx     | `docker/setup-buildx-action@v3` enables BuildKit-based builds                                    |
-| Build and push    | `docker/build-push-action@v6` tags `:sha` and `:latest`; pushes only on `push` events            |
-| Provenance off    | `provenance: false` and `sbom: false` prevent GHCR `unknown blob` push failures (see below)     |
+| Step           | Description                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| Set push flag  | Output `pushed=true` only on `push` events                                                  |
+| GHCR login     | `docker/login-action@v3` using `GITHUB_TOKEN` (push only)                                   |
+| Set up Buildx  | `docker/setup-buildx-action@v3` enables BuildKit-based builds                               |
+| Build and push | `docker/build-push-action@v6` tags `:sha` and `:latest`; pushes only on `push` events       |
+| Provenance off | `provenance: false` and `sbom: false` prevent GHCR `unknown blob` push failures (see below) |
 
 ```mermaid
 flowchart LR
@@ -105,13 +109,13 @@ flowchart LR
 
 Runs after both previous jobs regardless of their outcome (`if: always()`).
 
-| Step                      | Description                                                                                       |
-| ------------------------- | ------------------------------------------------------------------------------------------------- |
-| Download artifact         | Retrieves `java-execution-report` from `build-test` into `ci-report/`                             |
-| Count programs            | Scans `demo/src/main/java/com` for `public static void main(...)` declarations                    |
-| Check email configuration | Selects **Resend API** (preferred) or **Gmail SMTP** (fallback); validates secrets                |
-| Send email notification   | Python script sends via Resend HTTP API or `smtplib` over IPv4; `continue-on-error: true`         |
-| Report delivery failure   | Prints provider-specific fix guidance when sending fails                                          |
+| Step                      | Description                                                                               |
+| ------------------------- | ----------------------------------------------------------------------------------------- |
+| Download artifact         | Retrieves `java-execution-report` from `build-test` into `ci-report/`                     |
+| Count programs            | Scans `demo/src/main/java/com` for `public static void main(...)` declarations            |
+| Check email configuration | Selects **Resend API** (preferred) or **Gmail SMTP** (fallback); validates secrets        |
+| Send email notification   | Python script sends via Resend HTTP API or `smtplib` over IPv4; `continue-on-error: true` |
+| Report delivery failure   | Prints provider-specific fix guidance when sending fails                                  |
 
 ```mermaid
 flowchart TD
@@ -143,24 +147,24 @@ The email includes:
 
 ### Recommended: Resend API (reliable from GitHub Actions)
 
-| Secret           | Purpose                                              |
-| ---------------- | ---------------------------------------------------- |
-| `RESEND_API_KEY` | API key from [resend.com/api-keys](https://resend.com/api-keys) |
+| Secret           | Purpose                                                             |
+| ---------------- | ------------------------------------------------------------------- |
+| `RESEND_API_KEY` | API key from [resend.com/api-keys](https://resend.com/api-keys)     |
 | `RESEND_FROM`    | Optional sender (defaults to `Java E2E CI <onboarding@resend.dev>`) |
-| `SMTP_TO`        | Recipient email address                              |
+| `SMTP_TO`        | Recipient email address                                             |
 
 When `RESEND_API_KEY` is set, the workflow uses Resend and **does not use Gmail SMTP**.
 
 ### Legacy fallback: Gmail SMTP
 
-| Secret          | Purpose                                      |
-| --------------- | -------------------------------------------- |
-| `SMTP_SERVER`   | `smtp.gmail.com`                             |
-| `SMTP_PORT`     | `587` (STARTTLS) or `465` (SSL)              |
-| `SMTP_USERNAME` | Full `@gmail.com` address                    |
-| `SMTP_PASSWORD` | 16-character Gmail App Password              |
-| `SMTP_FROM`     | Same as `SMTP_USERNAME`                      |
-| `SMTP_TO`       | Recipient email address                      |
+| Secret          | Purpose                         |
+| --------------- | ------------------------------- |
+| `SMTP_SERVER`   | `smtp.gmail.com`                |
+| `SMTP_PORT`     | `587` (STARTTLS) or `465` (SSL) |
+| `SMTP_USERNAME` | Full `@gmail.com` address       |
+| `SMTP_PASSWORD` | 16-character Gmail App Password |
+| `SMTP_FROM`     | Same as `SMTP_USERNAME`         |
+| `SMTP_TO`       | Recipient email address         |
 
 Gmail SMTP often returns `535 BadCredentials` from GitHub-hosted runners even with a valid App Password. Prefer Resend for CI notifications.
 
@@ -444,14 +448,14 @@ flowchart LR
 
 ### Error summary
 
-| # | Error | Job | Root cause | Workflow fix | User action |
-| - | ----- | --- | ---------- | ------------ | ----------- |
-| 1 | `535 BadCredentials` | `notify` | Wrong or stale Gmail App Password | Trim/normalize secrets; validate 16-char length | Update `SMTP_PASSWORD` with current App Password |
-| 2 | `unknown blob` | `docker` | BuildKit provenance attestation rejected by GHCR | `provenance: false`, `sbom: false` | None — merge latest workflow |
-| 3 | `ENETUNREACH 2607:f8b0:...` | `notify` | Runner tried Gmail over unreachable IPv6 | Python `smtplib` with explicit IPv4 | None — merge latest workflow |
-| 4 | `starttls() unexpected keyword 'server_hostname'` | `notify` | GitHub runner Python lacks that parameter | `smtp._host = host` + `smtp.connect(ipv4, port)` | None — merge latest workflow |
-| 5 | `535` with valid 16-char password | `notify` | Gmail rejects SMTP from datacenter IPs | Added **Resend API** provider | Add `RESEND_API_KEY` secret |
-| 6 | Email step skipped | `notify` | No email secrets configured | Graceful skip with log message | Add `RESEND_API_KEY` or all SMTP secrets |
+| #   | Error                                             | Job      | Root cause                                       | Workflow fix                                     | User action                                      |
+| --- | ------------------------------------------------- | -------- | ------------------------------------------------ | ------------------------------------------------ | ------------------------------------------------ |
+| 1   | `535 BadCredentials`                              | `notify` | Wrong or stale Gmail App Password                | Trim/normalize secrets; validate 16-char length  | Update `SMTP_PASSWORD` with current App Password |
+| 2   | `unknown blob`                                    | `docker` | BuildKit provenance attestation rejected by GHCR | `provenance: false`, `sbom: false`               | None — merge latest workflow                     |
+| 3   | `ENETUNREACH 2607:f8b0:...`                       | `notify` | Runner tried Gmail over unreachable IPv6         | Python `smtplib` with explicit IPv4              | None — merge latest workflow                     |
+| 4   | `starttls() unexpected keyword 'server_hostname'` | `notify` | GitHub runner Python lacks that parameter        | `smtp._host = host` + `smtp.connect(ipv4, port)` | None — merge latest workflow                     |
+| 5   | `535` with valid 16-char password                 | `notify` | Gmail rejects SMTP from datacenter IPs           | Added **Resend API** provider                    | Add `RESEND_API_KEY` secret                      |
+| 6   | Email step skipped                                | `notify` | No email secrets configured                      | Graceful skip with log message                   | Add `RESEND_API_KEY` or all SMTP secrets         |
 
 ---
 
@@ -465,13 +469,13 @@ Invalid login: 535-5.7.8 Username and Password not accepted ... - gsmtp
 
 #### Root causes
 
-| Cause | Explanation |
-| ----- | ----------- |
-| Regular Gmail password used | Google requires a 16-character **App Password**, not your login password |
-| Stale App Password | Creating a new App Password **revokes** the previous one immediately |
-| `SMTP_FROM` mismatch | Sender must match the authenticated Gmail account |
-| Whitespace or quotes in secret | App Password pasted as `abcd efgh ijkl mnop` or wrapped in quotes |
-| Wrong account | App Password created on a different Google account than `SMTP_USERNAME` |
+| Cause                          | Explanation                                                              |
+| ------------------------------ | ------------------------------------------------------------------------ |
+| Regular Gmail password used    | Google requires a 16-character **App Password**, not your login password |
+| Stale App Password             | Creating a new App Password **revokes** the previous one immediately     |
+| `SMTP_FROM` mismatch           | Sender must match the authenticated Gmail account                        |
+| Whitespace or quotes in secret | App Password pasted as `abcd efgh ijkl mnop` or wrapped in quotes        |
+| Wrong account                  | App Password created on a different Google account than `SMTP_USERNAME`  |
 
 #### Resolution
 
@@ -495,10 +499,10 @@ flowchart TD
 
 **Workflow safeguards:**
 
-| Safeguard | Effect |
-| --------- | ------ |
-| Whitespace/quote stripping | Cleans pasted App Passwords |
-| 16-character validation | Fails fast before send attempt |
+| Safeguard                   | Effect                                                                    |
+| --------------------------- | ------------------------------------------------------------------------- |
+| Whitespace/quote stripping  | Cleans pasted App Passwords                                               |
+| 16-character validation     | Fails fast before send attempt                                            |
 | Password fingerprint in log | e.g. `ne********sl` — verify first/last two chars match your App Password |
 
 ---
@@ -643,10 +647,10 @@ flowchart TD
 
 #### Why Resend
 
-| Approach | Works from GitHub Actions? | Setup complexity |
-| -------- | -------------------------- | ---------------- |
-| Gmail SMTP + App Password | Often **no** (535 from datacenter IPs) | Medium |
-| **Resend API** | **Yes** | Low (one API key) |
+| Approach                  | Works from GitHub Actions?             | Setup complexity  |
+| ------------------------- | -------------------------------------- | ----------------- |
+| Gmail SMTP + App Password | Often **no** (535 from datacenter IPs) | Medium            |
+| **Resend API**            | **Yes**                                | Low (one API key) |
 
 #### Setup
 
@@ -664,11 +668,11 @@ flowchart TD
 
 **GitHub secrets:**
 
-| Secret | Required | Example |
-| ------ | -------- | ------- |
-| `RESEND_API_KEY` | Yes | `re_xxxxxxxxxxxx` |
-| `SMTP_TO` | Yes | `team@example.com` |
-| `RESEND_FROM` | No | `Java CI <notifications@yourdomain.com>` |
+| Secret           | Required | Example                                  |
+| ---------------- | -------- | ---------------------------------------- |
+| `RESEND_API_KEY` | Yes      | `re_xxxxxxxxxxxx`                        |
+| `SMTP_TO`        | Yes      | `team@example.com`                       |
+| `RESEND_FROM`    | No       | `Java CI <notifications@yourdomain.com>` |
 
 If `RESEND_FROM` is omitted, the workflow uses `Java E2E CI <onboarding@resend.dev>`.
 
@@ -797,11 +801,11 @@ flowchart TD
     H --> I["Recipient receives email\nwith execution-report.html"]
 ```
 
-| Job | Expected log / outcome |
-| --- | ---------------------- |
-| `Build & Test` | `success` |
-| `Docker Build & Push` | `Build and push Docker image` → `success` |
-| `Notify via Email` | `Email provider: Resend API` → `Email sent successfully` |
+| Job                   | Expected log / outcome                                   |
+| --------------------- | -------------------------------------------------------- |
+| `Build & Test`        | `success`                                                |
+| `Docker Build & Push` | `Build and push Docker image` → `success`                |
+| `Notify via Email`    | `Email provider: Resend API` → `Email sent successfully` |
 
 **Verify from the command line:**
 
@@ -819,8 +823,8 @@ docker pull ghcr.io/<owner>/java-project:latest
 
 **Minimum secrets for a fully passing pipeline:**
 
-| Secret | Purpose |
-| ------ | ------- |
-| `RESEND_API_KEY` | Send CI notification emails |
-| `SMTP_TO` | Email recipient |
+| Secret                    | Purpose                                        |
+| ------------------------- | ---------------------------------------------- |
+| `RESEND_API_KEY`          | Send CI notification emails                    |
+| `SMTP_TO`                 | Email recipient                                |
 | *(none extra for Docker)* | `GITHUB_TOKEN` handles GHCR push automatically |

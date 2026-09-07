@@ -1,5 +1,9 @@
 # Serialization Basics — The Foundation
 
+> A foundational study guide to Java object serialization, deserialization, and field-state inspection.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`) to explore the class diagram, flowchart, and linked examples.
+
 <!-- TOC -->
 - [Serialization Basics — The Foundation](#serialization-basics--the-foundation)
   - [Concept](#concept)
@@ -12,6 +16,8 @@
 **Files:**
 - [serializationBasics.java](../../../demo/src/main/java/com/advanced/serialization/serializationBasics.java) — the runnable demo.
 - [serializeBase.java](../../../demo/src/main/java/com/advanced/serialization/serializeBase.java) — the shared parent class every other serialization demo in this package extends. It owns `serialize()`, `deserialize()`, and the file-check helpers used everywhere else.
+
+---
 
 ## 📌 Concept
 

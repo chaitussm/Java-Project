@@ -1,5 +1,9 @@
 # Externalization Basics
 
+> A study guide to Java `Externalizable`, selective persistence, and its constructor requirements.
+
+> **Preview tip:** Open this guide in **Markdown Preview** (`Ctrl+Shift+V`) to follow the lifecycle diagrams and comparison tables.
+
 <!-- TOC -->
 - [Externalization Basics](#externalization-basics)
     - [Concept](#concept)
@@ -12,6 +16,8 @@
 <!-- /TOC -->
 
 **File:** [externalizationbasics.java](../../../demo/src/main/java/com/advanced/serialization/externalization/externalizationbasics.java)
+
+---
 
 ## 📌 Concept
 
@@ -99,8 +105,6 @@ flowchart LR
 
 - If the class has no accessible public no-arg constructor, deserialization fails with `InvalidClassException`.
 - This is a stricter requirement than plain `Serializable`, which doesn't invoke any constructor of the serializable class itself.
-
----
 
 ---
 

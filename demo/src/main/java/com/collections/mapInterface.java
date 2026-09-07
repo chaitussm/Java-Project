@@ -8,6 +8,10 @@ public class mapInterface extends mapDemo{
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);
         mapConstructors(collectionType);
+        if (collectionType.equals("HashMap") || collectionType.equals("LinkedHashMap")
+                || collectionType.equals("Hashtable")) {
+            mapLoadFactor(collectionType);
+        }
     }
 
     public static void main(String[] args) {
@@ -15,6 +19,6 @@ public class mapInterface extends mapDemo{
         demonstrateMap("LinkedHashMap");
         demonstrateMap("TreeMap");
         demonstrateMap("Hashtable");
-        CollectionTypeInspector.printDefaultCapacitySummary();
+        CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable");
     }
 }

@@ -1,5 +1,9 @@
 # Extracting Mobile Numbers and Email IDs from a File
-//Ctrl and click a Markdown link to open its target.
+
+> A file-processing study guide that uses regular expressions to collect unique mobile numbers and email IDs.
+
+> **Preview tip:** Use **Markdown Preview** (`Ctrl+Shift+V`), then `Ctrl+click` a Markdown link to open its target.
+
 <!-- TOC -->
 - [Extracting Mobile Numbers and Email IDs from a File](#extracting-mobile-numbers-and-email-ids-from-a-file)
     - [Files Used](#files-used)
@@ -10,6 +14,8 @@
 <!-- /TOC -->
 
 **Source:** [FetchMobileNumandEmailFromFile.java](../../../demo/src/main/java/com/regularExpressions/FetchMobileNumandEmailFromFile.java)
+
+---
 
 This program reads mixed text from `fetchdata.txt`, finds mobile numbers and email IDs with regular expressions, stores them in collections, and writes the extracted values to `writeFetchedData.txt`.
 
@@ -101,7 +107,7 @@ String regxEmail = "[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+";
 
 | Pattern                           | Explanation                                                                                                              |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `(0                               | 91)?[7-9][0-9]{9}`                                                                                                       | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits. |
+| `(0\|91)?[7-9][0-9]{9}`           | Optional `0` or `91` prefix, followed by a first digit from `7` to `9`, followed by nine digits.                         |
 | `[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+` | Finds an email-like value anywhere in a line. It accepts letters, digits, and common email symbols before and after `@`. |
 
 The email pattern does not use `^` and `$`. Those anchors would require the whole line to be only an email, but the input uses text such as `Email: priya.sharma@example.com`.

@@ -1,5 +1,9 @@
 # Serializing Multiple Objects to One File
 
+> A study guide to stream order, typed reads, and safe runtime type checks for multiple serialized objects.
+
+> **Preview tip:** Open this page in **Markdown Preview** (`Ctrl+Shift+V`) to follow the stream diagrams and comparison table.
+
 <!-- TOC -->
 - [Serializing Multiple Objects to One File](#serializing-multiple-objects-to-one-file)
     - [Part 1 — sequenceOfMultpleObjects.java](#part-1--sequenceofmultpleobjectsjava)

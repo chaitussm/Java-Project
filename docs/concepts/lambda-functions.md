@@ -1,5 +1,11 @@
 # Lambda Functions in Java
 
+> A practical study guide to Java lambda syntax, functional interfaces, method references, and collection workflows.
+
+> **Preview tip:** Open this file in **Markdown Preview** (`Ctrl+Shift+V`) to explore the diagrams and linked sections.
+
+---
+
 ## Quick navigation
 
 - [Source program](#source-program)

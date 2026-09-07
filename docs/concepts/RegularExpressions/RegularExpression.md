@@ -1,5 +1,9 @@
 # Regular Expressions — Basics
 
+> A hands-on reference for Java regular expressions, `Pattern`, `Matcher`, tokenization, validation, and CI execution.
+
+> **Preview tip:** Open this page in **Markdown Preview** (`Ctrl+Shift+V`) for the diagrams, tables, and clickable contents.
+
 <!-- TOC -->
 - [Regular Expressions — Basics](#regular-expressions--basics)
   - [Concept](#concept)
@@ -30,6 +34,8 @@
 <!-- /TOC -->
 
 **File:** [regularExpressionBasics.java](../../../demo/src/main/java/com/regularExpressions/regularExpressionBasics.java)
+
+---
 
 ## 📌 Concept
 
@@ -148,31 +154,30 @@ This explains why the output can look like:
 
 Even though the actual match is only two characters long.
 
-public static Pattern complie(String target)
+### `Pattern` and `Matcher` API summary
 
-We can use matcher Object to check trhe given pattern in the target String
-We can create a matcher Object by using matcher() of Pattern class
+```java
+public static Pattern compile(String regex)
+public Matcher matcher(CharSequence target)
+```
 
-Public Matcher matecher(String target)
+Use a `Matcher` object to check a compiled pattern against a target string. Create it with the `matcher()` method of `Pattern`.
 
-## Important Methods of Matcher class 
-> boolean find()
-It attempts to find next match and returns true if it is available 
-> int start() 
-Returns the start index of the match 
-> int end()
-Returns end + 1 index of the match 
-> String group()
-It returns the matched pattern 
+## Important Methods of `Matcher`
 
-# NOTE 
-> Pattern and matcher classes present in java.util.regex package 
-and introduced in 1.4 V 
+| Method           | Purpose                                                                   |
+| ---------------- | ------------------------------------------------------------------------- |
+| `boolean find()` | Attempts to find the next match and returns `true` when one is available. |
+| `int start()`    | Returns the inclusive start index of the match.                           |
+| `int end()`      | Returns the exclusive end index of the match.                             |
+| `String group()` | Returns the matched text.                                                 |
+
+> **Note:** `Pattern` and `Matcher` are in the `java.util.regex` package and were introduced in Java 1.4.
 
 ## 🔗 Related Files
 - [regularExpressionBasics.java](../../../demo/src/main/java/com/regularExpressions/regularExpressionBasics.java) — source file implementing the regex scanning logic.
 
-# character classes 
+## Character classes
 
 >[abc] => either 'a' or 'b' or 'c'
 
@@ -194,7 +199,7 @@ and introduced in 1.4 V
 
 >[a-z&&[^m-p]] => subtraction: 'a' to 'z' except 'm' to 'p'
 
-# predefined character classes
+## Predefined character classes
 
 >. => any character (except line terminator)
 
@@ -210,7 +215,7 @@ and introduced in 1.4 V
 
 >\W => any non-word character, same as [^\w]
 
-# quantifiers
+## Quantifiers
 
 >X? => X occurs zero or one time (optional)
 
@@ -224,7 +229,7 @@ and introduced in 1.4 V
 
 >X{n,m} => X occurs at least n but not more than m times
 
-# boundary matchers
+## Boundary matchers
 
 >^ => matches at the beginning of a line
 
@@ -240,7 +245,7 @@ and introduced in 1.4 V
 
 >\z => matches at the very end of the input
 
-# logical operators
+## Logical operators
 
 >XY => X followed by Y (concatenation)
 
@@ -248,13 +253,13 @@ and introduced in 1.4 V
 
 >(X) => X as a capturing group
 
-# back references
+## Back references
 
 >\n => matches whatever was matched by the n-th capturing group (e.g. \1 refers to group 1)
 
 ---
 
-# Regular Expressions — Pattern Class
+## Regular Expressions — `Pattern` Class
 
 **File:** [splitMethod.java](../../../demo/src/main/java/com/regularExpressions/patternClass/splitMethod.java)
 
@@ -298,7 +303,7 @@ String[] parts = dotPattern.split("www.durgajobs.com");
 
 ---
 
-# StringTokenizer
+## `StringTokenizer`
 
 **Files:**
 - [stringTokenizer.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/stringTokenizer.java)
@@ -417,22 +422,24 @@ flowchart LR
 - [mobileNumber.java](../../../demo/src/main/java/com/regularExpressions/stringTokenizer/mobileNumber.java) — mobile 
 number and email regex design notes.
 
-# Regular expression to represent YAVA language Identifiers 
+## Regular Expression to Represent Java Language Identifiers
 
->Rules 
+### Rules
 
-Allowed characters are 
+Allowed characters are:
 
 1. a-z , A-Z, 0-9, #, $
 2. length of identifier should be atleast 2 
 3. the first character should be lower case alphabet symbol from a to k 
 4. second character should be a digit divisible by 3 (0,3,6,9)
 
-[a-k][0369][a-zA-Z0-9#$]* 
+```text
+[a-k][0369][a-zA-Z0-9#$]*
+```
 
 ---
 
-# Executing the Mobile Number Validator Locally
+## Executing the Mobile Number Validator Locally
 
 **File:** [checkNumber.java](../../../demo/src/main/java/com/regularExpressions/checkNumber.java)
 
@@ -520,7 +527,7 @@ java -cp demo/target/classes com.regularExpressions.checkNumber
 
 ---
 
-# Executing the Validator in the CI Pipeline
+## Executing the Validator in the CI Pipeline
 
 **Workflow:** [java-end-to-end_ci.yml](../../../.github/workflows/java-end-to-end_ci.yml)
 

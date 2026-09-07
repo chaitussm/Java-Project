@@ -5,7 +5,7 @@
   - [Folders](#folders)
 <!-- /TOC -->
 
-This folder contains project data files.
+> Project data files used by the Java demonstrations and serialization examples.
 
 ## Folders
 
