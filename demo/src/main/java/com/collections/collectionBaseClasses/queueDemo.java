@@ -1,8 +1,11 @@
 package com.collections.collectionBaseClasses;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -22,6 +25,49 @@ public class queueDemo {
                 demonstrateLinkedListQueue();
                 break;
         }
+    }
+
+    public static void queueConstructors(String collectionType) {
+        switch (collectionType) {
+            case "ArrayDeque":
+                demonstrateArrayDequeConstructors();
+                break;
+            case "PriorityQueue":
+                demonstratePriorityQueueConstructors();
+                break;
+            case "LinkedList":
+            default:
+                demonstrateLinkedListQueueConstructors();
+                break;
+        }
+    }
+
+    private static void demonstrateLinkedListQueueConstructors() {
+        Collection<String> source = List.of("A", "B");
+        System.out.println("LinkedList(): " + new LinkedList<String>());
+        System.out.println("LinkedList(Collection): " + new LinkedList<>(source));
+    }
+
+    private static void demonstrateArrayDequeConstructors() {
+        Collection<String> source = List.of("A", "B");
+        System.out.println("ArrayDeque(): " + new ArrayDeque<String>());
+        System.out.println("ArrayDeque(int): capacity 20 -> " + new ArrayDeque<String>(20));
+        System.out.println("ArrayDeque(Collection): " + new ArrayDeque<>(source));
+    }
+
+    private static void demonstratePriorityQueueConstructors() {
+        Collection<String> source = List.of("B", "A");
+        System.out.println("PriorityQueue(): " + new PriorityQueue<String>());
+        System.out.println("PriorityQueue(int): capacity 20 -> " + new PriorityQueue<String>(20));
+        System.out.println("PriorityQueue(Comparator): "
+                + new PriorityQueue<String>(Comparator.reverseOrder()));
+        System.out.println("PriorityQueue(int, Comparator): capacity 20 -> "
+                + new PriorityQueue<String>(20, Comparator.reverseOrder()));
+        System.out.println("PriorityQueue(Collection): " + new PriorityQueue<>(source));
+        System.out.println("PriorityQueue(PriorityQueue): "
+                + new PriorityQueue<>(new PriorityQueue<>(source)));
+        System.out.println("PriorityQueue(SortedSet): "
+                + new PriorityQueue<>(new java.util.TreeSet<>(source)));
     }
 
     // LinkedList as Queue: doubly-linked list. FIFO order preserved; offer/poll at ends are O(1).

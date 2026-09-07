@@ -1,17 +1,11 @@
 package com.collections;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Spliterator;
-import java.util.Vector;
-
+import java.util.*;
 public class cursors {
 
 	public void demonstrateIterator() {
 		List<String> names = new ArrayList<>(List.of("Asha", "Bala", "Chitra", "Dinesh"));
+        System.out.println("iterator implemented class object is :" + names.getClass().getName());
 		Iterator<String> iterator = names.iterator();
 
 		System.out.print("Iterator forward: ");
@@ -29,6 +23,7 @@ public class cursors {
 
 	public void demonstrateListIterator() {
 		List<String> names = new ArrayList<>(List.of("Asha", "Bala", "Chitra"));
+        System.out.println("listIterator implemented class object is :" + names.getClass().getName());
 		ListIterator<String> iterator = names.listIterator();
 
 		while (iterator.hasNext()) {
@@ -49,6 +44,7 @@ public class cursors {
 
 	public void demonstrateEnumeration() {
 		Vector<String> values = new Vector<>(List.of("one", "two", "three"));
+        System.out.println("enumeration implemented class object is :" + values.getClass().getName());
 		Enumeration<String> enumeration = values.elements();
 
 		System.out.print("Enumeration forward: ");
@@ -60,6 +56,7 @@ public class cursors {
 
 	public void demonstrateSpliterator() {
 		List<String> values = List.of("one", "two", "three", "four");
+        System.out.println("spliterator implemented class object is :" + values.getClass().getName());
 		Spliterator<String> firstHalf = values.spliterator();
 		Spliterator<String> secondHalf = firstHalf.trySplit();
 

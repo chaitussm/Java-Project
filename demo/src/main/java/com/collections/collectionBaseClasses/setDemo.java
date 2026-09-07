@@ -3,6 +3,7 @@ package com.collections.collectionBaseClasses;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,6 +23,47 @@ public class setDemo {
                 demonstrateHashSet();
                 break;
         }
+    }
+
+    public static void setConstructors(String collectionType) {
+        switch (collectionType) {
+            case "LinkedHashSet":
+                demonstrateLinkedHashSetConstructors();
+                break;
+            case "TreeSet":
+                demonstrateTreeSetConstructors();
+                break;
+            case "HashSet":
+            default:
+                demonstrateHashSetConstructors();
+                break;
+        }
+    }
+
+    private static void demonstrateHashSetConstructors() {
+        Set<String> source = Set.of("A", "B");
+        System.out.println("HashSet(): " + new HashSet<String>());
+        System.out.println("HashSet(int): capacity 20 -> " + new HashSet<String>(20));
+        System.out.println("HashSet(int, float): capacity 20, load factor 0.80 -> " + new HashSet<String>(20, 0.80f));
+        System.out.println("HashSet(Collection): " + new HashSet<>(source));
+    }
+
+    private static void demonstrateLinkedHashSetConstructors() {
+        Set<String> source = Set.of("A", "B");
+        System.out.println("LinkedHashSet(): " + new LinkedHashSet<String>());
+        System.out.println("LinkedHashSet(int): capacity 20 -> " + new LinkedHashSet<String>(20));
+        System.out.println("LinkedHashSet(int, float): capacity 20, load factor 0.80 -> "
+                + new LinkedHashSet<String>(20, 0.80f));
+        System.out.println("LinkedHashSet(Collection): " + new LinkedHashSet<>(source));
+    }
+
+    private static void demonstrateTreeSetConstructors() {
+        Set<String> source = Set.of("B", "A");
+        Set<String> sortedSource = new TreeSet<>(source);
+        System.out.println("TreeSet(): " + new TreeSet<String>());
+        System.out.println("TreeSet(Comparator): " + new TreeSet<String>(Comparator.reverseOrder()));
+        System.out.println("TreeSet(Collection): " + new TreeSet<>(source));
+        System.out.println("TreeSet(SortedSet): " + new TreeSet<>(sortedSource));
     }
 
     // HashSet: hash-table backed. No insertion order guarantee; add/contains/remove are average O(1).

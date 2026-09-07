@@ -78,6 +78,29 @@ public final class CollectionTypeInspector {
         System.out.println("  Formula: " + formula);
     }
 
+    public static void printDefaultCapacitySummary() {
+        System.out.println("===== Default Capacity Summary =====");
+        System.out.println("List:");
+        System.out.println("  ArrayList       -> 10 on first growth; new capacity is old capacity + half");
+        System.out.println("  LinkedList      -> no array capacity; one node per element");
+        System.out.println("  Vector          -> 10; doubles when full by default");
+        System.out.println("  Stack           -> 10; inherits Vector capacity");
+        System.out.println("Set:");
+        System.out.println("  HashSet         -> 16 buckets, threshold = 16 * 0.75 = 12");
+        System.out.println("  LinkedHashSet   -> 16 buckets, threshold = 16 * 0.75 = 12");
+        System.out.println("  TreeSet         -> no array capacity; one tree node per element");
+        System.out.println("Queue:");
+        System.out.println("  LinkedList      -> no array capacity; one node per element");
+        System.out.println("  ArrayDeque      -> default internal circular-array capacity");
+        System.out.println("  PriorityQueue   -> 11; grows by old capacity + 2 below 64");
+        System.out.println("Map:");
+        System.out.println("  HashMap         -> 16 buckets, threshold = 16 * 0.75 = 12");
+        System.out.println("  LinkedHashMap   -> 16 buckets, threshold = 16 * 0.75 = 12");
+        System.out.println("  TreeMap         -> no array capacity; one tree node per entry");
+        System.out.println("  Hashtable       -> 11 buckets, threshold = 11 * 0.75 = 8");
+        System.out.println("====================================");
+    }
+
     private static String classify(Class<?> type) {
         if (type.isInterface()) {
             return "INTERFACE";

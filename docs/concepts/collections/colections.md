@@ -25,6 +25,13 @@
     - [`Iterator<E>` methods](#iteratore-methods)
     - [`ListIterator<E>` additional methods](#listiteratore-additional-methods)
     - [Legacy `Enumeration<E>` methods](#legacy-enumeratione-methods)
+- [Vector](#vector)
+- [Constructors for all collection data structures](#constructors-for-all-collection-data-structures)
+  - [List constructor examples](#list-constructor-examples)
+- [Stack](#stack)
+  - [Set constructor examples](#set-constructor-examples)
+  - [Queue constructor examples](#queue-constructor-examples)
+  - [Map constructor examples](#map-constructor-examples)
 - [Set(I) Interface](#seti-interface)
   - [Set Interface Hierarchy](#set-interface-hierarchy)
     - [Common implementations](#common-implementations)
@@ -441,6 +448,133 @@ flowchart LR
 6. It implements Serializable ,Cloneable and RandomAccess interfaces
 7. Every method present in the vector is synchronized and hence vector object is thread safe
 
+Constructors
+
+>Vector v = new Vector();
+
+>Vector v = new Vector(int initialCapacity);
+
+Creates an empty vector object with specified initial capacity 
+
+>Vector v = new Vector(int initialCapacity, int incrementalCapacity);
+
+>Vector v = new Vector(Collection c);
+
+Creates an equivalent vector Object for the given collection this constructor meant for interconvertion between
+collection objects
+
+# Constructors for all collection data structures
+
+The following methods demonstrate the constructors for each data structure. Ctrl+click a method name to open its Java implementation:
+
+- [List constructors — `listConstructors(String)`](../../../demo/src/main/java/com/collections/list/listDemo.java)
+
+## List constructor examples
+
+```java
+new ArrayList<>();
+new ArrayList<>(20);
+new ArrayList<>(collection);
+
+new LinkedList<>();
+new LinkedList<>(collection);
+
+new Vector<>();
+new Vector<>(20);
+new Vector<>(20, 5);
+new Vector<>(collection);
+
+
+
+```
+# Stack 
+
+It is the child class of vector , it is a specially designed class for last in firsat out order(LIFO) 
+
+Constructor 
+
+Stack s = new Stack<>();
+
+
+`Stack` has only its no-argument constructor. It inherits the vector-based storage behavior from `Vector`.
+
+## Set constructor examples
+
+
+```java
+new HashSet<>();
+new HashSet<>(20);
+new HashSet<>(20, 0.80f);
+new HashSet<>(collection);
+
+new LinkedHashSet<>();
+new LinkedHashSet<>(20);
+new LinkedHashSet<>(20, 0.80f);
+new LinkedHashSet<>(collection);
+
+new TreeSet<>();
+new TreeSet<>(Comparator.reverseOrder());
+new TreeSet<>(collection);
+new TreeSet<>(sortedSet);
+```
+
+`TreeSet` accepts a comparator for custom ordering and a `SortedSet` to preserve its sorted-source behavior.
+
+## Queue constructor examples
+
+```java
+new LinkedList<>();
+new LinkedList<>(collection);
+
+new ArrayDeque<>();
+new ArrayDeque<>(20);
+new ArrayDeque<>(collection);
+
+new PriorityQueue<>();
+new PriorityQueue<>(20);
+new PriorityQueue<>(Comparator.reverseOrder());
+new PriorityQueue<>(20, Comparator.reverseOrder());
+new PriorityQueue<>(collection);
+new PriorityQueue<>(priorityQueue);
+new PriorityQueue<>(sortedSet);
+```
+
+`LinkedList` can act as both a `List` and a `Queue`. `PriorityQueue` also provides copy constructors for another `PriorityQueue` and a `SortedSet`.
+
+## Map constructor examples
+
+```java
+new HashMap<>();
+new HashMap<>(20);
+new HashMap<>(20, 0.80f);
+new HashMap<>(map);
+
+new LinkedHashMap<>();
+new LinkedHashMap<>(20);
+new LinkedHashMap<>(20, 0.80f);
+new LinkedHashMap<>(20, 0.80f, true); // access-order mode
+new LinkedHashMap<>(map);
+
+new TreeMap<>();
+new TreeMap<>(Comparator.reverseOrder());
+new TreeMap<>(map);
+new TreeMap<>(sortedMap);
+
+new Hashtable<>();
+new Hashtable<>(20);
+new Hashtable<>(20, 0.80f);
+new Hashtable<>(map);
+```
+
+The integer argument controls initial capacity, the `float` argument controls load factor, and the collection/map argument copies entries from an existing object.
+
+
+
+
+
+
+
+
 
 
 
@@ -449,6 +583,8 @@ flowchart LR
 1.It is the child interface of collection 
 2.If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion 
   order not required then we should go for Set.
+
+- [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/setDemo.java)
 
 ## Set Interface Hierarchy
 
@@ -593,6 +729,8 @@ order only mail should be delivered.For this requirement Queue is best choice
 
 > Most Queue implementations do not permit `null` elements because `poll()` and `peek()` use `null` to indicate that the queue is empty.
 
+- [Queue constructors — `queueConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/queueDemo.java)
+- 
 ## Queue Interface Hierarchy
 
 The diagram includes the public Queue-related interfaces and standard JDK implementations. A solid arrow means **extends** and a dashed arrow means **implements**.
@@ -757,6 +895,9 @@ then we should go for map.Duplicate Keys are not allowed but Values can be dupli
 
 ## Map Interface Hierarchy
 
+
+- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/mapDemo.java)
+- 
 `Map` is separate from `Collection`: it stores a mapping from each unique key to one value. A solid arrow means **extends** and a dashed arrow means **implements**.
 
 ```mermaid

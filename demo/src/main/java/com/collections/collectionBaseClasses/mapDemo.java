@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,6 +27,63 @@ public class mapDemo {
                 demonstrateHashMap();
                 break;
         }
+    }
+
+    public static void mapConstructors(String collectionType) {
+        switch (collectionType) {
+            case "LinkedHashMap":
+                demonstrateLinkedHashMapConstructors();
+                break;
+            case "TreeMap":
+                demonstrateTreeMapConstructors();
+                break;
+            case "Hashtable":
+                demonstrateHashtableConstructors();
+                break;
+            case "HashMap":
+            default:
+                demonstrateHashMapConstructors();
+                break;
+        }
+    }
+
+    private static void demonstrateHashMapConstructors() {
+        Map<String, Integer> source = Map.of("A", 1, "B", 2);
+        System.out.println("HashMap(): " + new HashMap<String, Integer>());
+        System.out.println("HashMap(int): capacity 20 -> " + new HashMap<String, Integer>(20));
+        System.out.println("HashMap(int, float): capacity 20, load factor 0.80 -> "
+                + new HashMap<String, Integer>(20, 0.80f));
+        System.out.println("HashMap(Map): " + new HashMap<>(source));
+    }
+
+    private static void demonstrateLinkedHashMapConstructors() {
+        Map<String, Integer> source = Map.of("A", 1, "B", 2);
+        System.out.println("LinkedHashMap(): " + new LinkedHashMap<String, Integer>());
+        System.out.println("LinkedHashMap(int): capacity 20 -> " + new LinkedHashMap<String, Integer>(20));
+        System.out.println("LinkedHashMap(int, float): capacity 20, load factor 0.80 -> "
+                + new LinkedHashMap<String, Integer>(20, 0.80f));
+        System.out.println("LinkedHashMap(int, float, boolean): access order -> "
+                + new LinkedHashMap<String, Integer>(20, 0.80f, true));
+        System.out.println("LinkedHashMap(Map): " + new LinkedHashMap<>(source));
+    }
+
+    private static void demonstrateTreeMapConstructors() {
+        Map<String, Integer> source = Map.of("B", 2, "A", 1);
+        Map<String, Integer> sortedSource = new TreeMap<>(source);
+        System.out.println("TreeMap(): " + new TreeMap<String, Integer>());
+        System.out.println("TreeMap(Comparator): "
+                + new TreeMap<String, Integer>(Comparator.reverseOrder()));
+        System.out.println("TreeMap(Map): " + new TreeMap<>(source));
+        System.out.println("TreeMap(SortedMap): " + new TreeMap<>(sortedSource));
+    }
+
+    private static void demonstrateHashtableConstructors() {
+        Map<String, Integer> source = Map.of("A", 1, "B", 2);
+        System.out.println("Hashtable(): " + new Hashtable<String, Integer>());
+        System.out.println("Hashtable(int): capacity 20 -> " + new Hashtable<String, Integer>(20));
+        System.out.println("Hashtable(int, float): capacity 20, load factor 0.80 -> "
+                + new Hashtable<String, Integer>(20, 0.80f));
+        System.out.println("Hashtable(Map): " + new Hashtable<>(source));
     }
 
     // HashMap: hash-table backed. No insertion order guarantee; put/get/remove are average O(1). Allows one null key.

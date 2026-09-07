@@ -31,6 +31,50 @@ public class listDemo {
         }
     }
 
+    public static void listConstructors(String collectionType) {
+        switch (collectionType) {
+            case "LinkedList":
+                demonstrateLinkedListConstructors();
+                break;
+            case "Vector":
+                demonstrateVectorConstructors();
+                break;
+            case "Stack":
+                demonstrateStackConstructors();
+                break;
+            case "ArrayList":
+            default:
+                demonstrateArrayListConstructors();
+                break;
+        }
+    }
+
+    private static void demonstrateArrayListConstructors() {
+        List<String> source = List.of("A", "B");
+        System.out.println("ArrayList(): " + new ArrayList<String>());
+        System.out.println("ArrayList(int): capacity 20 -> " + new ArrayList<String>(20));
+        System.out.println("ArrayList(Collection): " + new ArrayList<>(source));
+    }
+
+    private static void demonstrateLinkedListConstructors() {
+        List<String> source = List.of("A", "B");
+        System.out.println("LinkedList(): " + new LinkedList<String>());
+        System.out.println("LinkedList(Collection): " + new LinkedList<>(source));
+    }
+
+    private static void demonstrateVectorConstructors() {
+        List<String> source = List.of("A", "B");
+        System.out.println("Vector(): " + new Vector<String>());
+        System.out.println("Vector(int): capacity 20 -> " + new Vector<String>(20));
+        System.out.println("Vector(int, int): capacity 20, increment 5 -> " + new Vector<String>(20, 5));
+        System.out.println("Vector(Collection): " + new Vector<>(source));
+    }
+
+    private static void demonstrateStackConstructors() {
+        System.out.println("Stack(): " + new Stack<String>());
+        System.out.println("Stack has only the no-argument constructor; it inherits Vector storage.");
+    }
+
     // ArrayList: resizable array. Fast random access (get/set are O(1)); slow mid-list insert/remove (O(n) shift).
     private static void demonstrateArrayList() {
         System.out.println("===== ArrayList =====");
