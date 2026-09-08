@@ -716,6 +716,8 @@ equals()
 
 >public boolean equals(Object obj)
 
+Whenever we are implementing comparator interface compulsory we should provide implementation only for compare() and we are not required to provide implementation for equals() because it is already available to our class from Object class through inheritance
+
 
 
 
