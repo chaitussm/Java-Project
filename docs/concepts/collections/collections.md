@@ -703,6 +703,19 @@ the Tree diagram will be
               c
 # Comparator
 
+comparator is present in java.util package and it defines 2 methods
+ 
+compare() 
+
+>public int compare(Object obj1, Object obj2)
+1. returns -ve if obj1 has to come before obj2 
+2. returns +ve if obj1 has to come after obj2 
+3. returns 0 if both obj1 and obj2 are equal 
+
+equals() 
+
+>public boolean equals(Object obj)
+
 
 
 
