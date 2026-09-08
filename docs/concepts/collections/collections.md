@@ -718,6 +718,23 @@ equals()
 
 Whenever we are implementing comparator interface compulsory we should provide implementation only for compare() and we are not required to provide implementation for equals() because it is already available to our class from Object class through inheritance
 
+refer treeSetCutomized program
+
+If we dont call comparator customized method in the below code 
+
+> TreeSet<Integer> treeSet = new TreeSet<>()
+
+internally JVM calls 
+
+>compareTo()
+
+which is meant for default natural sorting order in this case the output is [1,2,3,4,5]
+
+> TreeSet<Integer> treeSet = new TreeSet<>(new comparatorBase())
+
+At the above line if we are passing comparator Object then JVM calls for compare() which is 
+meant for customized sorting in this case ouput is [5,4,3,2,1]
+
 
 
 
