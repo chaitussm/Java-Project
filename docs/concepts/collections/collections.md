@@ -735,6 +735,14 @@ which is meant for default natural sorting order in this case the output is [1,2
 At the above line if we are passing comparator Object then JVM calls for compare() which is 
 meant for customized sorting in this case ouput is [5,4,3,2,1]
 
+If we are depending on default natural sorting order compulsory 
+objects should be homoegenous and comparable otherwise we will 
+run-time exception saying ClassCastException
+
+If we are defining our own sorting by comparator then objects need not be comparable and homogeneous i.e we can add heterogeneous 
+non-comparable objects also 
+
+
 
 
 
