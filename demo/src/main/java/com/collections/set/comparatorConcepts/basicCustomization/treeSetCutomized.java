@@ -1,4 +1,4 @@
-package com.collections.set.comparatorConcepts;
+package com.collections.set.comparatorConcepts.basicCustomization;
 import java.util.TreeSet;
 public class treeSetCutomized {
 

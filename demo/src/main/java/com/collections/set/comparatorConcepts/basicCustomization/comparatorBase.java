@@ -1,4 +1,4 @@
-package com.collections.set.comparatorConcepts;
+package com.collections.set.comparatorConcepts.basicCustomization;
 
 /** WAP to insert objects into the TreeSet where the sorting order is 
  * descending order

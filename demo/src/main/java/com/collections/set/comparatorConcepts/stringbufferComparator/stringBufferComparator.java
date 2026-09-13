@@ -1,4 +1,4 @@
-package com.collections.set.comparatorConcepts;
+package com.collections.set.comparatorConcepts.stringbufferComparator;
 
 import java.util.Comparator;
 
