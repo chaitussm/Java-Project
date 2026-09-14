@@ -742,7 +742,7 @@ run-time exception saying ClassCastException
 If we are defining our own sorting by comparator then objects need not be comparable and homogeneous i.e we can add heterogeneous 
 non-comparable objects also 
 
-
+# comparable 
 
 
 
