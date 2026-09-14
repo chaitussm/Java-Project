@@ -1,4 +1,4 @@
-package com.collections.collectionBaseClasses;
+package com.collections.map;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.collections.collectionBaseClasses.CollectionTypeInspector;
 
 public class mapDemo {
 

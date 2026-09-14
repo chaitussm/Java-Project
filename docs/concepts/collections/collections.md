@@ -50,6 +50,7 @@
 - [null acceptance in TreeSet](#null-acceptance-in-treeset)
 - [comparable Concept](#comparable-concept)
 - [Comparator](#comparator)
+- [comparable](#comparable)
     - [Common implementations](#common-implementations)
     - [Thread-safe implementations](#thread-safe-implementations)
     - [HashSet (C)](#hashset-c)
@@ -61,6 +62,7 @@
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
   - [Map (I)](#map-i)
+- [Map Interface methods](#map-interface-methods)
   - [Map Interface Hierarchy](#map-interface-hierarchy)
     - [Interfaces](#interfaces)
     - [Classes](#classes)
@@ -69,6 +71,8 @@
   - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
     - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line--collectiontypeinspectorjava-line-15)
     - [Example output](#example-output)
+- [HashMap](#hashmap)
+- [HashMap constructors](#hashmap-constructors)
 <!-- /TOC -->
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
@@ -1136,8 +1140,25 @@ classDiagram
 
 ## Map (I)
 
-Map is not child interface of Collection (I) , if we want to represent a group objects as Key Value pairs 
-then we should go for map.Duplicate Keys are not allowed but Values can be duplicated.
+Map is not child interface of Collection (I) , 
+1. If we want to represent a group objects as Key Value pairs 
+   then we should go for map.
+2. Duplicate Keys are not allowed but Values can be duplicated.
+3. Both Keys and Values are objects only.
+4. Each Key Value pair is called Entry, hence map is considered as a collection of entry objects
+
+
+# Map Interface methods 
+
+>Object put(Object Key, Object Value)
+1. To add one Key-Value pair to the map 
+2. If the Key is already present then the old value will be replaced with new Value and returns old value.
+
+
+>Entry(I)
+
+Map is a group of Key-Value pairs and each key-value pair is called an entry. Hence map is considered as a collection of entry objects 
+without existing map object there is no chance of existing entry object, hence entry interface is defined inside map interface
 
 ## Map Interface Hierarchy
 
@@ -1383,6 +1404,26 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
   List                 -> INTERFACE
 --------------------------------
 ```
+# HashMap
+1. The underlying data structure is Hashtable
+2. Insertion order is not preserved and it is based on hashcode of keys 
+3. duplicate keys are not allowed but values can be duplicated 
+4. Heterogeneous objects are allowed for both Key and values
+5.  null is allowed for key only once 
+6. null is allowed for values any number of times 
+7. HashMap implements serializable and cloneable interfaces but not RandomAccess
+8. HashMap is the best choice if our frequent operation is search operation 
+
+# HashMap constructors
+1. HashMap hm = new HashMap();
+  
+   creates an empty hashmap object with default initial capacity 16 and default fill ratio 0.75
+2. HashMap hm = new HashMap(int initialcapacity);
+   creates an empty hashmap object with specified initial capacity and default fill ration 0.75
+3. HashMap hm = new HashMap(int initialcapacity, float fillratio);
+4. HashMap hm = new HashMap(Map m);
+
+
 
 
 
