@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "name": "Java-Project (root)",
+      "path": "."
+    },
+    {
+      "name": "demo (Maven)",
+      "path": "demo"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.maven.enabled": true
+  }
+}

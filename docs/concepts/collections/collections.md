@@ -11,7 +11,6 @@
 <!-- TOC -->
 - [Java Collections Guide](#java-collections-guide)
   - [Introduction](#introduction)
-    - [Limitations of arrays](#limitations-of-arrays)
   - [Collections](#collections)
   - [Collection Definition](#collection-definition)
   - [Collection Framework](#collection-framework)
@@ -23,8 +22,6 @@
     - [ArrayList](#arraylist)
     - [Difference between ArrayList and Vector](#difference-between-arraylist-and-vector)
     - [LinkedList](#linkedlist)
-      - [Constructors](#constructors)
-      - [LinkedList class-specific methods](#linkedlist-class-specific-methods)
     - [Difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
     - [Modern implementations](#modern-implementations)
     - [Legacy classes](#legacy-classes)
@@ -44,13 +41,19 @@
   - [Set constructor examples](#set-constructor-examples)
   - [Queue constructor examples](#queue-constructor-examples)
   - [Map constructor examples](#map-constructor-examples)
+  - [Hashtable — complete execution flow (`hashTableDemo.java`)](#hashtable--complete-execution-flow-hashtabledemojava)
+    - [Source files](#source-files)
+    - [Default bucket table and load factor](#default-bucket-table-and-load-factor)
+    - [How a key picks a bucket](#how-a-key-picks-a-bucket)
+    - [End-to-end execution flow](#end-to-end-execution-flow)
+    - [Bucket allocation after all `put` calls](#bucket-allocation-after-all-put-calls)
+    - [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets)
+    - [Collision chaining at bucket 5](#collision-chaining-at-bucket-5)
+    - [How `println` walks the table](#how-println-walks-the-table)
+    - [Verified program output](#verified-program-output)
+    - [Run the demo](#run-the-demo)
   - [Set (I) Interface](#set-i-interface)
   - [Set Interface Hierarchy](#set-interface-hierarchy)
-- [TreeSet](#treeset)
-- [null acceptance in TreeSet](#null-acceptance-in-treeset)
-- [comparable Concept](#comparable-concept)
-- [Comparator](#comparator)
-- [comparable](#comparable)
     - [Common implementations](#common-implementations)
     - [Thread-safe implementations](#thread-safe-implementations)
     - [HashSet (C)](#hashset-c)
@@ -62,7 +65,6 @@
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
   - [Map (I)](#map-i)
-- [Map Interface methods](#map-interface-methods)
   - [Map Interface Hierarchy](#map-interface-hierarchy)
     - [Interfaces](#interfaces)
     - [Classes](#classes)
@@ -71,13 +73,6 @@
   - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
     - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line--collectiontypeinspectorjava-line-15)
     - [Example output](#example-output)
-- [HashMap](#hashmap)
-- [HashMap constructors](#hashmap-constructors)
-- [SortedMap](#sortedmap)
-- [null Acceptance](#null-acceptance)
-- [Constructors](#constructors-1)
-- [Hashtable](#hashtable)
-- [Constructors](#constructors-2)
 <!-- /TOC -->
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
@@ -171,12 +166,12 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 
 ### Difference between ArrayList and Vector
 
-| Topic           | `ArrayList`                                                                                                   | `Vector`                                                                                            |
-| --------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Synchronization | Every method present in `ArrayList` is non-synchronized.                                                      | Every method present in `Vector` is synchronized.                                                   |
-| Thread safety   | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
-| Performance     | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object.     | Relatively low performance because threads are required to wait to operate on a `Vector` object.    |
-| Version         | Introduced in 1.2 v and it is non-legacy.                                                                     | Introduced in 1.0 v and it is legacy.                                                               |
+| Topic | `ArrayList` | `Vector` |
+| ----- | ----------- | -------- |
+| Synchronization | Every method present in `ArrayList` is non-synchronized. | Every method present in `Vector` is synchronized. |
+| Thread safety | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
+| Performance | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object. | Relatively low performance because threads are required to wait to operate on a `Vector` object. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.0 v and it is legacy. |
 
 By default, `ArrayList` is non-synchronized, but we can get a synchronized version of an `ArrayList` object by using the `synchronizedList()` method of the `Collections` class:
 
@@ -213,34 +208,34 @@ public static Map synchronizedMap(Map m)
 
 #### Constructors
 
-| Constructor                                    | Description                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------------- |
-| `LinkedList l = new LinkedList();`             | Creates an empty list object.                                       |
+| Constructor | Description |
+| ----------- | ----------- |
+| `LinkedList l = new LinkedList();` | Creates an empty list object. |
 | `LinkedList l = new LinkedList(Collection c);` | Creates an equivalent `LinkedList` object for the given collection. |
 
 #### LinkedList class-specific methods
 
 Usually we can use `LinkedList` to develop stacks and queues. To provide support for this requirement, the `LinkedList` class defines the following specific methods:
 
-| Method                    | Description                            |
-| ------------------------- | -------------------------------------- |
-| `void addFirst(Object o)` | Inserts an element at the beginning.   |
-| `void addLast(Object o)`  | Inserts an element at the end.         |
-| `Object getFirst()`       | Returns the first element.             |
-| `Object getLast()`        | Returns the last element.              |
-| `Object removeFirst()`    | Removes and returns the first element. |
-| `Object removeLast()`     | Removes and returns the last element.  |
+| Method | Description |
+| ------ | ----------- |
+| `void addFirst(Object o)` | Inserts an element at the beginning. |
+| `void addLast(Object o)` | Inserts an element at the end. |
+| `Object getFirst()` | Returns the first element. |
+| `Object getLast()` | Returns the last element. |
+| `Object removeFirst()` | Removes and returns the first element. |
+| `Object removeLast()` | Removes and returns the last element. |
 
 ### Difference between ArrayList and LinkedList
 
-| Topic          | `ArrayList`                                                                           | `LinkedList`                                                                                                              |
-| -------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Data structure | Internally uses a resizable array data structure.                                     | Internally uses a doubly linked list data structure.                                                                      |
-| Best for       | Retrieval operations.                                                                 | Insertion or deletion in the middle.                                                                                      |
-| Worst for      | Insertion or deletion in the middle because it requires shifting of elements.         | Retrieval because it does not support index-based access; it has to traverse from the beginning or end.                   |
-| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor.                                                  |
-| Memory usage   | Consumes less memory because it just holds the elements.                              | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
-| Version        | Introduced in 1.2 v and it is non-legacy.                                             | Introduced in 1.2 v and it is non-legacy.                                                                                 |
+| Topic | `ArrayList` | `LinkedList` |
+| ----- | ----------- | ------------ |
+| Data structure | Internally uses a resizable array data structure. | Internally uses a doubly linked list data structure. |
+| Best for | Retrieval operations. | Insertion or deletion in the middle. |
+| Worst for | Insertion or deletion in the middle because it requires shifting of elements. | Retrieval because it does not support index-based access; it has to traverse from the beginning or end. |
+| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor. |
+| Memory usage | Consumes less memory because it just holds the elements. | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
+| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.2 v and it is non-legacy. |
 
 Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
 
@@ -607,14 +602,244 @@ new Hashtable<>(map);
 
 The integer argument controls initial capacity, the `float` argument controls load factor, and the collection/map argument copies entries from an existing object.
 
+---
 
+## Hashtable — complete execution flow (`hashTableDemo.java`)
 
+This section follows the runnable demo that shows **how many buckets exist**, **where each entry lands**, and **why `println` order is not insertion order**.
 
+### Source files
 
+| File | Role |
+| ---- | ---- |
+| [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) | Creates a `Hashtable`, inserts six keys, prints the table |
+| [hashTableBase.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) | Key type: stores `int i`, overrides `hashCode()` to return `i`, overrides `toString()` to return `i` as text |
+| [hashTable.java](../../../demo/src/main/java/com/collections/map/hashTable.java) | Optional entry point that runs the broader `Hashtable` map demo via `mapDemo` |
 
+`hashTableDemo` uses **custom keys** so bucket indices are predictable. In real code, `hashCode()` is rarely equal to a small integer, but the **bucket formula is the same**.
 
+### Default bucket table and load factor
 
+For `new Hashtable<>()` (no-arg constructor), the JDK uses:
 
+| Setting | Default value | Meaning in this demo |
+| ------- | ------------- | -------------------- |
+| **Number of buckets** | **11** | Internal array length; valid bucket indexes are **0 … 10** |
+| **Load factor** | **0.75** | Rehash when `size` exceeds `capacity × load factor` |
+| **Rehash threshold** | **8** | `11 × 0.75 = 8` (integer truncation) |
+
+Six `put` operations are performed, so `size = 6` and **no rehash** occurs. The table stays at **11 buckets**.
+
+### How a key picks a bucket
+
+For each `put(key, value)`:
+
+1. Call `key.hashCode()` → for `hashTableBase`, this is the field `i`.
+2. Compute `index = (hashCode & 0x7FFFFFFF) % table.length` → with length **11**, this is `i % 11` for non-negative `i`.
+3. If the bucket is empty, store the entry there.
+4. If the bucket already has entries (**collision**), link the new entry into a **chain** at that bucket (separate chaining).
+5. If `size` exceeds the threshold, **rehash** into a larger bucket array (not triggered in this demo).
+
+| `put` order | Key (`hashTableBase`) | `hashCode()` | `index = hash % 11` | Value |
+| ----------- | --------------------- | ------------ | ------------------- | ----- |
+| 1 | `5` | 5 | **5** | `value1` |
+| 2 | `2` | 2 | **2** | `value2` |
+| 3 | `6` | 6 | **6** | `value3` |
+| 4 | `15` | 15 | **4** | `value4` |
+| 5 | `23` | 23 | **1** | `value5` |
+| 6 | `16` | 16 | **5** | `value6` (collides with key `5`) |
+
+> `Hashtable` does **not** allow `null` keys or `null` values. The commented line `table.put("durga", null)` would throw `NullPointerException`.
+
+### End-to-end execution flow
+
+```mermaid
+flowchart TD
+  A["main() in hashTableDemo"] --> B["new Hashtable&lt;&gt;()\n11 buckets, threshold = 8"]
+  B --> C["put(hashTableBase(5), value1)\nindex = 5"]
+  C --> D["put(hashTableBase(2), value2)\nindex = 2"]
+  D --> E["put(hashTableBase(6), value3)\nindex = 6"]
+  E --> F["put(hashTableBase(15), value4)\nindex = 4"]
+  F --> G["put(hashTableBase(23), value5)\nindex = 1"]
+  G --> H["put(hashTableBase(16), value6)\nindex = 5 → chain at bucket 5"]
+  H --> I["System.out.println(table)"]
+  I --> J["Enumerator: buckets 10 → 0\nemit each chain head → tail"]
+```
+
+```mermaid
+sequenceDiagram
+  participant Main as hashTableDemo.main()
+  participant HT as Hashtable
+  participant B as Bucket array [0..10]
+
+  Main->>HT: new Hashtable()
+  Note over HT,B: 11 buckets, load factor 0.75, threshold 8
+
+  Main->>HT: put(5, value1)
+  HT->>B: bucket[5] = 5 → value1
+
+  Main->>HT: put(2, value2)
+  HT->>B: bucket[2] = 2 → value2
+
+  Main->>HT: put(6, value3)
+  HT->>B: bucket[6] = 6 → value3
+
+  Main->>HT: put(15, value4)
+  HT->>B: bucket[4] = 15 → value4
+
+  Main->>HT: put(23, value5)
+  HT->>B: bucket[1] = 23 → value5
+
+  Main->>HT: put(16, value6)
+  HT->>B: bucket[5] chain: 16 → value6, then 5 → value1
+
+  Main->>HT: toString() / println
+  HT-->>Main: enumerate bucket 0..10 (not insertion order)
+```
+
+### Bucket allocation after all `put` calls
+
+Logical view of the **11 buckets** (only **6** hold data; **5** are empty). See [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets) for the same layout as a classroom diagram.
+
+| Bucket index | Contents (head → tail of chain) | Notes |
+| ------------ | --------------------------------- | ----- |
+| 0 | — | empty |
+| 1 | `23=value5` | |
+| 2 | `2=value2` | |
+| 3 | — | empty |
+| 4 | `15=value4` | |
+| 5 | `16=value6` → `5=value1` | **collision**; two keys share bucket 5 |
+| 6 | `6=value3` | |
+| 7–10 | — | empty |
+
+### Whiteboard view of the 11 buckets
+
+The diagram below matches the usual classroom sketch: a **vertical array of 11 slots** (indexes **0** at the bottom through **10** at the top), each `put` landing at `hashCode % 11`, with **bucket 5** holding two entries after a collision.
+
+![Hashtable internal buckets — whiteboard view](../../ScreenShots%20of%20Java%20Concepts/hashtableBucketsWhiteboard.png)
+
+The whiteboard uses a `Temp` key (`hashCode()` returns `i`) and values **A–F**. This repo’s [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) is the same logic with [hashTableBase](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) keys and `value1`–`value6`:
+
+| Classroom (`Temp` + letter) | This demo (`hashTableBase` + value) | `hash % 11` → bucket |
+| --------------------------- | ----------------------------------- | -------------------- |
+| `put(new Temp(5), "A")` | `put(new hashTableBase(5), "value1")` | **5** |
+| `put(new Temp(2), "B")` | `put(new hashTableBase(2), "value2")` | **2** |
+| `put(new Temp(6), "C")` | `put(new hashTableBase(6), "value3")` | **6** |
+| `put(new Temp(15), "D")` | `put(new hashTableBase(15), "value4")` | **4** (`15 % 11 = 4`) |
+| `put(new Temp(23), "E")` | `put(new hashTableBase(23), "value5")` | **1** (`23 % 11 = 1`) |
+| `put(new Temp(16), "F")` | `put(new hashTableBase(16), "value6")` | **5** (`16 % 11 = 5`, collides with key `5`) |
+
+**ASCII bucket table** (same layout as the photo: index on the left, entries inside the array):
+
+```text
+ index │  entries in this bucket (after all six put operations)
+───────┼──────────────────────────────────────────────────────────
+  10   │
+   9   │
+   8   │
+   7   │
+   6   │  6=value3          (classroom: 6=C)
+   5   │  5=value1, 16=value6   ← collision (classroom: 5=A, 16=F)   16%11=5
+   4   │  15=value4         (classroom: 15=D)                      15%11=4
+   3   │
+   2   │  2=value2          (classroom: 2=B)
+   1   │  23=value5         (classroom: 23=E)                      23%11=1
+   0   │
+```
+
+**How `println` scans this picture**
+
+- **Top → bottom:** bucket indexes from **10 down to 0** (skip empty slots).
+- **Within a bucket (collision chain):** walk from **chain head → tail**. For bucket **5**, the head is key **16** (`value6` / **F**), then key **5** (`value1` / **A**). That is why output shows `16=…` before `5=…`, not the order you called `put`.
+
+Partial `System.out.println(h)` on the whiteboard: `{6=C, 16=F, 5=A, …}` — same traversal as this demo’s `{6=value3, 16=value6, 5=value1, …}`.
+
+```mermaid
+flowchart TB
+  subgraph buckets ["Hashtable internal array — length 11 (indexes 0–10)"]
+    B10["[10] empty"]
+    B9["[9] empty"]
+    B8["[8] empty"]
+    B7["[7] empty"]
+    B6["[6] 6 → value3"]
+    B5["[5] 16 → value6, 5 → value1"]
+    B4["[4] 15 → value4"]
+    B3["[3] empty"]
+    B2["[2] 2 → value2"]
+    B1["[1] 23 → value5"]
+    B0["[0] empty"]
+  end
+```
+
+### Collision chaining at bucket 5
+
+Keys **5** and **16** both map to bucket **5** because `5 % 11 = 5` and `16 % 11 = 5`.
+
+```mermaid
+flowchart LR
+  H["bucket[5] head"] --> E16["Entry: key 16, value6"]
+  E16 --> E5["Entry: key 5, value1"]
+  E5 --> N["null / end of chain"]
+```
+
+When `get(16)` or `get(5)` runs, `Hashtable` walks the chain at bucket 5 and compares keys with `equals()` (and hash). Here keys are distinct objects, so both entries remain reachable.
+
+### How `println` walks the table
+
+`System.out.println(table)` uses the map's `entrySet()` iterator. It does **not** print in insertion order.
+
+In the JDK `Hashtable` implementation, the internal enumerator walks bucket indexes from **high to low** (`table.length` down to `0`). At each non-empty bucket it walks the collision chain from **head to tail**.
+
+For this demo, that produces this print order:
+
+| Step | Bucket scanned | Entries emitted |
+| ---- | -------------- | --------------- |
+| 1 | 6 | `6=value3` |
+| 2 | 5 | `16=value6`, then `5=value1` |
+| 3 | 4 | `15=value4` |
+| 4 | 2 | `2=value2` |
+| 5 | 1 | `23=value5` |
+
+Buckets **0**, **3**, and **7–10** are empty and are skipped.
+
+```mermaid
+flowchart TD
+  A["println(Hashtable)"] --> B["entrySet().toString()"]
+  B --> C["Enumerator: index from 11 down to 0"]
+  C --> D{"Bucket empty?"}
+  D -- no --> E["Walk chain: head → tail\nemit each entry"]
+  E --> C
+  D -- yes --> C
+  C --> F["Final string:\n{6=value3, 16=value6, 5=value1, ...}"]
+```
+
+> **Takeaway:** insertion order was `5 → 2 → 6 → 15 → 23 → 16`, but the printed order follows **internal bucket traversal**, not the order you called `put`.
+
+### Verified program output
+
+```text
+Hashtable: {6=value3, 16=value6, 5=value1, 15=value4, 2=value2, 23=value5}
+```
+
+This matches the bucket walk described above. The line is **not** sorted by key and **not** insertion order.
+
+### Run the demo
+
+From the `demo` module:
+
+```bash
+cd demo
+javac -d target/classes -sourcepath src/main/java \
+  src/main/java/com/collections/hashTable/basicflow/hashTableBase.java \
+  src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java
+java -cp target/classes com.collections.hashTable.basicflow.hashTableDemo
+```
+
+For the broader `Hashtable` map API demo (constructors, load factor, iterators), run:
+
+```bash
+java -cp target/classes com.collections.map.hashTable
+```
 
 
 ---
@@ -645,119 +870,6 @@ Collection(I)
 1. Set is child interface of collection 
 2. If we want to represent a group of individual objects as a single entity where duplicates are not allowed 
    and insertion order not preseved.
-
-
-# TreeSet 
-
-1. the underlying datastructure is balanced tree
-2. Duplicates are not allowed 
-3. Insertion order is not preserved 
-4. heterogeneous objects are not allowed other wise we will get runtime
-  ClassCastException 
-5. Null inserstion is allowed but only once 
-6. Implements Serializable and Cloneable but not RandomAccess interface.
-7. All objects will be inserted based on some sorting order it may be default nautal sorting order or customized sorting order.
-
->TreeSet t = new TreeSet();
-
-Creates an empty TreeSet object where the elements will be inserted according to default natural sorting order 
-
->TreeSet t = new TreeSet(Comparator c);
-
-Creates an empty TreeSet object where the elements will be inserted according to customized sorting order specfied by comparator object 
-
->TreeSet t = new TreeSet(Collection c);
-
->TreeSet t = new TreeSet(SortedSet s);
-
-# null acceptance in TreeSet 
-
-1. for non-empty TreeSet if we are trying to insert null then we will get NullPointerException
-2. For empty TreeSet as the first element null is allowed but after inserting the null if we are trying to insert any other then we will get runtime exception saying NullPointerException
-3. Unitll 1.6 version null is allowed as the first element to the empty TreeSet but from 1.7 version null is not allowed even as the first element i.e "null" such type of story not applicable for TreeSet from 1.7 onwards.
-
-# comparable Concept 
-
-1. If we are depending default natural sorting order compulsory the object should be homogeneous and comparable otherwise we will get 
-runtime exception saying ClassCastException
-2. An object is said to be comparable if and only if corresponding class implements comparable interface 
-3. String class and all wrappr classes already implement comparable interface 
-4. But StringBuffer and StringBuilder classes doesn't implement comparable interface, hence we got ClassCastException in treeSetexample1 
-5. comparable interface is in java.lang package and it contains only one method compareTo()
-syntax 
->public int compareTo(Object obj1)
->obj1.compareTo(obj2)
-
-
-Here obj1 is which we are trying to insert to TreeSet 
-obj2 which is already inserted
-
-returns -ve if obj1 comes before obj2 
-returns +ve if obj1 comes after obj2 
-returns 0 if obj1 and obj2 are equal 
-
-If we are depending on default natural sorting order then while while adding object to the TreeSet JVM will call compareTo() 
-
-If default natural sorting order not available or if we are not satisfied with default natural sorting order then we can go for customized sorting by using comparator 
-
-
-refer example "treeSetexample1" in "Java-Project/demo/src/main/java/com/collections/set/"
-
-the Tree diagram will be 
-
-                  z
-                 /
-                k
-               /
-              c
-# Comparator
-
-comparator is present in java.util package and it defines 2 methods
- 
-compare() 
-
->public int compare(Object obj1, Object obj2)
-1. returns -ve if obj1 has to come before obj2 
-2. returns +ve if obj1 has to come after obj2 
-3. returns 0 if both obj1 and obj2 are equal 
-
-equals() 
-
->public boolean equals(Object obj)
-
-Whenever we are implementing comparator interface compulsory we should provide implementation only for compare() and we are not required to provide implementation for equals() because it is already available to our class from Object class through inheritance
-
-refer treeSetCutomized program
-
-If we dont call comparator customized method in the below code 
-
-> TreeSet<Integer> treeSet = new TreeSet<>()
-
-internally JVM calls 
-
->compareTo()
-
-which is meant for default natural sorting order in this case the output is [1,2,3,4,5]
-
-> TreeSet<Integer> treeSet = new TreeSet<>(new comparatorBase())
-
-At the above line if we are passing comparator Object then JVM calls for compare() which is 
-meant for customized sorting in this case ouput is [5,4,3,2,1]
-
-If we are depending on default natural sorting order compulsory 
-objects should be homoegenous and comparable otherwise we will 
-run-time exception saying ClassCastException
-
-If we are defining our own sorting by comparator then objects need not be comparable and homogeneous i.e we can add heterogeneous 
-non-comparable objects also 
-
-# comparable 
-
-
-
-
-
-
 
 ```mermaid
 classDiagram
@@ -1145,30 +1257,13 @@ classDiagram
 
 ## Map (I)
 
-Map is not child interface of Collection (I) , 
-1. If we want to represent a group objects as Key Value pairs 
-   then we should go for map.
-2. Duplicate Keys are not allowed but Values can be duplicated.
-3. Both Keys and Values are objects only.
-4. Each Key Value pair is called Entry, hence map is considered as a collection of entry objects
-
-
-# Map Interface methods 
-
->Object put(Object Key, Object Value)
-1. To add one Key-Value pair to the map 
-2. If the Key is already present then the old value will be replaced with new Value and returns old value.
-
-
->Entry(I)
-
-Map is a group of Key-Value pairs and each key-value pair is called an entry. Hence map is considered as a collection of entry objects 
-without existing map object there is no chance of existing entry object, hence entry interface is defined inside map interface
+Map is not child interface of Collection (I) , if we want to represent a group objects as Key Value pairs 
+then we should go for map.Duplicate Keys are not allowed but Values can be duplicated.
 
 ## Map Interface Hierarchy
 
 
-- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/mapDemo.java)
+- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/map/mapDemo.java)
 - 
 `Map` is separate from `Collection`: it stores a mapping from each unique key to one value. A solid arrow means **extends** and a dashed arrow means **implements**.
 
@@ -1409,77 +1504,6 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
   List                 -> INTERFACE
 --------------------------------
 ```
-# HashMap
-1. The underlying data structure is Hashtable
-2. Insertion order is not preserved and it is based on hashcode of keys 
-3. duplicate keys are not allowed but values can be duplicated 
-4. Heterogeneous objects are allowed for both Key and values
-5.  null is allowed for key only once 
-6. null is allowed for values any number of times 
-7. HashMap implements serializable and cloneable interfaces but not RandomAccess
-8. HashMap is the best choice if our frequent operation is search operation 
-
-# HashMap constructors
-1. HashMap hm = new HashMap();
-  
-   creates an empty hashmap object with default initial capacity 16 and default fill ratio 0.75
-2. HashMap hm = new HashMap(int initialcapacity);
-   creates an empty hashmap object with specified initial capacity and default fill ration 0.75
-3. HashMap hm = new HashMap(int initialcapacity, float fillratio);
-4. HashMap hm = new HashMap(Map m);
-
-# SortedMap 
-
-It is the child interface of Map if we want to represent a group of objects as a group of Key-Value pairs according to some sorting order 
-of keys then we should go for SortedMap.Sorting is based on the Key but not based on Value.
-
-1. If we are depending on default natual sorting order then Keys should be homogeneous and comparable otherwise we will get 
-   runtime exception saying ClassCastException
-2. If we are defining our own sorting by comparator then Keys need not be homogeneous and comparable we can take heterogeneous 
-   non-comparable objects also.
-3. Whether we are depending on default natural sorting order or customized sorting order there are no restrictions for Values 
-   we can take heterogeneous non-comparable objects also
-
-# null Acceptance 
-
-1. For nonempty TreeMap if we are trying to insert an entry with null Key then we will get runtime Exception saying NullPointerException
-2. For empty TreeMap as the first entry with null Key is allowed but after inserting that entry if we are trying to insert any other entry 
-   then we will get runtime exception saying NullPointerException
-NOTE: The above null acceptance rule is applicable until java 1.6 version only from 1.7 version onwards null is not allowed for Key 
-But for Values we can use null any number of times there is no restriction whether it is 1.6 version or 1.7 version
-
-# Constructors 
-
->TreeMap tree = new TreeMap(); 
-
-For default natural sorting order 
-
->TreeMap tree = new TreeMap(Comparator c);
-
-For Customized Sorting Order 
-
->TreeMap tree = new TreeMap(SortedMap s);
-
->TreeMap tree = new TreeMap(Map m);
-
-# Hashtable
-
-1. The underlyting datastructure for Hashtable is Hashtable 
-2. Insertion order is not preserved and it is based on hashcode of keys 
-3. Duplicate keys are not allowed but duplicate Values are allowed 
-4. Hetereogeneous objects are allowed for both Keys and Values 
-5. null is not allowed for both Keys and Values otherwise we will get runtime exception saying NullPointerException
-6. Implements Serializable , Cloneable interfaces but not RandomAccess interface
-7. Every method present in the Hashtable is synchronized and hence HashTable object is thread safe 
-8. HashTable is the best choice if our ferquent operation is search operation
-
-# Constructors 
-
-1. Hashtable table = new Hashtable();
-   creates an empty Hashtable object with default initial capacity 11 and default fill ratio 0.75
-2. Hashtable table = new Hashtable(int initialcapacity); 
-3. Hashtable table = new Hashtable(int initialcapacity, float fillRatio);
-4. Hashtable table = new Hashtable(Map m);
 
 
 

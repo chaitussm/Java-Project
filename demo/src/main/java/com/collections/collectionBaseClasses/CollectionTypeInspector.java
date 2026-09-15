@@ -75,10 +75,6 @@ public final class CollectionTypeInspector {
                 // Resize threshold = capacity * load factor = 11 * 0.75 = 8; new capacity = old capacity * 2 + 1.
                 printCapacity(dataStructure, "11 buckets, load factor 0.75", "resize threshold = 11 * 0.75 = 8; new capacity = old capacity * 2 + 1");
                 break;
-            case "SortedMap":
-                // SortedMap has no array capacity; every key-value pair becomes a red-black tree node.
-                printCapacity(dataStructure, "no fixed initial capacity", "a tree node is created for each key-value pair");
-                break;
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
         }
@@ -148,13 +144,11 @@ public final class CollectionTypeInspector {
                 return "TreeMap";
             case "hashtable":
                 return "Hashtable";
-            case "sortedmap":
-                return "SortedMap";
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure
                         + ". Supported types: ArrayList, LinkedList, Vector, Stack, HashSet, LinkedHashSet, "
                         + "TreeSet, SortedSet, NavigableSet, ArrayDeque, PriorityQueue, HashMap, LinkedHashMap, "
-                        + "TreeMap, Hashtable, SortedMap.");
+                        + "TreeMap, Hashtable.");
         }
     }
 
@@ -175,7 +169,6 @@ public final class CollectionTypeInspector {
             case "LinkedHashMap": return java.util.LinkedHashMap.class;
             case "TreeMap": return java.util.TreeMap.class;
             case "Hashtable": return java.util.Hashtable.class;
-            case "SortedMap": return java.util.SortedMap.class;
             default: throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
         }
     }
@@ -234,7 +227,6 @@ public final class CollectionTypeInspector {
             case "LinkedHashMap": System.out.println("  HashMap that preserves insertion or access order."); break;
             case "TreeMap": System.out.println("  Keys stay sorted; put, get, and remove are O(log n)."); break;
             case "Hashtable": System.out.println("  Legacy synchronized map that does not allow null keys or values."); break;
-            case "SortedMap": System.out.println("  Interface for sorted maps; SortedMap implementations like TreeMap maintain keys in sorted order."); break;
             default: throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
         }
         System.out.println("-------------------");

@@ -1,10 +1,6 @@
 package com.collections.set.comparatorConcepts.employeeObjects;
 
-import java.lang.Comparable;
-
-
-public class employeeBase implements Comparable<Object>
-{
+public class employeeBase implements Comparable<employeeBase> {
 
     String name;
     int empId;
@@ -19,21 +15,8 @@ public class employeeBase implements Comparable<Object>
         return "employeeBase{name='" + name + "', empId=" + empId + "}";
     }
 
-    // Overriding compareTo using Object parameter and casting
     @Override
-    public int compareTo(Object obj) {
-        int empdId1 = this.empId;
-        
-        // Casting Object back to employeeBase
-        employeeBase emp = (employeeBase) obj; 
-        int empId2 = emp.empId;
-
-        if(empdId1 < empId2)
-            return -1;
-        else if(empdId1 > empId2)
-            return 1;
-        else
-            return 0;
+    public int compareTo(employeeBase other) {
+        return Integer.compare(this.empId, other.empId);
     }
-
 }
