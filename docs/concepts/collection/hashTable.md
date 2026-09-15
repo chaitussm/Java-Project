@@ -6,7 +6,7 @@
 
 ---
 
-**Related code:** [`hashTable/basicflow/hashTableDemo.java`](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) (this document), [`map/hashTable.java`](../../../demo/src/main/java/com/collections/map/hashTable.java) (runs `mapDemo` for Hashtable).
+**Related code:** [`hashTable/basicflow/hashTableDemo.java`](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java) (this document), [`map/hashTable.java`](../../../demo/src/main/java/com/collection/map/hashTable.java) (runs `mapDemo` for Hashtable).
 
 ## Hashtable — complete execution flow (`hashTableDemo.java`)
 
@@ -16,9 +16,9 @@ This section follows the runnable demo that shows **how many buckets exist**, **
 
 | File                                                                                                     | Role                                                                                                         |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) | Creates a `Hashtable`, inserts six keys, prints the table                                                    |
-| [hashTableBase.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) | Key type: stores `int i`, overrides `hashCode()` to return `i`, overrides `toString()` to return `i` as text |
-| [hashTable.java](../../../demo/src/main/java/com/collections/map/hashTable.java)                         | Optional entry point that runs the broader `Hashtable` map demo via `mapDemo`                                |
+| [hashTableDemo.java](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java) | Creates a `Hashtable`, inserts six keys, prints the table                                                    |
+| [hashTableBase.java](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableBase.java) | Key type: stores `int i`, overrides `hashCode()` to return `i`, overrides `toString()` to return `i` as text |
+| [hashTable.java](../../../demo/src/main/java/com/collection/map/hashTable.java)                         | Optional entry point that runs the broader `Hashtable` map demo via `mapDemo`                                |
 
 `hashTableDemo` uses **custom keys** so bucket indices are predictable. In real code, `hashCode()` is rarely equal to a small integer, but the **bucket formula is the same**.
 
@@ -122,7 +122,7 @@ The diagram below matches the usual classroom sketch: a **vertical array of 11 s
 
 ![Hashtable internal buckets — whiteboard view](../../ScreenShots%20of%20Java%20Concepts/hashtableBucketsWhiteboard.png)
 
-The whiteboard uses a `Temp` key (`hashCode()` returns `i`) and values **A–F**. This repo’s [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) is the same logic with [hashTableBase](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) keys and `value1`–`value6`:
+The whiteboard uses a `Temp` key (`hashCode()` returns `i`) and values **A–F**. This repo’s [hashTableDemo.java](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java) is the same logic with [hashTableBase](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableBase.java) keys and `value1`–`value6`:
 
 | Classroom (`Temp` + letter) | This demo (`hashTableBase` + value)    | `hash % 11` → bucket                         |
 | --------------------------- | -------------------------------------- | -------------------------------------------- |
@@ -234,15 +234,15 @@ From the `demo` module:
 ```bash
 cd demo
 javac -d target/classes -sourcepath src/main/java \
-  src/main/java/com/collections/hashTable/basicflow/hashTableBase.java \
-  src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java
-java -cp target/classes com.collections.hashTable.basicflow.hashTableDemo
+  src/main/java/com/collection/hashTable/basicflow/hashTableBase.java \
+  src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java
+java -cp target/classes com.collection.hashTable.basicflow.hashTableDemo
 ```
 
 For the broader `Hashtable` map API demo (constructors, load factor, iterators), run:
 
 ```bash
-java -cp target/classes com.collections.map.hashTable
+java -cp target/classes com.collection.map.hashTable
 ```
 
 

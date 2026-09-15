@@ -142,7 +142,7 @@ This is the key advantage of a doubly linked list: deleting a known node takes *
 `java.util.LinkedList` is a ready-made doubly linked list implementation of `List` and `Deque`.
 
 ```java
-package com.collections.list;
+package com.collection.list;
 
 import java.util.LinkedList;
 import java.util.Iterator;

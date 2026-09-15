@@ -95,17 +95,17 @@ It contains several classes and interfaces that can be used to represent a group
 ---
 ## Package guides (by demo folder)
 
-Detailed sections were **moved** from this file into the guides below (not rewritten). Each guide matches a `com.collections.*` package and includes at least one **flagship launcher** with execution flow, diagrams, and pie charts where already documented.
+Detailed sections were **moved** from this file into the guides below (not rewritten). Each guide matches a `com.collection.*` package and includes at least one **flagship launcher** with execution flow, diagrams, and pie charts where already documented.
 
 | # | Folder / topic | Guide | Flagship program |
 | - | -------------- | ----- | ---------------- |
 | 1 | `collectionBaseClasses` | [collectionBaseClasses.md](collectionBaseClasses.md) | `CollectionTypeInspector`, `listDemo` / `setDemo` / `queueDemo` / `mapDemo` |
-| 2 | `hashTable` | [hashTable.md](hashTable.md) | [`hashTableDemo.java`](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) |
-| 3 | `list` | [list.md](list.md) | [`arrayList.java`](../../../demo/src/main/java/com/collections/list/arrayList.java) |
-| 4 | `map` | [map.md](map.md) | [`navigableMap.java`](../../../demo/src/main/java/com/collections/map/navigableMap.java) (+ `linkedHashMap`, `hashMap`, …) |
-| 5 | `properties` | [properties.md](properties.md) | [`propertiesDemo.java`](../../../demo/src/main/java/com/collections/properties/propertiesDemo.java) |
-| 6 | `queue` | [queue.md](queue.md) | [`arrayDeque.java`](../../../demo/src/main/java/com/collections/queue/arrayDeque.java) |
-| 7 | `set` | [set.md](set.md) | [`navigableSet.java`](../../../demo/src/main/java/com/collections/set/navigableSet.java) |
+| 2 | `hashTable` | [hashTable.md](hashTable.md) | [`hashTableDemo.java`](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java) |
+| 3 | `list` | [list.md](list.md) | [`arrayList.java`](../../../demo/src/main/java/com/collection/list/arrayList.java) |
+| 4 | `map` | [map.md](map.md) | [`navigableMap.java`](../../../demo/src/main/java/com/collection/map/navigableMap.java) (+ `linkedHashMap`, `hashMap`, …) |
+| 5 | `properties` | [properties.md](properties.md) | [`propertiesDemo.java`](../../../demo/src/main/java/com/collection/properties/propertiesDemo.java) |
+| 6 | `queue` | [queue.md](queue.md) | [`arrayDeque.java`](../../../demo/src/main/java/com/collection/queue/arrayDeque.java) |
+| 7 | `set` | [set.md](set.md) | [`navigableSet.java`](../../../demo/src/main/java/com/collection/set/navigableSet.java) |
 
 ### Related collections docs
 

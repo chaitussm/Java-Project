@@ -36,7 +36,7 @@ By default, `ArrayList` is non-synchronized, but we can get a synchronized versi
 public static List synchronizedList(List l)
 ```
 
-Refer to this example: [synchornizedCollections.java](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) in the collections folder.
+Refer to this example: [synchornizedCollections.java](../../../demo/src/main/java/com/collection/collectionBaseClasses/synchornizedCollections.java) in the `collection` package folder.
 
 ```java
 ArrayList l = new ArrayList();
@@ -94,7 +94,7 @@ Usually we can use `LinkedList` to develop stacks and queues. To provide support
 | Memory usage   | Consumes less memory because it just holds the elements.                              | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
 | Version        | Introduced in 1.2 v and it is non-legacy.                                             | Introduced in 1.2 v and it is non-legacy.                                                                                 |
 
-Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
+Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collection/list/internalProcessOfLinkedList.java) in the list folder.
 
                                                 
  
@@ -273,7 +273,7 @@ These methods are inherited from `SequencedCollection<E>`, which `List<E>` exten
 
 A **cursor** moves through a collection and reads, and sometimes modifies, its elements. Java provides `Iterator` for all collections, `ListIterator` specifically for lists, and the legacy `Enumeration` cursor for `Vector`.
 
-For complete runnable examples, use the Ctrl+clickable section links: [`Iterator<E>`](cursors.md#1-iteratore), [`ListIterator<E>`](cursors.md#2-listiteratore), [`Enumeration<E>`](cursors.md#3-enumeratione), and [`Spliterator<E>`](cursors.md#4-spliteratore). The complete guide is [Cursors in Java Collections](cursors.md), and the source is [cursors.java](../../../demo/src/main/java/com/collections/cursors.java).
+For complete runnable examples, use the Ctrl+clickable section links: [`Iterator<E>`](cursors.md#1-iteratore), [`ListIterator<E>`](cursors.md#2-listiteratore), [`Enumeration<E>`](cursors.md#3-enumeratione), and [`Spliterator<E>`](cursors.md#4-spliteratore). The complete guide is [Cursors in Java Collections](cursors.md), and the source is [cursors.java](../../../demo/src/main/java/com/collection/cursors.java).
 
 | Cursor            | Obtained from         | Direction            | Can modify?                      | Definition                                                                      |
 | ----------------- | --------------------- | -------------------- | -------------------------------- | ------------------------------------------------------------------------------- |
@@ -391,7 +391,7 @@ Stack s = new Stack<>();
 
 ## ArrayList — complete execution flow (`arrayList.java`)
 
-[`arrayList.java`](../../../demo/src/main/java/com/collections/list/arrayList.java) extends [`listDemo`](../../../demo/src/main/java/com/collections/list/listDemo.java) and runs **`demonstrateList("ArrayList")`** plus **`printDefaultCapacitySummary("ArrayList")`**.
+[`arrayList.java`](../../../demo/src/main/java/com/collection/list/arrayList.java) extends [`listDemo`](../../../demo/src/main/java/com/collection/list/listDemo.java) and runs **`demonstrateList("ArrayList")`** plus **`printDefaultCapacitySummary("ArrayList")`**.
 
 The core logic lives in **`listDemo.demonstrateArrayList()`** (not duplicated here in full — see [List Methods](#list-methods) and [List Cursors](#list-cursors) above).
 
@@ -426,5 +426,5 @@ pie showData
 ### Run
 
 ```bash
-cd demo && mvn -q exec:java -Dexec.mainClass=com.collections.list.arrayList
+cd demo && mvn -q exec:java -Dexec.mainClass=com.collection.list.arrayList
 ```

@@ -378,7 +378,7 @@ total_programs=$(grep -R -E -h "$main_pattern" "demo/src/main/java/com" | wc -l)
 | `-h`           | Hides file names so only matching method declarations are counted.                |
 | `wc -l`        | Counts the matching lines, producing the total number of entry points.            |
 
-The `for folder in "$source_root"/*` loop repeats the same search for every immediate folder under `com`. For example, it separately counts `com/advanced`, `com/collections`, and `com/regularExpressions`, then combines them into `folder_counts`.
+The `for folder in "$source_root"/*` loop repeats the same search for every immediate folder under `com`. For example, it separately counts `com/advanced`, `com/collection`, and `com/regularExpressions`, then combines them into `folder_counts`.
 
 This count measures **runnable Java entry points**, not Maven/JUnit test cases. A Java class is counted only when it declares `public static void main(...)`; helper classes and regular test methods are not included.
 

@@ -32,7 +32,7 @@
 
 The complete runnable example is available here:
 
-[cursors.java](../../../demo/src/main/java/com/collections/cursors.java)
+[cursors.java](../../../demo/src/main/java/com/collection/cursors.java)
 
 Run the class to see every example:
 

@@ -46,7 +46,7 @@ order only mail should be delivered.For this requirement Queue is best choice
 
 > Most Queue implementations do not permit `null` elements because `poll()` and `peek()` use `null` to indicate that the queue is empty.
 
-- [Queue constructors — `queueConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/queueDemo.java)
+- [Queue constructors — `queueConstructors(String)`](../../../demo/src/main/java/com/collection/collectionBaseClasses/queueDemo.java)
 - 
 ## Queue Interface Hierarchy
 
@@ -254,9 +254,9 @@ NOTE: some platforms won't provide proper support for thread priorites and prior
 
 ## ArrayDeque — complete execution flow (`arrayDeque.java`)
 
-[`arrayDeque.java`](../../../demo/src/main/java/com/collections/queue/arrayDeque.java) calls **`demonstrateQueue("ArrayDeque")`** then **`printDefaultCapacitySummary`** for LinkedList, ArrayDeque, and PriorityQueue.
+[`arrayDeque.java`](../../../demo/src/main/java/com/collection/queue/arrayDeque.java) calls **`demonstrateQueue("ArrayDeque")`** then **`printDefaultCapacitySummary`** for LinkedList, ArrayDeque, and PriorityQueue.
 
-Implementation: [`queueDemo.demonstrateArrayDeque()`](../../../demo/src/main/java/com/collections/collectionBaseClasses/queueDemo.java).
+Implementation: [`queueDemo.demonstrateArrayDeque()`](../../../demo/src/main/java/com/collection/collectionBaseClasses/queueDemo.java).
 
 ### Launcher flow
 
@@ -285,10 +285,10 @@ pie showData
 | `poll` / `remove` | Remove head; `remove` throws if empty |
 | `iterator` | Head-to-tail traversal |
 
-> **Also in this repo:** [`priroityQueue.java`](../../../demo/src/main/java/com/collections/queue/priroityQueue.java) → `demonstratePriorityQueue()` (heap order, not FIFO). See [Queue Interface Hierarchy](#queue-interface-hierarchy) above.
+> **Also in this repo:** [`priroityQueue.java`](../../../demo/src/main/java/com/collection/queue/priroityQueue.java) → `demonstratePriorityQueue()` (heap order, not FIFO). See [Queue Interface Hierarchy](#queue-interface-hierarchy) above.
 
 ### Run
 
 ```bash
-cd demo && mvn -q exec:java -Dexec.mainClass=com.collections.queue.arrayDeque
+cd demo && mvn -q exec:java -Dexec.mainClass=com.collection.queue.arrayDeque
 ```
