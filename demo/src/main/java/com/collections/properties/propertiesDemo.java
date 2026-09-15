@@ -9,9 +9,9 @@ public class propertiesDemo {
     public static void main(String[] args) {
 
         java.util.Properties properties = new java.util.Properties();
-        properties.put(new propertiesBase("key1", "value1").getKey(), new propertiesBase("key1", "value1").getValue());
-        properties.put(new propertiesBase("key2", "value2").getKey(), new propertiesBase("key2", "value2").getValue());
-        properties.put(new propertiesBase("key3", "value3").getKey(), new propertiesBase("key3", "value3").getValue());
+        properties.put(new propertiesBase("key1", "Shiva").getKey(), new propertiesBase("key1", "Brahma").getValue());
+        properties.put(new propertiesBase("key2", "Vishnu").getKey(), new propertiesBase("key2", "Vishnu").getValue());
+        properties.put(new propertiesBase("key3", "Brahma").getKey(), new propertiesBase("key3", "Shiva").getValue());
         /*properties.setProperty("key4", null); NullPointerException will be thrown
         properties.setProperty("key4", "value4");
         try {
