@@ -1,12 +1,10 @@
 package com.collections.map;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
+import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Map;
+
 
 import com.collections.collectionBaseClasses.CollectionTypeInspector;
 
@@ -23,6 +21,9 @@ public class mapDemo {
                 break;
             case "Hashtable":
                 demonstrateHashtable();
+                break;
+            case "SortedMap":
+                demonstrateSortedMap();
                 break;
             case "HashMap":
             default:
@@ -228,5 +229,42 @@ public class mapDemo {
         System.out.println("Core characteristic: no insertion-order guarantee; every method is synchronized and");
         System.out.println("null keys/values are disallowed, making Hashtable slower than HashMap in single-threaded code.");
     }
+
+    //SortedMap demonstration
+    private static void demonstrateSortedMap() {
+        System.out.println("===== SortedMap (TreeMap) =====");
+        CollectionTypeInspector.printTypeInfo(TreeMap.class, SortedMap.class);
+        CollectionTypeInspector.printDefaultInitialCapacity("TreeMap");
+        SortedMap<String, Integer> map = new TreeMap<>();
+
+        // Basic methods
+        map.put("Ram", 25);
+        map.put("Shyam", 30);
+        map.put("Geeta", 28);
+        System.out.println("After put(): " + map);
+
+        System.out.println("get(\"Shyam\"): " + map.get("Shyam"));
+        map.remove("Geeta");
+        System.out.println("After remove(\"Geeta\"): " + map);
+
+        //Methods in SortedMap interface (subMap, headMap, tailMap)
+        System.out.println("subMap(\"Ram\", \"Shyam\"): " + map.subMap("Ram", "Shyam"));
+        System.out.println("headMap(\"Shyam\"): " + map.headMap("Shyam"));
+        System.out.println("tailMap(\"Ram\"): " + map.tailMap("Ram"));
+        System.out.println("firstKey(): " + map.firstKey());
+        System.out.println("lastKey(): " + map.lastKey());
+        System.out.println("comparator(): " + map.comparator()); // Returns the comparator used to order the keys, or null if natural ordering is used
+
+        // Cursor 1: Iterator over entrySet() - forward-only, can remove() while iterating
+        System.out.println("Iterator over entrySet() (sorted order):");
+        Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+        }
+
+        System.out.println("Core characteristic: no insertion order; keys are always sorted (natural order or");
+        System.out.println("a Comparator), so put/get/remove are O(log n), slower than HashMap's O(1) average.");
+    }   
 
 }

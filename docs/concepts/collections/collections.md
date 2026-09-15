@@ -73,6 +73,11 @@
     - [Example output](#example-output)
 - [HashMap](#hashmap)
 - [HashMap constructors](#hashmap-constructors)
+- [SortedMap](#sortedmap)
+- [null Acceptance](#null-acceptance)
+- [Constructors](#constructors-1)
+- [Hashtable](#hashtable)
+- [Constructors](#constructors-2)
 <!-- /TOC -->
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
@@ -1423,7 +1428,58 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
 3. HashMap hm = new HashMap(int initialcapacity, float fillratio);
 4. HashMap hm = new HashMap(Map m);
 
+# SortedMap 
 
+It is the child interface of Map if we want to represent a group of objects as a group of Key-Value pairs according to some sorting order 
+of keys then we should go for SortedMap.Sorting is based on the Key but not based on Value.
+
+1. If we are depending on default natual sorting order then Keys should be homogeneous and comparable otherwise we will get 
+   runtime exception saying ClassCastException
+2. If we are defining our own sorting by comparator then Keys need not be homogeneous and comparable we can take heterogeneous 
+   non-comparable objects also.
+3. Whether we are depending on default natural sorting order or customized sorting order there are no restrictions for Values 
+   we can take heterogeneous non-comparable objects also
+
+# null Acceptance 
+
+1. For nonempty TreeMap if we are trying to insert an entry with null Key then we will get runtime Exception saying NullPointerException
+2. For empty TreeMap as the first entry with null Key is allowed but after inserting that entry if we are trying to insert any other entry 
+   then we will get runtime exception saying NullPointerException
+NOTE: The above null acceptance rule is applicable until java 1.6 version only from 1.7 version onwards null is not allowed for Key 
+But for Values we can use null any number of times there is no restriction whether it is 1.6 version or 1.7 version
+
+# Constructors 
+
+>TreeMap tree = new TreeMap(); 
+
+For default natural sorting order 
+
+>TreeMap tree = new TreeMap(Comparator c);
+
+For Customized Sorting Order 
+
+>TreeMap tree = new TreeMap(SortedMap s);
+
+>TreeMap tree = new TreeMap(Map m);
+
+# Hashtable
+
+1. The underlyting datastructure for Hashtable is Hashtable 
+2. Insertion order is not preserved and it is based on hashcode of keys 
+3. Duplicate keys are not allowed but duplicate Values are allowed 
+4. Hetereogeneous objects are allowed for both Keys and Values 
+5. null is not allowed for both Keys and Values otherwise we will get runtime exception saying NullPointerException
+6. Implements Serializable , Cloneable interfaces but not RandomAccess interface
+7. Every method present in the Hashtable is synchronized and hence HashTable object is thread safe 
+8. HashTable is the best choice if our ferquent operation is search operation
+
+# Constructors 
+
+1. Hashtable table = new Hashtable();
+   creates an empty Hashtable object with default initial capacity 11 and default fill ratio 0.75
+2. Hashtable table = new Hashtable(int initialcapacity); 
+3. Hashtable table = new Hashtable(int initialcapacity, float fillRatio);
+4. Hashtable table = new Hashtable(Map m);
 
 
 
