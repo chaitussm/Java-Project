@@ -47,6 +47,7 @@
     - [How a key picks a bucket](#how-a-key-picks-a-bucket)
     - [End-to-end execution flow](#end-to-end-execution-flow)
     - [Bucket allocation after all `put` calls](#bucket-allocation-after-all-put-calls)
+    - [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets)
     - [Collision chaining at bucket 5](#collision-chaining-at-bucket-5)
     - [How `println` walks the table](#how-println-walks-the-table)
     - [Verified program output](#verified-program-output)
@@ -698,24 +699,7 @@ sequenceDiagram
 
 ### Bucket allocation after all `put` calls
 
-Logical view of the **11 buckets** (only **6** hold data; **5** are empty):
-
-```mermaid
-flowchart TB
-  subgraph buckets ["Hashtable internal array — length 11 (indexes 0–10)"]
-    B0["[0] empty"]
-    B1["[1] 23 → value5"]
-    B2["[2] 2 → value2"]
-    B3["[3] empty"]
-    B4["[4] 15 → value4"]
-    B5["[5] 16 → value6 → 5 → value1"]
-    B6["[6] 6 → value3"]
-    B7["[7] empty"]
-    B8["[8] empty"]
-    B9["[9] empty"]
-    B10["[10] empty"]
-  end
-```
+Logical view of the **11 buckets** (only **6** hold data; **5** are empty). See [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets) for the same layout as a classroom diagram.
 
 | Bucket index | Contents (head → tail of chain) | Notes |
 | ------------ | --------------------------------- | ----- |
@@ -727,6 +711,65 @@ flowchart TB
 | 5 | `16=value6` → `5=value1` | **collision**; two keys share bucket 5 |
 | 6 | `6=value3` | |
 | 7–10 | — | empty |
+
+### Whiteboard view of the 11 buckets
+
+The diagram below matches the usual classroom sketch: a **vertical array of 11 slots** (indexes **0** at the bottom through **10** at the top), each `put` landing at `hashCode % 11`, with **bucket 5** holding two entries after a collision.
+
+![Hashtable internal buckets — whiteboard view](../../ScreenShots%20of%20Java%20Concepts/hashtableBucketsWhiteboard.png)
+
+The whiteboard uses a `Temp` key (`hashCode()` returns `i`) and values **A–F**. This repo’s [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) is the same logic with [hashTableBase](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) keys and `value1`–`value6`:
+
+| Classroom (`Temp` + letter) | This demo (`hashTableBase` + value) | `hash % 11` → bucket |
+| --------------------------- | ----------------------------------- | -------------------- |
+| `put(new Temp(5), "A")` | `put(new hashTableBase(5), "value1")` | **5** |
+| `put(new Temp(2), "B")` | `put(new hashTableBase(2), "value2")` | **2** |
+| `put(new Temp(6), "C")` | `put(new hashTableBase(6), "value3")` | **6** |
+| `put(new Temp(15), "D")` | `put(new hashTableBase(15), "value4")` | **4** (`15 % 11 = 4`) |
+| `put(new Temp(23), "E")` | `put(new hashTableBase(23), "value5")` | **1** (`23 % 11 = 1`) |
+| `put(new Temp(16), "F")` | `put(new hashTableBase(16), "value6")` | **5** (`16 % 11 = 5`, collides with key `5`) |
+
+**ASCII bucket table** (same layout as the photo: index on the left, entries inside the array):
+
+```text
+ index │  entries in this bucket (after all six put operations)
+───────┼──────────────────────────────────────────────────────────
+  10   │
+   9   │
+   8   │
+   7   │
+   6   │  6=value3          (classroom: 6=C)
+   5   │  5=value1, 16=value6   ← collision (classroom: 5=A, 16=F)   16%11=5
+   4   │  15=value4         (classroom: 15=D)                      15%11=4
+   3   │
+   2   │  2=value2          (classroom: 2=B)
+   1   │  23=value5         (classroom: 23=E)                      23%11=1
+   0   │
+```
+
+**How `println` scans this picture**
+
+- **Top → bottom:** bucket indexes from **10 down to 0** (skip empty slots).
+- **Within a bucket (collision chain):** walk from **chain head → tail**. For bucket **5**, the head is key **16** (`value6` / **F**), then key **5** (`value1` / **A**). That is why output shows `16=…` before `5=…`, not the order you called `put`.
+
+Partial `System.out.println(h)` on the whiteboard: `{6=C, 16=F, 5=A, …}` — same traversal as this demo’s `{6=value3, 16=value6, 5=value1, …}`.
+
+```mermaid
+flowchart TB
+  subgraph buckets ["Hashtable internal array — length 11 (indexes 0–10)"]
+    B10["[10] empty"]
+    B9["[9] empty"]
+    B8["[8] empty"]
+    B7["[7] empty"]
+    B6["[6] 6 → value3"]
+    B5["[5] 16 → value6, 5 → value1"]
+    B4["[4] 15 → value4"]
+    B3["[3] empty"]
+    B2["[2] 2 → value2"]
+    B1["[1] 23 → value5"]
+    B0["[0] empty"]
+  end
+```
 
 ### Collision chaining at bucket 5
 
