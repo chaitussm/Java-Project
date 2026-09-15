@@ -75,6 +75,10 @@ public final class CollectionTypeInspector {
                 // Resize threshold = capacity * load factor = 11 * 0.75 = 8; new capacity = old capacity * 2 + 1.
                 printCapacity(dataStructure, "11 buckets, load factor 0.75", "resize threshold = 11 * 0.75 = 8; new capacity = old capacity * 2 + 1");
                 break;
+            case "Properties":
+                // Properties is a subclass of Hashtable; initial capacity and load factor are inherited from Hashtable.
+                printCapacity(dataStructure, "11 buckets, load factor 0.75", "resize threshold = 11 * 0.75 = 8; new capacity = old capacity * 2 + 1");
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
         }

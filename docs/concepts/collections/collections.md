@@ -11,6 +11,7 @@
 <!-- TOC -->
 - [Java Collections Guide](#java-collections-guide)
   - [Introduction](#introduction)
+    - [Limitations of arrays](#limitations-of-arrays)
   - [Collections](#collections)
   - [Collection Definition](#collection-definition)
   - [Collection Framework](#collection-framework)
@@ -22,6 +23,8 @@
     - [ArrayList](#arraylist)
     - [Difference between ArrayList and Vector](#difference-between-arraylist-and-vector)
     - [LinkedList](#linkedlist)
+      - [Constructors](#constructors)
+      - [LinkedList class-specific methods](#linkedlist-class-specific-methods)
     - [Difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
     - [Modern implementations](#modern-implementations)
     - [Legacy classes](#legacy-classes)
@@ -73,6 +76,8 @@
   - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
     - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line--collectiontypeinspectorjava-line-15)
     - [Example output](#example-output)
+  - [Properties](#properties)
+- [Constructors](#constructors-1)
 <!-- /TOC -->
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
@@ -166,12 +171,12 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 
 ### Difference between ArrayList and Vector
 
-| Topic | `ArrayList` | `Vector` |
-| ----- | ----------- | -------- |
-| Synchronization | Every method present in `ArrayList` is non-synchronized. | Every method present in `Vector` is synchronized. |
-| Thread safety | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
-| Performance | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object. | Relatively low performance because threads are required to wait to operate on a `Vector` object. |
-| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.0 v and it is legacy. |
+| Topic           | `ArrayList`                                                                                                   | `Vector`                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Synchronization | Every method present in `ArrayList` is non-synchronized.                                                      | Every method present in `Vector` is synchronized.                                                   |
+| Thread safety   | At a time, multiple threads are allowed to operate on an `ArrayList` object, and hence it is not thread-safe. | At a time, only one thread is allowed to operate on a `Vector` object, and hence it is thread-safe. |
+| Performance     | Relatively high performance because threads are not required to wait to operate on an `ArrayList` object.     | Relatively low performance because threads are required to wait to operate on a `Vector` object.    |
+| Version         | Introduced in 1.2 v and it is non-legacy.                                                                     | Introduced in 1.0 v and it is legacy.                                                               |
 
 By default, `ArrayList` is non-synchronized, but we can get a synchronized version of an `ArrayList` object by using the `synchronizedList()` method of the `Collections` class:
 
@@ -208,34 +213,34 @@ public static Map synchronizedMap(Map m)
 
 #### Constructors
 
-| Constructor | Description |
-| ----------- | ----------- |
-| `LinkedList l = new LinkedList();` | Creates an empty list object. |
+| Constructor                                    | Description                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| `LinkedList l = new LinkedList();`             | Creates an empty list object.                                       |
 | `LinkedList l = new LinkedList(Collection c);` | Creates an equivalent `LinkedList` object for the given collection. |
 
 #### LinkedList class-specific methods
 
 Usually we can use `LinkedList` to develop stacks and queues. To provide support for this requirement, the `LinkedList` class defines the following specific methods:
 
-| Method | Description |
-| ------ | ----------- |
-| `void addFirst(Object o)` | Inserts an element at the beginning. |
-| `void addLast(Object o)` | Inserts an element at the end. |
-| `Object getFirst()` | Returns the first element. |
-| `Object getLast()` | Returns the last element. |
-| `Object removeFirst()` | Removes and returns the first element. |
-| `Object removeLast()` | Removes and returns the last element. |
+| Method                    | Description                            |
+| ------------------------- | -------------------------------------- |
+| `void addFirst(Object o)` | Inserts an element at the beginning.   |
+| `void addLast(Object o)`  | Inserts an element at the end.         |
+| `Object getFirst()`       | Returns the first element.             |
+| `Object getLast()`        | Returns the last element.              |
+| `Object removeFirst()`    | Removes and returns the first element. |
+| `Object removeLast()`     | Removes and returns the last element.  |
 
 ### Difference between ArrayList and LinkedList
 
-| Topic | `ArrayList` | `LinkedList` |
-| ----- | ----------- | ------------ |
-| Data structure | Internally uses a resizable array data structure. | Internally uses a doubly linked list data structure. |
-| Best for | Retrieval operations. | Insertion or deletion in the middle. |
-| Worst for | Insertion or deletion in the middle because it requires shifting of elements. | Retrieval because it does not support index-based access; it has to traverse from the beginning or end. |
-| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor. |
-| Memory usage | Consumes less memory because it just holds the elements. | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
-| Version | Introduced in 1.2 v and it is non-legacy. | Introduced in 1.2 v and it is non-legacy. |
+| Topic          | `ArrayList`                                                                           | `LinkedList`                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Data structure | Internally uses a resizable array data structure.                                     | Internally uses a doubly linked list data structure.                                                                      |
+| Best for       | Retrieval operations.                                                                 | Insertion or deletion in the middle.                                                                                      |
+| Worst for      | Insertion or deletion in the middle because it requires shifting of elements.         | Retrieval because it does not support index-based access; it has to traverse from the beginning or end.                   |
+| `RandomAccess` | Implements `RandomAccess`, so any random element can be accessed with the same speed. | Does not implement `RandomAccess`, so random access performance is poor.                                                  |
+| Memory usage   | Consumes less memory because it just holds the elements.                              | Consumes more memory because for every element it has to hold data, a previous-node reference, and a next-node reference. |
+| Version        | Introduced in 1.2 v and it is non-legacy.                                             | Introduced in 1.2 v and it is non-legacy.                                                                                 |
 
 Refer to this example: [internalProcessOfLinkedList.java](../../../demo/src/main/java/com/collections/list/internalProcessOfLinkedList.java) in the list folder.
 
@@ -610,11 +615,11 @@ This section follows the runnable demo that shows **how many buckets exist**, **
 
 ### Source files
 
-| File | Role |
-| ---- | ---- |
-| [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) | Creates a `Hashtable`, inserts six keys, prints the table |
+| File                                                                                                     | Role                                                                                                         |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) | Creates a `Hashtable`, inserts six keys, prints the table                                                    |
 | [hashTableBase.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) | Key type: stores `int i`, overrides `hashCode()` to return `i`, overrides `toString()` to return `i` as text |
-| [hashTable.java](../../../demo/src/main/java/com/collections/map/hashTable.java) | Optional entry point that runs the broader `Hashtable` map demo via `mapDemo` |
+| [hashTable.java](../../../demo/src/main/java/com/collections/map/hashTable.java)                         | Optional entry point that runs the broader `Hashtable` map demo via `mapDemo`                                |
 
 `hashTableDemo` uses **custom keys** so bucket indices are predictable. In real code, `hashCode()` is rarely equal to a small integer, but the **bucket formula is the same**.
 
@@ -622,11 +627,11 @@ This section follows the runnable demo that shows **how many buckets exist**, **
 
 For `new Hashtable<>()` (no-arg constructor), the JDK uses:
 
-| Setting | Default value | Meaning in this demo |
-| ------- | ------------- | -------------------- |
-| **Number of buckets** | **11** | Internal array length; valid bucket indexes are **0 … 10** |
-| **Load factor** | **0.75** | Rehash when `size` exceeds `capacity × load factor` |
-| **Rehash threshold** | **8** | `11 × 0.75 = 8` (integer truncation) |
+| Setting               | Default value | Meaning in this demo                                       |
+| --------------------- | ------------- | ---------------------------------------------------------- |
+| **Number of buckets** | **11**        | Internal array length; valid bucket indexes are **0 … 10** |
+| **Load factor**       | **0.75**      | Rehash when `size` exceeds `capacity × load factor`        |
+| **Rehash threshold**  | **8**         | `11 × 0.75 = 8` (integer truncation)                       |
 
 Six `put` operations are performed, so `size = 6` and **no rehash** occurs. The table stays at **11 buckets**.
 
@@ -640,14 +645,14 @@ For each `put(key, value)`:
 4. If the bucket already has entries (**collision**), link the new entry into a **chain** at that bucket (separate chaining).
 5. If `size` exceeds the threshold, **rehash** into a larger bucket array (not triggered in this demo).
 
-| `put` order | Key (`hashTableBase`) | `hashCode()` | `index = hash % 11` | Value |
-| ----------- | --------------------- | ------------ | ------------------- | ----- |
-| 1 | `5` | 5 | **5** | `value1` |
-| 2 | `2` | 2 | **2** | `value2` |
-| 3 | `6` | 6 | **6** | `value3` |
-| 4 | `15` | 15 | **4** | `value4` |
-| 5 | `23` | 23 | **1** | `value5` |
-| 6 | `16` | 16 | **5** | `value6` (collides with key `5`) |
+| `put` order | Key (`hashTableBase`) | `hashCode()` | `index = hash % 11` | Value                            |
+| ----------- | --------------------- | ------------ | ------------------- | -------------------------------- |
+| 1           | `5`                   | 5            | **5**               | `value1`                         |
+| 2           | `2`                   | 2            | **2**               | `value2`                         |
+| 3           | `6`                   | 6            | **6**               | `value3`                         |
+| 4           | `15`                  | 15           | **4**               | `value4`                         |
+| 5           | `23`                  | 23           | **1**               | `value5`                         |
+| 6           | `16`                  | 16           | **5**               | `value6` (collides with key `5`) |
 
 > `Hashtable` does **not** allow `null` keys or `null` values. The commented line `table.put("durga", null)` would throw `NullPointerException`.
 
@@ -701,16 +706,16 @@ sequenceDiagram
 
 Logical view of the **11 buckets** (only **6** hold data; **5** are empty). See [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets) for the same layout as a classroom diagram.
 
-| Bucket index | Contents (head → tail of chain) | Notes |
-| ------------ | --------------------------------- | ----- |
-| 0 | — | empty |
-| 1 | `23=value5` | |
-| 2 | `2=value2` | |
-| 3 | — | empty |
-| 4 | `15=value4` | |
-| 5 | `16=value6` → `5=value1` | **collision**; two keys share bucket 5 |
-| 6 | `6=value3` | |
-| 7–10 | — | empty |
+| Bucket index | Contents (head → tail of chain) | Notes                                  |
+| ------------ | ------------------------------- | -------------------------------------- |
+| 0            | —                               | empty                                  |
+| 1            | `23=value5`                     |                                        |
+| 2            | `2=value2`                      |                                        |
+| 3            | —                               | empty                                  |
+| 4            | `15=value4`                     |                                        |
+| 5            | `16=value6` → `5=value1`        | **collision**; two keys share bucket 5 |
+| 6            | `6=value3`                      |                                        |
+| 7–10         | —                               | empty                                  |
 
 ### Whiteboard view of the 11 buckets
 
@@ -720,14 +725,14 @@ The diagram below matches the usual classroom sketch: a **vertical array of 11 s
 
 The whiteboard uses a `Temp` key (`hashCode()` returns `i`) and values **A–F**. This repo’s [hashTableDemo.java](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java) is the same logic with [hashTableBase](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableBase.java) keys and `value1`–`value6`:
 
-| Classroom (`Temp` + letter) | This demo (`hashTableBase` + value) | `hash % 11` → bucket |
-| --------------------------- | ----------------------------------- | -------------------- |
-| `put(new Temp(5), "A")` | `put(new hashTableBase(5), "value1")` | **5** |
-| `put(new Temp(2), "B")` | `put(new hashTableBase(2), "value2")` | **2** |
-| `put(new Temp(6), "C")` | `put(new hashTableBase(6), "value3")` | **6** |
-| `put(new Temp(15), "D")` | `put(new hashTableBase(15), "value4")` | **4** (`15 % 11 = 4`) |
-| `put(new Temp(23), "E")` | `put(new hashTableBase(23), "value5")` | **1** (`23 % 11 = 1`) |
-| `put(new Temp(16), "F")` | `put(new hashTableBase(16), "value6")` | **5** (`16 % 11 = 5`, collides with key `5`) |
+| Classroom (`Temp` + letter) | This demo (`hashTableBase` + value)    | `hash % 11` → bucket                         |
+| --------------------------- | -------------------------------------- | -------------------------------------------- |
+| `put(new Temp(5), "A")`     | `put(new hashTableBase(5), "value1")`  | **5**                                        |
+| `put(new Temp(2), "B")`     | `put(new hashTableBase(2), "value2")`  | **2**                                        |
+| `put(new Temp(6), "C")`     | `put(new hashTableBase(6), "value3")`  | **6**                                        |
+| `put(new Temp(15), "D")`    | `put(new hashTableBase(15), "value4")` | **4** (`15 % 11 = 4`)                        |
+| `put(new Temp(23), "E")`    | `put(new hashTableBase(23), "value5")` | **1** (`23 % 11 = 1`)                        |
+| `put(new Temp(16), "F")`    | `put(new hashTableBase(16), "value6")` | **5** (`16 % 11 = 5`, collides with key `5`) |
 
 **ASCII bucket table** (same layout as the photo: index on the left, entries inside the array):
 
@@ -792,13 +797,13 @@ In the JDK `Hashtable` implementation, the internal enumerator walks bucket inde
 
 For this demo, that produces this print order:
 
-| Step | Bucket scanned | Entries emitted |
-| ---- | -------------- | --------------- |
-| 1 | 6 | `6=value3` |
-| 2 | 5 | `16=value6`, then `5=value1` |
-| 3 | 4 | `15=value4` |
-| 4 | 2 | `2=value2` |
-| 5 | 1 | `23=value5` |
+| Step | Bucket scanned | Entries emitted              |
+| ---- | -------------- | ---------------------------- |
+| 1    | 6              | `6=value3`                   |
+| 2    | 5              | `16=value6`, then `5=value1` |
+| 3    | 4              | `15=value4`                  |
+| 4    | 2              | `2=value2`                   |
+| 5    | 1              | `23=value5`                  |
 
 Buckets **0**, **3**, and **7–10** are empty and are skipped.
 
@@ -1504,6 +1509,20 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
   List                 -> INTERFACE
 --------------------------------
 ```
+## Properties 
+
+1. In our program if anything which changes frequently(like username, password, mail id's, mobilenumber etc) are recommended to hardcode in 
+   java program, because if there is any change to reflect that change recompilation, rebuild and redeploy application are required even 
+   sometimes server restart also required which creates a big business impact to the client 
+2. We can overcome this problem by using properties file such type of variable things we have to configure in the properties file from that 
+   properties file we have to read into java program and we can use those properties
+3. The main advantage of this approach is if there is a change in properties file to reflect that change just redeployment is enough which 
+   won't create any business impact to the client
+4. In normal map ( HashMap , Hashtable , TreeMap) key and Value can be any type but in the case of properties Key and Value should be String type.
+  
+# Constructors 
+
+>Properties p = new Properties();
 
 
 
