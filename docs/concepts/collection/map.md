@@ -10,14 +10,14 @@
 
 | File | `main` runs |
 | ---- | ----------- |
-| [`hashMap.java`](../../../demo/src/main/java/com/collections/map/hashMap.java) | `demonstrateMap("HashMap")` |
-| [`linkedHashMap.java`](../../../demo/src/main/java/com/collections/map/linkedHashMap.java) | `demonstrateMap("LinkedHashMap")` |
-| [`treeMap.java`](../../../demo/src/main/java/com/collections/map/treeMap.java) | `demonstrateMap("TreeMap")` |
-| [`sortedMap.java`](../../../demo/src/main/java/com/collections/map/sortedMap.java) | `demonstrateMap("SortedMap")` |
-| [`navigableMap.java`](../../../demo/src/main/java/com/collections/map/navigableMap.java) | `demonstrateMap("NavigableMap")` — **full walkthrough below** |
-| [`hashTable.java`](../../../demo/src/main/java/com/collections/map/hashTable.java) | Hashtable via `mapDemo` (see also [Hashtable bucket demo](hashTable.md)) |
+| [`hashMap.java`](../../../demo/src/main/java/com/collection/map/hashMap.java) | `demonstrateMap("HashMap")` |
+| [`linkedHashMap.java`](../../../demo/src/main/java/com/collection/map/linkedHashMap.java) | `demonstrateMap("LinkedHashMap")` |
+| [`treeMap.java`](../../../demo/src/main/java/com/collection/map/treeMap.java) | `demonstrateMap("TreeMap")` |
+| [`sortedMap.java`](../../../demo/src/main/java/com/collection/map/sortedMap.java) | `demonstrateMap("SortedMap")` |
+| [`navigableMap.java`](../../../demo/src/main/java/com/collection/map/navigableMap.java) | `demonstrateMap("NavigableMap")` — **full walkthrough below** |
+| [`hashTable.java`](../../../demo/src/main/java/com/collection/map/hashTable.java) | Hashtable via `mapDemo` (see also [Hashtable bucket demo](hashTable.md)) |
 
-Shared implementation: [`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java) (`mapCollectionType`, `mapConstructors`, …).
+Shared implementation: [`mapDemo.java`](../../../demo/src/main/java/com/collection/map/mapDemo.java) (`mapCollectionType`, `mapConstructors`, …).
 
 ## Map constructor examples
 
@@ -58,7 +58,7 @@ then we should go for map.Duplicate Keys are not allowed but Values can be dupli
 ## Map Interface Hierarchy
 
 
-- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/map/mapDemo.java)
+- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collection/map/mapDemo.java)
 - 
 `Map` is separate from `Collection`: it stores a mapping from each unique key to one value. A solid arrow means **extends** and a dashed arrow means **implements**.
 
@@ -247,16 +247,16 @@ flowchart TD
 
 `NavigableMap<K, V>` extends `SortedMap<K, V>` with **nearest-key navigation** on entries (`lowerEntry`, `floorEntry`, `ceilingEntry`, `higherEntry`), **descending views**, and **inclusive range** `subMap` / `headMap` / `tailMap` overloads. The usual implementation is **`TreeMap`** (red-black tree, $O(\log n)$ per operation).
 
-[`navigableMap.java`](../../../demo/src/main/java/com/collections/map/navigableMap.java) extends [`mapDemo`](../../../demo/src/main/java/com/collections/map/mapDemo.java) and runs the NavigableMap demo from `main`.
+[`navigableMap.java`](../../../demo/src/main/java/com/collection/map/navigableMap.java) extends [`mapDemo`](../../../demo/src/main/java/com/collection/map/mapDemo.java) and runs the NavigableMap demo from `main`.
 
 ### Source files
 
 | File | Role |
 | ---- | ---- |
-| [navigableMap.java](../../../demo/src/main/java/com/collections/map/navigableMap.java) | `main`: `demonstrateMap("NavigableMap")` + map capacity summaries |
-| [mapDemo.java](../../../demo/src/main/java/com/collections/map/mapDemo.java) | **`demonstrateNavigableMap()`** and other map demos |
-| [treeMap.java](../../../demo/src/main/java/com/collections/map/treeMap.java) | Optional entry point for `TreeMap` only |
-| [sortedMap.java](../../../demo/src/main/java/com/collections/map/sortedMap.java) | `SortedMap` demo (`demonstrateSortedMap`) — overlap with range views |
+| [navigableMap.java](../../../demo/src/main/java/com/collection/map/navigableMap.java) | `main`: `demonstrateMap("NavigableMap")` + map capacity summaries |
+| [mapDemo.java](../../../demo/src/main/java/com/collection/map/mapDemo.java) | **`demonstrateNavigableMap()`** and other map demos |
+| [treeMap.java](../../../demo/src/main/java/com/collection/map/treeMap.java) | Optional entry point for `TreeMap` only |
+| [sortedMap.java](../../../demo/src/main/java/com/collection/map/sortedMap.java) | `SortedMap` demo (`demonstrateSortedMap`) — overlap with range views |
 
 ### End-to-end execution flow
 
@@ -288,7 +288,7 @@ sequenceDiagram
   NM->>CTI: printDefaultCapacitySummary (4 map types)
 ```
 
-Reference — full `demonstrateNavigableMap()` body ([`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java)):
+Reference — full `demonstrateNavigableMap()` body ([`mapDemo.java`](../../../demo/src/main/java/com/collection/map/mapDemo.java)):
 
 ```java
 private static void demonstrateNavigableMap() {
@@ -463,7 +463,7 @@ Related APIs **not** called in this demo: `descendingMap()`, `navigableKeySet()`
 
 ### `mapConstructors("NavigableMap")` behavior
 
-`mapConstructors` in [`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java) has **no `case "NavigableMap"`** (or `"SortedMap"`), so the switch **falls through to `default`** and runs **`demonstrateHashMapConstructors()`**.
+`mapConstructors` in [`mapDemo.java`](../../../demo/src/main/java/com/collection/map/mapDemo.java) has **no `case "NavigableMap"`** (or `"SortedMap"`), so the switch **falls through to `default`** and runs **`demonstrateHashMapConstructors()`**.
 
 ```mermaid
 flowchart TD
@@ -471,7 +471,7 @@ flowchart TD
   SW --> DEF["default → demonstrateHashMapConstructors()"]
 ```
 
-That is why the log after the NavigableMap block shows **`HashMap(): {}`** and related lines — not `TreeMap()` constructors. For TreeMap constructors, run [`treeMap.java`](../../../demo/src/main/java/com/collections/map/treeMap.java) or extend the switch with `NavigableMap` → `demonstrateTreeMapConstructors()`.
+That is why the log after the NavigableMap block shows **`HashMap(): {}`** and related lines — not `TreeMap()` constructors. For TreeMap constructors, run [`treeMap.java`](../../../demo/src/main/java/com/collection/map/treeMap.java) or extend the switch with `NavigableMap` → `demonstrateTreeMapConstructors()`.
 
 ---
 
@@ -492,7 +492,7 @@ pie showData
 
 Each block prints **type**, **capacity / load factor** (where applicable), **public methods**, and a **one-line summary**. The **TreeMap** list includes full **`NavigableMap`** surface: `ceilingEntry`, `descendingMap`, `pollFirstEntry`, `subMap`, `tailMap`, …
 
-To print **`NavigableMap`** as the interface summary, pass `"NavigableMap"` (supported in [`CollectionTypeInspector`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java)).
+To print **`NavigableMap`** as the interface summary, pass `"NavigableMap"` (supported in [`CollectionTypeInspector`](../../../demo/src/main/java/com/collection/collectionBaseClasses/CollectionTypeInspector.java)).
 
 ---
 
@@ -554,12 +554,12 @@ Iterator over entrySet() (sorted order):
 
 ```bash
 cd demo
-mvn -q exec:java -Dexec.mainClass=com.collections.map.navigableMap
+mvn -q exec:java -Dexec.mainClass=com.collection.map.navigableMap
 ```
 
-Main class: `com.collections.map.navigableMap`.
+Main class: `com.collection.map.navigableMap`.
 
-> **Also see:** [`demonstrateSortedMap()`](../../../demo/src/main/java/com/collections/map/mapDemo.java) for `SortedMap` range views without poll/entry navigation; [`Hashtable` execution flow](hashTable.md) for bucket-based maps.
+> **Also see:** [`demonstrateSortedMap()`](../../../demo/src/main/java/com/collection/map/mapDemo.java) for `SortedMap` range views without poll/entry navigation; [`Hashtable` execution flow](hashTable.md) for bucket-based maps.
 
 ---
 

@@ -36,7 +36,7 @@ new TreeSet<>(sortedSet);
 2.If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion 
   order not required then we should go for Set.
 
-- [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collections/set/setDemo.java)
+- [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collection/set/setDemo.java)
 
 ## Set Interface Hierarchy
 
@@ -278,15 +278,15 @@ duplicates are not allowed and all objects should be inserted according to some 
 
 `NavigableSet<E>` extends `SortedSet<E>` with **nearest-match lookups** and **descending views** on a sorted unique set. The usual implementation is **`TreeSet`** (red-black tree, $O(\log n)$ per operation).
 
-[`navigableSet.java`](../../../demo/src/main/java/com/collections/set/navigableSet.java) is a thin launcher: it calls [`setDemo`](../../../demo/src/main/java/com/collections/set/setDemo.java) with type `"NavigableSet"`, then prints a **capacity / API summary** via [`CollectionTypeInspector`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java).
+[`navigableSet.java`](../../../demo/src/main/java/com/collection/set/navigableSet.java) is a thin launcher: it calls [`setDemo`](../../../demo/src/main/java/com/collection/set/setDemo.java) with type `"NavigableSet"`, then prints a **capacity / API summary** via [`CollectionTypeInspector`](../../../demo/src/main/java/com/collection/collectionBaseClasses/CollectionTypeInspector.java).
 
 ### Source files
 
 | File                                                                                   | Role                                                                                     |
 | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [navigableSet.java](../../../demo/src/main/java/com/collections/set/navigableSet.java) | `main`: `demonstrateSet("NavigableSet")` + `printDefaultCapacitySummary("NavigableSet")` |
-| [setDemo.java](../../../demo/src/main/java/com/collections/set/setDemo.java)           | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos                      |
-| [treeSet.java](../../../demo/src/main/java/com/collections/set/treeSet.java)           | Optional entry point focused on `TreeSet` only                                           |
+| [navigableSet.java](../../../demo/src/main/java/com/collection/set/navigableSet.java) | `main`: `demonstrateSet("NavigableSet")` + `printDefaultCapacitySummary("NavigableSet")` |
+| [setDemo.java](../../../demo/src/main/java/com/collection/set/setDemo.java)           | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos                      |
+| [treeSet.java](../../../demo/src/main/java/com/collection/set/treeSet.java)           | Optional entry point focused on `TreeSet` only                                           |
 
 ### End-to-end execution flow
 
@@ -322,7 +322,7 @@ sequenceDiagram
   CTI-->>NS: methods + summary for NavigableSet interface
 ```
 
-Reference implementation of the core demo ( [`setDemo.java`](../../../demo/src/main/java/com/collections/set/setDemo.java) lines 169–188):
+Reference implementation of the core demo ( [`setDemo.java`](../../../demo/src/main/java/com/collection/set/setDemo.java) lines 169–188):
 
 ```java
 private static void demonstrateNavigableSet() {
@@ -350,7 +350,7 @@ private static void demonstrateNavigableSet() {
 
 ### `navigableSet.java` — launcher methods
 
-[`navigableSet.java`](../../../demo/src/main/java/com/collections/set/navigableSet.java) does **not** reimplement set logic; it **inherits** [`setDemo`](../../../demo/src/main/java/com/collections/set/setDemo.java) and only wires `main`.
+[`navigableSet.java`](../../../demo/src/main/java/com/collection/set/navigableSet.java) does **not** reimplement set logic; it **inherits** [`setDemo`](../../../demo/src/main/java/com/collection/set/setDemo.java) and only wires `main`.
 
 ```mermaid
 flowchart TD
@@ -705,7 +705,7 @@ mindmap
 
 ### Verified NavigableSet output
 
-Excerpt from running `com.collections.set.navigableSet` (full log includes constructor and comparator blocks):
+Excerpt from running `com.collection.set.navigableSet` (full log includes constructor and comparator blocks):
 
 ```text
 ===== NavigableSet (implemented by TreeSet) =====
@@ -731,12 +731,12 @@ Core characteristic: NavigableSet adds nearest-match searches and descending vie
 
 ```bash
 cd demo
-mvn -q exec:java -Dexec.mainClass=com.collections.set.navigableSet
+mvn -q exec:java -Dexec.mainClass=com.collection.set.navigableSet
 ```
 
-Main class: `com.collections.set.navigableSet`.
+Main class: `com.collection.set.navigableSet`.
 
-> **Also see:** [`sortedSet.java`](../../../demo/src/main/java/com/collections/set/sortedSet.java) for `first` / `last` / classic `headSet` & `tailSet` without nearest-match APIs; [`treeSet.java`](../../../demo/src/main/java/com/collections/set/treeSet.java) for the concrete class demo.
+> **Also see:** [`sortedSet.java`](../../../demo/src/main/java/com/collection/set/sortedSet.java) for `first` / `last` / classic `headSet` & `tailSet` without nearest-match APIs; [`treeSet.java`](../../../demo/src/main/java/com/collection/set/treeSet.java) for the concrete class demo.
 
 ---
 

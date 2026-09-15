@@ -60,7 +60,7 @@ sequenceDiagram
   P->>File: persist entries
 ```
 
-> In [`propertiesDemo.java`](../../../demo/src/main/java/com/collections/properties/propertiesDemo.java), the `store(...)` call is **commented out** so the demo stays read-only in CI; uncomment it locally to regenerate [`propertiesDemo.properties`](../../../propertiesDemo.properties).
+> In [`propertiesDemo.java`](../../../demo/src/main/java/com/collection/properties/propertiesDemo.java), the `store(...)` call is **commented out** so the demo stays read-only in CI; uncomment it locally to regenerate [`propertiesDemo.properties`](../../../propertiesDemo.properties).
 
 ---
 
@@ -72,8 +72,8 @@ This section walks through **what `main` actually runs** in the demo: in-memory 
 
 | File                                                                                              | Role                                                                         |
 | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [propertiesDemo.java](../../../demo/src/main/java/com/collections/properties/propertiesDemo.java) | `main`: populate `Properties`, print entries, inspect type                   |
-| [propertiesBase.java](../../../demo/src/main/java/com/collections/properties/propertiesBase.java) | Small helper holding `key` / `value` strings used when calling `put`         |
+| [propertiesDemo.java](../../../demo/src/main/java/com/collection/properties/propertiesDemo.java) | `main`: populate `Properties`, print entries, inspect type                   |
+| [propertiesBase.java](../../../demo/src/main/java/com/collection/properties/propertiesBase.java) | Small helper holding `key` / `value` strings used when calling `put`         |
 | [propertiesDemo.properties](../../../propertiesDemo.properties)                                   | Example file produced when `store()` is enabled (sample on disk in the repo) |
 
 #### End-to-end flow
@@ -118,7 +118,7 @@ sequenceDiagram
 | Step | Code                                  | Effect                                                                                                                                                                                                 |
 | ---- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 1    | `new Properties()`                    | Empty table with the same default capacity as `Hashtable` (**11** buckets, load factor **0.75**).                                                                                                      |
-| 2    | `properties.put(...)` × 3             | Inserts `key1`→`value1`, `key2`→`value2`, `key3`→`value3`. Keys and values are `String`s obtained from [`propertiesBase`](../../../demo/src/main/java/com/collections/properties/propertiesBase.java). |
+| 2    | `properties.put(...)` × 3             | Inserts `key1`→`value1`, `key2`→`value2`, `key3`→`value3`. Keys and values are `String`s obtained from [`propertiesBase`](../../../demo/src/main/java/com/collection/properties/propertiesBase.java). |
 | 3    | Commented `setProperty("key4", null)` | Would throw **`NullPointerException`** — `Properties` does not allow `null` keys or values (inherited from `Hashtable`).                                                                               |
 | 4    | Commented `store(FileWriter, ...)`    | Would write all entries to **`propertiesDemo.properties`** with a header comment (see sample file in repo root).                                                                                       |
 | 5    | Commented `notify()`                  | Would throw **`IllegalMonitorStateException`** — `Properties` is not a monitor; `wait`/`notify` are for thread coordination on synchronized objects.                                                   |
@@ -142,7 +142,7 @@ classDiagram
   }
 ```
 
-Because `Properties` **extends `Hashtable`**, it inherits synchronized methods and **does not preserve insertion order** in `println` output — the same idea as [`hashTableDemo`](../../../demo/src/main/java/com/collections/hashTable/basicflow/hashTableDemo.java).
+Because `Properties` **extends `Hashtable`**, it inherits synchronized methods and **does not preserve insertion order** in `println` output — the same idea as [`hashTableDemo`](../../../demo/src/main/java/com/collection/hashTable/basicflow/hashTableDemo.java).
 
 #### Verified program output
 
@@ -167,9 +167,9 @@ From the `demo` module (Maven) or compile `propertiesDemo` and `propertiesBase` 
 
 ```bash
 cd demo
-mvn -q exec:java -Dexec.mainClass=com.collections.properties.propertiesDemo
+mvn -q exec:java -Dexec.mainClass=com.collection.properties.propertiesDemo
 ```
 
-Main class: `com.collections.properties.propertiesDemo`.
+Main class: `com.collection.properties.propertiesDemo`.
 
 

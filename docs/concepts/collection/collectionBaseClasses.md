@@ -12,24 +12,24 @@ The following methods demonstrate the constructors for each data structure. Ctrl
 
 | Dispatcher | Package | Role |
 | ---------- | ------- | ---- |
-| [`listDemo.java`](../../../demo/src/main/java/com/collections/list/listDemo.java) | `list` | `listCollectionType`, `listConstructors` — ArrayList, LinkedList, Vector, Stack |
-| [`setDemo.java`](../../../demo/src/main/java/com/collections/set/setDemo.java) | `set` | `setCollectionType`, `setConstructors`, `setComparator` — HashSet, TreeSet, NavigableSet, … |
-| [`queueDemo.java`](../../../demo/src/main/java/com/collections/collectionBaseClasses/queueDemo.java) | `collectionBaseClasses` | `queueCollectionType`, `queueConstructors` — LinkedList-as-Queue, ArrayDeque, PriorityQueue |
-| [`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java) | `map` | `mapCollectionType`, `mapConstructors`, `mapLoadFactor` — HashMap, TreeMap, NavigableMap, … |
-| [`synchornizedCollections.java`](../../../demo/src/main/java/com/collections/collectionBaseClasses/synchornizedCollections.java) | `collectionBaseClasses` | Legacy synchronized wrapper examples |
+| [`listDemo.java`](../../../demo/src/main/java/com/collection/list/listDemo.java) | `list` | `listCollectionType`, `listConstructors` — ArrayList, LinkedList, Vector, Stack |
+| [`setDemo.java`](../../../demo/src/main/java/com/collection/set/setDemo.java) | `set` | `setCollectionType`, `setConstructors`, `setComparator` — HashSet, TreeSet, NavigableSet, … |
+| [`queueDemo.java`](../../../demo/src/main/java/com/collection/collectionBaseClasses/queueDemo.java) | `collectionBaseClasses` | `queueCollectionType`, `queueConstructors` — LinkedList-as-Queue, ArrayDeque, PriorityQueue |
+| [`mapDemo.java`](../../../demo/src/main/java/com/collection/map/mapDemo.java) | `map` | `mapCollectionType`, `mapConstructors`, `mapLoadFactor` — HashMap, TreeMap, NavigableMap, … |
+| [`synchornizedCollections.java`](../../../demo/src/main/java/com/collection/collectionBaseClasses/synchornizedCollections.java) | `collectionBaseClasses` | Legacy synchronized wrapper examples |
 
 Constructor entry points (same pattern: `*Constructors(String type)` in each dispatcher):
 
-- [List — `listConstructors`](../../../demo/src/main/java/com/collections/list/listDemo.java) → see [List guide](list.md)
-- [Set — `setConstructors`](../../../demo/src/main/java/com/collections/set/setDemo.java) → see [Set guide](set.md)
-- [Queue — `queueConstructors`](../../../demo/src/main/java/com/collections/collectionBaseClasses/queueDemo.java) → see [Queue guide](queue.md)
-- [Map — `mapConstructors`](../../../demo/src/main/java/com/collections/map/mapDemo.java) → see [Map guide](map.md)
+- [List — `listConstructors`](../../../demo/src/main/java/com/collection/list/listDemo.java) → see [List guide](list.md)
+- [Set — `setConstructors`](../../../demo/src/main/java/com/collection/set/setDemo.java) → see [Set guide](set.md)
+- [Queue — `queueConstructors`](../../../demo/src/main/java/com/collection/collectionBaseClasses/queueDemo.java) → see [Queue guide](queue.md)
+- [Map — `mapConstructors`](../../../demo/src/main/java/com/collection/map/mapDemo.java) → see [Map guide](map.md)
 
-[`printDefaultCapacitySummary`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java) reflects public API names and capacity rules for a requested type (used from launchers such as `navigableSet`, `arrayList`, `arrayDeque`).
+[`printDefaultCapacitySummary`](../../../demo/src/main/java/com/collection/collectionBaseClasses/CollectionTypeInspector.java) reflects public API names and capacity rules for a requested type (used from launchers such as `navigableSet`, `arrayList`, `arrayDeque`).
 
 ## Checking Whether a Collection Type Is a Class or an Interface
 
-**File:** [`CollectionTypeInspector.java`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java)
+**File:** [`CollectionTypeInspector.java`](../../../demo/src/main/java/com/collection/collectionBaseClasses/CollectionTypeInspector.java)
 
 Every `listDemo`, `setDemo`, `queueDemo`, and `mapDemo` method calls `CollectionTypeInspector.printTypeInfo(...)` before running its methods/cursors. It uses `java.lang.reflect` to classify each supplied type as `INTERFACE`, `ABSTRACT CLASS`, or `CLASS`, and prints a boxed, column-aligned table.
 
@@ -48,7 +48,7 @@ flowchart TD
 
 ### The formatting line — `CollectionTypeInspector.java` line 15
 
-> 🔎 **Highlighted line:** [`CollectionTypeInspector.java#L15`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java#L15)
+> 🔎 **Highlighted line:** [`CollectionTypeInspector.java#L15`](../../../demo/src/main/java/com/collection/collectionBaseClasses/CollectionTypeInspector.java#L15)
 
 ```java
 System.out.printf("  %-20s -> %s%n", type.getSimpleName(), classify(type));
