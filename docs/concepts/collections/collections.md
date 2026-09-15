@@ -64,6 +64,13 @@
   - [HashSet vs LinkedHashSet](#hashset-vs-linkedhashset)
     - [Shared properties](#shared-properties)
     - [SortedSet (I)](#sortedset-i)
+  - [NavigableSet — complete execution flow (`navigableSet.java`)](#navigableset--complete-execution-flow-navigablesetjava)
+    - [What `NavigableSet` adds beyond `SortedSet`](#what-navigableset-adds-beyond-sortedset)
+    - [Nearest-match methods on the demo data](#nearest-match-methods-on-the-demo-data)
+    - [NavigableSet API — method groups](#navigableset-api--method-groups)
+    - [Program phases (`navigableSet.main`)](#program-phases-navigablesetmain)
+    - [Verified program output](#verified-navigableset-output)
+    - [Run the demo](#run-the-navigableset-demo)
   - [Queue (I)](#queue-i)
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
@@ -858,7 +865,7 @@ java -cp target/classes com.collections.map.hashTable
 2.If we want to represent a group of individual objects as a single entity where duplicates are not allowed and insertion 
   order not required then we should go for Set.
 
-- [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/setDemo.java)
+- [Set constructors — `setConstructors(String)`](../../../demo/src/main/java/com/collections/set/setDemo.java)
 
 ## Set Interface Hierarchy
 
@@ -1082,6 +1089,227 @@ linkedHashSet.add("Cherry");
 
 It is the child interface of Set if we want to represent a group of individual objects as a single entity where 
 duplicates are not allowed and all objects should be inserted according to some sorting order then we should go for Sorted Set 
+
+---
+
+## NavigableSet — complete execution flow (`navigableSet.java`)
+
+`NavigableSet<E>` extends `SortedSet<E>` with **nearest-match lookups** and **descending views** on a sorted unique set. The usual implementation is **`TreeSet`** (red-black tree, $O(\log n)$ per operation).
+
+[`navigableSet.java`](../../../demo/src/main/java/com/collections/set/navigableSet.java) is a thin launcher: it calls [`setDemo`](../../../demo/src/main/java/com/collections/set/setDemo.java) with type `"NavigableSet"`, then prints a **capacity / API summary** via [`CollectionTypeInspector`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java).
+
+### Source files
+
+| File | Role |
+| ---- | ---- |
+| [navigableSet.java](../../../demo/src/main/java/com/collections/set/navigableSet.java) | `main`: `demonstrateSet("NavigableSet")` + `printDefaultCapacitySummary("NavigableSet")` |
+| [setDemo.java](../../../demo/src/main/java/com/collections/set/setDemo.java) | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos |
+| [treeSet.java](../../../demo/src/main/java/com/collections/set/treeSet.java) | Optional entry point focused on `TreeSet` only |
+
+### End-to-end execution flow
+
+```mermaid
+flowchart TD
+  A["main() in navigableSet"] --> B["demonstrateSet(\"NavigableSet\")"]
+  B --> C["setCollectionType → demonstrateNavigableSet()"]
+  B --> D["setConstructors → demonstrateTreeSetConstructors()"]
+  B --> E["setComparator → demonstrateTreeSetComparator()"]
+  C --> F["new TreeSet&lt;&gt;(); add Apple, Banana, Cherry, Mango"]
+  F --> G["lower / floor / ceiling / higher"]
+  G --> H["descendingSet() and inclusive subSet(...)"]
+  A --> I["printDefaultCapacitySummary(\"NavigableSet\")"]
+  I --> J["Type info, capacity note, public methods list, behavior summary"]
+```
+
+```mermaid
+sequenceDiagram
+  participant NS as navigableSet.main()
+  participant SD as setDemo
+  participant TS as TreeSet
+  participant CTI as CollectionTypeInspector
+
+  NS->>SD: demonstrateSet("NavigableSet")
+  SD->>SD: setCollectionType → demonstrateNavigableSet()
+  SD->>CTI: printTypeInfo(NavigableSet, SortedSet, TreeSet)
+  SD->>TS: new TreeSet(); add × 4
+  SD->>TS: lower, floor, ceiling, higher
+  SD->>TS: descendingSet(), subSet(Banana, true, Mango, false)
+  SD->>SD: setConstructors → TreeSet constructor examples
+  SD->>SD: setComparator → natural / reverse / custom Comparator
+  NS->>CTI: printDefaultCapacitySummary("NavigableSet")
+  CTI-->>NS: methods + summary for NavigableSet interface
+```
+
+### What `NavigableSet` adds beyond `SortedSet`
+
+```mermaid
+flowchart LR
+  subgraph inherited ["From SortedSet + Collection"]
+    S1["first() / last()"]
+    S2["comparator()"]
+    S3["headSet / tailSet / subSet"]
+    S4["add / remove / contains / iterator …"]
+  end
+  subgraph nav ["NavigableSet-only navigation"]
+    N1["lower / floor / ceiling / higher"]
+    N2["pollFirst / pollLast"]
+    N3["descendingSet / descendingIterator"]
+    N4["headSet / tailSet / subSet with inclusive flags"]
+  end
+  SortedSet["SortedSet"] --> inherited
+  NavigableSet["NavigableSet"] --> inherited
+  NavigableSet --> nav
+  TreeSet["TreeSet (class)"] --> NavigableSet
+```
+
+| Layer | Responsibility |
+| ----- | ---------------- |
+| **`Set`** | No duplicates; `add` / `remove` / `contains` |
+| **`SortedSet`** | Total ordering; `first` / `last`; range views with **exclusive** upper bounds on classic overloads |
+| **`NavigableSet`** | **Closest element** queries; **descending** set view; range views with **explicit inclusive/exclusive** endpoints |
+| **`TreeSet`** | Concrete red-black tree implementation used in the demo |
+
+### Nearest-match methods on the demo data
+
+After inserts, the set is **`[Apple, Banana, Cherry, Mango]`** (natural `String` order).
+
+```mermaid
+flowchart TB
+  subgraph axis ["Ascending order (conceptual)"]
+    direction LR
+    A1["Apple"] --- A2["Banana"] --- A3["Cherry"] --- A4["Mango"]
+  end
+```
+
+| Method | Argument | Result in demo | Meaning |
+| ------ | -------- | -------------- | ------- |
+| **`lower(e)`** | `"Cherry"` | `Banana` | Greatest element **strictly less than** `e` |
+| **`floor(e)`** | `"Cherry"` | `Cherry` | Greatest element **≤ `e`** (exact match allowed) |
+| **`ceiling(e)`** | `"Coconut"` | `Mango` | Smallest element **≥ `e`** (`Coconut` is not in the set) |
+| **`higher(e)`** | `"Cherry"` | `Mango` | Smallest element **strictly greater than** `e` |
+
+```mermaid
+flowchart LR
+  Q["Query: ceiling(\"Coconut\")"] --> T["Walk sorted tree ≥ Coconut"]
+  T --> R["Mango"]
+```
+
+**Descending view:** `descendingSet()` returns a **view** backed by the same tree, iterating **`[Mango, Cherry, Banana, Apple]`**. Changes to either view update the other.
+
+**Inclusive range:** `subSet("Banana", true, "Mango", false)` → **`[Banana, Cherry]`** (includes `Banana`, excludes `Mango`).
+
+```mermaid
+flowchart TD
+  subgraph range ["subSet(Banana, true, Mango, false)"]
+    B["Banana ✓"]
+    C["Cherry ✓"]
+    M["Mango ✗ (toElement exclusive)"]
+  end
+```
+
+### NavigableSet API — method groups
+
+`CollectionTypeInspector` reflects **public methods** on `java.util.NavigableSet` (including those inherited from `SortedSet`, `Set`, and `Collection`). Grouped by purpose:
+
+```mermaid
+pie showData
+    title NavigableSet public API (grouped by role)
+    "Collection core (add, remove, size, iterate, stream…)" : 22
+    "SortedSet endpoints & classic ranges (first, last, head/tail/sub)" : 6
+    "Nearest-match (lower, floor, ceiling, higher)" : 4
+    "Descending navigation (descendingSet, descendingIterator)" : 2
+    "Deque-style polls (pollFirst, pollLast)" : 2
+    "Inclusive range overloads (head/tail/sub with boolean flags)" : 3
+    "SequencedSet (Java 21: reversed, addFirst, getFirst…)" : 6
+```
+
+| Group | Methods (typical) | Notes |
+| ----- | ----------------- | ----- |
+| **Nearest-match** | `lower`, `floor`, `ceiling`, `higher` | All return `null` if no such element exists |
+| **Descending** | `descendingSet`, `descendingIterator` | Live view; do not use after structural changes unless synchronized externally |
+| **Poll ends** | `pollFirst`, `pollLast` | Remove and return first/last, or `null` if empty |
+| **Inclusive ranges** | `subSet(from, fromInclusive, to, toInclusive)`, `headSet(to, inclusive)`, `tailSet(from, inclusive)` | Prefer these when boundary inclusivity matters |
+| **SortedSet** | `first`, `last`, `comparator`, `headSet`, `tailSet`, `subSet` | Classic `subSet` uses **exclusive** `toElement` |
+| **Collection** | `add`, `remove`, `contains`, `iterator`, `stream`, … | `TreeSet` rejects `null` elements |
+
+```mermaid
+mindmap
+  root((NavigableSet))
+    Nearest match
+      lower
+      floor
+      ceiling
+      higher
+    Views
+      descendingSet
+      descendingIterator
+      headSet tailSet subSet
+    Sorted ends
+      first
+      last
+      pollFirst
+      pollLast
+    Ordering
+      comparator
+      natural vs custom TreeSet
+```
+
+### Program phases (`navigableSet.main`)
+
+What runs when you launch `com.collections.set.navigableSet`:
+
+```mermaid
+pie showData
+    title Share of main() output sections
+    "NavigableSet method demo (demonstrateNavigableSet)" : 35
+    "TreeSet constructors (setConstructors)" : 15
+    "Comparator lab (setComparator)" : 35
+    "CollectionTypeInspector summary" : 15
+```
+
+| Phase | Code path | What you see |
+| ----- | --------- | ------------ |
+| 1 | `demonstrateNavigableSet()` | Type table, sorted elements, **lower/floor/ceiling/higher**, `descendingSet`, inclusive `subSet` |
+| 2 | `demonstrateTreeSetConstructors()` | Empty `TreeSet`, reverse-order `TreeSet`, copy from `Collection` / `SortedSet` |
+| 3 | `demonstrateTreeSetComparator()` | Natural, reverse, and custom comparators; duplicate rejection when `compare == 0` |
+| 4 | `printDefaultCapacitySummary("NavigableSet")` | **No fixed bucket count** (tree grows per element); full **method name list**; behavior one-liner |
+
+**Capacity note:** unlike `HashSet`, `NavigableSet` / `TreeSet` has **no hash buckets**. Each `add` creates a tree node; default capacity messaging in the inspector is *“TreeSet creates a red-black tree node for each element”*.
+
+### Verified NavigableSet output
+
+Excerpt from running `com.collections.set.navigableSet` (full log includes constructor and comparator blocks):
+
+```text
+===== NavigableSet (implemented by TreeSet) =====
+----- Type Classification -----
+  NavigableSet         -> INTERFACE
+  SortedSet            -> INTERFACE
+  TreeSet              -> CLASS
+--------------------------------
+Elements in natural sorted order: [Apple, Banana, Cherry, Mango]
+lower("Cherry"): Banana
+floor("Cherry"): Cherry
+ceiling("Coconut"): Mango
+higher("Cherry"): Mango
+descendingSet(): [Mango, Cherry, Banana, Apple]
+subSet("Banana", true, "Mango", false): [Banana, Cherry]
+Core characteristic: NavigableSet adds nearest-match searches and descending views.
+===== NavigableSet Details =====
+----- Summary -----
+  SortedSet interface with nearest-match and descending-view operations; TreeSet implements it.
+```
+
+### Run the NavigableSet demo
+
+```bash
+cd demo
+mvn -q exec:java -Dexec.mainClass=com.collections.set.navigableSet
+```
+
+Main class: `com.collections.set.navigableSet`.
+
+> **Also see:** [`sortedSet.java`](../../../demo/src/main/java/com/collections/set/sortedSet.java) for `first` / `last` / classic `headSet` & `tailSet` without nearest-match APIs; [`treeSet.java`](../../../demo/src/main/java/com/collections/set/treeSet.java) for the concrete class demo.
 
 ---
 
