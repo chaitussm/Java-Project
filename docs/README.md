@@ -23,7 +23,8 @@
 
 | Topic | Guide |
 | ----- | ----- |
-| Collections | [colections.md](concepts/collections/colections.md) |
+| Collections (hub) | [collections.md](concepts/collections/collections.md) |
+| Collections — list / set / map / … | See package table in [collections.md](concepts/collections/collections.md#package-guides-by-demo-folder) |
 | Cursors | [cursors.md](concepts/collections/cursors.md) |
 | Lambda functions | [lambda-functions.md](concepts/lambda-functions.md) |
 | Serialization | [serializationBasics.md](concepts/serialization/serializationBasics.md) |
