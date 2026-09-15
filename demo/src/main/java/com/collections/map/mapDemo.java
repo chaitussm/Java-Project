@@ -25,6 +25,9 @@ public class mapDemo {
             case "SortedMap":
                 demonstrateSortedMap();
                 break;
+            case "NavigableMap":
+                demonstrateNavigableMap();
+                break;
             case "HashMap":
             default:
                 demonstrateHashMap();
@@ -239,5 +242,42 @@ public class mapDemo {
         System.out.println("Core characteristic: not insertion order; keys stay sorted (natural order or");
         System.out.println("a Comparator), so put/get/remove are O(log n), slower than HashMap's O(1) average.");
     }
+    private static void demonstrateNavigableMap() { 
+        System.out.println("===== NavigableMap (TreeMap) =====");
+        CollectionTypeInspector.printTypeInfo(TreeMap.class, NavigableMap.class, SortedMap.class, Map.class);   
+        CollectionTypeInspector.printDefaultInitialCapacity("TreeMap");
+        NavigableMap<String, Integer> map = new TreeMap<>();
 
+        map.put("Ram", 25);
+        map.put("Shyam", 30);
+        map.put("Geeta", 28);
+        System.out.println("After put() (stored in sorted key order): " + map);
+
+        System.out.println("get(\"Shyam\"): " + map.get("Shyam"));
+        System.out.println("firstKey(): " + map.firstKey());
+        System.out.println("lastKey(): " + map.lastKey());
+
+        map.remove("Geeta");
+        System.out.println("After remove(\"Geeta\"): " + map);
+
+        System.out.println("subMap(\"Ram\", \"Shyam\") [to exclusive]: " + map.ceilingEntry("Ram").getKey() + " to " + map.lowerEntry("Shyam").getKey());
+        System.out.println("subMap(\"Ram\", true, \"Shyam\", true) [both inclusive]: "
+                + map.subMap("Ram", true, "Shyam", true));
+        System.out.println("headMap(\"Shyam\") [keys < Shyam]: " + map.floorKey("Shyam"));
+        System.out.println("tailMap(\"Ram\") [keys >= Ram]: " + map.floorEntry("Ram").getKey());
+        System.out.println("floorEntry(\"Ram\"): " + map.pollFirstEntry().getKey());
+        System.out.println("ceilingEntry(\"Ram\"): " + map.pollLastEntry().getKey());
+        //System.out.println("pollFirstEntry(): " + map.descendingMap().firstEntry().getKey());
+        System.out.println("comparator(): " + map.comparator());
+
+        System.out.println("Iterator over entrySet() (sorted order):");
+        Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Integer> entry = iterator.next();
+            System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+        }
+
+        System.out.println("Core characteristic: not insertion order; keys stay sorted (natural order or");
+        System.out.println("a Comparator), so put/get/remove are O(log n), slower than HashMap's O(1) average.");
+    }
 }

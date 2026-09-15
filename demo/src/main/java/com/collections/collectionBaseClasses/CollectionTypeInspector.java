@@ -148,11 +148,13 @@ public final class CollectionTypeInspector {
                 return "TreeMap";
             case "hashtable":
                 return "Hashtable";
+            case "navigablemap":
+                return "NavigableMap";
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure
                         + ". Supported types: ArrayList, LinkedList, Vector, Stack, HashSet, LinkedHashSet, "
                         + "TreeSet, SortedSet, NavigableSet, ArrayDeque, PriorityQueue, HashMap, LinkedHashMap, "
-                        + "TreeMap, Hashtable.");
+                        + "TreeMap, Hashtable, NavigableMap.");
         }
     }
 
@@ -173,6 +175,7 @@ public final class CollectionTypeInspector {
             case "LinkedHashMap": return java.util.LinkedHashMap.class;
             case "TreeMap": return java.util.TreeMap.class;
             case "Hashtable": return java.util.Hashtable.class;
+            case "NavigableMap": return java.util.NavigableMap.class;
             default: throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
         }
     }
