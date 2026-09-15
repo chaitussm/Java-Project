@@ -64,13 +64,7 @@
   - [HashSet vs LinkedHashSet](#hashset-vs-linkedhashset)
     - [Shared properties](#shared-properties)
     - [SortedSet (I)](#sortedset-i)
-  - [NavigableSet — complete execution flow (`navigableSet.java`)](#navigableset--complete-execution-flow-navigablesetjava)
-    - [What `NavigableSet` adds beyond `SortedSet`](#what-navigableset-adds-beyond-sortedset)
-    - [Nearest-match methods on the demo data](#nearest-match-methods-on-the-demo-data)
-    - [NavigableSet API — method groups](#navigableset-api--method-groups)
-    - [Program phases (`navigableSet.main`)](#program-phases-navigablesetmain)
-    - [Verified program output](#verified-navigableset-output)
-    - [Run the demo](#run-the-navigableset-demo)
+- [NavigableSet](#navigableset)
   - [Queue (I)](#queue-i)
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
@@ -87,7 +81,15 @@
     - [Why use a properties file?](#why-use-a-properties-file)
     - [Properties file and the `Properties` object (`load` / `store`)](#properties-file-and-the-properties-object-load--store)
     - [Complete execution flow (`propertiesDemo.java`)](#complete-execution-flow-propertiesdemojava)
-    - [Run the demo](#run-the-properties-demo)
+      - [Source files](#source-files-1)
+      - [End-to-end flow](#end-to-end-flow)
+      - [Step-by-step summary](#step-by-step-summary)
+      - [Relationship to `Hashtable`](#relationship-to-hashtable)
+      - [Verified program output](#verified-program-output-1)
+    - [Run the properties demo](#run-the-properties-demo)
+- [1.5 v enhancements  (Queue Interface)](#15-v-enhancements--queue-interface)
+- [PriorityQueue](#priorityqueue)
+- [Constructors](#constructors-1)
 <!-- /TOC -->
 
 > **Quick navigation:** for a focused, side-by-side comparison reference, open [Differences in Java Collections](differences-in-collections.md).
@@ -1092,226 +1094,20 @@ duplicates are not allowed and all objects should be inserted according to some 
 
 ---
 
-## NavigableSet — complete execution flow (`navigableSet.java`)
+# NavigableSet
 
-`NavigableSet<E>` extends `SortedSet<E>` with **nearest-match lookups** and **descending views** on a sorted unique set. The usual implementation is **`TreeSet`** (red-black tree, $O(\log n)$ per operation).
+As a part of 1.6 version the following 2 concepts introduced in 1.6 version 
+1. NavigableSet(I)
+2. NavigableMap(I)
 
-[`navigableSet.java`](../../../demo/src/main/java/com/collections/set/navigableSet.java) is a thin launcher: it calls [`setDemo`](../../../demo/src/main/java/com/collections/set/setDemo.java) with type `"NavigableSet"`, then prints a **capacity / API summary** via [`CollectionTypeInspector`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java).
+1. It is the child interface of SortedSet(I) and it defines several methods for navigation purposes 
 
-### Source files
+NavigableSet defines the follwing methods 
 
-| File | Role |
-| ---- | ---- |
-| [navigableSet.java](../../../demo/src/main/java/com/collections/set/navigableSet.java) | `main`: `demonstrateSet("NavigableSet")` + `printDefaultCapacitySummary("NavigableSet")` |
-| [setDemo.java](../../../demo/src/main/java/com/collections/set/setDemo.java) | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos |
-| [treeSet.java](../../../demo/src/main/java/com/collections/set/treeSet.java) | Optional entry point focused on `TreeSet` only |
+>floor(e)
 
-### End-to-end execution flow
+It returns highest element 
 
-```mermaid
-flowchart TD
-  A["main() in navigableSet"] --> B["demonstrateSet(\"NavigableSet\")"]
-  B --> C["setCollectionType → demonstrateNavigableSet()"]
-  B --> D["setConstructors → demonstrateTreeSetConstructors()"]
-  B --> E["setComparator → demonstrateTreeSetComparator()"]
-  C --> F["new TreeSet&lt;&gt;(); add Apple, Banana, Cherry, Mango"]
-  F --> G["lower / floor / ceiling / higher"]
-  G --> H["descendingSet() and inclusive subSet(...)"]
-  A --> I["printDefaultCapacitySummary(\"NavigableSet\")"]
-  I --> J["Type info, capacity note, public methods list, behavior summary"]
-```
-
-```mermaid
-sequenceDiagram
-  participant NS as navigableSet.main()
-  participant SD as setDemo
-  participant TS as TreeSet
-  participant CTI as CollectionTypeInspector
-
-  NS->>SD: demonstrateSet("NavigableSet")
-  SD->>SD: setCollectionType → demonstrateNavigableSet()
-  SD->>CTI: printTypeInfo(NavigableSet, SortedSet, TreeSet)
-  SD->>TS: new TreeSet(); add × 4
-  SD->>TS: lower, floor, ceiling, higher
-  SD->>TS: descendingSet(), subSet(Banana, true, Mango, false)
-  SD->>SD: setConstructors → TreeSet constructor examples
-  SD->>SD: setComparator → natural / reverse / custom Comparator
-  NS->>CTI: printDefaultCapacitySummary("NavigableSet")
-  CTI-->>NS: methods + summary for NavigableSet interface
-```
-
-### What `NavigableSet` adds beyond `SortedSet`
-
-```mermaid
-flowchart LR
-  subgraph inherited ["From SortedSet + Collection"]
-    S1["first() / last()"]
-    S2["comparator()"]
-    S3["headSet / tailSet / subSet"]
-    S4["add / remove / contains / iterator …"]
-  end
-  subgraph nav ["NavigableSet-only navigation"]
-    N1["lower / floor / ceiling / higher"]
-    N2["pollFirst / pollLast"]
-    N3["descendingSet / descendingIterator"]
-    N4["headSet / tailSet / subSet with inclusive flags"]
-  end
-  SortedSet["SortedSet"] --> inherited
-  NavigableSet["NavigableSet"] --> inherited
-  NavigableSet --> nav
-  TreeSet["TreeSet (class)"] --> NavigableSet
-```
-
-| Layer | Responsibility |
-| ----- | ---------------- |
-| **`Set`** | No duplicates; `add` / `remove` / `contains` |
-| **`SortedSet`** | Total ordering; `first` / `last`; range views with **exclusive** upper bounds on classic overloads |
-| **`NavigableSet`** | **Closest element** queries; **descending** set view; range views with **explicit inclusive/exclusive** endpoints |
-| **`TreeSet`** | Concrete red-black tree implementation used in the demo |
-
-### Nearest-match methods on the demo data
-
-After inserts, the set is **`[Apple, Banana, Cherry, Mango]`** (natural `String` order).
-
-```mermaid
-flowchart TB
-  subgraph axis ["Ascending order (conceptual)"]
-    direction LR
-    A1["Apple"] --- A2["Banana"] --- A3["Cherry"] --- A4["Mango"]
-  end
-```
-
-| Method | Argument | Result in demo | Meaning |
-| ------ | -------- | -------------- | ------- |
-| **`lower(e)`** | `"Cherry"` | `Banana` | Greatest element **strictly less than** `e` |
-| **`floor(e)`** | `"Cherry"` | `Cherry` | Greatest element **≤ `e`** (exact match allowed) |
-| **`ceiling(e)`** | `"Coconut"` | `Mango` | Smallest element **≥ `e`** (`Coconut` is not in the set) |
-| **`higher(e)`** | `"Cherry"` | `Mango` | Smallest element **strictly greater than** `e` |
-
-```mermaid
-flowchart LR
-  Q["Query: ceiling(\"Coconut\")"] --> T["Walk sorted tree ≥ Coconut"]
-  T --> R["Mango"]
-```
-
-**Descending view:** `descendingSet()` returns a **view** backed by the same tree, iterating **`[Mango, Cherry, Banana, Apple]`**. Changes to either view update the other.
-
-**Inclusive range:** `subSet("Banana", true, "Mango", false)` → **`[Banana, Cherry]`** (includes `Banana`, excludes `Mango`).
-
-```mermaid
-flowchart TD
-  subgraph range ["subSet(Banana, true, Mango, false)"]
-    B["Banana ✓"]
-    C["Cherry ✓"]
-    M["Mango ✗ (toElement exclusive)"]
-  end
-```
-
-### NavigableSet API — method groups
-
-`CollectionTypeInspector` reflects **public methods** on `java.util.NavigableSet` (including those inherited from `SortedSet`, `Set`, and `Collection`). Grouped by purpose:
-
-```mermaid
-pie showData
-    title NavigableSet public API (grouped by role)
-    "Collection core (add, remove, size, iterate, stream…)" : 22
-    "SortedSet endpoints & classic ranges (first, last, head/tail/sub)" : 6
-    "Nearest-match (lower, floor, ceiling, higher)" : 4
-    "Descending navigation (descendingSet, descendingIterator)" : 2
-    "Deque-style polls (pollFirst, pollLast)" : 2
-    "Inclusive range overloads (head/tail/sub with boolean flags)" : 3
-    "SequencedSet (Java 21: reversed, addFirst, getFirst…)" : 6
-```
-
-| Group | Methods (typical) | Notes |
-| ----- | ----------------- | ----- |
-| **Nearest-match** | `lower`, `floor`, `ceiling`, `higher` | All return `null` if no such element exists |
-| **Descending** | `descendingSet`, `descendingIterator` | Live view; do not use after structural changes unless synchronized externally |
-| **Poll ends** | `pollFirst`, `pollLast` | Remove and return first/last, or `null` if empty |
-| **Inclusive ranges** | `subSet(from, fromInclusive, to, toInclusive)`, `headSet(to, inclusive)`, `tailSet(from, inclusive)` | Prefer these when boundary inclusivity matters |
-| **SortedSet** | `first`, `last`, `comparator`, `headSet`, `tailSet`, `subSet` | Classic `subSet` uses **exclusive** `toElement` |
-| **Collection** | `add`, `remove`, `contains`, `iterator`, `stream`, … | `TreeSet` rejects `null` elements |
-
-```mermaid
-mindmap
-  root((NavigableSet))
-    Nearest match
-      lower
-      floor
-      ceiling
-      higher
-    Views
-      descendingSet
-      descendingIterator
-      headSet tailSet subSet
-    Sorted ends
-      first
-      last
-      pollFirst
-      pollLast
-    Ordering
-      comparator
-      natural vs custom TreeSet
-```
-
-### Program phases (`navigableSet.main`)
-
-What runs when you launch `com.collections.set.navigableSet`:
-
-```mermaid
-pie showData
-    title Share of main() output sections
-    "NavigableSet method demo (demonstrateNavigableSet)" : 35
-    "TreeSet constructors (setConstructors)" : 15
-    "Comparator lab (setComparator)" : 35
-    "CollectionTypeInspector summary" : 15
-```
-
-| Phase | Code path | What you see |
-| ----- | --------- | ------------ |
-| 1 | `demonstrateNavigableSet()` | Type table, sorted elements, **lower/floor/ceiling/higher**, `descendingSet`, inclusive `subSet` |
-| 2 | `demonstrateTreeSetConstructors()` | Empty `TreeSet`, reverse-order `TreeSet`, copy from `Collection` / `SortedSet` |
-| 3 | `demonstrateTreeSetComparator()` | Natural, reverse, and custom comparators; duplicate rejection when `compare == 0` |
-| 4 | `printDefaultCapacitySummary("NavigableSet")` | **No fixed bucket count** (tree grows per element); full **method name list**; behavior one-liner |
-
-**Capacity note:** unlike `HashSet`, `NavigableSet` / `TreeSet` has **no hash buckets**. Each `add` creates a tree node; default capacity messaging in the inspector is *“TreeSet creates a red-black tree node for each element”*.
-
-### Verified NavigableSet output
-
-Excerpt from running `com.collections.set.navigableSet` (full log includes constructor and comparator blocks):
-
-```text
-===== NavigableSet (implemented by TreeSet) =====
------ Type Classification -----
-  NavigableSet         -> INTERFACE
-  SortedSet            -> INTERFACE
-  TreeSet              -> CLASS
---------------------------------
-Elements in natural sorted order: [Apple, Banana, Cherry, Mango]
-lower("Cherry"): Banana
-floor("Cherry"): Cherry
-ceiling("Coconut"): Mango
-higher("Cherry"): Mango
-descendingSet(): [Mango, Cherry, Banana, Apple]
-subSet("Banana", true, "Mango", false): [Banana, Cherry]
-Core characteristic: NavigableSet adds nearest-match searches and descending views.
-===== NavigableSet Details =====
------ Summary -----
-  SortedSet interface with nearest-match and descending-view operations; TreeSet implements it.
-```
-
-### Run the NavigableSet demo
-
-```bash
-cd demo
-mvn -q exec:java -Dexec.mainClass=com.collections.set.navigableSet
-```
-
-Main class: `com.collections.set.navigableSet`.
-
-> **Also see:** [`sortedSet.java`](../../../demo/src/main/java/com/collections/set/sortedSet.java) for `first` / `last` / classic `headSet` & `tailSet` without nearest-match APIs; [`treeSet.java`](../../../demo/src/main/java/com/collections/set/treeSet.java) for the concrete class demo.
-
----
 
 ## Queue (I)
 
@@ -1748,11 +1544,11 @@ Unlike a general `HashMap` or `Hashtable`, the API is oriented toward **string k
 
 ### Why use a properties file?
 
-| Problem with hard-coding | Properties-file approach |
-| ------------------------ | ------------------------ |
-| Changing a username, password, mail id, or mobile number in source forces **recompile**, **rebuild**, and often **redeploy** (sometimes a server restart). | Store those values in a **`.properties` file** on disk or in the classpath. |
-| Frequent config changes create **business impact** for the client. | Update the file and **redeploy** (or reload) without changing Java source. |
-| Any map type allows non-`String` keys/values. | For `Properties`, keys and values are treated as **strings** (use `getProperty` / `setProperty` rather than arbitrary objects in production code). |
+| Problem with hard-coding                                                                                                                                   | Properties-file approach                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Changing a username, password, mail id, or mobile number in source forces **recompile**, **rebuild**, and often **redeploy** (sometimes a server restart). | Store those values in a **`.properties` file** on disk or in the classpath.                                                                        |
+| Frequent config changes create **business impact** for the client.                                                                                         | Update the file and **redeploy** (or reload) without changing Java source.                                                                         |
+| Any map type allows non-`String` keys/values.                                                                                                              | For `Properties`, keys and values are treated as **strings** (use `getProperty` / `setProperty` rather than arbitrary objects in production code). |
 
 ### Properties file and the `Properties` object (`load` / `store`)
 
@@ -1772,10 +1568,10 @@ flowchart LR
   P -->|"store(OutputStream / Writer, header)"| F
 ```
 
-| Direction | Method | What happens |
-| --------- | ------ | ------------ |
-| **File → object** | `load(InputStream)` or `load(Reader)` | Reads `key=value` lines (and `#` / `!` comments) from the file into the in-memory table. |
-| **Object → file** | `store(OutputStream, comments)` or `store(Writer, comments)` | Writes the current entries back to a file, optionally with a header comment line. |
+| Direction         | Method                                                       | What happens                                                                             |
+| ----------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **File → object** | `load(InputStream)` or `load(Reader)`                        | Reads `key=value` lines (and `#` / `!` comments) from the file into the in-memory table. |
+| **Object → file** | `store(OutputStream, comments)` or `store(Writer, comments)` | Writes the current entries back to a file, optionally with a header comment line.        |
 
 Typical lifecycle:
 
@@ -1804,11 +1600,11 @@ This section walks through **what `main` actually runs** in the demo: in-memory 
 
 #### Source files
 
-| File | Role |
-| ---- | ---- |
-| [propertiesDemo.java](../../../demo/src/main/java/com/collections/properties/propertiesDemo.java) | `main`: populate `Properties`, print entries, inspect type |
-| [propertiesBase.java](../../../demo/src/main/java/com/collections/properties/propertiesBase.java) | Small helper holding `key` / `value` strings used when calling `put` |
-| [propertiesDemo.properties](../../../propertiesDemo.properties) | Example file produced when `store()` is enabled (sample on disk in the repo) |
+| File                                                                                              | Role                                                                         |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [propertiesDemo.java](../../../demo/src/main/java/com/collections/properties/propertiesDemo.java) | `main`: populate `Properties`, print entries, inspect type                   |
+| [propertiesBase.java](../../../demo/src/main/java/com/collections/properties/propertiesBase.java) | Small helper holding `key` / `value` strings used when calling `put`         |
+| [propertiesDemo.properties](../../../propertiesDemo.properties)                                   | Example file produced when `store()` is enabled (sample on disk in the repo) |
 
 #### End-to-end flow
 
@@ -1849,18 +1645,18 @@ sequenceDiagram
 
 #### Step-by-step summary
 
-| Step | Code | Effect |
-| ---- | ---- | ------ |
-| 1 | `new Properties()` | Empty table with the same default capacity as `Hashtable` (**11** buckets, load factor **0.75**). |
-| 2 | `properties.put(...)` × 3 | Inserts `key1`→`value1`, `key2`→`value2`, `key3`→`value3`. Keys and values are `String`s obtained from [`propertiesBase`](../../../demo/src/main/java/com/collections/properties/propertiesBase.java). |
-| 3 | Commented `setProperty("key4", null)` | Would throw **`NullPointerException`** — `Properties` does not allow `null` keys or values (inherited from `Hashtable`). |
-| 4 | Commented `store(FileWriter, ...)` | Would write all entries to **`propertiesDemo.properties`** with a header comment (see sample file in repo root). |
-| 5 | Commented `notify()` | Would throw **`IllegalMonitorStateException`** — `Properties` is not a monitor; `wait`/`notify` are for thread coordination on synchronized objects. |
-| 6 | `getProperty("key1")` | Returns `"value1"` (result not printed). |
-| 7 | `propertyNames()` | Legacy **`Enumeration`** of keys; demo calls it without using the result (contrast with `stringPropertyNames()` below). |
-| 8 | `stringPropertyNames()` loop | Prints each `key = value` line using the **string-only** API (preferred in modern code). |
-| 9 | `CollectionTypeInspector` | Reports `Properties` as a **CLASS** extending **`Properties`** / `Hashtable`, and prints default bucket capacity. |
-| 10 | `System.out.println(properties)` | Prints the map’s `toString()` — order follows internal `Hashtable` enumeration, **not** insertion order. |
+| Step | Code                                  | Effect                                                                                                                                                                                                 |
+| ---- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | `new Properties()`                    | Empty table with the same default capacity as `Hashtable` (**11** buckets, load factor **0.75**).                                                                                                      |
+| 2    | `properties.put(...)` × 3             | Inserts `key1`→`value1`, `key2`→`value2`, `key3`→`value3`. Keys and values are `String`s obtained from [`propertiesBase`](../../../demo/src/main/java/com/collections/properties/propertiesBase.java). |
+| 3    | Commented `setProperty("key4", null)` | Would throw **`NullPointerException`** — `Properties` does not allow `null` keys or values (inherited from `Hashtable`).                                                                               |
+| 4    | Commented `store(FileWriter, ...)`    | Would write all entries to **`propertiesDemo.properties`** with a header comment (see sample file in repo root).                                                                                       |
+| 5    | Commented `notify()`                  | Would throw **`IllegalMonitorStateException`** — `Properties` is not a monitor; `wait`/`notify` are for thread coordination on synchronized objects.                                                   |
+| 6    | `getProperty("key1")`                 | Returns `"value1"` (result not printed).                                                                                                                                                               |
+| 7    | `propertyNames()`                     | Legacy **`Enumeration`** of keys; demo calls it without using the result (contrast with `stringPropertyNames()` below).                                                                                |
+| 8    | `stringPropertyNames()` loop          | Prints each `key = value` line using the **string-only** API (preferred in modern code).                                                                                                               |
+| 9    | `CollectionTypeInspector`             | Reports `Properties` as a **CLASS** extending **`Properties`** / `Hashtable`, and prints default bucket capacity.                                                                                      |
+| 10   | `System.out.println(properties)`      | Prints the map’s `toString()` — order follows internal `Hashtable` enumeration, **not** insertion order.                                                                                               |
 
 #### Relationship to `Hashtable`
 
@@ -1905,4 +1701,42 @@ mvn -q exec:java -Dexec.mainClass=com.collections.properties.propertiesDemo
 ```
 
 Main class: `com.collections.properties.propertiesDemo`.
+
+# 1.5 v enhancements  (Queue Interface)
+
+1. It is the child interface of Collection 
+   a. Prority Queue
+   b. Blocking queue 
+      1)Priority Blocking Queue
+      2)Linked Blocking Queue
+2. If we want to represent a group of individual objects prior to processing then we should for Queue
+   Example: before sending SMS message all mobile numbers we have to store in some data structure in which order we added the mobilenumbers 
+   in the same order only message should be sent.For this FIFO(first in first out) requirement queue is the best choice
+3. Usually queue follows FIFO order but based on our requirement we can implement out own priority order also(prioroty queue)
+4. From 1.5 version onwards linkedlist class also implements queue interface, linkedlist based implemenation always follws FIFO
+
+# PriorityQueue
+
+1. If we want to represent a group of individual objects prior to processing according to some priority then we should go for priority queue
+2. The priority can be either default natural sorting order or customized sorting order defined by comparator 
+3. Insertion order is not preserved and it is based on some priority 
+4. Duplicate objects are not allowed 
+5. If we are depending on default natural sorting order compulsory the objects should be homogeneous and comparable otherwise we will get runtime 
+   Exception saying ClassCastException
+6. If we are defininig our own sorting by comparator then objects need not be homogeneous and comparable 
+7. null is not allowed even as the first element insertion also.
+
+# Constructors 
+
+>PriorityQueue pq = new PriorityQueue();
+ Creates an empty priority queue with default initial capacity 11 and all objects wil be inserted according to default natural sorting order
+
+>PriorityQueue pq = new PriorityQueue(int initialcapacity);
+>PriorityQueue pq = new PriorityQueue(int initialcapacity, Comparator s);
+>PriorityQueue pq = new PriorityQueue(SortedSet s );
+>PriorityQueue pq = new PriorityQueue(Collection c);
+
+NOTE: some platforms won't provide proper support for thread priorites and priorityqueue
+
+
 

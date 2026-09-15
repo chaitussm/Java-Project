@@ -111,9 +111,14 @@ public class queueDemo {
         queue.offer("Geeta");
         System.out.println("After offer(): " + queue);
 
-        System.out.println("peek(): " + queue.peek());   // O(1) - array-index access to the head
-        System.out.println("poll(): " + queue.poll());   // O(1) amortized - remove head
+        System.out.println("peek(): " + queue.peek());
+        System.out.println("element(): " + queue.element());   // O(1) - array-index access to the head
+        System.out.println("poll(): " + queue.poll());
+        System.out.println("remove(): " + queue.remove());   // O(1) amortized - remove head
         System.out.println("After poll(): " + queue);
+        System.out.println("After peek(): " + queue); 
+        System.out.println("After remove(): " + queue);
+        System.out.println("After element(): " + queue.size());   // O(1) - array-index access to the head
 
         // Cursor: Iterator - forward-only, traverses head-to-tail (FIFO order)
         System.out.println("Iterator traversal (head-to-tail FIFO order):");

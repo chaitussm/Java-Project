@@ -1,9 +1,9 @@
-package com.collections;
+package com.collections.queue;
 
 import com.collections.collectionBaseClasses.CollectionTypeInspector;
-import com.collections.collectionBaseClasses.queueDemo; 
+import com.collections.collectionBaseClasses.queueDemo;
 
-public class queueInterface extends queueDemo{
+public class arrayDeque extends queueDemo{
 
     public static void demonstrateQueue(String collectionType) {
         queueCollectionType(collectionType);
@@ -11,9 +11,8 @@ public class queueInterface extends queueDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateQueue("LinkedList");
         demonstrateQueue("ArrayDeque");
-        demonstrateQueue("PriorityQueue");
         CollectionTypeInspector.printDefaultCapacitySummary("LinkedList", "ArrayDeque", "PriorityQueue");
     }
+    
 }

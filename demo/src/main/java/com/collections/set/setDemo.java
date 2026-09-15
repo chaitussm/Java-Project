@@ -182,6 +182,10 @@ public class setDemo {
         System.out.println("ceiling(\"Coconut\"): " + set.ceiling("Coconut"));
         System.out.println("higher(\"Cherry\"): " + set.higher("Cherry"));
         System.out.println("descendingSet(): " + set.descendingSet());
+        System.out.println("descendingIterator(): " + set.descendingIterator());
+        System.out.println("pollFirst(): " + set.pollFirst());
+        System.out.println("pollLast(): " + set.pollLast());
+        System.out.println("Elements after pollFirst() and pollLast(): " + set);
         System.out.println("subSet(\"Banana\", true, \"Mango\", false): "
                 + set.subSet("Banana", true, "Mango", false));
         System.out.println("Core characteristic: NavigableSet adds nearest-match searches and descending views.");
