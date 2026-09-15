@@ -1,9 +1,8 @@
-package com.collections;
+package com.collections.map;
 
 import com.collections.collectionBaseClasses.CollectionTypeInspector;
-import com.collections.collectionBaseClasses.mapDemo;
 
-public class mapInterface extends mapDemo{
+public class treeMap extends mapDemo{
 
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);
@@ -15,10 +14,7 @@ public class mapInterface extends mapDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateMap("HashMap");
-        demonstrateMap("LinkedHashMap");
         demonstrateMap("TreeMap");
-        demonstrateMap("Hashtable");
         CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable");
     }
 }

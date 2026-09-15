@@ -1220,7 +1220,7 @@ then we should go for map.Duplicate Keys are not allowed but Values can be dupli
 ## Map Interface Hierarchy
 
 
-- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/collectionBaseClasses/mapDemo.java)
+- [Map constructors — `mapConstructors(String)`](../../../demo/src/main/java/com/collections/map/mapDemo.java)
 - 
 `Map` is separate from `Collection`: it stores a mapping from each unique key to one value. A solid arrow means **extends** and a dashed arrow means **implements**.
 
