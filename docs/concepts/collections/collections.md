@@ -96,10 +96,17 @@
     - [Classes](#classes)
   - [Map Collection Views](#map-collection-views)
   - [Choosing a Map Implementation](#choosing-a-map-implementation)
+  - [NavigableMap — complete execution flow (`navigableMap.java`)](#navigablemap--complete-execution-flow-navigablemapjava)
+    - [`navigableMap.java` — launcher methods](#navigablemapjava--launcher-methods)
+    - [`demonstrateNavigableMap()` — every statement explained](#demonstratenavigablemap--every-statement-explained)
+    - [`mapConstructors("NavigableMap")` behavior](#mapconstructorsnavigablemap-behavior)
+    - [`printDefaultCapacitySummary` from `main`](#printdefaultcapacitysummary-from-navigablemapmain)
+    - [What `NavigableMap` adds beyond `SortedMap`](#what-navigablemap-adds-beyond-sortedmap)
+    - [Verified NavigableMap output](#verified-navigablemap-output)
+    - [Run the NavigableMap demo](#run-the-navigablemap-demo)
   - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
     - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line--collectiontypeinspectorjava-line-15)
     - [Example output](#example-output)
-- [NavigableMap](#navigablemap)
   - [Properties](#properties)
     - [Why use a properties file?](#why-use-a-properties-file)
     - [Properties file and the `Properties` object (`load` / `store`)](#properties-file-and-the-properties-object-load--store)
@@ -1966,6 +1973,328 @@ flowchart TD
   J -- No --> L["HashMap"]
 ```
 
+---
+
+## NavigableMap — complete execution flow (`navigableMap.java`)
+
+`NavigableMap<K, V>` extends `SortedMap<K, V>` with **nearest-key navigation** on entries (`lowerEntry`, `floorEntry`, `ceilingEntry`, `higherEntry`), **descending views**, and **inclusive range** `subMap` / `headMap` / `tailMap` overloads. The usual implementation is **`TreeMap`** (red-black tree, $O(\log n)$ per operation).
+
+[`navigableMap.java`](../../../demo/src/main/java/com/collections/map/navigableMap.java) extends [`mapDemo`](../../../demo/src/main/java/com/collections/map/mapDemo.java) and runs the NavigableMap demo from `main`.
+
+### Source files
+
+| File | Role |
+| ---- | ---- |
+| [navigableMap.java](../../../demo/src/main/java/com/collections/map/navigableMap.java) | `main`: `demonstrateMap("NavigableMap")` + map capacity summaries |
+| [mapDemo.java](../../../demo/src/main/java/com/collections/map/mapDemo.java) | **`demonstrateNavigableMap()`** and other map demos |
+| [treeMap.java](../../../demo/src/main/java/com/collections/map/treeMap.java) | Optional entry point for `TreeMap` only |
+| [sortedMap.java](../../../demo/src/main/java/com/collections/map/sortedMap.java) | `SortedMap` demo (`demonstrateSortedMap`) — overlap with range views |
+
+### End-to-end execution flow
+
+```mermaid
+flowchart TD
+  A["main() in navigableMap"] --> B["demonstrateMap(\"NavigableMap\")"]
+  B --> C["mapCollectionType → demonstrateNavigableMap()"]
+  B --> D["mapConstructors → see note below"]
+  A --> E["printDefaultCapacitySummary(HashMap, LinkedHashMap, TreeMap, Hashtable)"]
+  C --> F["new TreeMap; put Ram, Shyam, Geeta"]
+  F --> G["get, firstKey, lastKey, remove Geeta"]
+  G --> H["ceilingEntry/lowerEntry, subMap, floorKey, floorEntry"]
+  H --> I["pollFirstEntry, pollLastEntry, comparator, iterator"]
+```
+
+```mermaid
+sequenceDiagram
+  participant NM as navigableMap.main()
+  participant MD as mapDemo
+  participant TM as TreeMap
+  participant CTI as CollectionTypeInspector
+
+  NM->>MD: demonstrateMap("NavigableMap")
+  MD->>MD: mapCollectionType → demonstrateNavigableMap()
+  MD->>CTI: printTypeInfo(TreeMap, NavigableMap, SortedMap, Map)
+  MD->>TM: put × 3; get; firstKey/lastKey; remove
+  MD->>TM: navigation + poll methods
+  MD->>MD: mapConstructors("NavigableMap")
+  NM->>CTI: printDefaultCapacitySummary (4 map types)
+```
+
+Reference — full `demonstrateNavigableMap()` body ([`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java)):
+
+```java
+private static void demonstrateNavigableMap() {
+    System.out.println("===== NavigableMap (TreeMap) =====");
+    CollectionTypeInspector.printTypeInfo(TreeMap.class, NavigableMap.class, SortedMap.class, Map.class);
+    CollectionTypeInspector.printDefaultInitialCapacity("TreeMap");
+    NavigableMap<String, Integer> map = new TreeMap<>();
+
+    map.put("Ram", 25);
+    map.put("Shyam", 30);
+    map.put("Geeta", 28);
+    System.out.println("After put() (stored in sorted key order): " + map);
+
+    System.out.println("get(\"Shyam\"): " + map.get("Shyam"));
+    System.out.println("firstKey(): " + map.firstKey());
+    System.out.println("lastKey(): " + map.lastKey());
+
+    map.remove("Geeta");
+    System.out.println("After remove(\"Geeta\"): " + map);
+
+    System.out.println("subMap(\"Ram\", \"Shyam\") [to exclusive]: "
+            + map.ceilingEntry("Ram").getKey() + " to " + map.lowerEntry("Shyam").getKey());
+    System.out.println("subMap(\"Ram\", true, \"Shyam\", true) [both inclusive]: "
+            + map.subMap("Ram", true, "Shyam", true));
+    System.out.println("headMap(\"Shyam\") [keys < Shyam]: " + map.floorKey("Shyam"));
+    System.out.println("tailMap(\"Ram\") [keys >= Ram]: " + map.floorEntry("Ram").getKey());
+    System.out.println("floorEntry(\"Ram\"): " + map.pollFirstEntry().getKey());
+    System.out.println("ceilingEntry(\"Ram\"): " + map.pollLastEntry().getKey());
+    System.out.println("comparator(): " + map.comparator());
+
+    System.out.println("Iterator over entrySet() (sorted order):");
+    Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+    while (iterator.hasNext()) {
+        Map.Entry<String, Integer> entry = iterator.next();
+        System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+    }
+    // ... closing println ...
+}
+```
+
+---
+
+### `navigableMap.java` — launcher methods
+
+```mermaid
+flowchart TD
+  M["main(args)"] --> D["demonstrateMap(\"NavigableMap\")"]
+  M --> S["printDefaultCapacitySummary(4 map types)"]
+  D --> T1["mapCollectionType → demonstrateNavigableMap()"]
+  D --> T2["mapConstructors(\"NavigableMap\")"]
+```
+
+```mermaid
+pie showData
+    title Calls from navigableMap.main()
+    "demonstrateMap (2 mapDemo phases)" : 2
+    "printDefaultCapacitySummary (4 structures)" : 4
+```
+
+| Method in `navigableMap.java` | What it does |
+| ----------------------------- | ------------ |
+| **`demonstrateMap(String collectionType)`** | `mapCollectionType` + `mapConstructors`; calls `mapLoadFactor` only for HashMap / LinkedHashMap / Hashtable |
+| **`main(String[] args)`** | `demonstrateMap("NavigableMap")` then inspector summaries for **HashMap, LinkedHashMap, TreeMap, Hashtable** |
+
+---
+
+### `demonstrateNavigableMap()` — every statement explained
+
+```mermaid
+pie showData
+    title Statements in demonstrateNavigableMap() by purpose
+    "Inspector (type + TreeMap capacity)" : 2
+    "TreeMap + put × 3" : 4
+    "SortedMap basics (get, first/last key, remove)" : 4
+    "NavigableMap navigation & polls" : 7
+    "comparator + iterator + banners" : 3
+```
+
+#### Execution order (numbered)
+
+```mermaid
+flowchart TD
+  S1["① banner"] --> S2["② printTypeInfo"]
+  S2 --> S3["③ printDefaultInitialCapacity(TreeMap)"]
+  S3 --> S4["④ new TreeMap"]
+  S4 --> S5["⑤–⑦ put Ram, Shyam, Geeta"]
+  S5 --> S6["⑧ println map"]
+  S6 --> S7["⑨ get / firstKey / lastKey"]
+  S7 --> S8["⑩ remove Geeta"]
+  S8 --> S9["⑪ ceilingEntry + lowerEntry (demo println)"]
+  S9 --> S10["⑫ inclusive subMap"]
+  S10 --> S11["⑬ floorKey"]
+  S11 --> S12["⑭ floorEntry key"]
+  S12 --> S13["⑮ pollFirstEntry"]
+  S13 --> S14["⑯ pollLastEntry"]
+  S14 --> S15["⑰ comparator + iterator"]
+```
+
+Sorted key order after three `put` calls: **`Geeta` → `Ram` → `Shyam`** (natural `String` order).
+
+| Step | Code | Result / effect |
+| ---- | ---- | ----------------- |
+| ① | Section `println` | Header: `===== NavigableMap (TreeMap) =====` |
+| ② | `printTypeInfo(TreeMap, NavigableMap, SortedMap, Map)` | `TreeMap` = CLASS; others = INTERFACE |
+| ③ | `printDefaultInitialCapacity("TreeMap")` | No fixed buckets — **one tree node per entry** |
+| ④ | `new TreeMap<>()` | Empty `NavigableMap` implementation |
+| ⑤–⑦ | `put("Ram",25)`, `put("Shyam",30)`, `put("Geeta",28)` | `{Geeta=28, Ram=25, Shyam=30}` |
+| ⑧ | `println(map)` | Same map string (sorted key order) |
+| ⑨ | `get("Shyam")` | `30` |
+| ⑨ | `firstKey()` / `lastKey()` | `Geeta` / `Shyam` (`SortedMap`) |
+| ⑩ | `remove("Geeta")` | `{Ram=25, Shyam=30}` |
+| ⑪ | `ceilingEntry("Ram")` + `lowerEntry("Shyam")` | Prints **`Ram to Ram`** (labels say `subMap` but code uses **entry** navigation APIs) |
+| ⑫ | `subMap("Ram", true, "Shyam", true)` | `{Ram=25, Shyam=30}` — **both endpoints inclusive** |
+| ⑬ | `floorKey("Shyam")` | `Shyam` (key exists → floor is the key itself) |
+| ⑭ | `floorEntry("Ram").getKey()` | `Ram` |
+| ⑮ | `pollFirstEntry()` | **Removes** smallest entry; prints key **`Ram`**; map → `{Shyam=30}` |
+| ⑯ | `pollLastEntry()` | **Removes** largest entry; prints key **`Shyam`**; map → `{}` |
+| ⑰ | `comparator()` | `null` (natural ordering) |
+| ⑰ | `entrySet` iterator | **No lines** — map is empty after polls |
+
+```mermaid
+flowchart LR
+  subgraph keys ["Keys after remove(Geeta)"]
+    direction LR
+    R["Ram"] --- S["Shyam"]
+  end
+```
+
+#### NavigableMap entry methods used in the demo
+
+| Method | Argument | Demo output | Meaning |
+| ------ | -------- | ----------- | ------- |
+| **`ceilingEntry(key)`** | `"Ram"` | entry for `Ram` | Smallest key **≥ `Ram`** |
+| **`lowerEntry(key)`** | `"Shyam"` | entry for `Ram` | Greatest key **strictly less than** `Shyam` |
+| **`floorKey(key)`** | `"Shyam"` | `Shyam` | Greatest key **≤ `Shyam`** |
+| **`floorEntry(key)`** | `"Ram"` | key `Ram` | Greatest key **≤ `Ram`** (entry view) |
+| **`pollFirstEntry()`** | — | removes & returns `Ram` | **`SortedMap`/`NavigableMap` poll** — mutates map |
+| **`pollLastEntry()`** | — | removes & returns `Shyam` | Removes highest entry |
+
+```mermaid
+pie showData
+    title NavigableMap-specific calls in demonstrateNavigableMap()
+    "ceilingEntry" : 1
+    "lowerEntry" : 1
+    "floorKey" : 1
+    "floorEntry" : 1
+    "pollFirstEntry" : 1
+    "pollLastEntry" : 1
+    "subMap inclusive overload" : 1
+```
+
+> **Console labels vs methods:** two `println` lines use the text `floorEntry` / `ceilingEntry` but the code calls **`pollFirstEntry()`** and **`pollLastEntry()`**, which **remove** entries. That is why the final iterator prints nothing.
+
+#### Parallel: key-only vs entry APIs
+
+```mermaid
+flowchart TB
+  subgraph keyOnly ["Key methods (examples)"]
+    FK["floorKey / ceilingKey / lowerKey / higherKey"]
+  end
+  subgraph entry ["Entry methods (demo uses these)"]
+    FE["floorEntry / ceilingEntry / lowerEntry / higherEntry"]
+    PE["pollFirstEntry / pollLastEntry"]
+  end
+  Nav["NavigableMap"] --> keyOnly
+  Nav --> entry
+```
+
+Related APIs **not** called in this demo: `descendingMap()`, `navigableKeySet()`, `higherEntry`, `ceilingKey`, etc. They appear in the **TreeMap** public-method list from `printDefaultCapacitySummary`.
+
+---
+
+### `mapConstructors("NavigableMap")` behavior
+
+`mapConstructors` in [`mapDemo.java`](../../../demo/src/main/java/com/collections/map/mapDemo.java) has **no `case "NavigableMap"`** (or `"SortedMap"`), so the switch **falls through to `default`** and runs **`demonstrateHashMapConstructors()`**.
+
+```mermaid
+flowchart TD
+  MC["mapConstructors(\"NavigableMap\")"] --> SW{"switch collectionType"}
+  SW --> DEF["default → demonstrateHashMapConstructors()"]
+```
+
+That is why the log after the NavigableMap block shows **`HashMap(): {}`** and related lines — not `TreeMap()` constructors. For TreeMap constructors, run [`treeMap.java`](../../../demo/src/main/java/com/collections/map/treeMap.java) or extend the switch with `NavigableMap` → `demonstrateTreeMapConstructors()`.
+
+---
+
+### `printDefaultCapacitySummary` from `navigableMap.main`
+
+```java
+CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable");
+```
+
+```mermaid
+pie showData
+    title Inspector summaries after NavigableMap demo
+    "HashMap" : 1
+    "LinkedHashMap" : 1
+    "TreeMap" : 1
+    "Hashtable" : 1
+```
+
+Each block prints **type**, **capacity / load factor** (where applicable), **public methods**, and a **one-line summary**. The **TreeMap** list includes full **`NavigableMap`** surface: `ceilingEntry`, `descendingMap`, `pollFirstEntry`, `subMap`, `tailMap`, …
+
+To print **`NavigableMap`** as the interface summary, pass `"NavigableMap"` (supported in [`CollectionTypeInspector`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java)).
+
+---
+
+### What `NavigableMap` adds beyond `SortedMap`
+
+| Layer | Responsibility |
+| ----- | ---------------- |
+| **`Map`** | `put` / `get` / `remove`; entry, key, and value views |
+| **`SortedMap`** | `firstKey` / `lastKey`; classic `subMap` / `headMap` / `tailMap` |
+| **`NavigableMap`** | `*Entry` and `*Key` nearest-match pairs; `descendingMap`; inclusive range overloads; `pollFirstEntry` / `pollLastEntry` |
+| **`TreeMap`** | Standard implementation used in the demo |
+
+```mermaid
+mindmap
+  root((NavigableMap API))
+    Used in demonstrateNavigableMap
+      put get remove
+      firstKey lastKey
+      ceilingEntry lowerEntry
+      floorKey floorEntry
+      subMap inclusive
+      pollFirstEntry pollLastEntry
+    On interface not in demo
+      descendingMap
+      higherEntry ceilingKey
+      navigableKeySet
+```
+
+---
+
+### Verified NavigableMap output
+
+```text
+===== NavigableMap (TreeMap) =====
+----- Type Classification -----
+  TreeMap              -> CLASS
+  NavigableMap         -> INTERFACE
+  SortedMap            -> INTERFACE
+  Map                  -> INTERFACE
+--------------------------------
+After put() (stored in sorted key order): {Geeta=28, Ram=25, Shyam=30}
+get("Shyam"): 30
+firstKey(): Geeta
+lastKey(): Shyam
+After remove("Geeta"): {Ram=25, Shyam=30}
+subMap("Ram", "Shyam") [to exclusive]: Ram to Ram
+subMap("Ram", true, "Shyam", true) [both inclusive]: {Ram=25, Shyam=30}
+headMap("Shyam") [keys < Shyam]: Shyam
+tailMap("Ram") [keys >= Ram]: Ram
+floorEntry("Ram"): Ram
+ceilingEntry("Ram"): Shyam
+comparator(): null
+Iterator over entrySet() (sorted order):
+```
+
+*(Iterator body empty — map empty after `pollFirstEntry` / `pollLastEntry`.)*
+
+### Run the NavigableMap demo
+
+```bash
+cd demo
+mvn -q exec:java -Dexec.mainClass=com.collections.map.navigableMap
+```
+
+Main class: `com.collections.map.navigableMap`.
+
+> **Also see:** [`demonstrateSortedMap()`](../../../demo/src/main/java/com/collections/map/mapDemo.java) for `SortedMap` range views without poll/entry navigation; [`Hashtable` execution flow](#hashtable--complete-execution-flow-hashtabledemojava) for bucket-based maps.
+
+---
+
 ## Checking Whether a Collection Type Is a Class or an Interface
 
 **File:** [`CollectionTypeInspector.java`](../../../demo/src/main/java/com/collections/collectionBaseClasses/CollectionTypeInspector.java)
@@ -2024,8 +2353,6 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
   List                 -> INTERFACE
 --------------------------------
 ```
-# NavigableMap
-
 ## Properties
 
 `java.util.Properties` is a **legacy `Hashtable` subclass** used for **configuration**: usernames, passwords, URLs, and other values that change more often than compiled code should.
