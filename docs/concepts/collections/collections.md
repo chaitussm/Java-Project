@@ -65,14 +65,28 @@
     - [Shared properties](#shared-properties)
     - [SortedSet (I)](#sortedset-i)
   - [NavigableSet — complete execution flow (`navigableSet.java`)](#navigableset--complete-execution-flow-navigablesetjava)
+    - [Source files](#source-files-1)
+    - [End-to-end execution flow](#end-to-end-execution-flow-1)
     - [`navigableSet.java` — launcher methods](#navigablesetjava--launcher-methods)
     - [`demonstrateNavigableSet()` — every statement explained](#demonstratenavigableset--every-statement-explained)
+      - [Execution order (numbered)](#execution-order-numbered)
+      - [② `CollectionTypeInspector.printTypeInfo(NavigableSet, SortedSet, TreeSet)`](#-collectiontypeinspectorprinttypeinfonavigableset-sortedset-treeset)
+      - [③ `printDefaultInitialCapacity("NavigableSet")`](#-printdefaultinitialcapacitynavigableset)
+      - [④ `NavigableSet<String> set = new TreeSet<>();`](#-navigablesetstring-set--new-treeset)
+      - [⑤–⑧ `set.add("Apple" | "Banana" | "Cherry" | "Mango")`](#-setaddapple--banana--cherry--mango)
+      - [⑨ `System.out.println("Elements in natural sorted order: " + set)`](#-systemoutprintlnelements-in-natural-sorted-order---set)
+      - [⑩ `set.lower("Cherry")` → `Banana`](#-setlowercherry--banana)
+      - [⑪ `set.floor("Cherry")` → `Cherry`](#-setfloorcherry--cherry)
+      - [⑫ `set.ceiling("Coconut")` → `Mango`](#-setceilingcoconut--mango)
+      - [⑬ `set.higher("Cherry")` → `Mango`](#-sethighercherry--mango)
+      - [⑭ `set.descendingSet()` → `[Mango, Cherry, Banana, Apple]`](#-setdescendingset--mango-cherry-banana-apple)
+      - [⑮ `set.subSet("Banana", true, "Mango", false)` → `[Banana, Cherry]`](#-setsubsetbanana-true-mango-false--banana-cherry)
     - [`demonstrateTreeSetConstructors()` (called from launcher)](#demonstratetreesetconstructors-called-from-launcher)
     - [`demonstrateTreeSetComparator()` (called from launcher)](#demonstratetreesetcomparator-called-from-launcher)
     - [`printDefaultCapacitySummary("NavigableSet")`](#printdefaultcapacitysummarynavigableset)
     - [What `NavigableSet` adds beyond `SortedSet`](#what-navigableset-adds-beyond-sortedset)
-    - [Verified program output](#verified-navigableset-output)
-    - [Run the demo](#run-the-navigableset-demo)
+    - [Verified NavigableSet output](#verified-navigableset-output)
+    - [Run the NavigableSet demo](#run-the-navigableset-demo)
   - [Queue (I)](#queue-i)
   - [Queue Interface Hierarchy](#queue-interface-hierarchy)
     - [Choosing a Queue implementation](#choosing-a-queue-implementation)
@@ -85,11 +99,12 @@
   - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
     - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line--collectiontypeinspectorjava-line-15)
     - [Example output](#example-output)
+- [NavigableMap](#navigablemap)
   - [Properties](#properties)
     - [Why use a properties file?](#why-use-a-properties-file)
     - [Properties file and the `Properties` object (`load` / `store`)](#properties-file-and-the-properties-object-load--store)
     - [Complete execution flow (`propertiesDemo.java`)](#complete-execution-flow-propertiesdemojava)
-      - [Source files](#source-files-1)
+      - [Source files](#source-files-2)
       - [End-to-end flow](#end-to-end-flow)
       - [Step-by-step summary](#step-by-step-summary)
       - [Relationship to `Hashtable`](#relationship-to-hashtable)
@@ -1123,11 +1138,11 @@ duplicates are not allowed and all objects should be inserted according to some 
 
 ### Source files
 
-| File | Role |
-| ---- | ---- |
+| File                                                                                   | Role                                                                                     |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | [navigableSet.java](../../../demo/src/main/java/com/collections/set/navigableSet.java) | `main`: `demonstrateSet("NavigableSet")` + `printDefaultCapacitySummary("NavigableSet")` |
-| [setDemo.java](../../../demo/src/main/java/com/collections/set/setDemo.java) | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos |
-| [treeSet.java](../../../demo/src/main/java/com/collections/set/treeSet.java) | Optional entry point focused on `TreeSet` only |
+| [setDemo.java](../../../demo/src/main/java/com/collections/set/setDemo.java)           | `demonstrateNavigableSet()`, TreeSet constructors, comparator demos                      |
+| [treeSet.java](../../../demo/src/main/java/com/collections/set/treeSet.java)           | Optional entry point focused on `TreeSet` only                                           |
 
 ### End-to-end execution flow
 
@@ -1209,16 +1224,16 @@ pie showData
     "printDefaultCapacitySummary" : 1
 ```
 
-| Method in `navigableSet.java` | What it does | Delegates to |
-| ----------------------------- | ------------ | ------------ |
+| Method in `navigableSet.java`               | What it does                                                        | Delegates to                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | **`demonstrateSet(String collectionType)`** | Runs type demo, constructors, and comparator lab for the given name | `setCollectionType`, `setConstructors`, `setComparator` on `setDemo` |
-| **`main(String[] args)`** | Entry point for the collections demo | `demonstrateSet("NavigableSet")` then inspector summary |
+| **`main(String[] args)`**                   | Entry point for the collections demo                                | `demonstrateSet("NavigableSet")` then inspector summary              |
 
-| `demonstrateSet("NavigableSet")` step | `setDemo` switch branch | Private method executed |
-| ------------------------------------- | ----------------------- | ------------------------ |
-| 1 | `setCollectionType` → `"NavigableSet"` | **`demonstrateNavigableSet()`** |
-| 2 | `setConstructors` → `"NavigableSet"` | **`demonstrateTreeSetConstructors()`** |
-| 3 | `setComparator` → `"NavigableSet"` | **`demonstrateTreeSetComparator()`** |
+| `demonstrateSet("NavigableSet")` step | `setDemo` switch branch                | Private method executed                |
+| ------------------------------------- | -------------------------------------- | -------------------------------------- |
+| 1                                     | `setCollectionType` → `"NavigableSet"` | **`demonstrateNavigableSet()`**        |
+| 2                                     | `setConstructors` → `"NavigableSet"`   | **`demonstrateTreeSetConstructors()`** |
+| 3                                     | `setComparator` → `"NavigableSet"`     | **`demonstrateTreeSetComparator()`**   |
 
 ---
 
@@ -1255,21 +1270,21 @@ flowchart TD
   S12 --> S13["⑯ characteristic println"]
 ```
 
-| Step | Source line | Call | Role |
-| ---- | ----------- | ---- | ---- |
-| ① | `println(...)` | `System.out.println` | Section header in the console |
-| ② | `printTypeInfo(...)` | `CollectionTypeInspector.printTypeInfo` | Shows `NavigableSet` = interface, `SortedSet` = interface, `TreeSet` = class |
-| ③ | `printDefaultInitialCapacity("NavigableSet")` | Inspector | Explains **no hash buckets** — tree stores one node per element |
-| ④ | `new TreeSet<>()` | `TreeSet` constructor | Creates empty **red-black tree** implementing `NavigableSet` |
-| ⑤–⑧ | `set.add(...)` × 4 | `NavigableSet.add` / `TreeSet.add` | Inserts strings; duplicates ignored; each insert $O(\log n)$ |
-| ⑨ | `println(set)` | `Collection.toString()` | Prints **`[Apple, Banana, Cherry, Mango]`** — always **sorted**, not insertion order |
-| ⑩ | `set.lower("Cherry")` | `NavigableSet.lower` | Strictly smaller neighbor → **`Banana`** |
-| ⑪ | `set.floor("Cherry")` | `NavigableSet.floor` | Less-or-equal neighbor → **`Cherry`** (member) |
-| ⑫ | `set.ceiling("Coconut")` | `NavigableSet.ceiling` | Greater-or-equal neighbor → **`Mango`** (`Coconut` absent) |
-| ⑬ | `set.higher("Cherry")` | `NavigableSet.higher` | Strictly greater neighbor → **`Mango`** |
-| ⑭ | `set.descendingSet()` | `NavigableSet.descendingSet` | Live view **`[Mango, Cherry, Banana, Apple]`** |
-| ⑮ | `set.subSet("Banana", true, "Mango", false)` | `NavigableSet.subSet` | Range view **`[Banana, Cherry]`** |
-| ⑯ | final `println` | — | One-line concept summary |
+| Step | Source line                                   | Call                                    | Role                                                                                 |
+| ---- | --------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------ |
+| ①    | `println(...)`                                | `System.out.println`                    | Section header in the console                                                        |
+| ②    | `printTypeInfo(...)`                          | `CollectionTypeInspector.printTypeInfo` | Shows `NavigableSet` = interface, `SortedSet` = interface, `TreeSet` = class         |
+| ③    | `printDefaultInitialCapacity("NavigableSet")` | Inspector                               | Explains **no hash buckets** — tree stores one node per element                      |
+| ④    | `new TreeSet<>()`                             | `TreeSet` constructor                   | Creates empty **red-black tree** implementing `NavigableSet`                         |
+| ⑤–⑧  | `set.add(...)` × 4                            | `NavigableSet.add` / `TreeSet.add`      | Inserts strings; duplicates ignored; each insert $O(\log n)$                         |
+| ⑨    | `println(set)`                                | `Collection.toString()`                 | Prints **`[Apple, Banana, Cherry, Mango]`** — always **sorted**, not insertion order |
+| ⑩    | `set.lower("Cherry")`                         | `NavigableSet.lower`                    | Strictly smaller neighbor → **`Banana`**                                             |
+| ⑪    | `set.floor("Cherry")`                         | `NavigableSet.floor`                    | Less-or-equal neighbor → **`Cherry`** (member)                                       |
+| ⑫    | `set.ceiling("Coconut")`                      | `NavigableSet.ceiling`                  | Greater-or-equal neighbor → **`Mango`** (`Coconut` absent)                           |
+| ⑬    | `set.higher("Cherry")`                        | `NavigableSet.higher`                   | Strictly greater neighbor → **`Mango`**                                              |
+| ⑭    | `set.descendingSet()`                         | `NavigableSet.descendingSet`            | Live view **`[Mango, Cherry, Banana, Apple]`**                                       |
+| ⑮    | `set.subSet("Banana", true, "Mango", false)`  | `NavigableSet.subSet`                   | Range view **`[Banana, Cherry]`**                                                    |
+| ⑯    | final `println`                               | —                                       | One-line concept summary                                                             |
 
 #### ② `CollectionTypeInspector.printTypeInfo(NavigableSet, SortedSet, TreeSet)`
 
@@ -1284,10 +1299,10 @@ Uses reflection so you see **interface vs implementation** before any elements a
 
 #### ③ `printDefaultInitialCapacity("NavigableSet")`
 
-| Message | Meaning |
-| ------- | ------- |
-| *no fixed initial capacity* | Unlike `HashSet(16)`, `TreeSet` does not preallocate 16 buckets |
-| *red-black tree node for each element* | Memory grows with **one tree node per unique element** |
+| Message                                | Meaning                                                         |
+| -------------------------------------- | --------------------------------------------------------------- |
+| *no fixed initial capacity*            | Unlike `HashSet(16)`, `TreeSet` does not preallocate 16 buckets |
+| *red-black tree node for each element* | Memory grows with **one tree node per unique element**          |
 
 #### ④ `NavigableSet<String> set = new TreeSet<>();`
 
@@ -1301,12 +1316,12 @@ You compile against **`NavigableSet`**; at runtime the object is **`TreeSet`**, 
 
 #### ⑤–⑧ `set.add("Apple" | "Banana" | "Cherry" | "Mango")`
 
-| `add` call | Insertion order in code | Position in sorted tree | Returns |
-| ---------- | ------------------------- | ------------------------ | ------- |
-| `add("Apple")` | 1st | smallest | `true` |
-| `add("Banana")` | 2nd | 2nd | `true` |
-| `add("Cherry")` | 3rd | 3rd | `true` |
-| `add("Mango")` | 4th | largest | `true` |
+| `add` call      | Insertion order in code | Position in sorted tree | Returns |
+| --------------- | ----------------------- | ----------------------- | ------- |
+| `add("Apple")`  | 1st                     | smallest                | `true`  |
+| `add("Banana")` | 2nd                     | 2nd                     | `true`  |
+| `add("Cherry")` | 3rd                     | 3rd                     | `true`  |
+| `add("Mango")`  | 4th                     | largest                 | `true`  |
 
 ```mermaid
 pie showData
@@ -1331,9 +1346,9 @@ flowchart LR
   L --> B["Banana"]
 ```
 
-| API | Comparator relation | Demo result |
-| --- | ------------------- | ----------- |
-| **`lower(e)`** | largest element **strictly less than** `e` | `Banana` |
+| API            | Comparator relation                        | Demo result |
+| -------------- | ------------------------------------------ | ----------- |
+| **`lower(e)`** | largest element **strictly less than** `e` | `Banana`    |
 
 #### ⑪ `set.floor("Cherry")` → `Cherry`
 
@@ -1343,9 +1358,9 @@ flowchart LR
   F --> C2["Cherry (in set)"]
 ```
 
-| API | Comparator relation | Demo result |
-| --- | ------------------- | ----------- |
-| **`floor(e)`** | largest element **≤ `e`** | `Cherry` |
+| API            | Comparator relation       | Demo result |
+| -------------- | ------------------------- | ----------- |
+| **`floor(e)`** | largest element **≤ `e`** | `Cherry`    |
 
 #### ⑫ `set.ceiling("Coconut")` → `Mango`
 
@@ -1357,9 +1372,9 @@ flowchart LR
   CE --> M["Mango"]
 ```
 
-| API | Comparator relation | Demo result |
-| --- | ------------------- | ----------- |
-| **`ceiling(e)`** | smallest element **≥ `e`** | `Mango` |
+| API              | Comparator relation        | Demo result |
+| ---------------- | -------------------------- | ----------- |
+| **`ceiling(e)`** | smallest element **≥ `e`** | `Mango`     |
 
 #### ⑬ `set.higher("Cherry")` → `Mango`
 
@@ -1369,9 +1384,9 @@ flowchart LR
   H --> M["Mango"]
 ```
 
-| API | Comparator relation | Demo result |
-| --- | ------------------- | ----------- |
-| **`higher(e)`** | smallest element **strictly greater than** `e` | `Mango` |
+| API             | Comparator relation                            | Demo result |
+| --------------- | ---------------------------------------------- | ----------- |
+| **`higher(e)`** | smallest element **strictly greater than** `e` | `Mango`     |
 
 ```mermaid
 pie showData
@@ -1384,8 +1399,8 @@ pie showData
 
 #### ⑭ `set.descendingSet()` → `[Mango, Cherry, Banana, Apple]`
 
-| Method | Returns | Backing store |
-| ------ | ------- | ------------- |
+| Method                | Returns                                     | Backing store                                 |
+| --------------------- | ------------------------------------------- | --------------------------------------------- |
 | **`descendingSet()`** | `NavigableSet` **view** with reversed order | Same `TreeSet`; updates are visible both ways |
 
 ```mermaid
@@ -1401,12 +1416,12 @@ Related API (not called in this demo): **`descendingIterator()`** — iterator o
 
 NavigableSet overload: **control inclusivity** at both ends.
 
-| Parameter | Value | Effect |
-| --------- | ----- | ------ |
-| `fromElement` | `"Banana"` | Start at Banana |
-| `fromInclusive` | `true` | **Include** Banana |
-| `toElement` | `"Mango"` | Stop before Mango |
-| `toInclusive` | `false` | **Exclude** Mango |
+| Parameter       | Value      | Effect             |
+| --------------- | ---------- | ------------------ |
+| `fromElement`   | `"Banana"` | Start at Banana    |
+| `fromInclusive` | `true`     | **Include** Banana |
+| `toElement`     | `"Mango"`  | Stop before Mango  |
+| `toInclusive`   | `false`    | **Exclude** Mango  |
 
 ```mermaid
 flowchart LR
@@ -1426,12 +1441,12 @@ Classic `SortedSet.subSet(from, to)` uses **exclusive** `to`; this overload is w
 
 Runs immediately after `demonstrateNavigableSet()` because `navigableSet.demonstrateSet` calls `setConstructors("NavigableSet")`.
 
-| Statement | Constructor demonstrated | Printed idea |
-| --------- | ------------------------ | ------------ |
-| `new TreeSet<>()` | No-arg | Empty sorted set `{}` |
-| `new TreeSet<>(Comparator.reverseOrder())` | `TreeSet(Comparator)` | Empty set ready for **reverse** sort |
-| `new TreeSet<>(source)` | `TreeSet(Collection)` | Copies `Set.of("B","A")` → sorted `[A, B]` |
-| `new TreeSet<>(sortedSource)` | `TreeSet(SortedSet)` | Copies existing `SortedSet` with same order |
+| Statement                                  | Constructor demonstrated | Printed idea                                |
+| ------------------------------------------ | ------------------------ | ------------------------------------------- |
+| `new TreeSet<>()`                          | No-arg                   | Empty sorted set `{}`                       |
+| `new TreeSet<>(Comparator.reverseOrder())` | `TreeSet(Comparator)`    | Empty set ready for **reverse** sort        |
+| `new TreeSet<>(source)`                    | `TreeSet(Collection)`    | Copies `Set.of("B","A")` → sorted `[A, B]`  |
+| `new TreeSet<>(sortedSource)`              | `TreeSet(SortedSet)`     | Copies existing `SortedSet` with same order |
 
 ```mermaid
 pie showData
@@ -1448,12 +1463,12 @@ pie showData
 
 Shows how **`Comparator`** defines sort order and how **`TreeSet` treats `compare == 0` as duplicate**.
 
-| Block | Methods used | Purpose |
-| ----- | ------------ | ------- |
-| Natural order | `new TreeSet<>()`, `add`, `comparator()` | `[Apple, Banana, Cherry]`; `comparator()` is **`null`** (natural) |
-| Reverse | `TreeSet<>(Comparator.reverseOrder())`, `addAll` | `[Cherry, Banana, Apple]` |
-| Length then name | `Comparator.comparingInt(length).thenComparing(...)`, `add`, `first()`, `last()`, `subSet("C","Java")` | Custom total order; **`first`/`last`** from `SortedSet` |
-| Length only | `TreeSet<>(comparingInt(length))`, `add("Ruby")` after `"Java"` | **`add` returns false** — same length ⇒ compare 0 ⇒ duplicate |
+| Block            | Methods used                                                                                           | Purpose                                                           |
+| ---------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Natural order    | `new TreeSet<>()`, `add`, `comparator()`                                                               | `[Apple, Banana, Cherry]`; `comparator()` is **`null`** (natural) |
+| Reverse          | `TreeSet<>(Comparator.reverseOrder())`, `addAll`                                                       | `[Cherry, Banana, Apple]`                                         |
+| Length then name | `Comparator.comparingInt(length).thenComparing(...)`, `add`, `first()`, `last()`, `subSet("C","Java")` | Custom total order; **`first`/`last`** from `SortedSet`           |
+| Length only      | `TreeSet<>(comparingInt(length))`, `add("Ruby")` after `"Java"`                                        | **`add` returns false** — same length ⇒ compare 0 ⇒ duplicate     |
 
 ```mermaid
 flowchart TD
@@ -1488,12 +1503,12 @@ sequenceDiagram
   CTI->>CTI: printBehaviorSummary
 ```
 
-| Inspector step | Output |
-| -------------- | ------ |
-| `printTypeInfo` | `NavigableSet → INTERFACE` |
-| `printDefaultInitialCapacity` | Tree / no bucket table |
-| `printPublicMethods` | Alphabetical list: `add()`, `ceiling()`, `descendingSet()`, `floor()`, `higher()`, `lower()`, `pollFirst()`, `subSet()`, … |
-| `printBehaviorSummary` | *SortedSet interface with nearest-match and descending-view operations* |
+| Inspector step                | Output                                                                                                                     |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `printTypeInfo`               | `NavigableSet → INTERFACE`                                                                                                 |
+| `printDefaultInitialCapacity` | Tree / no bucket table                                                                                                     |
+| `printPublicMethods`          | Alphabetical list: `add()`, `ceiling()`, `descendingSet()`, `floor()`, `higher()`, `lower()`, `pollFirst()`, `subSet()`, … |
+| `printBehaviorSummary`        | *SortedSet interface with nearest-match and descending-view operations*                                                    |
 
 ---
 
@@ -1519,12 +1534,12 @@ flowchart LR
   TreeSet["TreeSet (class)"] --> NavigableSet
 ```
 
-| Layer | Responsibility |
-| ----- | ---------------- |
-| **`Set`** | No duplicates; `add` / `remove` / `contains` |
-| **`SortedSet`** | Total ordering; `first` / `last`; range views with **exclusive** upper bounds on classic overloads |
+| Layer              | Responsibility                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| **`Set`**          | No duplicates; `add` / `remove` / `contains`                                                                      |
+| **`SortedSet`**    | Total ordering; `first` / `last`; range views with **exclusive** upper bounds on classic overloads                |
 | **`NavigableSet`** | **Closest element** queries; **descending** set view; range views with **explicit inclusive/exclusive** endpoints |
-| **`TreeSet`** | Concrete red-black tree implementation used in the demo |
+| **`TreeSet`**      | Concrete red-black tree implementation used in the demo                                                           |
 
 Methods used in **`demonstrateNavigableSet()`** are documented step-by-step in [`demonstrateNavigableSet() — every statement explained`](#demonstratenavigableset--every-statement-explained). Other APIs on the interface (for example `pollFirst`, `headSet(to, inclusive)`) appear in the inspector list from [`printDefaultCapacitySummary`](#printdefaultcapacitysummarynavigableset).
 
@@ -2009,6 +2024,8 @@ The `%-20s` width of `20` keeps every row's `->` arrow aligned in the same colum
   List                 -> INTERFACE
 --------------------------------
 ```
+# NavigableMap
+
 ## Properties
 
 `java.util.Properties` is a **legacy `Hashtable` subclass** used for **configuration**: usernames, passwords, URLs, and other values that change more often than compiled code should.
