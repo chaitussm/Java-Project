@@ -8,6 +8,7 @@
 
 | Section | What you learn |
 | ------- | -------------- |
+| [Classroom overview](#concurrenthashmap--classroom-overview) | Reads vs writes, concurrency level **16**, constructors |
 | [Type hierarchy](#type-hierarchy-map--concurrentmap--concurrenthashmap) | `Map` → `ConcurrentMap` → `ConcurrentHashMap` |
 | [Demo classes](#how-concurrentmapjava-and-concurrenthashmapjava-run) | Same pipeline, different `collectionType` string |
 | [`ConcurrentMap` API](#concurrentmap-interface-atomic-check-then-act) | `putIfAbsent`, conditional `remove`, vs plain `put` |
@@ -46,6 +47,85 @@ flowchart BT
 </p>
 
 *Figure: `put` overwrites; `putIfAbsent` skips when the key exists; **`remove(key, value)`** removes only when the mapped value matches.*
+
+---
+
+## ConcurrentHashMap — classroom overview
+
+The slide below is the **high-level story** for interviews: hash-table layout, **reads without locking the whole map**, **writes at bucket / portion level**, default **concurrency level 16**, no `null`, and iterators that do not throw `ConcurrentModificationException`.
+
+<p align="center">
+  <img src="images/concurrentHashMap-classroom-overview.png" alt="ConcurrentHashMap: Hashtable-based structure, bucket-level locks, concurrency level 16, constructors, null not allowed, fail-safe iteration" width="780" />
+</p>
+
+### Slide points → precise behavior
+
+| Classroom note | Meaning |
+| -------------- | ------- |
+| Underlying DS is **Hashtable**-style | **Array of buckets** + chaining (like `Hashtable` / `HashMap`), **not** the legacy `java.util.Hashtable` class. `ConcurrentHashMap` is its own implementation in `java.util.concurrent`. |
+| **Concurrent reads** + **thread-safe updates** | Many threads can read; structural updates are coordinated so the table stays consistent. |
+| **Read:** no lock | Reads do **not** take the **whole-map** monitor (contrast `Hashtable`). Implementation uses `volatile`/safe publication so readers typically do not block writers on the entire table. |
+| **Update:** **bucket-level lock** | Writers lock only the **relevant part** of the table (a **bin** in JDK 8+), not every other bucket. |
+| **Concurrency level** (default **16**) | Constructor parameter: map is treated as **several portions** so up to **16 update paths** can proceed without all piling onto one global lock. **Java 7 and earlier:** literal **`Segment[]`** of that size. **Java 8+:** **per-bin** locking/CAS; `concurrencyLevel` is still a sizing hint in the API, but the mental model “~16 independent write lanes” remains useful. |
+| **`null` key / value** | **Not allowed** — `NullPointerException` (stricter than `HashMap`). |
+| **Iteration** | **Fail-safe / weakly consistent:** one thread may iterate while another updates; **no** `ConcurrentModificationException` (see [hub](concurrentCollections.md#threaddemojava--complete-execution-flow) for the fail-fast `ArrayList` case). |
+
+```mermaid
+flowchart TB
+  subgraph readers ["Read threads"]
+    R1["get / containsKey"]
+    R2["get / containsKey"]
+  end
+
+  subgraph chm ["ConcurrentHashMap — hash table divided for concurrency"]
+    direction LR
+    subgraph p0 ["portion 0"]
+      b0["buckets…"]
+    end
+    subgraph p1 ["portion 1"]
+      b1["buckets…"]
+    end
+    subgraph pm ["…"]
+      bx["…"]
+    end
+    subgraph p15 ["portion 15 (default level 16)"]
+      b15["buckets…"]
+    end
+  end
+
+  R1 --> chm
+  R2 --> chm
+  W1["write → bin in portion 1"] --> p1
+  W2["write → bin in portion 15"] --> p15
+```
+
+```mermaid
+pie showData
+    title Classroom model: who blocks whom on updates?
+    "Whole Hashtable lock: 1 writer at a time for entire map" : 35
+    "CHM: writers on different portions / bins in parallel" : 45
+    "Concurrent reads (no whole-map read lock)" : 20
+```
+
+### Constructors (from slide + demo)
+
+| # | Constructor | Defaults / notes |
+| - | ----------- | ---------------- |
+| 1 | `new ConcurrentHashMap<>()` | Initial capacity **16**, load factor **0.75**, concurrency level **16** |
+| 2 | `new ConcurrentHashMap<>(initialCapacity)` | Custom starting bucket table size |
+| 3 | `new ConcurrentHashMap<>(initialCapacity, fillRatio)` | Custom capacity + load factor |
+| 4 | `new ConcurrentHashMap<>(initialCapacity, fillRatio, concurrencyLevel)` | e.g. demo uses `(128, 0.75f, 16)` — see [`demonstrateConcurrentHashMapConstructors`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMapDemo.java) |
+| 5 | `new ConcurrentHashMap<>(Map m)` | Copy mappings from an existing `Map` |
+
+```java
+// Slide-style defaults (constructor 1)
+ConcurrentHashMap<Integer, String> m = new ConcurrentHashMap<>();
+
+// Demo constructor 4 (concurrency level explicit)
+ConcurrentHashMap<String, Integer> map5 = new ConcurrentHashMap<>(128, 0.75f, 16);
+```
+
+> **Bridge to internals:** [Internal structure (JDK 8+)](#concurrenthashmap-internal-structure-jdk-8) shows **bins, CAS, and treeify**. [Bucket-level lock vs whole-collection lock](#bucket-level-lock-vs-whole-collection-lock) contrasts `Hashtable` / `synchronizedMap` with this slide’s **portion / bucket** write model.
 
 ---
 
@@ -293,9 +373,11 @@ flowchart LR
 
 ## Bucket-level lock vs whole-collection lock
 
+The [classroom slide](#concurrenthashmap--classroom-overview) states the goal in one line: **do not lock the whole map for every update**—use **bucket-level** (portion-level) locks and allow **concurrent reads**, with default **concurrency level 16** for parallel writes.
+
 Traditional thread-safe maps (`Hashtable`, `Collections.synchronizedMap(new HashMap<>())`) use **one monitor on the entire map object**. Almost every mutating method is `synchronized` on **`this`**, so **only one thread** can be inside those critical sections at a time—even when two threads touch **different keys** that live in **different buckets**.
 
-`ConcurrentHashMap` (JDK 8+) still has one shared `table` array, but contention is **scoped to a bin** (plus special handling for resize): threads updating **different** bucket indexes can proceed **in parallel**.
+`ConcurrentHashMap` matches the slide’s intent: **reads** avoid a global read lock; **writes** lock only the **relevant bin** (JDK 8+) or **segment** (JDK 7). Threads updating **different** bucket indexes can proceed **in parallel** (up to the practical limit implied by **concurrency level** and hash spread).
 
 ### Mental model (same 16-bin table)
 
