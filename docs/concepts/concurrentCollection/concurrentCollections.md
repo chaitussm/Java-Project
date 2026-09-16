@@ -14,7 +14,7 @@
 | Issue                   | Non-concurrent collections                                              | `java.util.concurrent` collections                             |
 | ----------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
 | Thread safety           | Most structures are **not** safe for unsynchronized multi-thread access | Designed for **concurrent** read/write                         |
-| Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection              | Finer-grained locking / CAS (e.g. `ConcurrentHashMap`)         |
+| Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection — see [bucket vs whole-map lock](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) | Per-bin locks / CAS (e.g. `ConcurrentHashMap`) — [same section](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) |
 | Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException`            | Iterators designed for weak consistency / no CME in many cases |
 
 Point **3** is exactly what `threadDemo` demonstrates on a plain **`ArrayList`**.

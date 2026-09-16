@@ -12,6 +12,7 @@
 | [Demo classes](#how-concurrentmapjava-and-concurrenthashmapjava-run) | Same pipeline, different `collectionType` string |
 | [`ConcurrentMap` API](#concurrentmap-interface-atomic-check-then-act) | `putIfAbsent`, conditional `remove`, vs plain `put` |
 | [Internal buckets](#concurrenthashmap-internal-structure-jdk-8) | Bucket array, chains, tree bins, CAS + bin locks |
+| [Bucket lock vs whole-map lock](#bucket-level-lock-vs-whole-collection-lock) | `Hashtable` / `synchronizedMap` vs `ConcurrentHashMap` |
 | [Run commands](#run-the-demos) | Compile and execute both mains |
 
 ---
@@ -230,7 +231,7 @@ flowchart TB
   N --> Z["null"]
 ```
 
-> **Contrast with `Hashtable`:** one lock covered the whole table for writes; readers still paid synchronization cost. **ConcurrentHashMap** lets different threads update **different bins** in parallel. See also the [Hashtable bucket walkthrough](../collection/hashTable.md) for the older all-or-nothing locking model.
+See **[Bucket-level lock vs whole-collection lock](#bucket-level-lock-vs-whole-collection-lock)** below for a side-by-side with `Hashtable` and `Collections.synchronizedMap`. Bucket layout details: [Hashtable bucket walkthrough](../collection/hashTable.md).
 
 ### Collision → list → tree
 
@@ -287,6 +288,130 @@ flowchart LR
   AL["ArrayList + Iterator"] --> CME["Fail-fast → ConcurrentModificationException"]
   CHM["ConcurrentHashMap entrySet iterator"] --> WC["Weakly consistent, no CME"]
 ```
+
+---
+
+## Bucket-level lock vs whole-collection lock
+
+Traditional thread-safe maps (`Hashtable`, `Collections.synchronizedMap(new HashMap<>())`) use **one monitor on the entire map object**. Almost every mutating method is `synchronized` on **`this`**, so **only one thread** can be inside those critical sections at a time—even when two threads touch **different keys** that live in **different buckets**.
+
+`ConcurrentHashMap` (JDK 8+) still has one shared `table` array, but contention is **scoped to a bin** (plus special handling for resize): threads updating **different** bucket indexes can proceed **in parallel**.
+
+### Mental model (same 16-bin table)
+
+```text
+Traditional Hashtable / synchronizedMap
+┌─────────────────────────────────────────────────────────────┐
+│  ONE LOCK on the whole map object                           │
+│  ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐ │
+│  │ 0 │ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 │ 9 │10 │11 │12 │13 │…│ │
+│  └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘ │
+│  Thread A put → bin 2  and  Thread B put → bin 11         │
+│  → B waits until A releases the ENTIRE map lock             │
+└─────────────────────────────────────────────────────────────┘
+
+ConcurrentHashMap (conceptual)
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ 0 │ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 │ 9 │10 │11 │12 │13 │14 │15│
+└───┴─▲─┴───┴───┴─▲─┴───┴───┴───┴───┴─▲─┴───┴───┴───┴───┴───┘
+      │           │                   │
+   lock bin 2  lock bin 5         lock bin 11
+   (only that   (only that         (only that
+    chain)        chain)             chain)
+  Thread A and Thread B on bins 2 and 11 → can run together
+  Thread A and Thread C on same bin 5     → one waits on that bin
+```
+
+```mermaid
+flowchart TB
+  subgraph trad ["Traditional synchronized map"]
+    L1["single lock: map object"]
+    L1 --> TBL1["all buckets 0 … n-1"]
+  end
+
+  subgraph conc ["ConcurrentHashMap"]
+    TBL2["bucket array"]
+    TBL2 --> B2["bin 2 — lock / CAS"]
+    TBL2 --> B5["bin 5 — lock / CAS"]
+    TBL2 --> B11["bin 11 — lock / CAS"]
+  end
+```
+
+### Two threads, two different keys
+
+Suppose **Thread A** does `put(keyA, …)` and **Thread B** does `put(keyB, …)`, and `keyA` and `keyB` hash to **different** indexes.
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant HT as Hashtable (whole-map lock)
+  participant B as Thread B
+
+  A->>HT: synchronized put keyA → bin 2
+  Note over HT: holds map monitor
+  B->>HT: synchronized put keyB → bin 11
+  Note over B,HT: blocked until A exits put()
+  A->>HT: release monitor
+  B->>HT: enter put()
+```
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant CHM as ConcurrentHashMap
+  participant B as Thread B
+
+  par different bins
+    A->>CHM: put keyA → lock/CAS bin 2
+    B->>CHM: put keyB → lock/CAS bin 11
+  end
+  Note over A,B: no wait for each other if bins differ and no resize conflict
+```
+
+### Comparison table
+
+| Aspect | Whole-collection lock (`Hashtable`, `synchronizedMap`, `Vector`, …) | Bucket-level / fine-grained (`ConcurrentHashMap`) |
+| ------ | --------------------------------------------------------------------- | ------------------------------------------------- |
+| **What is locked** | The **entire** collection instance (`synchronized (this)`) | Typically the **first node** of one **bin** (or CAS into an empty bin) |
+| **Parallel puts on different keys** | **Serialized** — second thread waits on the map monitor | **Often parallel** if keys land in **different** bins |
+| **Parallel puts on same bucket** | Still one-at-a-time (whole map) | Still one-at-a-time **for that bin** |
+| **Read + write** | `Hashtable`: reads also synchronized; `synchronizedMap`: reads must use manual `synchronized(map)` during iteration per JDK docs | Reads often proceed without locking the whole table; writes touch only relevant bins |
+| **Scalability** | Throughput **drops** as thread count grows (lock becomes a bottleneck) | Designed for **many threads** updating disjoint keys |
+| **Iterator** | Fail-fast if unsynchronized read races with write (CME on non-concurrent structures) | Weakly consistent; no CME on iterator from concurrent updates |
+
+### How much of the map is “hot” under contention?
+
+```mermaid
+pie showData
+    title Lock scope during one put (conceptual)
+    "Whole-map lock: 100% of structure behind one monitor" : 50
+    "Bin lock: ~1/n of buckets (e.g. 1/16 ≈ one slot)" : 50
+```
+
+For a table of size **16**, a single `put` under **ConcurrentHashMap** usually contends on **one bin**, not all sixteen. Under **Hashtable**, that same `put` still acquires the lock that covers **every** bucket.
+
+### `Collections.synchronizedMap` is still whole-map
+
+Wrapping a `HashMap` does **not** add bucket striping:
+
+```java
+Map<K, V> m = Collections.synchronizedMap(new HashMap<>());
+```
+
+Every `put` / `remove` synchronizes on **`m`**. You also must manually synchronize on **`m`** while iterating, or risk `ConcurrentModificationException`. **`ConcurrentHashMap`** avoids that global iterator lock model for concurrent readers/writers.
+
+### When bucket locking does not help
+
+| Situation | Effect |
+| --------- | ------ |
+| **Many keys collide** into the same bin | Threads pile up on **one** bin lock (same as a hot global lock for those keys) |
+| **Resize / rehash** | Must coordinate updating the **whole** table; threads may help transfer bins, but this is a global phase |
+| **Bad hash distribution** | Few bins hold most entries → less parallelism |
+
+### Takeaway
+
+- **Traditional synchronized collections** = **one door** into the entire data structure; simple and correct, poor **multi-thread scalability**.
+- **`ConcurrentHashMap`** = **many small doors** (per bucket); threads working on **different** buckets rarely block each other, which is why shared caches and concurrent registries prefer it over `Hashtable` or `synchronizedMap` in new code.
 
 ---
 
