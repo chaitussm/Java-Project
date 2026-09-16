@@ -6,11 +6,11 @@
 
 ## Why concurrent collections matter
 
-| Issue | Non-concurrent collections | `java.util.concurrent` collections |
-| ----- | -------------------------- | ---------------------------------- |
-| Thread safety | Most structures are **not** safe for unsynchronized multi-thread access | Designed for **concurrent** read/write |
-| Legacy sync wrappers | `Collections.synchronized*` locks the **whole** collection | Finer-grained locking / CAS (e.g. `ConcurrentHashMap`) |
-| Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException` | Iterators designed for weak consistency / no CME in many cases |
+| Issue                   | Non-concurrent collections                                              | `java.util.concurrent` collections                             |
+| ----------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Thread safety           | Most structures are **not** safe for unsynchronized multi-thread access | Designed for **concurrent** read/write                         |
+| Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection              | Finer-grained locking / CAS (e.g. `ConcurrentHashMap`)         |
+| Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException`            | Iterators designed for weak consistency / no CME in many cases |
 
 Point **3** is exactly what `threadDemo` demonstrates on a plain **`ArrayList`**.
 
@@ -50,12 +50,12 @@ public class threadDemo extends Thread {
 
 ### Roles
 
-| Piece | Role |
-| ----- | ---- |
-| **`static ArrayList<String> arraylist`** | Shared list — **not** thread-safe |
-| **`main`** | Fills list, starts child, iterates with **`Iterator`** |
-| **`threadDemo` (child `Thread`)** | After 1s, **`add("apple")`** while main may still be iterating |
-| **`Iterator`** | Fail-fast view; tracks **`expectedModCount`** at creation time |
+| Piece                                    | Role                                                           |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| **`static ArrayList<String> arraylist`** | Shared list — **not** thread-safe                              |
+| **`main`**                               | Fills list, starts child, iterates with **`Iterator`**         |
+| **`threadDemo` (child `Thread`)**        | After 1s, **`add("apple")`** while main may still be iterating |
+| **`Iterator`**                           | Fail-fast view; tracks **`expectedModCount`** at creation time |
 
 ### Timeline (two threads)
 
@@ -135,13 +135,13 @@ flowchart TD
   H -- Yes --> J["return next element"]
 ```
 
-| Event | `modCount` | Iterator `expectedModCount` | Result |
-| ----- | ---------- | ----------------------------- | ------ |
-| After 2 `add`s in `main` | 2 | — | — |
-| `iterator()` created | 2 | **2** | OK |
-| `next()` × 2 | 2 | 2 | Prints `banana`, `pomegranate` |
-| Child `add("apple")` | **3** | 2 (stale) | List now has 3 elements |
-| Next `next()` | 3 ≠ 2 | — | **Exception** |
+| Event                    | `modCount` | Iterator `expectedModCount` | Result                         |
+| ------------------------ | ---------- | --------------------------- | ------------------------------ |
+| After 2 `add`s in `main` | 2          | —                           | —                              |
+| `iterator()` created     | 2          | **2**                       | OK                             |
+| `next()` × 2             | 2          | 2                           | Prints `banana`, `pomegranate` |
+| Child `add("apple")`     | **3**      | 2 (stale)                   | List now has 3 elements        |
+| Next `next()`            | 3 ≠ 2      | —                           | **Exception**                  |
 
 > **Important:** The exception is thrown in the **thread that uses the iterator** (`main`), even though the **other thread** (`child`) performed the `add`. Any structural change—same thread or another—invalidates a fail-fast iterator unless you use **`iterator.remove()`** on that iterator.
 
@@ -195,11 +195,40 @@ mvn -q exec:java -Dexec.mainClass=com.concurrentCollection.ConcurrentModificatio
 
 ## Relation to concurrent collections
 
-| Approach | CME on concurrent modification? | Typical use |
-| -------- | ------------------------------- | ----------- |
-| `ArrayList` + `Iterator` | **Yes** (fail-fast) | Single-threaded or fully synchronized access |
-| `Collections.synchronizedList` | Still fail-fast iterator; **must sync** on list during iteration | Legacy |
-| `CopyOnWriteArrayList` | Iterator sees **snapshot**; no CME from adds | Read-heavy, rare writes |
-| `ConcurrentHashMap` | **No** `ConcurrentModificationException` on iterator; weakly consistent view | Shared maps |
+| Approach                       | CME on concurrent modification?                                              | Typical use                                  |
+| ------------------------------ | ---------------------------------------------------------------------------- | -------------------------------------------- |
+| `ArrayList` + `Iterator`       | **Yes** (fail-fast)                                                          | Single-threaded or fully synchronized access |
+| `Collections.synchronizedList` | Still fail-fast iterator; **must sync** on list during iteration             | Legacy                                       |
+| `CopyOnWriteArrayList`         | Iterator sees **snapshot**; no CME from adds                                 | Read-heavy, rare writes                      |
+| `ConcurrentHashMap`            | **No** `ConcurrentModificationException` on iterator; weakly consistent view | Shared maps                                  |
 
 This demo intentionally uses a **non-concurrent** `ArrayList` and two threads so the fail-fast rule is easy to see. For production multi-threaded code, prefer types from **`java.util.concurrent`** or explicit synchronization—not shared mutation during iteration.
+
+# Need for the Concurrent Collections 
+
+1. Traditional Collection Object(like ArrayList, LinkedList) can be accessed easy by muliple threads simultaneously and there may be achance of 
+   data incosistency problems 
+2. Already existing thread safe Collections(Vector, Hashtable, synchronizedList(), SynchronizedSet(), synchronizedMap()) perfromance is not upto mark for every operation even for read total collection object will locked by the thread and it increases the wait time for the threads.
+3. Another big problem with traditional collections is while one thread iterating the collection the other threads are not allowed to modify 
+   Collection object simultaneously if we are trying to modify then we will get ConcurrentModificationException
+4. To overcoem this sun people introduced the concurrent collections.
+
+# Differnces between traditional vs concurrent collections 
+
+# Differences Between Traditional and Concurrent Collections in Java
+
+| Feature                       | Traditional Collections (e.g., `ArrayList`, `HashMap`)                                                                             | Concurrent Collections (e.g., `CopyOnWriteArrayList`, `ConcurrentHashMap`)                                             |
+| :---------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **Thread Safety**             | **Not Thread-Safe**. Multiple threads modifying the collection simultaneously will cause data corruption or crashes.               | **Thread-Safe**. Built from the ground up to handle simultaneous reads and writes from multiple threads safely.        |
+| **Iterator Behavior**         | **Fail-Fast**. Throws a `ConcurrentModificationException` immediately if the collection is structurally modified during iteration. | **Weakly Consistent / Fail-Safe**. Allows safe modification during iteration without throwing any exceptions.          |
+| **Locking Mechanism**         | No internal locking mechanisms. (Legacy synchronized wrappers lock the **entire** collection).                                     | Uses **fine-grained locking** (like lock striping) or **lock-free algorithms** (like Compare-And-Swap/CAS).            |
+| **Performance & Scalability** | High performance in single-threaded environments, but slows down completely if wrapped in manual synchronization locks.            | High performance and scalability in multi-threaded environments because threads rarely have to wait in line.           |
+| **Memory Overhead**           | Low memory footprint. Only stores the actual data elements.                                                                        | Higher memory footprint (e.g., `CopyOnWriteArrayList` creates a brand new copy of the array on every write operation). |
+| **Package Location**          | Found in the standard `java.util` package.                                                                                         | Found in the specialized `java.util.concurrent` package.                                                               |
+| **Best Used For**             | Local variables, single-threaded applications, or data that never changes after initialization.                                    | Shared caches, producer-consumer queues, and high-throughput multi-threaded background workers.                        |
+
+# Concurrent Collection classes 
+
+1. ConcurrentHashMap
+2. CopyOnWriteArrayList
+3. CopyOnWriteArraySet
