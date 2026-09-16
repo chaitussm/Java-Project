@@ -1,6 +1,11 @@
-# Concurrent collections and `ConcurrentModificationException`
+# Concurrent collections hub
 
-> Guide focused on fail-fast iteration vs structural changes. Runnable demo: [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java).
+| Guide | Topics |
+| ----- | ------ |
+| **This file** | `ConcurrentModificationException`, traditional vs concurrent collections |
+| **[concurrentMap.md](concurrentMap.md)** | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
+
+> Fail-fast demo: [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) · Concurrent maps: [`concurrentMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMap.java) · [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java)
 
 ---
 
@@ -9,7 +14,7 @@
 | Issue                   | Non-concurrent collections                                              | `java.util.concurrent` collections                             |
 | ----------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
 | Thread safety           | Most structures are **not** safe for unsynchronized multi-thread access | Designed for **concurrent** read/write                         |
-| Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection              | Finer-grained locking / CAS (e.g. `ConcurrentHashMap`)         |
+| Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection — see [bucket vs whole-map lock](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) | Per-bin locks / CAS (e.g. `ConcurrentHashMap`) — [same section](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) |
 | Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException`            | Iterators designed for weak consistency / no CME in many cases |
 
 Point **3** is exactly what `threadDemo` demonstrates on a plain **`ArrayList`**.
@@ -204,18 +209,18 @@ mvn -q exec:java -Dexec.mainClass=com.concurrentCollection.ConcurrentModificatio
 
 This demo intentionally uses a **non-concurrent** `ArrayList` and two threads so the fail-fast rule is easy to see. For production multi-threaded code, prefer types from **`java.util.concurrent`** or explicit synchronization—not shared mutation during iteration.
 
-# Need for the Concurrent Collections 
+---
 
-1. Traditional Collection Object(like ArrayList, LinkedList) can be accessed easy by muliple threads simultaneously and there may be achance of 
-   data incosistency problems 
-2. Already existing thread safe Collections(Vector, Hashtable, synchronizedList(), SynchronizedSet(), synchronizedMap()) perfromance is not upto mark for every operation even for read total collection object will locked by the thread and it increases the wait time for the threads.
-3. Another big problem with traditional collections is while one thread iterating the collection the other threads are not allowed to modify 
-   Collection object simultaneously if we are trying to modify then we will get ConcurrentModificationException
-4. To overcoem this sun people introduced the concurrent collections.
+## Why `java.util.concurrent` collections exist
 
-# Differnces between traditional vs concurrent collections 
+1. **Traditional** structures (`ArrayList`, `HashMap`, …) are not safe for unsynchronized multi-thread access — you risk torn reads and corrupted internal state.
+2. **Legacy thread-safe** types (`Vector`, `Hashtable`, `Collections.synchronized*`) lock the **whole** collection for many operations, so throughput drops when many threads compete.
+3. **Fail-fast iterators** on ordinary collections throw **`ConcurrentModificationException`** when another thread (or the same thread) structurally modifies the collection during iteration — exactly what [`threadDemo`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) shows.
+4. **`java.util.concurrent`** adds collections designed for **parallel** access (finer locking, CAS, or copy-on-write snapshots).
 
-# Differences Between Traditional and Concurrent Collections in Java
+---
+
+## Traditional vs concurrent collections
 
 | Feature                       | Traditional Collections (e.g., `ArrayList`, `HashMap`)                                                                             | Concurrent Collections (e.g., `CopyOnWriteArrayList`, `ConcurrentHashMap`)                                             |
 | :---------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
@@ -227,8 +232,11 @@ This demo intentionally uses a **non-concurrent** `ArrayList` and two threads so
 | **Package Location**          | Found in the standard `java.util` package.                                                                                         | Found in the specialized `java.util.concurrent` package.                                                               |
 | **Best Used For**             | Local variables, single-threaded applications, or data that never changes after initialization.                                    | Shared caches, producer-consumer queues, and high-throughput multi-threaded background workers.                        |
 
-# Concurrent Collection classes 
+## Common concurrent collection types
 
-1. ConcurrentHashMap
-2. CopyOnWriteArrayList
-3. CopyOnWriteArraySet
+| Type | Package role |
+| ---- | ------------ |
+| **`ConcurrentHashMap`** | Shared maps; bin-level locking / CAS — see **[concurrentMap.md](concurrentMap.md)** (constructors, `putIfAbsent`, **bucket internals**) |
+| **`CopyOnWriteArrayList`** | Snapshot iterators; copy backing array on write |
+| **`CopyOnWriteArraySet`** | Set view over copy-on-write list |
+| **`ConcurrentSkipListMap` / `ConcurrentSkipListSet`** | Sorted concurrent navigable structures (also covered in [concurrentMap.md](concurrentMap.md) constructors) |
