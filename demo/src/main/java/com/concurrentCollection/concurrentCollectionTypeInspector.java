@@ -42,8 +42,9 @@ public class concurrentCollectionTypeInspector {
         System.out.println("----- Default Initial Capacity -----");
         switch (dataStructure) {
             case "ConcurrentHashMap":
-                // Initial capacity = 10; new capacity = old capacity + (old capacity / 2).
-                printCapacity(dataStructure, "10 elements", "new capacity = old capacity + (old capacity / 2)");
+                // Default initial capacity = 16 (power of two); grows by resizing the table when threshold is exceeded.
+                printCapacity(dataStructure, "16 buckets (default)",
+                        "resize when size > capacity × load factor (default load factor 0.75)");
                 break;
             case "ConcurrentSkipListMap":
                 System.out.println("ConcurrentSkipListMap does not have a default initial capacity");
@@ -120,8 +121,7 @@ public class concurrentCollectionTypeInspector {
     }
 
     private static boolean usesLoadFactor(String dataStructure) {
-        return dataStructure.equals("ConcurrentHashMap") || dataStructure.equals("ConcurrentSkipListMap")
-                || dataStructure.equals("ConcurrentMap");
+        return dataStructure.equals("ConcurrentHashMap") || dataStructure.equals("ConcurrentMap");
     }
 
     private static void printPublicMethods(Class<?> structureClass) {
