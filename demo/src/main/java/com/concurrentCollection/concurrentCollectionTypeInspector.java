@@ -52,6 +52,9 @@ public class concurrentCollectionTypeInspector {
             case "ConcurrentMap":
                 System.out.println("ConcurrentMap initial capacity depends on the underlying implementation");
                 break;
+            case "CopyOnWriteArrayList":
+                System.out.println("CopyOnWriteArrayList initial capacity depends on the underlying array");
+                break;
             default:
                 throw new IllegalArgumentException("Initial capacity is not applicable to: " + dataStructure);
         }
@@ -115,6 +118,8 @@ public class concurrentCollectionTypeInspector {
                 return java.util.concurrent.ConcurrentSkipListMap.class;
             case "ConcurrentMap":
                 return java.util.concurrent.ConcurrentMap.class;
+            case "CopyOnWriteArrayList":
+                return java.util.concurrent.CopyOnWriteArrayList.class;
             default:
                 throw new IllegalArgumentException("Unknown data structure: " + dataStructure);
         }
@@ -168,8 +173,10 @@ public class concurrentCollectionTypeInspector {
             System.out.println("===== " + supportedType + " Details =====");
             printTypeInfo(structureClass);
             printDefaultInitialCapacity(supportedType);
-            if (usesLoadFactor(supportedType)) {
-                printLoadFactorDetails(supportedType);
+            if (dataStructure.equals("ConcurrentHashMap")) {
+                if (usesLoadFactor(supportedType)) {
+                    printLoadFactorDetails(supportedType);
+                }
             }
             printPublicMethods(structureClass);
             printBehaviorSummary(supportedType);

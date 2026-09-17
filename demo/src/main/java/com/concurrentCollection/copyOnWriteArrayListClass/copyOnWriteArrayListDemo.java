@@ -1,7 +1,10 @@
 package com.concurrentCollection.copyOnWriteArrayListClass;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.concurrentCollection.concurrentCollectionTypeInspector;
 
 public class copyOnWriteArrayListDemo {
 
@@ -29,45 +32,33 @@ public class copyOnWriteArrayListDemo {
     public static void demonstrateCopyOnWriteArrayListConstructors() {
         System.out.println("Demonstrating constructors for CopyOnWriteArrayList:");
 
-        // 1. Default Constructor (Capacity: 16, Fill Ratio/Load Factor: 0.75f,
-        // Concurrency Level: 16)
-        java.util.concurrent.CopyOnWriteArrayList<String> list1 = new java.util.concurrent.CopyOnWriteArrayList<>();
-        System.out.println(" -> Created empty CopyOnWriteArrayList (Default settings)");
+        // 1. Default Empty Constructor
+        // Creates an empty list backed by an internal array of size 0.
+        CopyOnWriteArrayList<String> list1 = new CopyOnWriteArrayList<>();
+        System.out.println(" -> Created an empty CopyOnWriteArrayList.");
 
-        // 2. Initial Capacity Constructor
-        java.util.concurrent.CopyOnWriteArrayList<String> list2 = new java.util.concurrent.CopyOnWriteArrayList<>(
-                java.util.Arrays.asList(new String[32]));
-        System.out.println(" -> Created with initial capacity: 32");
+        // 2. Collection Constructor
+        // Creates a list containing the elements of the specified collection,
+        // in the exact order they are returned by the collection's iterator.
+        Collection<String> traditionalList = new ArrayList<>();
+        traditionalList.add("Apple");
+        traditionalList.add("Banana");
 
-        // 3. Existing Map Constructor
-        Map<String, Integer> traditionalMap = new HashMap<>();
-        traditionalMap.put("Key1", 100);
-        java.util.concurrent.CopyOnWriteArrayList<String> list3 = new java.util.concurrent.CopyOnWriteArrayList<>(
-                java.util.Arrays.asList("Key1"));
-        System.out.println(" -> Created from an existing List instance");
+        CopyOnWriteArrayList<String> list2 = new CopyOnWriteArrayList<>(traditionalList);
+        System.out.println(" -> Created from an existing Collection. Initial elements: " + list2);
 
-        // 4. Custom Fill Ratio (Load Factor) Constructor
-        // Capacity = 64, Fill Ratio = 0.50f (resizes when map becomes 50% full to
-        // prevent hash collisions)
-        float fillRatio = 0.50f;
-        java.util.concurrent.CopyOnWriteArrayList<String> list4 = new java.util.concurrent.CopyOnWriteArrayList<>(
-                java.util.Arrays.asList(new String[64]));
-        System.out.println(" -> Created with capacity: 64");
+        // 3. Array Constructor
+        // Creates a list holding a copy of the given array.
+        String[] itemArray = { "Pomegranate", "Orange", "Mango" };
 
-        // 5. Full Tuning Constructor with Custom Fill Ratio and Concurrency Level
-        // Capacity = 128, Fill Ratio = 0.75f, Concurrency Level = 32 (optimized for 32
-        // threads writing concurrently)
-        int initialCapacity = 128;
-        float customFillRatio = 0.75f;
-        int concurrencyLevel = 32;
-        java.util.concurrent.CopyOnWriteArrayList<String> list5 = new java.util.concurrent.CopyOnWriteArrayList<>(
-                java.util.Arrays.asList(new String[initialCapacity]));
-        System.out.println(" -> Created with capacity: " + initialCapacity);
+        CopyOnWriteArrayList<String> list3 = new CopyOnWriteArrayList<>(itemArray);
+        System.out.println(" -> Created from an existing Array. Initial elements: " + list3);
 
     }
 
     public static void demonstrateCopyOnWriteArrayList() {
 
+        concurrentCollectionTypeInspector.printDefaultCapacitySummary("CopyOnWriteArrayList");
         java.util.concurrent.CopyOnWriteArrayList<String> list = new java.util.concurrent.CopyOnWriteArrayList<>();
         list.addIfAbsent("value1");
         list.add("value2");

@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import com.collection.collectionBaseClasses.CollectionTypeInspector;
 import com.concurrentCollection.concurrentCollectionTypeInspector;
 
 public class concurrentMapDemo {
