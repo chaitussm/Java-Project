@@ -3,6 +3,7 @@
 | Guide | Topics |
 | ----- | ------ |
 | **This file** | **Fail-fast vs fail-safe iterators**, `ConcurrentModificationException`, comparisons |
+| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | **Copy-on-write** mechanism, fail-safe iterator, read-heavy use cases |
 | **[concurrentHashMap.md](concurrentHashMap.md)** | **`HashMap` vs `ConcurrentHashMap`**; **CHM vs `synchronizedMap` vs `Hashtable`**; iterators |
 | **[concurrentMap.md](concurrentMap.md)** | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
 
