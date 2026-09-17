@@ -3,7 +3,8 @@
 | Guide                                                  | Topics                                                                                                      |
 | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | **This file**                                          | **Fail-fast vs fail-safe iterators**, `ConcurrentModificationException`, comparisons                        |
-| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | **Copy-on-write** mechanism, fail-safe iterator, read-heavy use cases                                       |
+| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | Copy-on-write, classroom **A,B,C+D** execution, multi-thread demo                                            |
+| **[unsupportedOperationException.md](unsupportedOperationException.md)** | Why **`iterator.remove()`** throws on `CopyOnWriteArrayList`                                                 |
 | **[concurrentHashMap.md](concurrentHashMap.md)**       | **`HashMap` vs `ConcurrentHashMap`**; **CHM vs `synchronizedMap` vs `Hashtable`**; iterators                |
 | **[concurrentMap.md](concurrentMap.md)**               | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
 
