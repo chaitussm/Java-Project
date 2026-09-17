@@ -10,7 +10,8 @@
 | ------- | ------- |
 | [Classroom comparison](#classroom-comparison-table) | Reference slide (image + table) |
 | [Thread safety & performance](#thread-safety-and-performance) | When each map wins |
-| [Iteration & CME](#iteration-while-another-thread-modifies) | Fail-fast vs fail-safe flows |
+| [Iteration & CME](#iteration-while-another-thread-modifies) | Fail-fast vs fail-safe flows + hub examples |
+| [Hub: iterator deep dive](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) | Runnable `ArrayList` / `HashMap` / CHM / COW examples |
 | [Null rules](#null-keys-and-values) | `HashMap` allows; `ConcurrentHashMap` rejects |
 | [Choose the right map](#which-map-should-you-use) | Decision flow + pie chart |
 
@@ -83,7 +84,29 @@ The slide’s “CHM performance is low” means **each operation may do more wo
 
 ## Iteration while another thread modifies
 
-This is the same idea as [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) on `ArrayList`, applied to maps.
+Full lesson with **five runnable examples** (list, map, threads, `CopyOnWriteArrayList`): [Fail-fast vs fail-safe iterators](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) in the hub.
+
+This section applies the same idea as [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) on `ArrayList`, but for **maps**.
+
+### Mini example — `HashMap` (fail-fast) vs `ConcurrentHashMap` (fail-safe)
+
+```java
+// Fail-fast: HashMap
+Map<Integer, String> hm = new HashMap<>();
+hm.put(1, "one");
+var it = hm.entrySet().iterator();
+it.next();
+hm.put(2, "two");
+it.next(); // ConcurrentModificationException
+
+// Fail-safe: ConcurrentHashMap
+Map<Integer, String> chm = new ConcurrentHashMap<>();
+chm.put(1, "one");
+var it2 = chm.entrySet().iterator();
+it2.next();
+chm.put(2, "two");
+it2.next(); // OK — no CME
+```
 
 ### `HashMap` — fail-fast
 
@@ -142,6 +165,23 @@ pie showData
     title Iterator behavior under concurrent write
     "HashMap: abort with CME" : 50
     "CHM: continue without CME" : 50
+```
+
+```mermaid
+flowchart TD
+  subgraph fast ["Fail-fast HashMap"]
+    F1["iterator()"] --> F2["next() once"]
+    F2 --> F3["map.put(...)"]
+    F3 --> F4["next() again"]
+    F4 --> F5["CME"]
+  end
+
+  subgraph safe ["Fail-safe ConcurrentHashMap"]
+    S1["iterator()"] --> S2["next() once"]
+    S2 --> S3["map.put(...)"]
+    S3 --> S4["next() again"]
+    S4 --> S5["continues — weak view"]
+  end
 ```
 
 ---
