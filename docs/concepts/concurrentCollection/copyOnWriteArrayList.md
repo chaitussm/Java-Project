@@ -14,6 +14,9 @@
 | [Copy-on-write mechanism](#copy-on-write-mechanism)      | Clone on update; reads unaffected              |
 | [Slide properties](#properties-from-classroom-notes)     | Ordering, nulls, interfaces, cost              |
 | [Fail-safe iteration](#fail-safe-iteration-vs-arraylist) | No CME; iterator cannot remove                 |
+| [Classroom execution (A,B,C + D)](#classroom-execution-add-after-iterator) | Slide program — full flow, output **A B C** |
+| [`unsupportedOperationexception.java`](#unsupportedoperationexception-demo) | Why `iterator.remove()` throws               |
+| [Multi-thread demo](#multi-thread-execution-copyonwritealdemo) | `copyOnWriteAlDemo` + timeline                 |
 | [When to use](#when-to-use-copyonwritearraylist)         | Read-heavy / write-rare pie chart              |
 | [Runnable example](#runnable-example)                    | Snapshot vs live list                          |
 
@@ -175,6 +178,168 @@ Deep dive with more examples: [Fail-fast vs fail-safe iterators](concurrentColle
 
 ---
 
+## Classroom execution: add after `iterator()`
+
+Classic slide program: build list **A, B, C**, create **`iterator`**, then **`l.add("D")`**, then loop. Output is **A**, **B**, **C** only — **not D**.
+
+<p align="center">
+  <img src="images/copyOnWriteArrayList-iterator-snapshot-slide.png" alt="CopyOnWriteArrayList classroom example — add D after iterator, output A B C, reason snapshot vs ArrayList CME" width="820" />
+</p>
+
+### Source (slide)
+
+```java
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Iterator;
+
+class Test {
+    public static void main(String[] args) {
+        CopyOnWriteArrayList<String> l = new CopyOnWriteArrayList<>();
+        l.add("A");
+        l.add("B");
+        l.add("C");
+
+        Iterator<String> itr = l.iterator();
+        l.add("D"); // modification after iterator created
+
+        while (itr.hasNext()) {
+            String s = itr.next();
+            System.out.println(s);
+        }
+    }
+}
+```
+
+### Verified output
+
+```text
+A
+B
+C
+```
+
+### Execution summary (step by step)
+
+| Step | What runs | Backing array / iterator |
+| ---- | --------- | ------------------------- |
+| 1 | `add("A")`, `add("B")`, `add("C")` | Live list → `[A, B, C]` |
+| 2 | `itr = l.iterator()` | **`COWIterator` holds snapshot reference** to array `[A, B, C]` |
+| 3 | `l.add("D")` | **Copy-on-write:** new array `[A, B, C, D]`; list ref updated; **iterator still points at old array** |
+| 4 | `while (itr.hasNext())` / `next()` | Walks **snapshot** only → prints **A, B, C** |
+| 5 | (after loop) | Live list is `[A, B, C, D]`; iterator never saw **D** |
+
+### Reason (from slide)
+
+1. Every **update** works on a **separate copy** of the array. After the iterator is created, later **`add`** changes the **live** list but **does not change the iterator’s snapshot**.
+2. If you use **`ArrayList`** instead and call `add("D")` after `iterator()`, the next `next()` typically throws **`ConcurrentModificationException`** (fail-fast).
+
+```mermaid
+flowchart TD
+  S1["add A, B, C"] --> S2["iterator() — snapshot [A,B,C]"]
+  S2 --> S3["add D on list"]
+  S3 --> S4["new live array [A,B,C,D]"]
+  S2 --> S5["iterator still uses [A,B,C]"]
+  S5 --> S6["next() × 3 → print A, B, C"]
+  S4 --> S7["D visible only to new iterators / list.toString()"]
+```
+
+```mermaid
+sequenceDiagram
+  participant Main as main
+  participant COW as CopyOnWriteArrayList
+  participant It as COWIterator (snapshot)
+
+  Main->>COW: add A, B, C
+  Main->>It: iterator() binds to array v1 [A,B,C]
+  Main->>COW: add(D) — clones v1 → v2 [A,B,C,D]
+  Note over COW: live ref = v2
+  loop hasNext / next
+    Main->>It: next()
+    It-->>Main: A, then B, then C
+  end
+  Note over It: never reads v2 — no D, no CME
+```
+
+```mermaid
+flowchart LR
+  subgraph cow ["CopyOnWriteArrayList"]
+    A1["iterator created"] --> A2["add D"]
+    A2 --> A3["print A B C — OK"]
+  end
+
+  subgraph al ["ArrayList (contrast)"]
+    B1["iterator created"] --> B2["add D"]
+    B2 --> B3["next() → ConcurrentModificationException"]
+  end
+```
+
+```mermaid
+pie showData
+    title Elements seen by iterator after add(D)
+    "Snapshot A, B, C" : 75
+    "Live-only D (not on this iterator)" : 25
+```
+
+---
+
+## `UnsupportedOperationException` demo
+
+Runnable class: [`unsupportedOperationexception.java`](../../../demo/src/main/java/com/concurrentCollection/copyOnWriteArrayListClass/unsupportedOperationexception.java)
+
+The list is **modifiable** via `coal.add(...)`, but **`Iterator.remove()`** is **not** supported on `CopyOnWriteArrayList` (snapshot iterator).
+
+```mermaid
+flowchart TD
+  A["iterator() on COW list"] --> B["next() until element equals yashoda"]
+  B --> C["iterator.remove()"]
+  C --> D["CopyOnWriteArrayList$COWIterator.remove()"]
+  D --> E["throw UnsupportedOperationException"]
+```
+
+| | `ArrayList` iterator | `CopyOnWriteArrayList` iterator |
+| --- | ---------------------- | ------------------------------- |
+| `remove()` | Updates backing list (with fail-fast rules) | **Always unsupported** — would break snapshot semantics |
+| Fix | Use `list.remove(...)` or iterator.remove on `ArrayList` | Remove via **`list.remove(element)`**, not `iterator.remove()` |
+
+Full walkthrough: [unsupportedOperationException.md](unsupportedOperationException.md).
+
+---
+
+## Multi-thread execution: `copyOnWriteAlDemo`
+
+Demo: [`copyOnWriteAlDemo.java`](../../../demo/src/main/java/com/concurrentCollection/copyOnWriteArrayListClass/updationByoneThreadwhileOtherThreadExceution/copyOnWriteAlDemo.java) · child thread: [`childThreadBase.java`](../../../demo/src/main/java/com/concurrentCollection/copyOnWriteArrayListClass/updationByoneThreadwhileOtherThreadExceution/childThreadBase.java)
+
+| Phase | Main thread | Child thread | `coal` (live) | Iterator snapshot |
+| ----- | ----------- | ------------ | ------------- | ----------------- |
+| Start | `add` panduraju, Maadhri | — | `[panduraju, Maadhri]` | — |
+| T0 | `start()` child | sleeps 3000 ms | unchanged | — |
+| T0 | `iterator()` | sleeping | unchanged | **`[panduraju, Maadhri]`** |
+| T0–2s | loop + sleep 1s × 2 | sleeping | unchanged | prints both names |
+| ~3s | may finish loop | `add("Kunti")` | **`[..., Kunti]`** | still old snapshot |
+| End | prints `coal` | done | shows **Kunti** if child finished | loop never saw **Kunti** |
+
+Without **`childThread.join()`**, main can print the final list **before** the child adds **Kunti** (race). Use **`join()`** when you need the final print to include the child’s update.
+
+```mermaid
+sequenceDiagram
+  participant Main
+  participant Child as childThreadBase
+  participant coal as CopyOnWriteArrayList
+
+  Main->>coal: add panduraju, Maadhri
+  Main->>Child: start()
+  Main->>coal: iterator() snapshot
+  par main loop ~2s
+    Main->>Main: print each element
+  and child ~3s
+    Child->>Child: sleep 3000
+    Child->>coal: add Kunti (new array)
+  end
+  Main->>Main: println final coal (may need join() first)
+```
+
+---
+
 ## When to use `CopyOnWriteArrayList`
 
 ```mermaid
@@ -274,141 +439,7 @@ it.remove(); // UnsupportedOperationException
 
 ## See also
 
+- [unsupportedOperationException.md](unsupportedOperationException.md) — `iterator.remove()` internal flow
 - [concurrentCollections.md](concurrentCollections.md) — hub, `threadDemo`, iterator examples
 - [concurrentHashMap.md](concurrentHashMap.md) — concurrent maps and fail-safe map iteration
-# Flow Analysis: Fixing Race Conditions in copyOnWriteAlDemo
-
-When running `copyOnWriteAlDemo`, if the child thread sleeps for 3 seconds (`3000ms`) while the main thread's loop only takes 2 seconds (`2000ms`), the program will exit before the child thread ever adds the element. Adding **`childThread.join()`** forces the main thread to wait for the background update to complete.
-
----
-
-## 1. Complete Source Code
-
-### Class 1: `childThreadBase.java`
-```java
-import java.util.concurrent.CopyOnWriteArrayList;
-
-public class childThreadBase extends Thread {
-
-    // Keeping your exact static collection object variable
-    public static CopyOnWriteArrayList<String> coal = new CopyOnWriteArrayList<String>();
-
-    @Override
-    public void run() {
-        try {
-            // Keeps your exact 3-second processing delay simulation
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            System.out.println("Child thread interrupted.");
-        }
-
-        System.out.println("\n[Child Thread] Waking up and executing -> coal.add(\"Kunti\")");
-        coal.add("Kunti");
-    }
-}
-```
-
-### Class 2: `copyOnWriteAlDemo.java`
-```java
-import java.util.Iterator;
-
-public class copyOnWriteAlDemo {
-    public static void main(String[] args) throws InterruptedException {
-
-        // 1. Adding initial entries directly to your static 'coal' object
-        childThreadBase.coal.add("panduraju");
-        childThreadBase.coal.add("Maadhri");
-
-        System.out.println("Main thread is running.");
-
-        // 2. Initializing and starting your custom thread
-        childThreadBase childThread = new childThreadBase();
-        childThread.start();
-
-        // 3. Capturing your Iterator from the 'coal' list instance
-        Iterator<String> itr = childThreadBase.coal.iterator();
-
-        // 4. Looping through the captured snapshot (Takes exactly 2 seconds)
-        while (itr.hasNext()) {
-            String element = itr.next();
-            System.out.println("Main Thread is iterating List: " + element);
-            Thread.sleep(1000); 
-        }
-        System.out.println("Main Thread has finished iterating the List.");
-
-        // =====================================================================
-        // THE FIX FOR THE FLAKY BEHAVIOR:
-        // Forces the main thread to stop here and wait for the childThread 
-        // to complete its 3-second sleep and execute its add() operation.
-        // =====================================================================
-        System.out.println("Main Thread waiting for Child Thread to add its element...");
-        childThread.join(); 
-
-        // 5. Printing the final collection showing your updated elements
-        System.out.println("\nFinal state of coal: " + childThreadBase.coal);
-    }
-}
-```
-
----
-
-## 2. Program Execution Flowchart
-
-This flowchart outlines the chronological execution blocks of your code, showing how `childThread.join()` holds the main thread execution line.
-
-```mermaid
-graph TD
-    Start([Start copyOnWriteAlDemo main]) --> SeedData[Add 'panduraju' & 'Maadhri' to coal]
-    SeedData --> SpawnThread[childThread.start]
-    
-    subgraph childThreadBase Thread Execution
-        SpawnThread -->|Asynchronous| ChildSleep[Sleeps for 3000ms]
-        ChildSleep --> ChildAdd[coal.add 'Kunti']
-        ChildAdd --> ChildEnd([Child Thread Terminates])
-    end
-
-    subgraph main Thread Loop Execution
-        SpawnThread --> GetItr[itr = coal.iterator]
-        GetItr --> LoopCondition{itr.hasNext?}
-        LoopCondition -->|Yes| PrintItem[Print element & Sleep 1000ms]
-        PrintItem --> LoopCondition
-        LoopCondition -->|No| JoinBarrier{childThread.join}
-        JoinBarrier -->|Blocks Main until finish| ChildEnd
-        ChildEnd --> PrintFinal[Print final contents of coal]
-        PrintFinal --> End([End Main Method])
-    end
-```
-
----
-
-## 3. Simultaneous Timeline Interaction
-
-This map plots why `"Kunti"` is hidden inside the iterator loop but visible inside the final string output representation.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Main as Main Thread (copyOnWriteAlDemo)
-    actor Child as Child Thread (childThreadBase)
-    participant List as CopyOnWriteArrayList (coal)
-
-    Main->>List: Add initial values: "panduraju", "Maadhri"
-    Main->>Child: start()
-    Note over Child: enters run(), begins 3000ms sleep
-    Main->>List: itr = coal.iterator() (Clones snapshot pointer)
-    
-    Note over Main: Loop index 1: Prints "panduraju" (Timeline: 1000ms passed)
-    Note over Main: Loop index 2: Prints "Maadhri" (Timeline: 2000ms passed)
-    Note over Main: Iterator loop closes successfully.
-    
-    Note over Main: Enters join() barrier. Main pauses here.
-    Note over Child: 3000ms expires. Child Thread wakes up.
-    
-    Child->>List: coal.add("Kunti") (Generates a clean array copy in memory)
-    Note over Child: childThreadBase completes execution.
-    
-    Main->>Main: join() unblocks. Main thread resumes.
-    Main->>List: Prints final collection output
-    Note over Main: Displays current modified array state: [panduraju, Maadhri, Kunti]
-```
 

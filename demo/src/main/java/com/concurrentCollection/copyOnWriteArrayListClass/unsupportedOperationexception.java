@@ -13,7 +13,7 @@ public class unsupportedOperationexception {
         coal.add("draupadi");
         coal.add("Subhadra");
         coal.add("yashoda");
-        // This will throw UnsupportedOperationException if the list is unmodifiable
+        // iterator.remove() is not supported on CopyOnWriteArrayList (snapshot iterator)
         Iterator<String> iterator = coal.iterator();
         while (iterator.hasNext()) {
 
