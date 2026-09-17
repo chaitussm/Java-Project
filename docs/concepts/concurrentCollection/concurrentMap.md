@@ -14,6 +14,7 @@
 | [`ConcurrentMap` API](#concurrentmap-interface-atomic-check-then-act) | `putIfAbsent`, conditional `remove`, vs plain `put` |
 | [Internal buckets](#concurrenthashmap-internal-structure-jdk-8) | Bucket array, chains, tree bins, CAS + bin locks |
 | [Bucket lock vs whole-map lock](#bucket-level-lock-vs-whole-collection-lock) | `Hashtable` / `synchronizedMap` vs `ConcurrentHashMap` |
+| [HashMap vs CHM](concurrentHashMap.md) | Classroom comparison slide, CME flows, null rules |
 | [Run commands](#run-the-demos) | Compile and execute both mains |
 
 ---
@@ -524,5 +525,6 @@ java -cp /tmp/cmap com.concurrentCollection.concurrentMap.concurrentHashMap
 
 ## See also
 
+- [concurrentHashMap.md](concurrentHashMap.md) — **HashMap vs ConcurrentHashMap** (classroom comparison table + diagrams)
 - Hub: [concurrentCollections.md](concurrentCollections.md) — `threadDemo` and `ConcurrentModificationException`
 - Legacy synchronized buckets: [hashTable.md](../collection/hashTable.md)

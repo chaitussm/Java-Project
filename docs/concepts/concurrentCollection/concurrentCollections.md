@@ -3,6 +3,7 @@
 | Guide | Topics |
 | ----- | ------ |
 | **This file** | `ConcurrentModificationException`, traditional vs concurrent collections |
+| **[concurrentHashMap.md](concurrentHashMap.md)** | **`HashMap` vs `ConcurrentHashMap`** — slide comparison, pie charts, iteration flows |
 | **[concurrentMap.md](concurrentMap.md)** | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
 
 > Fail-fast demo: [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) · Concurrent maps: [`concurrentMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMap.java) · [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java)
