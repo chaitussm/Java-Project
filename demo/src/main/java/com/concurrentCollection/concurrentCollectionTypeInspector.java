@@ -42,7 +42,8 @@ public class concurrentCollectionTypeInspector {
         System.out.println("----- Default Initial Capacity -----");
         switch (dataStructure) {
             case "ConcurrentHashMap":
-                // Default initial capacity = 16 (power of two); grows by resizing the table when threshold is exceeded.
+                // Default initial capacity = 16 (power of two); grows by resizing the table
+                // when threshold is exceeded.
                 printCapacity(dataStructure, "16 buckets (default)",
                         "resize when size > capacity × load factor (default load factor 0.75)");
                 break;
@@ -54,6 +55,9 @@ public class concurrentCollectionTypeInspector {
                 break;
             case "CopyOnWriteArrayList":
                 System.out.println("CopyOnWriteArrayList initial capacity depends on the underlying array");
+                break;
+            case "CopyOnWriteArraySet":
+                System.out.println("CopyOnWriteArraySet initial capacity depends on the underlying array");
                 break;
             default:
                 throw new IllegalArgumentException("Initial capacity is not applicable to: " + dataStructure);
@@ -105,6 +109,8 @@ public class concurrentCollectionTypeInspector {
                 return "ConcurrentMap";
             case "copyonwritearraylist":
                 return "CopyOnWriteArrayList";
+            case "copyonwritearrayset":
+                return "CopyOnWriteArraySet";
             default:
                 throw new IllegalArgumentException("Unknown data structure: " + dataStructure);
         }
@@ -120,6 +126,8 @@ public class concurrentCollectionTypeInspector {
                 return java.util.concurrent.ConcurrentMap.class;
             case "CopyOnWriteArrayList":
                 return java.util.concurrent.CopyOnWriteArrayList.class;
+            case "CopyOnWriteArraySet":
+                return java.util.concurrent.CopyOnWriteArraySet.class;
             default:
                 throw new IllegalArgumentException("Unknown data structure: " + dataStructure);
         }
@@ -199,6 +207,11 @@ public class concurrentCollectionTypeInspector {
             case "CopyOnWriteArrayList":
                 System.out.println(
                         "  Thread-safe variant of ArrayList; all mutative operations are implemented by making a fresh copy of the underlying array.");
+                break;
+
+            case "CopyOnWriteArraySet":
+                System.out.println(
+                        "  Thread-safe variant of Set; all mutative operations are implemented by making a fresh copy of the underlying array.");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);
