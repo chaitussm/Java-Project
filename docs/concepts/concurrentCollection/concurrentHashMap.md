@@ -14,6 +14,7 @@
 | [Hub: iterator deep dive](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) | Runnable `ArrayList` / `HashMap` / CHM / COW examples |
 | [Null rules](#null-keys-and-values) | `HashMap` allows; `ConcurrentHashMap` rejects |
 | [Choose the right map](#which-map-should-you-use) | Decision flow + pie chart |
+| [CHM vs synchronizedMap vs Hashtable](#concurrenthashmap-vs-synchronizedmap-vs-hashtable) | Thread-safe maps compared (classroom slide) |
 
 ---
 
@@ -229,6 +230,197 @@ pie showData
     "HashMap confined to one thread" : 30
     "Other (sync wrapper, DB, etc.)" : 15
 ```
+
+---
+
+## ConcurrentHashMap vs `synchronizedMap()` vs `Hashtable`
+
+Three ways people make a **shared `Map` thread-safe**. Only **`ConcurrentHashMap`** uses **bucket-level** (portion-level) coordination; the other two lock the **whole map** for writes (and `Hashtable` locks reads too).
+
+<p align="center">
+  <img src="images/chm-synchronizedMap-hashtable-comparison.png" alt="Difference between ConcurrentHashMap, synchronizedMap(), and Hashtable — locking, threads, iteration, nulls, Java version" width="860" />
+</p>
+
+*Figure: classroom comparison (expanded below with diagrams).*
+
+### Summary table (all seven slide rows)
+
+| Topic | `ConcurrentHashMap` | `Collections.synchronizedMap(map)` | `Hashtable` |
+| ----- | ------------------- | ---------------------------------- | ----------- |
+| **Thread safety** | Built-in, concurrent | Wraps any `Map`; **every** method syncs on wrapper | Legacy class; **synchronized** methods |
+| **Lock scope** | **Bucket / portion** — not the entire table for every update ([details](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock)) | **Whole map object** monitor | **Whole table** monitor |
+| **Threads at once** | Many threads can read; multiple writes on **different** bins often run together | **One** thread in synchronized API at a time | **One** thread at a time for reads and writes |
+| **Reads** | Typically **without** locking the entire map | Each `get` is `synchronized` on the wrapper | Each `get` is `synchronized` on `this` |
+| **Writes** | **Bucket-level** lock (or CAS on empty bin) | **Whole-map** lock | **Whole-map** lock |
+| **Iterate + another thread modifies** | Allowed in a safe way — **no** `ConcurrentModificationException` | **Not** allowed without external sync → **CME** (fail-fast) | Same — **CME** (fail-fast) |
+| **Iterator** | **Fail-safe** / weakly consistent | **Fail-fast** | **Fail-fast** |
+| **`null` key / value** | **Not allowed** (`NullPointerException`) | **Allowed** (inherits wrapped map — usually `HashMap`) | **Not allowed** |
+| **Since** | Java **1.5** (`java.util.concurrent`) | Java **1.2** (`Collections`) | Java **1.0** (legacy) |
+
+```mermaid
+pie showData
+    title Lock scope on a typical put()
+    "ConcurrentHashMap — one bin / portion" : 33
+    "synchronizedMap — entire wrapper" : 34
+    "Hashtable — entire table" : 33
+```
+
+### Locking model (flow)
+
+```mermaid
+flowchart TB
+  subgraph chm ["ConcurrentHashMap"]
+    P1["put(key)"] --> H1["hash → bucket index"]
+    H1 --> L1{"bin empty?"}
+    L1 -- Yes --> CAS["CAS insert"]
+    L1 -- No --> BL["lock head of this bin only"]
+  end
+
+  subgraph whole ["synchronizedMap / Hashtable"]
+    P2["put(key)"] --> L2["synchronized on whole map"]
+    L2 --> U2["update one bucket inside"]
+  end
+```
+
+```text
+ConcurrentHashMap          synchronizedMap() / Hashtable
+─────────────────          ─────────────────────────────
+  bin 0   bin 1   bin 2       ┌─────────────────────────┐
+    │       │       │         │ ONE LOCK around all bins │
+    ▲       │       ▲         │  0  1  2  3 …  n-1      │
+  lock    (free)   lock       └─────────────────────────┘
+  only            only              only one writer
+  bin 0           bin 2             (or reader+writer for HT)
+```
+
+### Multi-thread access (sequence)
+
+**`synchronizedMap` / `Hashtable`** — second thread waits on the **same** monitor:
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant M as synchronizedMap / Hashtable
+  participant B as Thread B
+
+  A->>M: put (holds whole-map lock)
+  B->>M: get or put
+  Note over B,M: blocked until A releases monitor
+  A->>M: release
+  B->>M: enters synchronized method
+```
+
+**`ConcurrentHashMap`** — different bins, parallel writes:
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant CHM as ConcurrentHashMap
+  participant B as Thread B
+
+  par different buckets
+    A->>CHM: put → bin 2
+    B->>CHM: put → bin 11
+  end
+```
+
+```mermaid
+pie showData
+    title Parallel write lanes (conceptual)
+    "CHM — up to many bins in parallel" : 50
+    "sync map / Hashtable — 1 at a time" : 50
+```
+
+### Iteration while another thread modifies
+
+Same pattern as [fail-fast vs fail-safe](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples):
+
+```mermaid
+flowchart TD
+  Iter["Thread 1: iterating map"]
+
+  Iter --> CHMpath["ConcurrentHashMap"]
+  CHMpath --> CHMok["Thread 2 may put/remove<br/>no CME — weak view"]
+
+  Iter --> FFpath["synchronizedMap or Hashtable"]
+  FFpath --> FFfail["Thread 2 modifies structure"]
+  FFfail --> CME["Fail-fast iterator → CME"]
+```
+
+| While iterating | `ConcurrentHashMap` | `synchronizedMap` | `Hashtable` |
+| --------------- | ------------------- | ------------------- | ----------- |
+| Other thread `put` / `remove` | **OK** (no CME) | **CME** unless **you** sync on map during entire iteration | **CME** (fail-fast) |
+| Recommended pattern | Use CHM iterator as documented | `synchronized (map) { for (...) }` for **both** iteration and writes | Same manual sync if sharing |
+
+**Example — `synchronizedMap` (fail-fast):**
+
+```java
+Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
+map.put("a", "1");
+var it = map.entrySet().iterator();
+it.next();
+map.put("b", "2");   // concurrent structural change
+it.next();           // ConcurrentModificationException
+```
+
+**Example — `ConcurrentHashMap` (fail-safe / weakly consistent):**
+
+```java
+Map<String, String> map = new ConcurrentHashMap<>();
+map.put("a", "1");
+var it = map.entrySet().iterator();
+it.next();
+map.put("b", "2");   // allowed
+it.next();           // no CME
+```
+
+```mermaid
+pie showData
+    title Iterator under concurrent modification
+    "CHM — fail-safe (no CME)" : 33
+    "synchronizedMap — fail-fast" : 34
+    "Hashtable — fail-fast" : 33
+```
+
+### `null` keys and values
+
+| | `ConcurrentHashMap` | `synchronizedMap(new HashMap<>())` | `Hashtable` |
+| --- | ------------------- | ----------------------------------- | ----------- |
+| `null` key | **NPE** | **OK** (HashMap rules) | **NPE** |
+| `null` value | **NPE** | **OK** | **NPE** |
+
+```mermaid
+flowchart LR
+  subgraph allow ["null allowed"]
+    SM["synchronizedMap + HashMap"]
+  end
+  subgraph deny ["null not allowed"]
+    CHM2["ConcurrentHashMap"]
+    HT["Hashtable"]
+  end
+```
+
+### Which thread-safe map? (extended)
+
+```mermaid
+flowchart TD
+  Need["Shared Map in production?"] --> Legacy{"Legacy API / serialization?"}
+  Legacy -- Hashtable --> HT["Avoid for new code<br/>use CHM instead"]
+  Legacy -- No --> Wrap{"Already have HashMap?"}
+  Wrap -- Yes --> Old["synchronizedMap — OK for low contention<br/>fail-fast iterator + whole-map lock"]
+  Wrap -- No --> CHM2["ConcurrentHashMap<br/>default for concurrent caches"]
+  CHM2 --> Null{"Need null key/value?"}
+  Null -- Yes --> SM["synchronizedMap(HashMap)<br/>or redesign keys"]
+  Null -- No --> CHM2
+```
+
+| Choose | When |
+| ------ | ---- |
+| **`ConcurrentHashMap`** | Default for **high concurrency**, no `null`, weakly consistent iteration OK |
+| **`Collections.synchronizedMap`** | Simple wrapping of existing `HashMap`; **low** thread contention; you accept whole-map lock + fail-fast iterator rules |
+| **`Hashtable`** | **Legacy only** — prefer CHM; same whole-map locking as sync wrapper, no `null`, older API |
+
+Bucket internals and classroom CHM slide: [concurrentMap.md](concurrentMap.md). Hashtable bucket walkthrough: [hashTable.md](../collection/hashTable.md).
 
 ---
 
