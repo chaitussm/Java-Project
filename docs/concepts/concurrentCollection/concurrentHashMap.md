@@ -1,186 +1,443 @@
-# Theory: Iterator and ListIterator Behavior in Java Concurrent Collections
+# HashMap vs ConcurrentHashMap
 
-When multiple threads interact with a collection, standard implementations (like `ArrayList` or `HashMap`) use **Fail-Fast Iterators**. Concurrent collections use **Weakly Consistent (Fail-Safe) Iterators**. 
-
-Understanding how these iterators handle real-time modifications is critical for designing correct multi-threaded applications.
+> Runnable `ConcurrentHashMap` demo: [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java) · Deeper internals: [concurrentMap.md](concurrentMap.md) · Hub: [concurrentCollections.md](concurrentCollections.md)
 
 ---
 
-## 1. What Does "No Guarantee of Availability" Mean?
+## Guide map
 
-In a concurrent collection (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`), if **Thread A** is iterating through the collection while **Thread B** is simultaneously updating it (adding, updating, or removing an element), there is **no guarantee** that Thread A's iterator will reflect Thread B's changes.
-
-### The Trade-Off: Safety vs. Real-Time Accuracy
-* **Safety (Guaranteed):** The iterator will **never** throw a `ConcurrentModificationException`. It will not crash or corrupt memory mid-loop.
-* **Real-Time Accuracy (Not Guaranteed):** The iterator reflects the state of the collection *at the time the iterator was constructed*. It may or may not see modifications that happen after the loop has started.
-
----
-
-## 2. Does This Apply to `ListIterator`?
-
-**Yes. This rule applies equally to `ListIterator`.** 
-
-`ListIterator` is an extended iterator interface designed specifically for list structures (allowing bidirectional traversal and element modification). In the `java.util.concurrent` package, the primary implementation of a thread-safe list is **`CopyOnWriteArrayList`**. 
-
-When you invoke `list.listIterator()`, it behaves according to the **Snapshot Style** rules of concurrent collections.
+| Section | Content |
+| ------- | ------- |
+| [Classroom comparison](#classroom-comparison-table) | Reference slide (image + table) |
+| [Thread safety & performance](#thread-safety-and-performance) | When each map wins |
+| [Iteration & CME](#iteration-while-another-thread-modifies) | Fail-fast vs fail-safe flows + hub examples |
+| [Hub: iterator deep dive](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) | Runnable `ArrayList` / `HashMap` / CHM / COW examples |
+| [Null rules](#null-keys-and-values) | `HashMap` allows; `ConcurrentHashMap` rejects |
+| [Choose the right map](#which-map-should-you-use) | Decision flow + pie chart |
+| [CHM vs synchronizedMap vs Hashtable](#concurrenthashmap-vs-synchronizedmap-vs-hashtable) | Thread-safe maps compared (classroom slide) |
 
 ---
 
-## 3. How Different Concurrent Collections Handle Iterators
+## Classroom comparison table
 
-Concurrent collections manage consistency during iteration using two primary structural strategies:
+<p align="center">
+  <img src="images/hashMap-vs-concurrentHashMap-comparison.png" alt="Difference between HashMap and ConcurrentHashMap — thread safety, performance, iteration, nulls, Java version" width="820" />
+</p>
 
-### A. Snapshot Style (e.g., `CopyOnWriteArrayList` / `ListIterator`)
-* **How it works:** When the `ListIterator` is created, it takes a reference to the underlying array exactly as it exists at that millisecond. 
-* **The Mutation Rule:** If another thread adds or removes an element, `CopyOnWriteArrayList` creates a brand-new copy of the array for the update.
-* **The Iterator Impact:** The `ListIterator` remains attached to the **old, original array snapshot**. Because of this, a `ListIterator` is **guaranteed NOT to see any updates** made by other threads after the loop begins.
+*Figure: interview-style comparison (expanded and clarified below).*
 
-### B. Weakly Consistent Style (e.g., `ConcurrentHashMap` / `Iterator`)
-* **How it works:** The iterator travels directly through the live buckets/nodes of the hash map using volatile variables.
-* **The Mutation Rule:** Threads update elements directly inside the map buckets using fine-grained locks or atomic operations.
-* **The Iterator Impact:** If another thread modifies a bucket that the iterator **has already passed**, the iterator misses it. If a thread modifies a bucket that the iterator **has not reached yet**, the iterator *will* see the update. This depends entirely on thread scheduling and CPU cache timing, resulting in "no guarantee" of availability.
-
----
-
-## 4. Summary Matrix: Fail-Fast vs. Weakly Consistent Iterators
-
-| Feature                        | Fail-Fast Iterators (`ArrayList`, `HashMap`)             | Weakly Consistent Iterators / `ListIterator` (`ConcurrentHashMap`, `CopyOnWriteArrayList`)                                                                   |
-| :----------------------------- | :------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Concurrent Modification**    | Throws `ConcurrentModificationException` instantly.      | Allowed safely. No exceptions are thrown.                                                                                                                    |
-| **Data State Checked**         | Checks a `modCount` flag on every single `.next()` call. | Traverses an immutable snapshot or reads live nodes atomically.                                                                                              |
-| **Reflects Live Updates**      | No, it crashes instead.                                  | **Weakly**. May reflect them depending on timing, or won't reflect them at all (Snapshot).                                                                   |
-| **Supports Iterator Mutators** | Supports `iterator.remove()`.                            | `CopyOnWriteArrayList`'s `ListIterator` does **not** support `remove()`, `set()`, or `add()` during loop execution (throws `UnsupportedOperationException`). |
-# Comprehensive Guide: Thread Safety & Iterator Behavior in Java Concurrent Collections
-
-When multiple threads interact with a collection, standard implementations use **Fail-Fast Iterators**, while concurrent collections use **Weakly Consistent (Fail-Safe) Iterators**. This guide explains their architectural differences, visibility semantics, and runtime behaviors.
-
----
-
-## 1. High-Level Architectural Differences
-
-### Memory Allocation & Lock Architecture
-The diagram below contrasts how a legacy synchronized or traditional collection handles locks versus how modern concurrent collections isolate operations via fine-grained mechanisms (like lock striping or snapshots).
+| Topic | `HashMap` | `ConcurrentHashMap` |
+| ----- | --------- | ------------------- |
+| **Thread safety** | **Not** thread-safe | **Thread-safe** for concurrent access |
+| **Performance (slide)** | **Higher** in the **single-threaded** sense — no internal coordination | **Lower** per operation — threads may **wait** on bin/segment locks or CAS retries |
+| **Performance (reality check)** | Fast alone; **unsafe** if multiple threads mutate without external sync | **Higher throughput** than `Collections.synchronizedMap(new HashMap<>())` when **many threads** update **different** keys — see [bucket vs whole-map lock](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) |
+| **Modify while iterating** | Other threads must **not** structurally modify the map → **`ConcurrentModificationException`** (fail-fast iterator) | Other threads **may** update safely; iterator is **weakly consistent** (fail-safe in classroom terms) — **no CME** |
+| **Iterator** | **Fail-fast** | **Fail-safe / weakly consistent** |
+| **`null`** | **Allowed** for key and value (one `null` key max) | **`null` not allowed** — `NullPointerException` |
+| **Since** | Java **1.2** | Java **1.5** (`java.util.concurrent`) |
 
 ```mermaid
-graph TD
-    subgraph Traditional / Synchronized Wrapper
-        A[Thread 1: Read/Write] -->|Locks ENTIRE Collection| B(HashMap / ArrayList)
-        C[Thread 2: Read/Write] -->|Blocked / Must Wait| B
-    end
-
-    subgraph Concurrent Architecture (Fine-Grained)
-        D[Thread 1: Write Bucket 1] -->|Locks Bucket 1 Only| E[Bucket 1]
-        F[Thread 2: Write Bucket 5] -->|Locks Bucket 5 Only| G[Bucket 5]
-        H[Thread 3: Read Bucket 3] -->|Lock-Free Read| I[Bucket 3]
-    end
+pie showData
+    title Comparison axes (classroom slide)
+    "Thread safety & coordination" : 25
+    "Iterator / CME behavior" : 25
+    "Null key & value rules" : 20
+    "Performance trade-offs" : 20
+    "API age (1.2 vs 1.5)" : 10
 ```
 
 ---
 
-## 2. Weakly Consistent Iterators vs. ListIterator
+## Thread safety and performance
 
-In a concurrent collection (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`), if **Thread A** iterates through the collection while **Thread B** simultaneously modifies it, there is **no guarantee** that Thread A's iterator will reflect Thread B's changes.
-
-### The Breakdown of Guarantees
-* **Safety (Guaranteed):** The iterator will **never** throw a `ConcurrentModificationException`. It will not crash or corrupt memory mid-loop.
-* **Real-Time Availability (Not Guaranteed):** The iterator reflects the state of the collection *at the exact millisecond the iterator was constructed*. It may or may not see modifications that happen after the loop has started.
-
-### How Different Structures Handle Iteration:
-1. **Snapshot Style (`CopyOnWriteArrayList` / `ListIterator`):** 
-   When the `ListIterator` is created, it takes a reference to the array snapshot. If another thread adds an element, the list duplicates its underlying array to a new space. The iterator stays attached to the **old snapshot** and is **guaranteed NOT to see the live update**.
-2. **Weakly Consistent Style (`ConcurrentHashMap` / `Iterator`):** 
-   The iterator travels directly through live nodes using volatile variables. If another thread modifies a bucket the iterator *has already passed*, the iterator misses it. If the modification happens *ahead* of the iterator's current position, it *will* see it.
-
----
-
-## 3. Statistical Comparison: Read vs. Write Performance
-
-The structural strategies dictate performance profiles. The chart below breaks down the typical optimal application use-case scenarios based on read-to-write ratios:
+### Single-threaded vs multi-threaded
 
 ```mermaid
-pie title Optimal Use-Cases Based on Read-to-Write Profiles
-    "High Read / Low Write (CopyOnWriteArrayList)" : 45
-    "Balanced Heavy Read & Write (ConcurrentHashMap)" : 40
-    "Strict Ordering / Sequential (ConcurrentSkipListMap)" : 15
+flowchart TD
+  Q["Who accesses the map?"]
+  Q --> One["One thread only"]
+  Q --> Many["Multiple threads"]
+
+  One --> HM["Prefer HashMap<br/>simpler, slightly less overhead"]
+  Many --> Safe{"Need shared mutable map?"}
+  Safe -- No --> HM2["HashMap + confine to one thread<br/>or immutable copies"]
+  Safe -- Yes --> CHM["ConcurrentHashMap<br/>or external synchronization"]
 ```
+
+| Scenario | Better choice | Why |
+| -------- | ------------- | ----- |
+| Local variable, one thread | **`HashMap`** | No locking/CAS cost |
+| Shared cache, many readers/writers | **`ConcurrentHashMap`** | Bin-level coordination vs locking entire `HashMap` |
+| Shared map, rare writes | **`HashMap`** + `ReadWriteLock` or immutable snapshots | Sometimes simpler than CHM |
+| Legacy “make HashMap thread-safe” | **`ConcurrentHashMap`** (new code) | `synchronizedMap` still **fail-fast** iterator + **whole-map** lock |
+
+```mermaid
+pie showData
+    title Relative cost per put (conceptual)
+    "HashMap — single thread, no wait" : 45
+    "CHM — coordination on bin / resize" : 35
+    "synchronized HashMap — whole-map wait" : 20
+```
+
+The slide’s “CHM performance is low” means **each operation may do more work** (atomic checks, bin locks). In **parallel**, CHM still wins over a globally locked `HashMap` because threads do not queue on **one** monitor for every key.
 
 ---
 
-## 4. Complete Verification Example
+## Iteration while another thread modifies
 
-This runnable Java class demonstrates the structural difference between `ArrayList` (which crashes) and `CopyOnWriteArrayList` (which executes safely via an isolated snapshot).
+Full lesson with **five runnable examples** (list, map, threads, `CopyOnWriteArrayList`): [Fail-fast vs fail-safe iterators](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) in the hub.
+
+This section applies the same idea as [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) on `ArrayList`, but for **maps**.
+
+### Mini example — `HashMap` (fail-fast) vs `ConcurrentHashMap` (fail-safe)
 
 ```java
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.concurrent.CopyOnWriteArrayList;
+// Fail-fast: HashMap
+Map<Integer, String> hm = new HashMap<>();
+hm.put(1, "one");
+var it = hm.entrySet().iterator();
+it.next();
+hm.put(2, "two");
+it.next(); // ConcurrentModificationException
 
-public class ConcurrentIteratorVerification {
+// Fail-safe: ConcurrentHashMap
+Map<Integer, String> chm = new ConcurrentHashMap<>();
+chm.put(1, "one");
+var it2 = chm.entrySet().iterator();
+it2.next();
+chm.put(2, "two");
+it2.next(); // OK — no CME
+```
 
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println("=== 1. DEMONSTRATING FAIL-FAST CRASH (ArrayList) ===");
-        try {
-            simulateFailFast();
-        } catch (Exception e) {
-            System.out.println("Result: Caught expected exception -> " + e.getClass().getName());
-        }
+### `HashMap` — fail-fast
 
-        System.out.println("\n=== 2. DEMONSTRATING SNAPSHOT SAFETY (CopyOnWriteArrayList) ===");
-        simulateWeaklyConsistent();
-    }
+```mermaid
+sequenceDiagram
+  participant T1 as Thread 1 (iterator)
+  participant HM as HashMap
+  participant T2 as Thread 2
 
-    private static void simulateFailFast() throws InterruptedException {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Apple");
-        list.add("Banana");
+  T1->>HM: iterator()
+  T1->>HM: next()
+  T2->>HM: put(newKey, value)
+  Note over HM: modCount changed
+  T1->>HM: next()
+  HM-->>T1: ConcurrentModificationException
+```
 
-        Thread modifier = new Thread(() -> {
-            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-            list.add("Cherry"); // Modifies structural state (modCount increments)
-        });
-        modifier.start();
+```mermaid
+flowchart TD
+  A["Thread 1: iterating HashMap"] --> B["Thread 2: put / remove"]
+  B --> C["modCount ≠ expectedModCount"]
+  C --> D["Fail-fast iterator throws CME"]
+```
 
-        Iterator<String> it = list.iterator();
-        while (it.hasNext()) {
-            System.out.println("ArrayList Reading: " + it.next());
-            Thread.sleep(200); // Allow modifier thread to execute write execution
-        }
-    }
+### `ConcurrentHashMap` — weakly consistent (fail-safe)
 
-    private static void simulateWeaklyConsistent() throws InterruptedException {
-        CopyOnWriteArrayList<String> concurrentList = new CopyOnWriteArrayList<>();
-        concurrentList.add("Apple");
-        concurrentList.add("Banana");
+```mermaid
+sequenceDiagram
+  participant T1 as Thread 1 (iterator)
+  participant CHM as ConcurrentHashMap
+  participant T2 as Thread 2
 
-        Thread modifier = new Thread(() -> {
-            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-            System.out.println("[Child Thread] Modifying list -> Adding 'Cherry'");
-            concurrentList.add("Cherry"); 
-        });
-        modifier.start();
+  T1->>CHM: entrySet().iterator()
+  T1->>CHM: next()
+  T2->>CHM: put(newKey, value)
+  T1->>CHM: next()
+  Note over T1,CHM: may or may not see new entry; no CME
+```
 
-        // ListIterator takes a snapshot reference of the array containing [Apple, Banana]
-        ListIterator<String> listIt = concurrentList.listIterator();
-        while (listIt.hasNext()) {
-            System.out.println("ListIterator Reading: " + listIt.next());
-            Thread.sleep(200); 
-        }
+```mermaid
+flowchart TD
+  A["Thread 1: iterating CHM"] --> B["Thread 2: put / remove"]
+  B --> C["Updates bin safely"]
+  C --> D["Iterator continues<br/>snapshot / weak view"]
+  D --> E["No ConcurrentModificationException"]
+```
 
-        modifier.join();
-        System.out.println("Execution finished without crashing!");
-        System.out.println("Final backing list contents: " + concurrentList);
-    }
-}
+| | `HashMap` iterator | `ConcurrentHashMap` iterator |
+| --- | ------------------ | --------------------------- |
+| Sees concurrent adds? | N/A — **CME** first | **May** see some later entries |
+| Guarantees | Fast-fail on structural change | No guarantee of full live view |
+| Classroom name | **Fail-fast** | **Fail-safe** |
+
+```mermaid
+pie showData
+    title Iterator behavior under concurrent write
+    "HashMap: abort with CME" : 50
+    "CHM: continue without CME" : 50
+```
+
+```mermaid
+flowchart TD
+  subgraph fast ["Fail-fast HashMap"]
+    F1["iterator()"] --> F2["next() once"]
+    F2 --> F3["map.put(...)"]
+    F3 --> F4["next() again"]
+    F4 --> F5["CME"]
+  end
+
+  subgraph safe ["Fail-safe ConcurrentHashMap"]
+    S1["iterator()"] --> S2["next() once"]
+    S2 --> S3["map.put(...)"]
+    S3 --> S4["next() again"]
+    S4 --> S5["continues — weak view"]
+  end
 ```
 
 ---
 
-## 5. Summary Matrix: Traditional vs. Concurrent Iterators
+## Null keys and values
 
-| Evaluation Feature              | Fail-Fast Iterators (`ArrayList`, `HashMap`)                       | Weakly Consistent / Snapshot Iterators (`ConcurrentHashMap`, `CopyOnWriteArrayList`)                                                   |
-| :------------------------------ | :----------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------- |
-| **Concurrent Modification**     | Throws `ConcurrentModificationException` instantly.                | Allowed safely. No exceptions are thrown.                                                                                              |
-| **Data Integrity Verification** | Compares expected `modCount` with actual state on every `.next()`. | Traverses immutable array views or accesses memory nodes atomically via volatile fields.                                               |
-| **Visibility of Live Edits**    | Irrelevant (Crashes runtime execution).                            | **Weakly Consistent:** Depends on index position vs thread timing, or entirely isolated (Snapshot).                                    |
-| **Iterator Mutation Support**   | Supports `iterator.remove()`.                                      | `CopyOnWriteArrayList` elements *cannot* be modified via `ListIterator.add()` or `.remove()` (throws `UnsupportedOperationException`). |
+| | `HashMap` | `ConcurrentHashMap` |
+| --- | --------- | ------------------- |
+| `null` key | **One** `null` key allowed | **`NullPointerException`** |
+| `null` value | Allowed | **`NullPointerException`** |
+
+```mermaid
+flowchart LR
+  subgraph hm ["HashMap"]
+    HK["put(null, v)"] --> OK1["OK"]
+    HV["put(k, null)"] --> OK2["OK"]
+  end
+
+  subgraph chm ["ConcurrentHashMap"]
+    CK["put(null, v)"] --> NPE1["NullPointerException"]
+    CV["put(k, null)"] --> NPE2["NullPointerException"]
+  end
+```
+
+`ConcurrentHashMap` forbids `null` so **absence** is unambiguous in concurrent code (`get` returning `null` always means “no mapping”, not “mapped to null”).
+
+---
+
+## Which map should you use?
+
+```mermaid
+flowchart TD
+  Start["Need a Map?"] --> TS{"Multiple threads<br/>read/write?"}
+  TS -- No --> HM["HashMap"]
+  TS -- Yes --> Null{"Need null key/value?"}
+  Null -- Yes --> Sync["Not CHM — use HashMap + sync strategy<br/>or avoid null in shared maps"]
+  Null -- No --> CHM["ConcurrentHashMap"]
+  CHM --> Demo["Run concurrentHashMap.java demo"]
+```
+
+```mermaid
+pie showData
+    title Typical production choices (shared data)
+    "ConcurrentHashMap" : 55
+    "HashMap confined to one thread" : 30
+    "Other (sync wrapper, DB, etc.)" : 15
+```
+
+---
+
+## ConcurrentHashMap vs `synchronizedMap()` vs `Hashtable`
+
+Three ways people make a **shared `Map` thread-safe**. Only **`ConcurrentHashMap`** uses **bucket-level** (portion-level) coordination; the other two lock the **whole map** for writes (and `Hashtable` locks reads too).
+
+<p align="center">
+  <img src="images/chm-synchronizedMap-hashtable-comparison.png" alt="Difference between ConcurrentHashMap, synchronizedMap(), and Hashtable — locking, threads, iteration, nulls, Java version" width="860" />
+</p>
+
+*Figure: classroom comparison (expanded below with diagrams).*
+
+### Summary table (all seven slide rows)
+
+| Topic | `ConcurrentHashMap` | `Collections.synchronizedMap(map)` | `Hashtable` |
+| ----- | ------------------- | ---------------------------------- | ----------- |
+| **Thread safety** | Built-in, concurrent | Wraps any `Map`; **every** method syncs on wrapper | Legacy class; **synchronized** methods |
+| **Lock scope** | **Bucket / portion** — not the entire table for every update ([details](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock)) | **Whole map object** monitor | **Whole table** monitor |
+| **Threads at once** | Many threads can read; multiple writes on **different** bins often run together | **One** thread in synchronized API at a time | **One** thread at a time for reads and writes |
+| **Reads** | Typically **without** locking the entire map | Each `get` is `synchronized` on the wrapper | Each `get` is `synchronized` on `this` |
+| **Writes** | **Bucket-level** lock (or CAS on empty bin) | **Whole-map** lock | **Whole-map** lock |
+| **Iterate + another thread modifies** | Allowed in a safe way — **no** `ConcurrentModificationException` | **Not** allowed without external sync → **CME** (fail-fast) | Same — **CME** (fail-fast) |
+| **Iterator** | **Fail-safe** / weakly consistent | **Fail-fast** | **Fail-fast** |
+| **`null` key / value** | **Not allowed** (`NullPointerException`) | **Allowed** (inherits wrapped map — usually `HashMap`) | **Not allowed** |
+| **Since** | Java **1.5** (`java.util.concurrent`) | Java **1.2** (`Collections`) | Java **1.0** (legacy) |
+
+```mermaid
+pie showData
+    title Lock scope on a typical put()
+    "ConcurrentHashMap — one bin / portion" : 33
+    "synchronizedMap — entire wrapper" : 34
+    "Hashtable — entire table" : 33
+```
+
+### Locking model (flow)
+
+```mermaid
+flowchart TB
+  subgraph chm ["ConcurrentHashMap"]
+    P1["put(key)"] --> H1["hash → bucket index"]
+    H1 --> L1{"bin empty?"}
+    L1 -- Yes --> CAS["CAS insert"]
+    L1 -- No --> BL["lock head of this bin only"]
+  end
+
+  subgraph whole ["synchronizedMap / Hashtable"]
+    P2["put(key)"] --> L2["synchronized on whole map"]
+    L2 --> U2["update one bucket inside"]
+  end
+```
+
+```text
+ConcurrentHashMap          synchronizedMap() / Hashtable
+─────────────────          ─────────────────────────────
+  bin 0   bin 1   bin 2       ┌─────────────────────────┐
+    │       │       │         │ ONE LOCK around all bins │
+    ▲       │       ▲         │  0  1  2  3 …  n-1      │
+  lock    (free)   lock       └─────────────────────────┘
+  only            only              only one writer
+  bin 0           bin 2             (or reader+writer for HT)
+```
+
+### Multi-thread access (sequence)
+
+**`synchronizedMap` / `Hashtable`** — second thread waits on the **same** monitor:
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant M as synchronizedMap / Hashtable
+  participant B as Thread B
+
+  A->>M: put (holds whole-map lock)
+  B->>M: get or put
+  Note over B,M: blocked until A releases monitor
+  A->>M: release
+  B->>M: enters synchronized method
+```
+
+**`ConcurrentHashMap`** — different bins, parallel writes:
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A
+  participant CHM as ConcurrentHashMap
+  participant B as Thread B
+
+  par different buckets
+    A->>CHM: put → bin 2
+    B->>CHM: put → bin 11
+  end
+```
+
+```mermaid
+pie showData
+    title Parallel write lanes (conceptual)
+    "CHM — up to many bins in parallel" : 50
+    "sync map / Hashtable — 1 at a time" : 50
+```
+
+### Iteration while another thread modifies
+
+Same pattern as [fail-fast vs fail-safe](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples):
+
+```mermaid
+flowchart TD
+  Iter["Thread 1: iterating map"]
+
+  Iter --> CHMpath["ConcurrentHashMap"]
+  CHMpath --> CHMok["Thread 2 may put/remove<br/>no CME — weak view"]
+
+  Iter --> FFpath["synchronizedMap or Hashtable"]
+  FFpath --> FFfail["Thread 2 modifies structure"]
+  FFfail --> CME["Fail-fast iterator → CME"]
+```
+
+| While iterating | `ConcurrentHashMap` | `synchronizedMap` | `Hashtable` |
+| --------------- | ------------------- | ------------------- | ----------- |
+| Other thread `put` / `remove` | **OK** (no CME) | **CME** unless **you** sync on map during entire iteration | **CME** (fail-fast) |
+| Recommended pattern | Use CHM iterator as documented | `synchronized (map) { for (...) }` for **both** iteration and writes | Same manual sync if sharing |
+
+**Example — `synchronizedMap` (fail-fast):**
+
+```java
+Map<String, String> map = Collections.synchronizedMap(new HashMap<>());
+map.put("a", "1");
+var it = map.entrySet().iterator();
+it.next();
+map.put("b", "2");   // concurrent structural change
+it.next();           // ConcurrentModificationException
+```
+
+**Example — `ConcurrentHashMap` (fail-safe / weakly consistent):**
+
+```java
+Map<String, String> map = new ConcurrentHashMap<>();
+map.put("a", "1");
+var it = map.entrySet().iterator();
+it.next();
+map.put("b", "2");   // allowed
+it.next();           // no CME
+```
+
+```mermaid
+pie showData
+    title Iterator under concurrent modification
+    "CHM — fail-safe (no CME)" : 33
+    "synchronizedMap — fail-fast" : 34
+    "Hashtable — fail-fast" : 33
+```
+
+### `null` keys and values
+
+| | `ConcurrentHashMap` | `synchronizedMap(new HashMap<>())` | `Hashtable` |
+| --- | ------------------- | ----------------------------------- | ----------- |
+| `null` key | **NPE** | **OK** (HashMap rules) | **NPE** |
+| `null` value | **NPE** | **OK** | **NPE** |
+
+```mermaid
+flowchart LR
+  subgraph allow ["null allowed"]
+    SM["synchronizedMap + HashMap"]
+  end
+  subgraph deny ["null not allowed"]
+    CHM2["ConcurrentHashMap"]
+    HT["Hashtable"]
+  end
+```
+
+### Which thread-safe map? (extended)
+
+```mermaid
+flowchart TD
+  Need["Shared Map in production?"] --> Legacy{"Legacy API / serialization?"}
+  Legacy -- Hashtable --> HT["Avoid for new code<br/>use CHM instead"]
+  Legacy -- No --> Wrap{"Already have HashMap?"}
+  Wrap -- Yes --> Old["synchronizedMap — OK for low contention<br/>fail-fast iterator + whole-map lock"]
+  Wrap -- No --> CHM2["ConcurrentHashMap<br/>default for concurrent caches"]
+  CHM2 --> Null{"Need null key/value?"}
+  Null -- Yes --> SM["synchronizedMap(HashMap)<br/>or redesign keys"]
+  Null -- No --> CHM2
+```
+
+| Choose | When |
+| ------ | ---- |
+| **`ConcurrentHashMap`** | Default for **high concurrency**, no `null`, weakly consistent iteration OK |
+| **`Collections.synchronizedMap`** | Simple wrapping of existing `HashMap`; **low** thread contention; you accept whole-map lock + fail-fast iterator rules |
+| **`Hashtable`** | **Legacy only** — prefer CHM; same whole-map locking as sync wrapper, no `null`, older API |
+
+Bucket internals and classroom CHM slide: [concurrentMap.md](concurrentMap.md). Hashtable bucket walkthrough: [hashTable.md](../collection/hashTable.md).
+
+---
+
+## Run the repo demo
+
+```bash
+cd demo
+javac -d /tmp/chm \
+  src/main/java/com/concurrentCollection/concurrentCollectionTypeInspector.java \
+  src/main/java/com/concurrentCollection/concurrentMap/*.java
+java -cp /tmp/chm com.concurrentCollection.concurrentMap.concurrentHashMap
+```
+
+---
+
+## See also
+
+- [concurrentMap.md](concurrentMap.md) — `ConcurrentMap` API, classroom CHM slide, **bucket internals**, constructors
+- [concurrentCollections.md](concurrentCollections.md) — `threadDemo` / `ConcurrentModificationException`
+- [map.md](../collection/map.md) — general `Map` hierarchy in the collection guides

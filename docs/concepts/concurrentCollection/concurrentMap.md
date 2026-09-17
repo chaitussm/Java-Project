@@ -6,15 +6,16 @@
 
 ## Guide map
 
-| Section                                                                      | What you learn                                          |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [Classroom overview](#concurrenthashmap--classroom-overview)                 | Reads vs writes, concurrency level **16**, constructors |
-| [Type hierarchy](#type-hierarchy-map--concurrentmap--concurrenthashmap)      | `Map` → `ConcurrentMap` → `ConcurrentHashMap`           |
-| [Demo classes](#how-concurrentmapjava-and-concurrenthashmapjava-run)         | Same pipeline, different `collectionType` string        |
-| [`ConcurrentMap` API](#concurrentmap-interface-atomic-check-then-act)        | `putIfAbsent`, conditional `remove`, vs plain `put`     |
-| [Internal buckets](#concurrenthashmap-internal-structure-jdk-8)              | Bucket array, chains, tree bins, CAS + bin locks        |
-| [Bucket lock vs whole-map lock](#bucket-level-lock-vs-whole-collection-lock) | `Hashtable` / `synchronizedMap` vs `ConcurrentHashMap`  |
-| [Run commands](#run-the-demos)                                               | Compile and execute both mains                          |
+| Section | What you learn |
+| ------- | -------------- |
+| [Classroom overview](#concurrenthashmap--classroom-overview) | Reads vs writes, concurrency level **16**, constructors |
+| [Type hierarchy](#type-hierarchy-map--concurrentmap--concurrenthashmap) | `Map` → `ConcurrentMap` → `ConcurrentHashMap` |
+| [Demo classes](#how-concurrentmapjava-and-concurrenthashmapjava-run) | Same pipeline, different `collectionType` string |
+| [`ConcurrentMap` API](#concurrentmap-interface-atomic-check-then-act) | `putIfAbsent`, conditional `remove`, vs plain `put` |
+| [Internal buckets](#concurrenthashmap-internal-structure-jdk-8) | Bucket array, chains, tree bins, CAS + bin locks |
+| [Bucket lock vs whole-map lock](#bucket-level-lock-vs-whole-collection-lock) | `Hashtable` / `synchronizedMap` vs `ConcurrentHashMap` |
+| [HashMap vs CHM](concurrentHashMap.md) | Classroom comparison slide, CME flows, null rules |
+| [Run commands](#run-the-demos) | Compile and execute both mains |
 
 ---
 
@@ -60,15 +61,15 @@ The slide below is the **high-level story** for interviews: hash-table layout, *
 
 ### Slide points → precise behavior
 
-| Classroom note                                 | Meaning                                                                                                                                                                                                                                                                                                                                                                      |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Underlying DS is **Hashtable**-style           | **Array of buckets** + chaining (like `Hashtable` / `HashMap`), **not** the legacy `java.util.Hashtable` class. `ConcurrentHashMap` is its own implementation in `java.util.concurrent`.                                                                                                                                                                                     |
-| **Concurrent reads** + **thread-safe updates** | Many threads can read; structural updates are coordinated so the table stays consistent.                                                                                                                                                                                                                                                                                     |
-| **Read:** no lock                              | Reads do **not** take the **whole-map** monitor (contrast `Hashtable`). Implementation uses `volatile`/safe publication so readers typically do not block writers on the entire table.                                                                                                                                                                                       |
-| **Update:** **bucket-level lock**              | Writers lock only the **relevant part** of the table (a **bin** in JDK 8+), not every other bucket.                                                                                                                                                                                                                                                                          |
-| **Concurrency level** (default **16**)         | Constructor parameter: map is treated as **several portions** so up to **16 update paths** can proceed without all piling onto one global lock. **Java 7 and earlier:** literal **`Segment[]`** of that size. **Java 8+:** **per-bin** locking/CAS; `concurrencyLevel` is still a sizing hint in the API, but the mental model “~16 independent write lanes” remains useful. |
-| **`null` key / value**                         | **Not allowed** — `NullPointerException` (stricter than `HashMap`).                                                                                                                                                                                                                                                                                                          |
-| **Iteration**                                  | **Fail-safe / weakly consistent:** one thread may iterate while another updates; **no** `ConcurrentModificationException` (see [hub](concurrentCollections.md#threaddemojava--complete-execution-flow) for the fail-fast `ArrayList` case).                                                                                                                                  |
+| Classroom note | Meaning |
+| -------------- | ------- |
+| Underlying DS is **Hashtable**-style | **Array of buckets** + chaining (like `Hashtable` / `HashMap`), **not** the legacy `java.util.Hashtable` class. `ConcurrentHashMap` is its own implementation in `java.util.concurrent`. |
+| **Concurrent reads** + **thread-safe updates** | Many threads can read; structural updates are coordinated so the table stays consistent. |
+| **Read:** no lock | Reads do **not** take the **whole-map** monitor (contrast `Hashtable`). Implementation uses `volatile`/safe publication so readers typically do not block writers on the entire table. |
+| **Update:** **bucket-level lock** | Writers lock only the **relevant part** of the table (a **bin** in JDK 8+), not every other bucket. |
+| **Concurrency level** (default **16**) | Constructor parameter: map is treated as **several portions** so up to **16 update paths** can proceed without all piling onto one global lock. **Java 7 and earlier:** literal **`Segment[]`** of that size. **Java 8+:** **per-bin** locking/CAS; `concurrencyLevel` is still a sizing hint in the API, but the mental model “~16 independent write lanes” remains useful. |
+| **`null` key / value** | **Not allowed** — `NullPointerException` (stricter than `HashMap`). |
+| **Iteration** | **Fail-safe / weakly consistent:** one thread may iterate while another updates; **no** `ConcurrentModificationException` (see [hub](concurrentCollections.md#threaddemojava--complete-execution-flow) for the fail-fast `ArrayList` case). |
 
 ```mermaid
 flowchart TB
@@ -109,13 +110,13 @@ pie showData
 
 ### Constructors (from slide + demo)
 
-| #   | Constructor                                                             | Defaults / notes                                                                                                                                                                |
-| --- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `new ConcurrentHashMap<>()`                                             | Initial capacity **16**, load factor **0.75**, concurrency level **16**                                                                                                         |
-| 2   | `new ConcurrentHashMap<>(initialCapacity)`                              | Custom starting bucket table size                                                                                                                                               |
-| 3   | `new ConcurrentHashMap<>(initialCapacity, fillRatio)`                   | Custom capacity + load factor                                                                                                                                                   |
-| 4   | `new ConcurrentHashMap<>(initialCapacity, fillRatio, concurrencyLevel)` | e.g. demo uses `(128, 0.75f, 16)` — see [`demonstrateConcurrentHashMapConstructors`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMapDemo.java) |
-| 5   | `new ConcurrentHashMap<>(Map m)`                                        | Copy mappings from an existing `Map`                                                                                                                                            |
+| # | Constructor | Defaults / notes |
+| - | ----------- | ---------------- |
+| 1 | `new ConcurrentHashMap<>()` | Initial capacity **16**, load factor **0.75**, concurrency level **16** |
+| 2 | `new ConcurrentHashMap<>(initialCapacity)` | Custom starting bucket table size |
+| 3 | `new ConcurrentHashMap<>(initialCapacity, fillRatio)` | Custom capacity + load factor |
+| 4 | `new ConcurrentHashMap<>(initialCapacity, fillRatio, concurrencyLevel)` | e.g. demo uses `(128, 0.75f, 16)` — see [`demonstrateConcurrentHashMapConstructors`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMapDemo.java) |
+| 5 | `new ConcurrentHashMap<>(Map m)` | Copy mappings from an existing `Map` |
 
 ```java
 // Slide-style defaults (constructor 1)
@@ -149,11 +150,11 @@ flowchart TD
   S2 --> S3["concurrentMapLoadFactor(type)"]
 ```
 
-| Step | Method                     | `ConcurrentMap`                                                                              | `ConcurrentHashMap`                                                                      |
-| ---- | -------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| 1    | `concurrentCollectionType` | `demonstrateConcurrentMap()` — interface ref backed by **`new ConcurrentHashMap<>()`**       | `demonstrateConcurrentHashMap()` — concrete map                                          |
-| 2    | `concurrentConstructors`   | Shows **cannot** `new ConcurrentMap()`; uses `ConcurrentHashMap` and `ConcurrentSkipListMap` | Five constructors (default, capacity, copy, capacity + load factor, + concurrency level) |
-| 3    | `concurrentMapLoadFactor`  | Message: load factor **depends on implementation**                                           | Default load factor **0.75**                                                             |
+| Step | Method | `ConcurrentMap` | `ConcurrentHashMap` |
+| ---- | ------ | --------------- | ------------------- |
+| 1 | `concurrentCollectionType` | `demonstrateConcurrentMap()` — interface ref backed by **`new ConcurrentHashMap<>()`** | `demonstrateConcurrentHashMap()` — concrete map |
+| 2 | `concurrentConstructors` | Shows **cannot** `new ConcurrentMap()`; uses `ConcurrentHashMap` and `ConcurrentSkipListMap` | Five constructors (default, capacity, copy, capacity + load factor, + concurrency level) |
+| 3 | `concurrentMapLoadFactor` | Message: load factor **depends on implementation** | Default load factor **0.75** |
 
 ### Shared operation sequence (`demonstrateConcurrent*`)
 
@@ -207,9 +208,9 @@ flowchart TD
   B -- Yes --> E["return existing value"]
 ```
 
-| Method                        | If key already exists                            |
-| ----------------------------- | ------------------------------------------------ |
-| **`put(key, value)`**         | **Replaces** old value; returns **old** value    |
+| Method | If key already exists |
+| ------ | --------------------- |
+| **`put(key, value)`** | **Replaces** old value; returns **old** value |
 | **`putIfAbsent(key, value)`** | **Does not** replace; returns **existing** value |
 
 **Classroom trace** (from slides; keys are `Integer`, values `String`):
@@ -264,13 +265,13 @@ flowchart LR
   B5 --> T["TreeBin (red-black) when chain is long"]
 ```
 
-| Part                       | Role                                                                                                                                       |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`table`**                | Array of bucket heads; index from spread hash and `(length - 1)`                                                                           |
-| **`Node`**                 | Singly linked list of entries in one bin (key, value, hash, `next`)                                                                        |
-| **`TreeBin` / tree nodes** | When a bin’s list grows past the threshold and the table is large enough, the bin becomes a **balanced tree** (like `HashMap` treeify)     |
-| **CAS**                    | Threads can often install the **first** node in an empty bin without locking the whole map                                                 |
-| **Bin lock**               | Updates to a non-empty bin typically **synchronize on the first node** of that bin (lock **striping** per bucket, not one global map lock) |
+| Part | Role |
+| ---- | ---- |
+| **`table`** | Array of bucket heads; index from spread hash and `(length - 1)` |
+| **`Node`** | Singly linked list of entries in one bin (key, value, hash, `next`) |
+| **`TreeBin` / tree nodes** | When a bin’s list grows past the threshold and the table is large enough, the bin becomes a **balanced tree** (like `HashMap` treeify) |
+| **CAS** | Threads can often install the **first** node in an empty bin without locking the whole map |
+| **Bin lock** | Updates to a non-empty bin typically **synchronize on the first node** of that bin (lock **striping** per bucket, not one global map lock) |
 
 ### How a key picks a bin
 
@@ -315,10 +316,10 @@ See **[Bucket-level lock vs whole-collection lock](#bucket-level-lock-vs-whole-c
 
 ### Collision → list → tree
 
-| Stage                                        | Structure                 | Lookup cost in that bin |
-| -------------------------------------------- | ------------------------- | ----------------------- |
-| Few keys in bin                              | Linked **`Node`** chain   | O(chain length)         |
-| Chain length ≥ **8** and table size ≥ **64** | **`TreeBin`** (red-black) | O(log n) in that bin    |
+| Stage | Structure | Lookup cost in that bin |
+| ----- | --------- | ------------------------ |
+| Few keys in bin | Linked **`Node`** chain | O(chain length) |
+| Chain length ≥ **8** and table size ≥ **64** | **`TreeBin`** (red-black) | O(log n) in that bin |
 
 ```mermaid
 stateDiagram-v2
@@ -351,11 +352,11 @@ sequenceDiagram
 
 ### Resize and load factor
 
-| Constant (typical)           | Meaning                                                             |
-| ---------------------------- | ------------------------------------------------------------------- |
-| Default **initial capacity** | **16** bins (power of two)                                          |
-| Default **load factor**      | **0.75** — resize when `size > capacity × loadFactor`               |
-| **Treeify threshold**        | **8** nodes in one bin (with minimum table size **64** for treeify) |
+| Constant (typical) | Meaning |
+| ------------------ | ------- |
+| Default **initial capacity** | **16** bins (power of two) |
+| Default **load factor** | **0.75** — resize when `size > capacity × loadFactor` |
+| **Treeify threshold** | **8** nodes in one bin (with minimum table size **64** for treeify) |
 
 The demo’s constructor `new ConcurrentHashMap<>(128, 0.75f, 16)` sets **initial capacity**, **load factor**, and a **concurrency-level hint** (legacy parameter from older APIs; on JDK 8+ it still influences internal sizing expectations but the segment array is gone).
 
@@ -452,14 +453,14 @@ sequenceDiagram
 
 ### Comparison table
 
-| Aspect                              | Whole-collection lock (`Hashtable`, `synchronizedMap`, `Vector`, …)                                                              | Bucket-level / fine-grained (`ConcurrentHashMap`)                                    |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **What is locked**                  | The **entire** collection instance (`synchronized (this)`)                                                                       | Typically the **first node** of one **bin** (or CAS into an empty bin)               |
-| **Parallel puts on different keys** | **Serialized** — second thread waits on the map monitor                                                                          | **Often parallel** if keys land in **different** bins                                |
-| **Parallel puts on same bucket**    | Still one-at-a-time (whole map)                                                                                                  | Still one-at-a-time **for that bin**                                                 |
-| **Read + write**                    | `Hashtable`: reads also synchronized; `synchronizedMap`: reads must use manual `synchronized(map)` during iteration per JDK docs | Reads often proceed without locking the whole table; writes touch only relevant bins |
-| **Scalability**                     | Throughput **drops** as thread count grows (lock becomes a bottleneck)                                                           | Designed for **many threads** updating disjoint keys                                 |
-| **Iterator**                        | Fail-fast if unsynchronized read races with write (CME on non-concurrent structures)                                             | Weakly consistent; no CME on iterator from concurrent updates                        |
+| Aspect | Whole-collection lock (`Hashtable`, `synchronizedMap`, `Vector`, …) | Bucket-level / fine-grained (`ConcurrentHashMap`) |
+| ------ | --------------------------------------------------------------------- | ------------------------------------------------- |
+| **What is locked** | The **entire** collection instance (`synchronized (this)`) | Typically the **first node** of one **bin** (or CAS into an empty bin) |
+| **Parallel puts on different keys** | **Serialized** — second thread waits on the map monitor | **Often parallel** if keys land in **different** bins |
+| **Parallel puts on same bucket** | Still one-at-a-time (whole map) | Still one-at-a-time **for that bin** |
+| **Read + write** | `Hashtable`: reads also synchronized; `synchronizedMap`: reads must use manual `synchronized(map)` during iteration per JDK docs | Reads often proceed without locking the whole table; writes touch only relevant bins |
+| **Scalability** | Throughput **drops** as thread count grows (lock becomes a bottleneck) | Designed for **many threads** updating disjoint keys |
+| **Iterator** | Fail-fast if unsynchronized read races with write (CME on non-concurrent structures) | Weakly consistent; no CME on iterator from concurrent updates |
 
 ### How much of the map is “hot” under contention?
 
@@ -484,11 +485,11 @@ Every `put` / `remove` synchronizes on **`m`**. You also must manually synchroni
 
 ### When bucket locking does not help
 
-| Situation                               | Effect                                                                                                   |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Many keys collide** into the same bin | Threads pile up on **one** bin lock (same as a hot global lock for those keys)                           |
-| **Resize / rehash**                     | Must coordinate updating the **whole** table; threads may help transfer bins, but this is a global phase |
-| **Bad hash distribution**               | Few bins hold most entries → less parallelism                                                            |
+| Situation | Effect |
+| --------- | ------ |
+| **Many keys collide** into the same bin | Threads pile up on **one** bin lock (same as a hot global lock for those keys) |
+| **Resize / rehash** | Must coordinate updating the **whole** table; threads may help transfer bins, but this is a global phase |
+| **Bad hash distribution** | Few bins hold most entries → less parallelism |
 
 ### Takeaway
 
@@ -499,9 +500,9 @@ Every `put` / `remove` synchronizes on **`m`**. You also must manually synchroni
 
 ## Relation to this repo’s demos
 
-| File                     | `main` calls          | Backing type in `demonstrate*`                                     |
-| ------------------------ | --------------------- | ------------------------------------------------------------------ |
-| `concurrentMap.java`     | `"ConcurrentMap"`     | `ConcurrentMap<String,String> map = new ConcurrentHashMap<>()`     |
+| File | `main` calls | Backing type in `demonstrate*` |
+| ---- | ------------ | ------------------------------ |
+| `concurrentMap.java` | `"ConcurrentMap"` | `ConcurrentMap<String,String> map = new ConcurrentHashMap<>()` |
 | `concurrentHashMap.java` | `"ConcurrentHashMap"` | `ConcurrentHashMap<String,String> map = new ConcurrentHashMap<>()` |
 
 [`concurrentCollectionTypeInspector.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentCollectionTypeInspector.java) prints load-factor notes for the selected label when the launcher reaches step 3.
@@ -524,5 +525,6 @@ java -cp /tmp/cmap com.concurrentCollection.concurrentMap.concurrentHashMap
 
 ## See also
 
+- [concurrentHashMap.md](concurrentHashMap.md) — **HashMap vs ConcurrentHashMap** (classroom comparison table + diagrams)
 - Hub: [concurrentCollections.md](concurrentCollections.md) — `threadDemo` and `ConcurrentModificationException`
 - Legacy synchronized buckets: [hashTable.md](../collection/hashTable.md)
