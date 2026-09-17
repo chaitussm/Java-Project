@@ -14,6 +14,8 @@
 | [Copy-on-write mechanism](#copy-on-write-mechanism)      | Clone on update; reads unaffected              |
 | [Slide properties](#properties-from-classroom-notes)     | Ordering, nulls, interfaces, cost              |
 | [Fail-safe iteration](#fail-safe-iteration-vs-arraylist) | No CME; iterator cannot remove                 |
+| [ArrayList vs COW (slide)](#arraylist-vs-copyonwritearraylist-classroom-comparison) | Thread safety, iterator, remove, since 1.2 / 1.5 |
+| [COW vs sync list vs Vector](#copyonwritearraylist-vs-synchronizedlist-vs-vector) | Three thread-safe list styles compared         |
 | [Classroom execution (A,B,C + D)](#classroom-execution-add-after-iterator) | Slide program — full flow, output **A B C** |
 | [`unsupportedOperationexception.java`](#unsupportedoperationexception-demo) | Why `iterator.remove()` throws               |
 | [Multi-thread demo](#multi-thread-execution-copyonwritealdemo) | `copyOnWriteAlDemo` + timeline                 |
@@ -175,6 +177,183 @@ flowchart TD
 ```
 
 Deep dive with more examples: [Fail-fast vs fail-safe iterators](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) (Example 5 uses `CopyOnWriteArrayList`).
+
+---
+
+## ArrayList vs CopyOnWriteArrayList (classroom comparison)
+
+<p align="center">
+  <img src="images/arrayList-vs-copyOnWriteArrayList-comparison.png" alt="Differences between ArrayList and CopyOnWriteArrayList — thread safety, iteration, iterators, remove, Java version" width="820" />
+</p>
+
+*Figure: classroom slide (clarified below — `CopyOnWriteArrayList` **is** thread-safe via copy-on-write, not “unsafe”).*
+
+| Topic | `ArrayList` | `CopyOnWriteArrayList` |
+| ----- | ----------- | ---------------------- |
+| **Thread safety** | **Not** thread-safe for shared mutation | **Thread-safe** — each **update** clones the backing array; readers use current or snapshot refs |
+| **Slide wording** | — | Slide says “not thread safe” while describing **cloned copy** updates → means **no single global lock**; the class **is** designed for concurrent access |
+| **Modify while iterating** | Other threads (or same thread) must not structurally modify → **`ConcurrentModificationException`** | Other threads **may** modify; **no CME** — iterator uses **snapshot** |
+| **Iterator type** | **Fail-fast** | **Fail-safe** (snapshot / weak view) |
+| **`iterator.remove()`** | **Supported** (with fail-fast rules) | **`UnsupportedOperationException`** — use `list.remove(...)` |
+| **Since** | Java **1.2** | Java **1.5** (`java.util.concurrent`) |
+
+```mermaid
+flowchart TD
+  Q["Shared list accessed by multiple threads?"]
+  Q -- No --> AL["ArrayList"]
+  Q -- Yes --> COW["CopyOnWriteArrayList<br/>(or external sync)"]
+
+  AL --> ALI["iterator + concurrent add"]
+  ALI --> CME["ConcurrentModificationException"]
+
+  COW --> COWI["iterator + concurrent add"]
+  COWI --> SNAP["Iterator on old snapshot — no CME"]
+```
+
+```mermaid
+sequenceDiagram
+  participant T1 as Thread 1 (iterator)
+  participant AL as ArrayList
+  participant T2 as Thread 2
+
+  T1->>AL: iterator()
+  T2->>AL: add(x)
+  T1->>AL: next()
+  AL-->>T1: ConcurrentModificationException
+```
+
+```mermaid
+sequenceDiagram
+  participant T1 as Thread 1 (iterator)
+  participant COW as CopyOnWriteArrayList
+  participant T2 as Thread 2
+
+  T1->>COW: iterator() snapshot
+  T2->>COW: add(x) new array copy
+  T1->>COW: next()
+  Note over T1,COW: continues — fail-safe
+```
+
+```mermaid
+pie showData
+    title Iterator behavior (classroom slide)
+    "ArrayList — fail-fast (CME)" : 50
+    "CopyOnWriteArrayList — fail-safe" : 50
+```
+
+---
+
+## CopyOnWriteArrayList vs `synchronizedList()` vs `Vector`
+
+Three ways to share a **thread-safe** `List`. Only **`CopyOnWriteArrayList`** uses **copy-on-write**; **`Collections.synchronizedList`** and **`Vector`** lock the **whole** list.
+
+<p align="center">
+  <img src="images/copyOnWriteArrayList-synchronizedList-vector-comparison.png" alt="Differences between CopyOnWriteArrayList, synchronizedList, and Vector" width="860" />
+</p>
+
+| Topic | `CopyOnWriteArrayList` | `Collections.synchronizedList(list)` | `Vector` |
+| ----- | ---------------------- | ------------------------------------ | -------- |
+| **How thread safety is achieved** | **Clone** backing array on each update; publish new ref | **One monitor** on wrapper — one thread in synced API at a time | **Synchronized** methods on **whole** `Vector` |
+| **Concurrency** | **Many** threads can read; writes copy array; iterators on snapshots | **One** thread at a time for operations | **One** thread at a time |
+| **Iterate + other thread modifies** | **Allowed** — **no** `ConcurrentModificationException` | **CME** if another thread modifies without syncing on same monitor | **CME** (fail-fast) |
+| **Iterator** | **Fail-safe** | **Fail-fast** | **Fail-fast** |
+| **`iterator.remove()`** | **`UnsupportedOperationException`** | **Supported** (sync rules apply) | **Supported** |
+| **Since** | Java **1.5** | Java **1.2** | Java **1.0** (legacy) |
+
+```mermaid
+flowchart TB
+  subgraph cow ["CopyOnWriteArrayList"]
+    W1["write: clone array → mutate → publish"]
+    R1["read / iterate: no whole-list lock"]
+  end
+
+  subgraph sync ["synchronizedList / Vector"]
+    W2["any operation"]
+    W2 --> L["lock entire list object"]
+    L --> U2["update or read"]
+  end
+```
+
+### Write path (flow)
+
+```mermaid
+flowchart LR
+  subgraph COWwrite ["CopyOnWriteArrayList add/remove"]
+    A1["lock briefly for write"] --> A2["copy array"]
+    A2 --> A3["change copy"]
+    A3 --> A4["assign new array ref"]
+  end
+
+  subgraph Syncwrite ["synchronizedList / Vector put"]
+    B1["synchronized list"] --> B2["single thread only"]
+    B2 --> B3["mutate backing store"]
+  end
+```
+
+### Iteration + concurrent modification
+
+```mermaid
+flowchart TD
+  Iter["Thread 1: iterating"]
+
+  Iter --> COWp["CopyOnWriteArrayList"]
+  COWp --> OK["Thread 2: list.add OK<br/>no CME"]
+
+  Iter --> Syncp["synchronizedList or Vector"]
+  Syncp --> Bad["Thread 2: structural change"]
+  Bad --> CME["Fail-fast → CME"]
+```
+
+```mermaid
+sequenceDiagram
+  participant A as Thread A (iterator)
+  participant B as Thread B
+  participant L as synchronizedList / Vector
+
+  A->>L: iterator()
+  B->>L: add without holding list lock
+  A->>L: next()
+  L-->>A: ConcurrentModificationException
+```
+
+```mermaid
+pie showData
+    title Lock scope for typical read loop
+    "COW — iterate snapshot, writers copy elsewhere" : 40
+    "sync list / Vector — must sync on list for safe iteration" : 35
+    "COW — iterator.remove blocked" : 25
+```
+
+### Iterator `remove`
+
+| Call | `CopyOnWriteArrayList` | `synchronizedList` / `Vector` |
+| ---- | ---------------------- | ------------------------------ |
+| `iterator.remove()` | **`UnsupportedOperationException`** | Works if iteration is properly synchronized |
+| Preferred remove | `list.remove(element)` | `iterator.remove()` or `list.remove` inside `synchronized (list)` |
+
+```mermaid
+flowchart LR
+  IR["iterator.remove()"] --> COW["COW → UnsupportedOperationException"]
+  IR --> SV["sync list / Vector → OK if synced"]
+```
+
+### Which list to choose?
+
+```mermaid
+flowchart TD
+  Need["Thread-safe List?"] --> Read{"Reads ≫ writes?"}
+  Read -- Yes --> COW2["CopyOnWriteArrayList"]
+  Read -- No --> Legacy{"Legacy API?"}
+  Legacy -- Vector --> V["Avoid Vector in new code"]
+  Legacy -- No --> SL["synchronizedList — low contention only"]
+  COW2 --> NoItrRemove["Do not use iterator.remove"]
+```
+
+| Choose | When |
+| ------ | ---- |
+| **`CopyOnWriteArrayList`** | Many concurrent **reads** / iterations, rare **writes**, tolerate snapshot iterators |
+| **`Collections.synchronizedList`** | Wrap existing `ArrayList`; low thread contention; manual sync during iteration |
+| **`Vector`** | **Legacy only** — prefer COW or sync wrapper patterns in new code |
 
 ---
 
@@ -426,7 +605,7 @@ it.remove(); // UnsupportedOperationException
 
 ---
 
-## Compare with related types
+## Compare with related types (quick reference)
 
 | Type                             | Iterator                          | Write cost      | Best for                     |
 | -------------------------------- | --------------------------------- | --------------- | ---------------------------- |
@@ -434,6 +613,8 @@ it.remove(); // UnsupportedOperationException
 | **`Vector` / synchronized list** | Fail-fast                         | Whole-list lock | Legacy                       |
 | **`CopyOnWriteArrayList`**       | Fail-safe snapshot                | Copy array      | **Read-mostly** shared lists |
 | **`ConcurrentHashMap`**          | Weakly consistent (map, not list) | Bin-level       | Shared maps                  |
+
+See detailed slide tables: [ArrayList vs COW](#arraylist-vs-copyonwritearraylist-classroom-comparison), [COW vs sync vs Vector](#copyonwritearraylist-vs-synchronizedlist-vs-vector).
 
 ---
 
