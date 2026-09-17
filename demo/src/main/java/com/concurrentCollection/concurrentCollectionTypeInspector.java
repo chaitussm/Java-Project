@@ -65,14 +65,23 @@ public class concurrentCollectionTypeInspector {
     public static void printLoadFactorDetails(String collectionType) {
         switch (collectionType) {
             case "ConcurrentHashMap":
-                System.out.println("ConcurrentHashMap has a default load factor of 0.75");
+                // Hash-based sets use a HashMap or LinkedHashMap table with default load factor
+                // 0.75.
+                printLoadFactor(collectionType, 16, 0.75f, "rehash when size reaches the threshold");
+
                 break;
             case "ConcurrentSkipListMap":
-                System.out.println("ConcurrentSkipListMap does not have a load factor");
+                // Hash-based sets use a HashMap or LinkedHashMap table with default load factor
+                // 0.75.
+                printLoadFactor(collectionType, 16, 0.75f, "rehash when size reaches the threshold");
+
                 break;
             case "ConcurrentMap":
-                System.out.println("ConcurrentMap load factor depends on the underlying implementation");
+                // Hash-based sets use a HashMap or LinkedHashMap table with default load factor
+                // 0.75.
+                printLoadFactor(collectionType, 16, 0.75f, "rehash when size reaches the threshold");
                 break;
+
             default:
                 throw new IllegalArgumentException("Load factor is not applicable to: " + collectionType);
         }
@@ -90,6 +99,8 @@ public class concurrentCollectionTypeInspector {
                 return "ConcurrentSkipListMap";
             case "concurrentmap":
                 return "ConcurrentMap";
+            case "copyonwritearraylist":
+                return "CopyOnWriteArrayList";
             default:
                 throw new IllegalArgumentException("Unknown data structure: " + dataStructure);
         }
@@ -143,6 +154,29 @@ public class concurrentCollectionTypeInspector {
         System.out.println("--------------------------");
     }
 
+    // Prints capacity, tuning, API, and behavior information for each requested
+    // implementation.
+    public static void printDefaultCapacitySummary(String... dataStructures) {
+        if (dataStructures == null || dataStructures.length == 0) {
+            throw new IllegalArgumentException("Provide at least one supported data structure.");
+        }
+
+        for (String dataStructure : dataStructures) {
+            String supportedType = normalizeDataStructure(dataStructure);
+            Class<?> structureClass = resolveDataStructureClass(supportedType);
+
+            System.out.println("===== " + supportedType + " Details =====");
+            printTypeInfo(structureClass);
+            printDefaultInitialCapacity(supportedType);
+            if (usesLoadFactor(supportedType)) {
+                printLoadFactorDetails(supportedType);
+            }
+            printPublicMethods(structureClass);
+            printBehaviorSummary(supportedType);
+            System.out.println("====================================");
+        }
+    }
+
     private static void printBehaviorSummary(String dataStructure) {
         System.out.println("----- Summary -----");
         switch (dataStructure) {
@@ -154,6 +188,10 @@ public class concurrentCollectionTypeInspector {
                 break;
             case "ConcurrentMap":
                 System.out.println("  Interface for thread-safe maps; ConcurrentHashMap is a common implementation.");
+                break;
+            case "CopyOnWriteArrayList":
+                System.out.println(
+                        "  Thread-safe variant of ArrayList; all mutative operations are implemented by making a fresh copy of the underlying array.");
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported data structure: " + dataStructure);

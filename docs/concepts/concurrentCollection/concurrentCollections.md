@@ -1,11 +1,11 @@
 # Concurrent collections hub
 
-| Guide | Topics |
-| ----- | ------ |
-| **This file** | **Fail-fast vs fail-safe iterators**, `ConcurrentModificationException`, comparisons |
-| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | **Copy-on-write** mechanism, fail-safe iterator, read-heavy use cases |
-| **[concurrentHashMap.md](concurrentHashMap.md)** | **`HashMap` vs `ConcurrentHashMap`**; **CHM vs `synchronizedMap` vs `Hashtable`**; iterators |
-| **[concurrentMap.md](concurrentMap.md)** | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
+| Guide                                                  | Topics                                                                                                      |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **This file**                                          | **Fail-fast vs fail-safe iterators**, `ConcurrentModificationException`, comparisons                        |
+| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | **Copy-on-write** mechanism, fail-safe iterator, read-heavy use cases                                       |
+| **[concurrentHashMap.md](concurrentHashMap.md)**       | **`HashMap` vs `ConcurrentHashMap`**; **CHM vs `synchronizedMap` vs `Hashtable`**; iterators                |
+| **[concurrentMap.md](concurrentMap.md)**               | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
 
 > Fail-fast demo: [`threadDemo.java`](../../../demo/src/main/java/com/concurrentCollection/ConcurrentModificationException/threadDemo.java) · Concurrent maps: [`concurrentMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMap.java) · [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java)
 
@@ -13,11 +13,11 @@
 
 ## Why concurrent collections matter
 
-| Issue                   | Non-concurrent collections                                              | `java.util.concurrent` collections                             |
-| ----------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
-| Thread safety           | Most structures are **not** safe for unsynchronized multi-thread access | Designed for **concurrent** read/write                         |
+| Issue                   | Non-concurrent collections                                                                                                                               | `java.util.concurrent` collections                                                                                           |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Thread safety           | Most structures are **not** safe for unsynchronized multi-thread access                                                                                  | Designed for **concurrent** read/write                                                                                       |
 | Legacy sync wrappers    | `Collections.synchronized*` locks the **whole** collection — see [bucket vs whole-map lock](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) | Per-bin locks / CAS (e.g. `ConcurrentHashMap`) — [same section](concurrentMap.md#bucket-level-lock-vs-whole-collection-lock) |
-| Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException`            | Iterators designed for weak consistency / no CME in many cases |
+| Iterator + modification | **Fail-fast** `Iterator` → `ConcurrentModificationException`                                                                                             | Iterators designed for weak consistency / no CME in many cases                                                               |
 
 Point **3** is exactly what `threadDemo` demonstrates on a plain **`ArrayList`**.
 
@@ -202,9 +202,9 @@ mvn -q exec:java -Dexec.mainClass=com.concurrentCollection.ConcurrentModificatio
 
 ## Fail-fast vs fail-safe iterators (with examples)
 
-| Term | What it means | Typical types |
-| ---- | ------------- | ------------- |
-| **Fail-fast** | If the collection is **structurally modified** while you iterate (add/remove, not `iterator.remove()`), the **next** iterator step throws **`ConcurrentModificationException`**. | `ArrayList`, `HashMap`, `HashSet`, most `java.util` collections |
+| Term                           | What it means                                                                                                                                                                            | Typical types                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Fail-fast**                  | If the collection is **structurally modified** while you iterate (add/remove, not `iterator.remove()`), the **next** iterator step throws **`ConcurrentModificationException`**.         | `ArrayList`, `HashMap`, `HashSet`, most `java.util` collections         |
 | **Fail-safe** (classroom name) | Iterator keeps going; **no CME**. You may see a **snapshot** or **weak** view — not guaranteed to include every change made while you iterate. JDK docs often say **weakly consistent**. | `ConcurrentHashMap`, `CopyOnWriteArrayList`, `ConcurrentLinkedQueue`, … |
 
 ```mermaid
@@ -411,12 +411,12 @@ pie showData
 
 ### Quick comparison
 
-| Question | Fail-fast | Fail-safe / weakly consistent |
-| -------- | --------- | ------------------------------ |
-| Throws CME on concurrent structural change? | **Yes** | **No** |
-| Safe to share map/list unsynchronized? | **No** (for writers) | **Yes** (for designed concurrent types) |
-| Iterator sees all concurrent adds? | N/A (fails first) | **Not guaranteed** |
-| Fix for `ArrayList` / `HashMap` | Do not modify while iterating; sync externally | Use `java.util.concurrent` type |
+| Question                                    | Fail-fast                                      | Fail-safe / weakly consistent           |
+| ------------------------------------------- | ---------------------------------------------- | --------------------------------------- |
+| Throws CME on concurrent structural change? | **Yes**                                        | **No**                                  |
+| Safe to share map/list unsynchronized?      | **No** (for writers)                           | **Yes** (for designed concurrent types) |
+| Iterator sees all concurrent adds?          | N/A (fails first)                              | **Not guaranteed**                      |
+| Fix for `ArrayList` / `HashMap`             | Do not modify while iterating; sync externally | Use `java.util.concurrent` type         |
 
 ---
 
@@ -456,9 +456,15 @@ This demo intentionally uses a **non-concurrent** `ArrayList` and two threads so
 
 ## Common concurrent collection types
 
-| Type | Package role |
-| ---- | ------------ |
-| **`ConcurrentHashMap`** | Shared maps; bin-level locking / CAS — see **[concurrentMap.md](concurrentMap.md)** (constructors, `putIfAbsent`, **bucket internals**) |
-| **`CopyOnWriteArrayList`** | Snapshot iterators; copy backing array on write |
-| **`CopyOnWriteArraySet`** | Set view over copy-on-write list |
-| **`ConcurrentSkipListMap` / `ConcurrentSkipListSet`** | Sorted concurrent navigable structures (also covered in [concurrentMap.md](concurrentMap.md) constructors) |
+| Type                                                  | Package role                                                                                                                            |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **`ConcurrentHashMap`**                               | Shared maps; bin-level locking / CAS — see **[concurrentMap.md](concurrentMap.md)** (constructors, `putIfAbsent`, **bucket internals**) |
+| **`CopyOnWriteArrayList`**                            | Snapshot iterators; copy backing array on write                                                                                         |
+| **`CopyOnWriteArraySet`**                             | Set view over copy-on-write list                                                                                                        |
+| **`ConcurrentSkipListMap` / `ConcurrentSkipListSet`** | Sorted concurrent navigable structures (also covered in [concurrentMap.md](concurrentMap.md) constructors)                              |
+
+
+| Collection Class           | Valid Tuning Parameters                                          | Why?                                                                                                                 |
+| :------------------------- | :--------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------- |
+| **`ConcurrentHashMap`**    | `initialCapacity`, `loadFactor` (fill ratio), `concurrencyLevel` | Uses a hash table with bucket chains. Needs thresholds to prevent key collisions.                                    |
+| **`CopyOnWriteArrayList`** | `Collection<? extends E> c` (or empty)                           | Uses an exact-sized array snapshot. It re-allocates an exact-size array on every write, making fill ratios obsolete. |

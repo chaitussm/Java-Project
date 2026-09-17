@@ -6,6 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import com.collection.collectionBaseClasses.CollectionTypeInspector;
+import com.concurrentCollection.concurrentCollectionTypeInspector;
+
 public class concurrentMapDemo {
 
     public static void concurrentCollectionType(String type) {
@@ -140,6 +143,8 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentHashMap() {
 
+        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentHashMap");
+
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
         map.putIfAbsent("key1", "value1");
         map.put("key2", "value2");
@@ -152,6 +157,7 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentSkipListMap() {
 
+        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentSkipListMap");
         ConcurrentSkipListMap<String, String> map = new ConcurrentSkipListMap<>();
         map.putIfAbsent("key1", "value1");
         map.put("key2", "value2");
@@ -164,6 +170,7 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentMap() {
 
+        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentMap");
         ConcurrentMap<String, String> map = new ConcurrentHashMap<>();
         map.putIfAbsent("key1", "value1");
         map.put("key2", "value2");
