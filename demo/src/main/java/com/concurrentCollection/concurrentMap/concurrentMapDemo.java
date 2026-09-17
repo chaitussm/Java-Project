@@ -64,7 +64,8 @@ public class concurrentMapDemo {
         // 1. Default Constructor (Capacity: 16, Fill Ratio/Load Factor: 0.75f,
         // Concurrency Level: 16)
         ConcurrentHashMap<String, Integer> map1 = new ConcurrentHashMap<>();
-        System.out.println(" -> Created empty ConcurrentHashMap (Default settings)");
+        System.out.println(
+                " -> Created empty ConcurrentHashMap (defaults: initial capacity 16, load factor 0.75, concurrency level 16)");
 
         // 2. Initial Capacity Constructor
         ConcurrentHashMap<String, Integer> map2 = new ConcurrentHashMap<>(32);
@@ -76,19 +77,16 @@ public class concurrentMapDemo {
         ConcurrentHashMap<String, Integer> map3 = new ConcurrentHashMap<>(traditionalMap);
         System.out.println(" -> Created from an existing Map instance");
 
-        // 4. Custom Fill Ratio (Load Factor) Constructor
-        // Capacity = 64, Fill Ratio = 0.50f (resizes when map becomes 50% full to
-        // prevent hash collisions)
+        // 4. Initial capacity + load factor (fill ratio) constructor
+        // Threshold for resize ≈ (int)(initialCapacity * loadFactor) — here 64 * 0.50 = 32 entries
         float fillRatio = 0.50f;
         ConcurrentHashMap<String, Integer> map4 = new ConcurrentHashMap<>(64, fillRatio);
-        System.out.println(" -> Created with capacity: 64, custom fill ratio (load factor): " + fillRatio);
+        System.out.println(" -> Created with capacity: 64, custom load factor (fill ratio): " + fillRatio);
 
-        // 5. Full Tuning Constructor with Custom Fill Ratio and Concurrency Level
-        // Capacity = 128, Fill Ratio = 0.75f, Concurrency Level = 32 (optimized for 32
-        // threads writing concurrently)
+        // 5. Initial capacity, load factor, and concurrency level (JDK default level is 16)
         int initialCapacity = 128;
         float customFillRatio = 0.75f;
-        int concurrencyLevel = 32;
+        int concurrencyLevel = 16;
         ConcurrentHashMap<String, Integer> map5 = new ConcurrentHashMap<>(initialCapacity, customFillRatio,
                 concurrencyLevel);
         System.out.println(" -> Created with capacity: " + initialCapacity +
@@ -130,10 +128,9 @@ public class concurrentMapDemo {
         System.out.println("Note: ConcurrentMap is an interface, so it cannot be instantiated directly.");
         System.out.println("Instead, we instantiate its reference using implementing classes:");
 
-        // Instantiating the interface using ConcurrentHashMap (Passing fill ratio and
-        // concurrency levels)
-        ConcurrentMap<String, Integer> concurrentMap1 = new ConcurrentHashMap<>(64, 0.75f, 8);
-        System.out.println(" -> ConcurrentMap reference assigned to a fully configured ConcurrentHashMap instance");
+        // Instantiating the interface using ConcurrentHashMap (typical defaults via no-arg constructor)
+        ConcurrentMap<String, Integer> concurrentMap1 = new ConcurrentHashMap<>();
+        System.out.println(" -> ConcurrentMap reference assigned to a new ConcurrentHashMap instance");
 
         // Instantiating the interface using ConcurrentSkipListMap
         ConcurrentMap<String, Integer> concurrentMap2 = new ConcurrentSkipListMap<>();
