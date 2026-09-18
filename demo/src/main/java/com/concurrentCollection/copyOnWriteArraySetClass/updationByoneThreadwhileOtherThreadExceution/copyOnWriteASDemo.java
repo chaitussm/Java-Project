@@ -4,7 +4,7 @@ import static com.concurrentCollection.copyOnWriteArraySetClass.updationByoneThr
 
 import java.util.Iterator;
 
-public class copyOnWriteAlDemo {
+public class copyOnWriteASDemo {
     public static void main(String[] args) throws InterruptedException {
 
         coal.add("panduraju");

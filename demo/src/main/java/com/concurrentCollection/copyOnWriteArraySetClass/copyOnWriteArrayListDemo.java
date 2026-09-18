@@ -2,7 +2,6 @@ package com.concurrentCollection.copyOnWriteArraySetClass;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.concurrentCollection.concurrentCollectionTypeInspector;

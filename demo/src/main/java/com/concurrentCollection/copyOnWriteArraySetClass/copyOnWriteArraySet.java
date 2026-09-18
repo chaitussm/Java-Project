@@ -1,6 +1,6 @@
 package com.concurrentCollection.copyOnWriteArraySetClass;
 
-public class copyOnWriteArrayList {
+public class copyOnWriteArraySet {
 
     public static void demonstratecopyOnWriteArraySet(String collectionType) {
         copyOnWriteArrayListDemo.concurrentCollectionType(collectionType);
