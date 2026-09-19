@@ -620,6 +620,7 @@ See detailed slide tables: [ArrayList vs COW](#arraylist-vs-copyonwritearraylist
 
 ## See also
 
+- [copyOnWriteArraySet.md](copyOnWriteArraySet.md) — same copy-on-write model for **Set**
 - [unsupportedOperationException.md](unsupportedOperationException.md) — `iterator.remove()` internal flow
 - [concurrentCollections.md](concurrentCollections.md) — hub, `threadDemo`, iterator examples
 - [concurrentHashMap.md](concurrentHashMap.md) — concurrent maps and fail-safe map iteration
