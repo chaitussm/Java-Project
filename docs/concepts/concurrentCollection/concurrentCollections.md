@@ -3,7 +3,8 @@
 | Guide                                                  | Topics                                                                                                      |
 | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | **This file**                                          | **Fail-fast vs fail-safe iterators**, `ConcurrentModificationException`, comparisons                        |
-| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | Copy-on-write, classroom **A,B,C+D** execution, multi-thread demo                                            |
+| **[copyOnWriteArrayList.md](copyOnWriteArrayList.md)** | Copy-on-write list, classroom comparisons, multi-thread demo                                               |
+| **[copyOnWriteArraySet.md](copyOnWriteArraySet.md)** | Thread-safe **Set** via COW list; vs **`synchronizedSet`**                                                 |
 | **[unsupportedOperationException.md](unsupportedOperationException.md)** | Why **`iterator.remove()`** throws on `CopyOnWriteArrayList`                                                 |
 | **[concurrentHashMap.md](concurrentHashMap.md)**       | **`HashMap` vs `ConcurrentHashMap`**; **CHM vs `synchronizedMap` vs `Hashtable`**; iterators                |
 | **[concurrentMap.md](concurrentMap.md)**               | `concurrentMap` / `concurrentHashMap` demos, `ConcurrentMap` API, **ConcurrentHashMap buckets & internals** |
@@ -461,7 +462,7 @@ This demo intentionally uses a **non-concurrent** `ArrayList` and two threads so
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | **`ConcurrentHashMap`**                               | Shared maps; bin-level locking / CAS — see **[concurrentMap.md](concurrentMap.md)** (constructors, `putIfAbsent`, **bucket internals**) |
 | **`CopyOnWriteArrayList`**                            | Snapshot iterators; copy backing array on write                                                                                         |
-| **`CopyOnWriteArraySet`**                             | Set view over copy-on-write list                                                                                                        |
+| **`CopyOnWriteArraySet`**                             | Set over copy-on-write list — **[copyOnWriteArraySet.md](copyOnWriteArraySet.md)**                                                       |
 | **`ConcurrentSkipListMap` / `ConcurrentSkipListSet`** | Sorted concurrent navigable structures (also covered in [concurrentMap.md](concurrentMap.md) constructors)                              |
 
 
