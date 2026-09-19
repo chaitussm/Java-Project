@@ -17,7 +17,7 @@ The following diagram shows the main interfaces, abstract classes, concrete impl
 
 ### ArrayList
 
-**Deep dive:** [`ArrayList<String>` vs raw `ArrayList` — internal structure & generics](arrayList-generics-and-internal-structure.md) (flowcharts, type erasure, `elementData` layout).
+**Deep dive:** [`ArrayList<String>` vs raw `ArrayList` — generics & internals](../generics/generics.md#arraylist-internal-structure-generics-vs-raw) (flowcharts, type erasure, `elementData` layout).
 
 `ArrayList` is the best choice for retrieval operations because `ArrayList` implements the `RandomAccess` interface.
 
