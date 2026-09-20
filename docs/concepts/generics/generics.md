@@ -1,6 +1,6 @@
 # Java Generics
 
-> Copy-friendly guide: type safety, type erasure, **`ArrayList<String>` vs raw `ArrayList`** internals.  
+> Copy-friendly guide: type safety, type erasure, **generic methods that erase to the same signature**, **`ArrayList<String>` vs raw `ArrayList`** internals.  
 > Demo: [`arrayList.java`](../../../demo/src/main/java/com/collection/list/arrayList.java) · Lists: [list.md](../collection/list.md)
 
 The main objectives of generics are to provide **type safety** and to resolve **type-casting** problems.
@@ -16,6 +16,7 @@ The main objectives of generics are to provide **type safety** and to resolve **
 | [Conclusions](#conclusions)                                          | Base type vs type parameter; no primitives                           |
 | [Pre-1.5 `ArrayList`](#pre-15-non-generic-arraylist-api)             | `Object` add/get                                                     |
 | [ArrayList internals](#arraylist-internal-structure-generics-vs-raw) | **`ArrayList<String>`** vs **`ArrayList`** — heap layout, flowcharts |
+| [Method erasure & name clash](#method-overloading-type-erasure-and-name-clash) | Why two `m1(ArrayList&lt;T&gt;)` overloads fail; compile-time internal flow |
 
 ---
 
@@ -269,6 +270,135 @@ pie showData
 | Different memory layout for generic vs raw?     | **No**                           |
 | `ArrayList<String>` uses `String[]` at runtime? | **No** — `Object[]`              |
 | Why use generics?                               | Compile-time safety, fewer casts |
+
+---
+
+## Method overloading, type erasure, and name clash
+
+Generics exist for the **compiler**. After compilation, the JVM sees **raw** types. That is why two methods that differ only by a **type parameter on a parameter** (for example `ArrayList<String>` vs `ArrayList<Integer>`) cannot both exist: after **type erasure** they become the **same method signature**.
+
+### Classroom slide (compile-time flow)
+
+![At compile time: generic methods erase to the same signature — name clash](images/generics-method-erasure-name-clash.png)
+
+*Figure: two `m1` overloads look different in source, but both erase to `m1(ArrayList l)` → compile-time error (CE).*
+
+### Source code that does not compile
+
+```java
+import java.util.ArrayList;
+
+class Test {
+    public void m1(ArrayList<String> l) {
+        // ...
+    }
+
+    public void m1(ArrayList<Integer> l) {
+        // ...
+    }
+}
+```
+
+| What you write (source) | After erasure (what the JVM would need) |
+| ----------------------- | --------------------------------------- |
+| `void m1(ArrayList<String> l)` | `void m1(ArrayList l)` |
+| `void m1(ArrayList<Integer> l)` | `void m1(ArrayList l)` |
+
+**Error (typical):** `name clash: m1(ArrayList<String>) and m1(ArrayList<Integer>) have the same erasure`
+
+### Internal flow at compile time
+
+`javac` does **not** ship separate “generic” and “erased” class files for this case. It must reject the program once erasure would create duplicate methods.
+
+```mermaid
+flowchart TD
+  S["1. Parse & type-check source<br/>with generic syntax"]
+  S --> T["2. Apply type erasure<br/>strip &lt;String&gt;, &lt;Integer&gt;, etc."]
+  T --> R["3. Check erased signatures<br/>for overload rules"]
+  R --> OK{"Duplicate method<br/>after erasure?"}
+  OK -- No --> BYTE["Emit bytecode"]
+  OK -- Yes --> CE["Compile-time error:<br/>name clash / same erasure"]
+  CE -.-> X["Step 3 fails for Test.m1"]
+```
+
+```mermaid
+sequenceDiagram
+  participant Dev as Developer source
+  participant Javac as javac
+  participant Erasure as Type erasure pass
+  participant Sig as Signature check
+  Dev->>Javac: Test with m1(AL String) and m1(AL Integer)
+  Javac->>Javac: Generic type safety on each method body
+  Javac->>Erasure: Replace type args with bounds / Object
+  Erasure->>Sig: Both methods → m1(ArrayList)
+  Sig-->>Dev: CE: same erasure
+```
+
+### Erasure arrows (parameter types only)
+
+```text
+public void m1(ArrayList<String> l)  ──erase──►  public void m1(ArrayList l)
+public void m1(ArrayList<Integer> l) ──erase──►  public void m1(ArrayList l)
+                                                      ▲
+                                                      └── duplicate → CE
+```
+
+### Why runtime cannot tell them apart
+
+At runtime there is **one** `ArrayList` class. Instances do not carry `String` vs `Integer` as part of the method’s parameter type in bytecode.
+
+```mermaid
+flowchart LR
+  subgraph compile ["Compile time (what you see)"]
+    M1["m1(ArrayList&lt;String&gt;)"]
+    M2["m1(ArrayList&lt;Integer&gt;)"]
+  end
+  subgraph runtime ["Runtime (after erasure)"]
+    ONE["Single descriptor: m1(ArrayList)"]
+  end
+  M1 --> ONE
+  M2 --> ONE
+```
+
+```mermaid
+pie showData
+    title Where generic method types matter
+    "Compile-time overload resolution" : 45
+    "Compile-time body type checks" : 35
+    "Runtime method parameter types" : 20
+```
+
+```mermaid
+pie showData
+    title JVM view of ArrayList parameter overloads
+    "Methods that survive erasure as distinct" : 0
+    "Would-be duplicates blocked at compile time" : 100
+```
+
+### What *is* allowed instead
+
+Overload on **different raw or non-generic** parameter types, or use **different method names**. Generic **type parameters on the method itself** (`<T> void m1(T x)` vs `<U> void m1(U x)`) also erase in ways that do not create two `m1(ArrayList)` from the example above—but **two methods whose only difference is `ArrayList<SomeType>` on a parameter** are not allowed.
+
+| Approach | Result |
+| -------- | ------ |
+| `m1(ArrayList<String>)` + `m1(ArrayList<Integer>)` | **Invalid** — same erasure |
+| `m1(List<String>)` + `m1(List<Integer>)` | **Invalid** — same erasure (`List`) |
+| `m1(ArrayList)` + `m1(LinkedList)` | **Valid** — different erased parameter types |
+| `m1Strings(ArrayList<String>)` + `m1Ints(ArrayList<Integer>)` | **Valid** — different method names |
+
+### Link to “generics only at compile time”
+
+The same erasure rule appears later in this guide: sending values between generic and raw areas, wildcards, and bounded types are all checked **before** bytecode is produced. The closing note in [Generic Class & Method](#generic-class--method) applies here as well—**generics syntax is removed as a last compile step**, so the JVM never executes `ArrayList<String>` as a distinct parameter type.
+
+```mermaid
+flowchart TB
+  A["Generic method signatures in .java"]
+  B["javac type checking"]
+  C["Type erasure"]
+  D[".class with raw types + bridges/casts"]
+  E["JVM invokes by erased descriptor"]
+  A --> B --> C --> D --> E
+```
 
 ---
 
