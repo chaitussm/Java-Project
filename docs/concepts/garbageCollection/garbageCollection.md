@@ -1,4 +1,91 @@
-# Introduction 
+# Java Garbage Collection
+
+> Study guide: eligibility rules, JVM stack/heap mechanics, islands of isolation, explicit GC requests, and `finalize()`.  
+> Demos: [`Garbage_Collector.java`](../../../demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java) · [`garbageCollectorWithMap.java`](../../../demo/src/main/java/com/collection/map/garbageCollectorAndMap/garbageCollectorWithMap.java)
+
+> **Navigation:** Use **Ctrl+click** (or Cmd+click on macOS) on any link below to jump to that section in preview.
+
+## Guide map
+
+| Jump to | Section |
+| ------- | ------- |
+| [Introduction](#introduction) | Introduction |
+| [The ways to make an object eligible for garbage coll...](#the-ways-to-make-an-object-eligible-for-garbage-collection) | The ways to make an object eligible for garbage collection |
+| [1.Deep Dive: Nullifying Reference Variables for Garb...](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java) | 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java |
+| [2. Reassigning the reference variable](#2-reassigning-the-reference-variable) | 2. Reassigning the reference variable |
+| [JVM Architecture & Memory Internals: Reassigning Ref...](#jvm-architecture-memory-internals-reassigning-reference-variables) | JVM Architecture & Memory Internals: Reassigning Reference Variables |
+| [Creating Objects inside a method](#creating-objects-inside-a-method) | Creating Objects inside a method |
+| [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method) | JVM Architecture & Memory Internals: Creating Objects Inside a Method |
+| [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation) | 4. JVM Architecture & Memory Internals: The Island of Isolation |
+| [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection) | The methods for requesting JVM to run garbage collection |
+| [Finalization](#finalization) | Finalization |
+| [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc) | Understanding Java Garbage Collection (GC) |
+
+---
+
+<!-- TOC -->
+- [Introduction](#introduction)
+- [The ways to make an object eligible for garbage collection](#the-ways-to-make-an-object-eligible-for-garbage-collection)
+- [1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java)
+  - [Architectural Memory Mechanics: Stack vs. Heap](#architectural-memory-mechanics-stack-vs-heap)
+    - [The Allocation Phase](#the-allocation-phase)
+    - [The Nullification Trigger](#the-nullification-trigger)
+  - [Low-Level JVM Flow: Object Disconnection to Sweep](#low-level-jvm-flow-object-disconnection-to-sweep)
+    - [Architectural Flowchart](#architectural-flowchart)
+    - [Detailed Phase Execution](#detailed-phase-execution)
+  - [Explicit Nullification vs. Natural Out-of-Scope](#explicit-nullification-vs-natural-out-of-scope)
+  - [Edge Cases: When Nullification Fails to Yield GC Eligibility](#edge-cases-when-nullification-fails-to-yield-gc-eligibility)
+    - [Case A: Shared Reference Aliasing](#case-a-shared-reference-aliasing)
+    - [Case B: The Leaked Collection Target](#case-b-the-leaked-collection-target)
+- [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)
+- [JVM Architecture & Memory Internals: Reassigning Reference Variables](#jvm-architecture-memory-internals-reassigning-reference-variables)
+  - [Low-Level Pointer Redirection: Stack vs. Heap](#low-level-pointer-redirection-stack-vs-heap)
+    - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout)
+      - [Phase 1: Initial Allocation](#phase-1-initial-allocation)
+      - [Phase 2: Reassignment Operation (`ref1 = ref2;`)](#phase-2-reassignment-operation-ref1-ref2)
+  - [The JVM Processing Sequence](#the-jvm-processing-sequence)
+  - [Bytecode-Level Execution Mechanics](#bytecode-level-execution-mechanics)
+    - [Key Bytecode Instructions:](#key-bytecode-instructions)
+  - [Object Liveness Graph & Reachability Tracing](#object-liveness-graph-reachability-tracing)
+  - [Architectural Comparison: Reassignment vs. Nullification](#architectural-comparison-reassignment-vs-nullification)
+  - [Advanced Edge Case: The Mutator Write Barrier & Card Tables](#advanced-edge-case-the-mutator-write-barrier-card-tables)
+- [Creating Objects inside a method](#creating-objects-inside-a-method)
+- [JVM Architecture & Memory Internals: Creating Objects Inside a Method](#jvm-architecture-memory-internals-creating-objects-inside-a-method)
+  - [Thread Stack Frame Mechanics & Heap Interaction](#thread-stack-frame-mechanics-heap-interaction)
+    - [Memory Lifecycle Matrix](#memory-lifecycle-matrix)
+      - [Phase 1: Method Execution Active](#phase-1-method-execution-active)
+      - [Phase 2: Method Return / Frame Eviction](#phase-2-method-return-frame-eviction)
+  - [2. The Method Lifecycle Execution Sequence](#2-the-method-lifecycle-execution-sequence)
+  - [Bytecode-Level Method Allocations](#bytecode-level-method-allocations)
+    - [GC Impact of return:](#gc-impact-of-return)
+  - [JIT Compiler Optimization: Escape Analysis & Scalar Replacement](#jit-compiler-optimization-escape-analysis-scalar-replacement)
+    - [The Three Escape States:](#the-three-escape-states)
+    - [Scalar Replacement (Bypassing the Heap)](#scalar-replacement-bypassing-the-heap)
+    - [Architectural Benefit for GC:](#architectural-benefit-for-gc)
+  - [Heap Allocation Optimizations: TLABs](#heap-allocation-optimizations-tlabs)
+- [4. JVM Architecture & Memory Internals: The Island of Isolation](#4-jvm-architecture-memory-internals-the-island-of-isolation)
+  - [Architectural Blueprint: The Cyclic Disconnection](#architectural-blueprint-the-cyclic-disconnection)
+    - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout-1)
+      - [Phase 1: Strong Reachability (Active Links)](#phase-1-strong-reachability-active-links)
+      - [Phase 2: Severing External Ties (`refA = null; refB = null;`)](#phase-2-severing-external-ties-refa-null-refb-null)
+  - [The Isolation Processing & Sweep Sequence](#the-isolation-processing-sweep-sequence)
+  - [Bytecode-Level Structural Graphing](#bytecode-level-structural-graphing)
+    - [Execution Insight:](#execution-insight)
+  - [Modern Tracing GC Roots & Reachability Graph Analysis](#modern-tracing-gc-roots-reachability-graph-analysis)
+    - [The Live-Object Marking Protocol:](#the-live-object-marking-protocol)
+  - [Architectural Memory Traps: Hidden Roots](#architectural-memory-traps-hidden-roots)
+- [The methods for requesting JVM to run garbage collection](#the-methods-for-requesting-jvm-to-run-garbage-collection)
+- [Finalization](#finalization)
+- [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)
+  - [1. How Objects Become Eligible for GC](#1-how-objects-become-eligible-for-gc)
+  - [2. The Garbage Collection Flow](#2-the-garbage-collection-flow)
+  - [3. Comprehensive Java Code Example](#3-comprehensive-java-code-example)
+    - [Expected Output Structure](#expected-output-structure)
+<!-- /TOC -->
+
+---
+
+## Introduction 
 
 In old lanaguages like c++, programmer is responsible to create new object and to destroy useless objects usually programmer taking very much care while creating objects and neglecting destruction of useless objects because of this negligence at certain point for creation of new object 
 sufficient memory may not be available (because total memory filled with useless objects only) and total application will be down with memory problems, hence OutOfMemoryError is very common problem in old languages like c++.
@@ -8,7 +95,7 @@ just because of this assistant the chance of failing java program with memory pr
 
 This assistant is nothing but garbage collector, hence the main objective of the garbage collector is to destroy useless objects
 
-# The ways to make an object eligible for garbage collection 
+## The ways to make an object eligible for garbage collection 
 
 Eventhough programmer is not responsible to destroy useless objects it is gihly recommonded to make an object eligible for garbage collection 
 if it is no longer required
@@ -18,13 +105,13 @@ An object is said to be eligible for garbage collection if an only iff it doesn'
 the following are various ways to make an object eligible for garbage collection 
 
 
-# 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java
+## 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java
 
 This document provides a highly technical, deep-dive architectural analysis of what happens inside the **Java Virtual Machine (JVM)** when a reference variable is explicitly set to `null` to facilitate **Garbage Collection (GC)**.
 
 ---
 
-## Architectural Memory Mechanics: Stack vs. Heap
+### Architectural Memory Mechanics: Stack vs. Heap
 
 To understand nullification, you must look at how the JVM splits memory between the **Java Virtual Machine Stack** and the **Java Heap**.
 
@@ -46,12 +133,12 @@ AFTER NULLIFICATION (`referenceVar = null;`):
                                                   +-------------------------+
 ```
 
-### The Allocation Phase
+#### The Allocation Phase
 When you execute `MyObject obj = new MyObject();`:
 1. **Heap Allocation:** The JVM allocates contiguous space on the heap for the instance data, including its object header (Mark Word and Klass Word).
 2. **Stack Reference:** The address (pointer) of this heap memory location is stored inside a slot in the **Local Variable Table (LVT)** of the executing thread's current Stack Frame.
 
-### The Nullification Trigger
+#### The Nullification Trigger
 When you execute `obj = null;`:
 * **Bytecode Execution:** The JVM executes an `aconst_null` instruction followed by an `astore` instruction matching the LVT slot.
 * **Reference Erasure:** The LVT slot value changes to `0x0` (null pointer). The stack frame **no longer holds a path** to the heap memory address.
@@ -59,11 +146,11 @@ When you execute `obj = null;`:
 
 ---
 
-## Low-Level JVM Flow: Object Disconnection to Sweep
+### Low-Level JVM Flow: Object Disconnection to Sweep
 
 The process from nullification to physical erasure moves through distinct lifecycle phases managed by the JVM Execution Engine.
 
-### Architectural Flowchart
+#### Architectural Flowchart
 ```
 [ Step 1: Thread Executes `obj = null;` ]
                    │
@@ -85,14 +172,14 @@ The process from nullification to physical erasure moves through distinct lifecy
                      [ Step 6: Memory Swept & Reclaimed ]
 ```
 
-### Detailed Phase Execution
+#### Detailed Phase Execution
 1. **Root Tracing Disconnection:** During a GC cycle, the Garbage Collector stops or pauses threads (or traces concurrently) to build a **Liveness Graph** starting from **GC Roots** (Thread local variables, Static variables, JNI global references). Because the stack slot is `0x0`, the tracing algorithm terminates at the stack frame and never visits the orphaned object.
 2. **Marking Phase:** The object is officially classified as **Unreachable**. It is flagged in the GC's internal marking bitmap or allocation region metadata as dead space.
 3. **Reclamation Phase:** Depending on the configured garbage collector (e.g., G1, ZGC), the space occupied by this dead object is either added to a **Free List** or compacted out during a region evacuation.
 
 ---
 
-## Explicit Nullification vs. Natural Out-of-Scope
+### Explicit Nullification vs. Natural Out-of-Scope
 
 Developers often debate whether to write `obj = null;` explicitly or let it happen naturally. The following comparison highlights the compiler and runtime realities.
 
@@ -105,11 +192,11 @@ Developers often debate whether to write `obj = null;` explicitly or let it happ
 
 ---
 
-## Edge Cases: When Nullification Fails to Yield GC Eligibility
+### Edge Cases: When Nullification Fails to Yield GC Eligibility
 
 Setting a reference variable to `null` does **not** guarantee the object will be garbage collected. Below are the structural conditions where memory remains trapped.
 
-### Case A: Shared Reference Aliasing
+#### Case A: Shared Reference Aliasing
 If multiple reference variables point to the exact same heap address, nullifying one variable does nothing to the object's reachability status.
 
 ```java
@@ -120,7 +207,7 @@ alpha = null;                    // Count = 1 (Object is STILL reachable via bet
 // The object remains completely protected from Garbage Collection.
 ```
 
-### Case B: The Leaked Collection Target
+#### Case B: The Leaked Collection Target
 Adding an object to a collection (like a `HashMap` or `ArrayList`) copies the reference into the collection's internal storage structure.
 
 ```java
@@ -133,11 +220,12 @@ data = null;    // Explicitly nullified here...
 // RESULT: The object remains 100% strongly reachable because the 'list' wrapper 
 // maintains its reference path back to the heap object.
 ```
-# 2. Reassigning the reference variable 
+
+## 2. Reassigning the reference variable 
 
 If an object no longer required then reassign its reference variable to some other object then old object by default eligible for garbage collection 
 
-# JVM Architecture & Memory Internals: Reassigning Reference Variables
+## JVM Architecture & Memory Internals: Reassigning Reference Variables
 
 In Java, memory management is governed entirely by the Java Virtual Machine (JVM). One of the core mechanisms for rendering an object eligible for **Garbage Collection (GC)** is the **reassignment of a reference variable**. 
 
@@ -145,7 +233,7 @@ Unlike explicit nullification (which clears a reference slot), reassignment shif
 
 ---
 
-## Low-Level Pointer Redirection: Stack vs. Heap
+### Low-Level Pointer Redirection: Stack vs. Heap
 
 A reference variable in Java is an entry within the **Local Variable Table (LVT)** of an executing thread’s stack frame. The variable does not hold the object data itself; it holds a **memory address (pointer)** pointing to an object allocated on the managed heap.
 
@@ -154,9 +242,9 @@ When a reference variable is reassigned:
 2. The 32-bit or 64-bit reference address stored in the stack slot is overwritten.
 3. The old object loses that specific incoming edge on the reference graph.
 
-### State Transitions (Stack and Heap Layout)
+#### State Transitions (Stack and Heap Layout)
 
-#### Phase 1: Initial Allocation
+##### Phase 1: Initial Allocation
 Both variables `ref1` and `ref2` point to separate distinct memory blocks on the heap.
 
 ```
@@ -168,7 +256,7 @@ STACK (Current Frame LVT)                   HEAP (Young/Old Generation)
 +-----------------------+                   +--------------------------+
 ```
 
-#### Phase 2: Reassignment Operation (`ref1 = ref2;`)
+##### Phase 2: Reassignment Operation (`ref1 = ref2;`)
 The pointer inside `Slot 1` is updated to hold `0x00F8`. `Object A` now has **zero active incoming references**.
 
 ```
@@ -182,7 +270,7 @@ STACK (Current Frame LVT)                   HEAP (Young/Old Generation)
 
 ---
 
-## The JVM Processing Sequence
+### The JVM Processing Sequence
 
 The sequence below illustrates the chronological path from a high-level Java source reassignment down to physical memory reclamation by the GC engine.
 
@@ -207,7 +295,7 @@ The sequence below illustrates the chronological path from a high-level Java sou
 
 ---
 
-## Bytecode-Level Execution Mechanics
+### Bytecode-Level Execution Mechanics
 
 To understand how the execution engine processes reference reassignments, consider this Java method:
 
@@ -236,13 +324,13 @@ public void processReassignment();
   16: return
 ```
 
-### Key Bytecode Instructions:
+#### Key Bytecode Instructions:
 *   `new`: Reserves memory bytes on the heap for the instance fields and object header.
 *   `astore_1`: This is where the actual reassignment occurs. It moves the reference reference from the operand stack into local variable slot 1, atomically stripping the reference from the old object instance.
 
 ---
 
-## Object Liveness Graph & Reachability Tracing
+### Object Liveness Graph & Reachability Tracing
 
 Modern JVM Garbage Collectors (like **G1, ZGC, or Shenandoah**) use **Tracing Garbage Collection** based on graph reachability rather than simple reference counting. 
 
@@ -254,7 +342,7 @@ When `ref1` is reassigned away from `Object A`, the edge between the **GC Root**
 
 ---
 
-## Architectural Comparison: Reassignment vs. Nullification
+### Architectural Comparison: Reassignment vs. Nullification
 
 | Architectural Property                    | Reassignment (`ref = newObj;`)                                                    | Nullification (`ref = null;`)                                              |
 | :---------------------------------------- | :-------------------------------------------------------------------------------- | :------------------------------------------------------------------------- |
@@ -266,7 +354,7 @@ When `ref1` is reassigned away from `Object A`, the edge between the **GC Root**
 
 ---
 
-## Advanced Edge Case: The Mutator Write Barrier & Card Tables
+### Advanced Edge Case: The Mutator Write Barrier & Card Tables
 
 In generational garbage collectors like G1, memory is divided into regions. When you reassign an object reference field belonging to an object residing in an older generation to an object in a younger generation, the JVM must track this cross-generational reference without scanning the entire old generation.
 
@@ -284,9 +372,9 @@ When this field reassignment runs, the compiler injects an architectural post-wr
 4. It marks that card as **dirty**.
 5. During a minor or young generation GC phase, the garbage collector scans only the dirty cards to discover that `nodeB` is strongly reachable, preventing accidental premature collection.
 
-# Creating Objects inside a method 
+## Creating Objects inside a method 
 
-# JVM Architecture & Memory Internals: Creating Objects Inside a Method
+## JVM Architecture & Memory Internals: Creating Objects Inside a Method
 
 When an object is created within the scope of a Java method, it triggers a tight coordination between the executing **Thread Stack**, the **Managed Heap**, the **Just-In-Time (JIT) Compiler**, and the **Garbage Collector (GC)**. 
 
@@ -294,7 +382,7 @@ Because method execution is short-lived, the lifecycle of objects created inside
 
 ---
 
-## Thread Stack Frame Mechanics & Heap Interaction
+### Thread Stack Frame Mechanics & Heap Interaction
 
 Every executing thread in Java has its own private **Thread Stack**. Each time a method is called, a new **Stack Frame** is pushed onto the stack. This frame houses the **Local Variable Table (LVT)** and the **Operand Stack**.
 
@@ -302,9 +390,9 @@ When you write `Object obj = new Object();` inside a method:
 1. The physical object data is allocated on the **Heap** (specifically within the Young Generation).
 2. The reference address (pointer) to that object is stored in a slot inside the Local Variable Table of the active stack frame.
 
-### Memory Lifecycle Matrix
+#### Memory Lifecycle Matrix
 
-#### Phase 1: Method Execution Active
+##### Phase 1: Method Execution Active
 The method is currently running. The reference inside the LVT slot keeps the heap object strongly reachable.
 
 ```
@@ -317,7 +405,7 @@ STACK (Thread Stack Frame)                  HEAP (Young Gen / TLAB)
 +-----------------------+                   +--------------------------+
 ```
 
-#### Phase 2: Method Return / Frame Eviction
+##### Phase 2: Method Return / Frame Eviction
 The method finishes execution. The entire stack frame is popped off the thread stack. The reference address ceases to exist, leaving the heap object with **zero active root paths**.
 
 ```
@@ -332,7 +420,7 @@ STACK (Thread Stack Frame)                  HEAP (Young Gen / TLAB)
 
 ---
 
-## 2. The Method Lifecycle Execution Sequence
+### 2. The Method Lifecycle Execution Sequence
 
 The diagram below maps the runtime timeline of a local object, from method invocation through stack cleanup to ultimate garbage collection sweeping.
 
@@ -367,7 +455,7 @@ The diagram below maps the runtime timeline of a local object, from method invoc
 
 ---
 
-## Bytecode-Level Method Allocations
+### Bytecode-Level Method Allocations
 
 Consider this standard local method allocation code:
 
@@ -393,21 +481,21 @@ public void executeLocalScope();
   13: return                            // Method returns. Stack frame is discarded instantly.
 ```
 
-### GC Impact of return:
+#### GC Impact of return:
 Notice that there is no explicit instruction to clear `astore_1` or set it to `null`. The `return` instruction at byte index `13` discards the entire frame context. The reference is broken automatically without any runtime bytecode overhead.
 
 ---
 
-## JIT Compiler Optimization: Escape Analysis & Scalar Replacement
+### JIT Compiler Optimization: Escape Analysis & Scalar Replacement
 
 The JVM contains a critical runtime optimization engine called **Escape Analysis (EA)**. Before an object is actually allocated on the heap inside a method, the Just-In-Time (JIT) Compiler analyzes the scope of the reference variable to determine if it "escapes" the method.
 
-### The Three Escape States:
+#### The Three Escape States:
 1. **GlobalEscape:** The object escapes the method and the thread (e.g., it is returned from the method, stored in a static global field, or passed into a separate thread). It **must** be allocated on the heap.
 2. **ArgEscape:** The object is passed as an argument to another method but does not escape the current thread.
 3. **NoEscape:** The object never leaves the executing method. Its lifetime is entirely bounded by the method's stack frame.
 
-### Scalar Replacement (Bypassing the Heap)
+#### Scalar Replacement (Bypassing the Heap)
 If the JIT compiler determines an object is **NoEscape**, it frequently performs an optimization known as **Scalar Replacement**. 
 
 Instead of allocating a physical object wrapper on the heap, the JIT breaks the object down into its primitive fields (scalars) and maps them directly to **CPU Registers** or individual slots within the thread's stack frame.
@@ -427,13 +515,13 @@ public void calculate() {
 }
 ```
 
-### Architectural Benefit for GC:
+#### Architectural Benefit for GC:
 * **Zero Heap Allocation:** No object is created on the heap.
 * **Zero GC Overhead:** Because the fields reside natively on the stack frame or registers, they vanish instantly when the method returns. The Garbage Collector never has to scan, track, or sweep this data.
 
 ---
 
-## Heap Allocation Optimizations: TLABs
+### Heap Allocation Optimizations: TLABs
 
 If an object created inside a method cannot be scalar-replaced (e.g., it is too complex or fails escape conditions), the JVM allocates it on the heap. To minimize multi-threaded synchronization slowdowns during high-frequency method calls, the JVM uses **Thread Local Allocation Buffers (TLABs)**.
 
@@ -441,7 +529,7 @@ If an object created inside a method cannot be scalar-replaced (e.g., it is too 
 * When a method executes `new Object()`, the execution engine attempts to reserve memory for that object inside the calling thread's private TLAB.
 * **Performance Impact:** This allows the pointer to advance via a fast, non-blocking sync-free operation ("Bump-the-pointer"). When the method returns, these objects sit quietly in the TLAB until a Minor GC sweep evacuates the surviving references and recycles the dead space in bulk.
 
-# 4. JVM Architecture & Memory Internals: The Island of Isolation
+## 4. JVM Architecture & Memory Internals: The Island of Isolation
 
 An **Island of Isolation** is a highly specific memory state in Java where two or more objects form a cyclic or bidirectional reference loop with each other, but **no active thread or reference path** from a valid **GC Root** can reach any object within that loop. 
 
@@ -449,7 +537,7 @@ This document provides a deep architectural breakdown of how these circular refe
 
 ---
 
-## Architectural Blueprint: The Cyclic Disconnection
+### Architectural Blueprint: The Cyclic Disconnection
 
 In older language runtimes that rely strictly on **Reference Counting** algorithms, islands of isolation cause critical memory leaks because each object's reference counter remains greater than zero. However, the Java Virtual Machine uses a **Tracing (Reachability) Algorithm** which handles this scenario automatically.
 
@@ -458,9 +546,9 @@ When an island is formed:
 2. The external reference variables residing in the active thread's **Local Variable Table (LVT)** are either nullified or go out of scope.
 3. The objects remain linked to each other on the heap, but are structurally isolated from the running application graph.
 
-### State Transitions (Stack and Heap Layout)
+#### State Transitions (Stack and Heap Layout)
 
-#### Phase 1: Strong Reachability (Active Links)
+##### Phase 1: Strong Reachability (Active Links)
 Local variables `refA` and `refB` inside the running thread stack point directly to their respective objects on the heap. The objects also point to each other.
 
 ```
@@ -478,7 +566,7 @@ STACK (Thread Stack Frame LVT)              HEAP (Young / Old Generation)
                                             +--------------------------+
 ```
 
-#### Phase 2: Severing External Ties (`refA = null; refB = null;`)
+##### Phase 2: Severing External Ties (`refA = null; refB = null;`)
 The local variables are overwritten on the stack. The horizontal paths from the stack to the heap are permanently broken. The objects now form an **Island of Isolation**.
 
 ```
@@ -498,7 +586,7 @@ STACK (Thread Stack Frame LVT)              HEAP (Young / Old Generation)
 
 ---
 
-## The Isolation Processing & Sweep Sequence
+### The Isolation Processing & Sweep Sequence
 
 The chronological pipeline below maps out how a mutator thread discards the external boundaries of the nodes and how the GC engine detects and sweeps the cluster.
 
@@ -526,7 +614,7 @@ The chronological pipeline below maps out how a mutator thread discards the exte
 
 ---
 
-## Bytecode-Level Structural Graphing
+### Bytecode-Level Structural Graphing
 
 Consider the following Java snippet that generates a micro-island:
 
@@ -574,16 +662,16 @@ public void buildIsland();
   30: return
 ```
 
-### Execution Insight:
+#### Execution Insight:
 Instructions `26` through `29` systematically clear the entries from the stack frame table. Even though `putfield` permanently wrote the internal object references directly to the heap memory structures at indexes `18` and `23`, the entry keys from the thread execution frame are completely blank.
 
 ---
 
-## Modern Tracing GC Roots & Reachability Graph Analysis
+### Modern Tracing GC Roots & Reachability Graph Analysis
 
 Modern Java Virtual Machines discard the concept of tracking reference totals. Instead, algorithms like **G1 (Garbage-First)**, **ZGC**, and **Parallel GC** utilize a **Root Reachability Graph Analysis**.
 
-### The Live-Object Marking Protocol:
+#### The Live-Object Marking Protocol:
 1. **The Root Set:** The garbage collector establishes an initial array of unmistakable reference origins called **GC Roots**. These include:
    * Local variable tables across all active thread stacks.
    * JNI (Java Native Interface) Global/Local references.
@@ -598,7 +686,7 @@ Modern Java Virtual Machines discard the concept of tracking reference totals. I
 
 ---
 
-## Architectural Memory Traps: Hidden Roots
+### Architectural Memory Traps: Hidden Roots
 
 While pure islands of isolation are collected instantly by the JVM, developers sometimes accidentally create "pseudo-islands" that leak memory because they remain linked to a hidden GC Root.
 
@@ -609,10 +697,19 @@ While pure islands of isolation are collected instantly by the JVM, developers s
 | **The Thread Local Trap** | A node loop is linked to a field variable inside an active `ThreadLocal` storage wrapper.                                                               | **Not Eligible for GC** as long as the parent application thread remains alive in the thread pool.               |
 | **Inner Class Retention** | An active external framework holds a reference to a non-static nested inner class instance, which implicitly references its outer configuration parent. | **Not Eligible for GC.** The outer class wrapper cannot be swept, retaining all variables mapped to its context. |
 
-# The methods for requesting JVM to run garbage collection 
-# Finalization 
+## The methods for requesting JVM to run garbage collection
 
-# Understanding Java Garbage Collection (GC)
+Use `System.gc()` or `Runtime.getRuntime().gc()` to **suggest** that the JVM run garbage collection. The call is not guaranteed to trigger an immediate collection; the collector still decides based on heap usage and policy. The runnable example in [§3 Comprehensive Java Code Example](#3-comprehensive-java-code-example) shows a typical test-style request.
+
+---
+
+## Finalization
+
+Before an unreachable object is reclaimed, the JVM may invoke `finalize()` **at most once** (if the class overrides it). Since Java 9, `finalize()` is **deprecated** because it delays reclamation and is unreliable; use try-with-resources, `Cleaner`, or phantom references in production. The closing demo in this file still uses `finalize()` to make collection visible in the console.
+
+---
+
+## Understanding Java Garbage Collection (GC)
 
 In Java, the **Garbage Collector (GC)** is a background thread that automatically manages memory by destroying unused objects. It ensures that the heap memory is freed up for new allocations, preventing `OutOfMemoryError` exceptions.
 
@@ -620,7 +717,7 @@ This guide demonstrates how objects become eligible for garbage collection, how 
 
 ---
 
-## 1. How Objects Become Eligible for GC
+### 1. How Objects Become Eligible for GC
 An object becomes eligible for Garbage Collection when it is no longer reachable by any active thread. This typically happens via:
 1. **Nullifying the reference:** Setting the reference variable to `null`.
 2. **Reassigning the reference variable:** Pointing the reference to another object.
@@ -634,7 +731,7 @@ pie title Java Heap Memory Allocation (Example)
 
 ---
 
-## 2. The Garbage Collection Flow
+### 2. The Garbage Collection Flow
 The JVM continuously monitors object reachability. When memory runs low, or when requested, it executes a multi-phase collection process.
 
 ```mermaid
@@ -650,7 +747,7 @@ graph TD
 
 ---
 
-## 3. Comprehensive Java Code Example
+### 3. Comprehensive Java Code Example
 
 The following program creates objects, makes them eligible for GC using various techniques, and requests the JVM to run the Garbage Collector using `System.gc()`.
 
@@ -705,7 +802,7 @@ public class GarbageCollectionDemo {
 }
 ```
 
-### Expected Output Structure
+#### Expected Output Structure
 When you run this code, the background GC daemon thread intercepts the dereferenced objects, invokes their `finalize()` blocks, and destroys them:
 
 ```text
