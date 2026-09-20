@@ -7,80 +7,82 @@
 
 ## Guide map
 
-| Jump to | Section |
-| ------- | ------- |
-| [Introduction](#introduction) | Introduction |
-| [The ways to make an object eligible for garbage coll...](#the-ways-to-make-an-object-eligible-for-garbage-collection) | The ways to make an object eligible for garbage collection |
+| Jump to                                                                                                                              | Section                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| [Introduction](#introduction)                                                                                                        | Introduction                                                               |
+| [The ways to make an object eligible for garbage coll...](#the-ways-to-make-an-object-eligible-for-garbage-collection)               | The ways to make an object eligible for garbage collection                 |
 | [1.Deep Dive: Nullifying Reference Variables for Garb...](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java) | 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java |
-| [2. Reassigning the reference variable](#2-reassigning-the-reference-variable) | 2. Reassigning the reference variable |
-| [JVM Architecture & Memory Internals: Reassigning Ref...](#jvm-architecture-memory-internals-reassigning-reference-variables) | JVM Architecture & Memory Internals: Reassigning Reference Variables |
-| [Creating Objects inside a method](#creating-objects-inside-a-method) | Creating Objects inside a method |
-| [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method) | JVM Architecture & Memory Internals: Creating Objects Inside a Method |
-| [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation) | 4. JVM Architecture & Memory Internals: The Island of Isolation |
-| [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection) | The methods for requesting JVM to run garbage collection |
-| [Finalization](#finalization) | Finalization |
-| [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc) | Understanding Java Garbage Collection (GC) |
+| [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)                                                       | 2. Reassigning the reference variable                                      |
+| [JVM Architecture & Memory Internals: Reassigning Ref...](#jvm-architecture-memory-internals-reassigning-reference-variables)        | JVM Architecture & Memory Internals: Reassigning Reference Variables       |
+| [Creating Objects inside a method](#creating-objects-inside-a-method)                                                                | Creating Objects inside a method                                           |
+| [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method)       | JVM Architecture & Memory Internals: Creating Objects Inside a Method      |
+| [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation)              | 4. JVM Architecture & Memory Internals: The Island of Isolation            |
+| [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection)                 | The methods for requesting JVM to run garbage collection                   |
+| [Finalization](#finalization)                                                                                                        | Finalization                                                               |
+| [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)                                              | Understanding Java Garbage Collection (GC)                                 |
 
 ---
 
 <!-- TOC -->
-- [Introduction](#introduction)
-- [The ways to make an object eligible for garbage collection](#the-ways-to-make-an-object-eligible-for-garbage-collection)
-- [1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java)
-  - [Architectural Memory Mechanics: Stack vs. Heap](#architectural-memory-mechanics-stack-vs-heap)
-    - [The Allocation Phase](#the-allocation-phase)
-    - [The Nullification Trigger](#the-nullification-trigger)
-  - [Low-Level JVM Flow: Object Disconnection to Sweep](#low-level-jvm-flow-object-disconnection-to-sweep)
-    - [Architectural Flowchart](#architectural-flowchart)
-    - [Detailed Phase Execution](#detailed-phase-execution)
-  - [Explicit Nullification vs. Natural Out-of-Scope](#explicit-nullification-vs-natural-out-of-scope)
-  - [Edge Cases: When Nullification Fails to Yield GC Eligibility](#edge-cases-when-nullification-fails-to-yield-gc-eligibility)
-    - [Case A: Shared Reference Aliasing](#case-a-shared-reference-aliasing)
-    - [Case B: The Leaked Collection Target](#case-b-the-leaked-collection-target)
-- [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)
-- [JVM Architecture & Memory Internals: Reassigning Reference Variables](#jvm-architecture-memory-internals-reassigning-reference-variables)
-  - [Low-Level Pointer Redirection: Stack vs. Heap](#low-level-pointer-redirection-stack-vs-heap)
-    - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout)
-      - [Phase 1: Initial Allocation](#phase-1-initial-allocation)
-      - [Phase 2: Reassignment Operation (`ref1 = ref2;`)](#phase-2-reassignment-operation-ref1-ref2)
-  - [The JVM Processing Sequence](#the-jvm-processing-sequence)
-  - [Bytecode-Level Execution Mechanics](#bytecode-level-execution-mechanics)
-    - [Key Bytecode Instructions:](#key-bytecode-instructions)
-  - [Object Liveness Graph & Reachability Tracing](#object-liveness-graph-reachability-tracing)
-  - [Architectural Comparison: Reassignment vs. Nullification](#architectural-comparison-reassignment-vs-nullification)
-  - [Advanced Edge Case: The Mutator Write Barrier & Card Tables](#advanced-edge-case-the-mutator-write-barrier-card-tables)
-- [Creating Objects inside a method](#creating-objects-inside-a-method)
-- [JVM Architecture & Memory Internals: Creating Objects Inside a Method](#jvm-architecture-memory-internals-creating-objects-inside-a-method)
-  - [Thread Stack Frame Mechanics & Heap Interaction](#thread-stack-frame-mechanics-heap-interaction)
-    - [Memory Lifecycle Matrix](#memory-lifecycle-matrix)
-      - [Phase 1: Method Execution Active](#phase-1-method-execution-active)
-      - [Phase 2: Method Return / Frame Eviction](#phase-2-method-return-frame-eviction)
-  - [2. The Method Lifecycle Execution Sequence](#2-the-method-lifecycle-execution-sequence)
-  - [Bytecode-Level Method Allocations](#bytecode-level-method-allocations)
-    - [GC Impact of return:](#gc-impact-of-return)
-  - [JIT Compiler Optimization: Escape Analysis & Scalar Replacement](#jit-compiler-optimization-escape-analysis-scalar-replacement)
-    - [The Three Escape States:](#the-three-escape-states)
-    - [Scalar Replacement (Bypassing the Heap)](#scalar-replacement-bypassing-the-heap)
-    - [Architectural Benefit for GC:](#architectural-benefit-for-gc)
-  - [Heap Allocation Optimizations: TLABs](#heap-allocation-optimizations-tlabs)
-- [4. JVM Architecture & Memory Internals: The Island of Isolation](#4-jvm-architecture-memory-internals-the-island-of-isolation)
-  - [Architectural Blueprint: The Cyclic Disconnection](#architectural-blueprint-the-cyclic-disconnection)
-    - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout-1)
-      - [Phase 1: Strong Reachability (Active Links)](#phase-1-strong-reachability-active-links)
-      - [Phase 2: Severing External Ties (`refA = null; refB = null;`)](#phase-2-severing-external-ties-refa-null-refb-null)
-  - [The Isolation Processing & Sweep Sequence](#the-isolation-processing-sweep-sequence)
-  - [Bytecode-Level Structural Graphing](#bytecode-level-structural-graphing)
-    - [Execution Insight:](#execution-insight)
-  - [Modern Tracing GC Roots & Reachability Graph Analysis](#modern-tracing-gc-roots-reachability-graph-analysis)
-    - [The Live-Object Marking Protocol:](#the-live-object-marking-protocol)
-  - [Architectural Memory Traps: Hidden Roots](#architectural-memory-traps-hidden-roots)
-- [The methods for requesting JVM to run garbage collection](#the-methods-for-requesting-jvm-to-run-garbage-collection)
-- [Finalization](#finalization)
-- [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)
-  - [1. How Objects Become Eligible for GC](#1-how-objects-become-eligible-for-gc)
-  - [2. The Garbage Collection Flow](#2-the-garbage-collection-flow)
-  - [3. Comprehensive Java Code Example](#3-comprehensive-java-code-example)
-    - [Expected Output Structure](#expected-output-structure)
+- [Java Garbage Collection](#java-garbage-collection)
+  - [Guide map](#guide-map)
+  - [Introduction](#introduction)
+  - [The ways to make an object eligible for garbage collection](#the-ways-to-make-an-object-eligible-for-garbage-collection)
+  - [1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java)
+    - [Architectural Memory Mechanics: Stack vs. Heap](#architectural-memory-mechanics-stack-vs-heap)
+      - [The Allocation Phase](#the-allocation-phase)
+      - [The Nullification Trigger](#the-nullification-trigger)
+    - [Low-Level JVM Flow: Object Disconnection to Sweep](#low-level-jvm-flow-object-disconnection-to-sweep)
+      - [Architectural Flowchart](#architectural-flowchart)
+      - [Detailed Phase Execution](#detailed-phase-execution)
+    - [Explicit Nullification vs. Natural Out-of-Scope](#explicit-nullification-vs-natural-out-of-scope)
+    - [Edge Cases: When Nullification Fails to Yield GC Eligibility](#edge-cases-when-nullification-fails-to-yield-gc-eligibility)
+      - [Case A: Shared Reference Aliasing](#case-a-shared-reference-aliasing)
+      - [Case B: The Leaked Collection Target](#case-b-the-leaked-collection-target)
+  - [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)
+  - [JVM Architecture \& Memory Internals: Reassigning Reference Variables](#jvm-architecture--memory-internals-reassigning-reference-variables)
+    - [Low-Level Pointer Redirection: Stack vs. Heap](#low-level-pointer-redirection-stack-vs-heap)
+      - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout)
+        - [Phase 1: Initial Allocation](#phase-1-initial-allocation)
+        - [Phase 2: Reassignment Operation (`ref1 = ref2;`)](#phase-2-reassignment-operation-ref1--ref2)
+    - [The JVM Processing Sequence](#the-jvm-processing-sequence)
+    - [Bytecode-Level Execution Mechanics](#bytecode-level-execution-mechanics)
+      - [Key Bytecode Instructions:](#key-bytecode-instructions)
+    - [Object Liveness Graph \& Reachability Tracing](#object-liveness-graph--reachability-tracing)
+    - [Architectural Comparison: Reassignment vs. Nullification](#architectural-comparison-reassignment-vs-nullification)
+    - [Advanced Edge Case: The Mutator Write Barrier \& Card Tables](#advanced-edge-case-the-mutator-write-barrier--card-tables)
+  - [3.Creating Objects inside a method](#3creating-objects-inside-a-method)
+  - [JVM Architecture \& Memory Internals: Creating Objects Inside a Method](#jvm-architecture--memory-internals-creating-objects-inside-a-method)
+    - [Thread Stack Frame Mechanics \& Heap Interaction](#thread-stack-frame-mechanics--heap-interaction)
+      - [Memory Lifecycle Matrix](#memory-lifecycle-matrix)
+        - [Phase 1: Method Execution Active](#phase-1-method-execution-active)
+        - [Phase 2: Method Return / Frame Eviction](#phase-2-method-return--frame-eviction)
+    - [2. The Method Lifecycle Execution Sequence](#2-the-method-lifecycle-execution-sequence)
+    - [Bytecode-Level Method Allocations](#bytecode-level-method-allocations)
+      - [GC Impact of return:](#gc-impact-of-return)
+    - [JIT Compiler Optimization: Escape Analysis \& Scalar Replacement](#jit-compiler-optimization-escape-analysis--scalar-replacement)
+      - [The Three Escape States:](#the-three-escape-states)
+      - [Scalar Replacement (Bypassing the Heap)](#scalar-replacement-bypassing-the-heap)
+      - [Architectural Benefit for GC:](#architectural-benefit-for-gc)
+    - [Heap Allocation Optimizations: TLABs](#heap-allocation-optimizations-tlabs)
+  - [4. JVM Architecture \& Memory Internals: The Island of Isolation](#4-jvm-architecture--memory-internals-the-island-of-isolation)
+    - [Architectural Blueprint: The Cyclic Disconnection](#architectural-blueprint-the-cyclic-disconnection)
+      - [State Transitions (Stack and Heap Layout)](#state-transitions-stack-and-heap-layout-1)
+        - [Phase 1: Strong Reachability (Active Links)](#phase-1-strong-reachability-active-links)
+        - [Phase 2: Severing External Ties (`refA = null; refB = null;`)](#phase-2-severing-external-ties-refa--null-refb--null)
+    - [The Isolation Processing \& Sweep Sequence](#the-isolation-processing--sweep-sequence)
+    - [Bytecode-Level Structural Graphing](#bytecode-level-structural-graphing)
+      - [Execution Insight:](#execution-insight)
+    - [Modern Tracing GC Roots \& Reachability Graph Analysis](#modern-tracing-gc-roots--reachability-graph-analysis)
+      - [The Live-Object Marking Protocol:](#the-live-object-marking-protocol)
+    - [Architectural Memory Traps: Hidden Roots](#architectural-memory-traps-hidden-roots)
+  - [The methods for requesting JVM to run garbage collection](#the-methods-for-requesting-jvm-to-run-garbage-collection)
+  - [Finalization](#finalization)
+  - [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)
+    - [1. How Objects Become Eligible for GC](#1-how-objects-become-eligible-for-gc)
+    - [2. The Garbage Collection Flow](#2-the-garbage-collection-flow)
+    - [3. Comprehensive Java Code Example](#3-comprehensive-java-code-example)
+      - [Expected Output Structure](#expected-output-structure)
 <!-- /TOC -->
 
 ---
@@ -372,7 +374,7 @@ When this field reassignment runs, the compiler injects an architectural post-wr
 4. It marks that card as **dirty**.
 5. During a minor or young generation GC phase, the garbage collector scans only the dirty cards to discover that `nodeB` is strongly reachable, preventing accidental premature collection.
 
-## Creating Objects inside a method 
+## 3.Creating Objects inside a method 
 
 ## JVM Architecture & Memory Internals: Creating Objects Inside a Method
 
