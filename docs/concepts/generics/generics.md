@@ -443,7 +443,8 @@ public < T extends Number & Thread>// multiple inheritance is not allowed
 
 If we send generic object to non-generic area then it starts behaving like non-generic object similarly if we send non-generic object to generic area then it starts behaving like generic object i.e the locatoin in which object present based on that behaviour will be defined 
 
-
+The main purpose of generics is to provide type safety and to resolve type-casting problems type safety and type casting both are applicable 
+at compile time hence generics also applicable only at compile time but not at runtime. At the time of compilation as the last step geerics syantax will be removed and hence for the JVM generics syntax won't be available.
 
 
 
