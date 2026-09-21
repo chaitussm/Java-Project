@@ -1,7 +1,7 @@
 # Java Garbage Collection
 
 > Study guide: eligibility rules, JVM stack/heap mechanics, islands of isolation, explicit GC requests, and `finalize()`.  
-> Demos: [`Garbage_Collector.java`](../../../demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java) · [`garbageCollectorWithMap.java`](../../../demo/src/main/java/com/collection/map/garbageCollectorAndMap/garbageCollectorWithMap.java)
+> Demos: [`Garbage_Collector.java`](../../../demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java) · [`runtimeMemoryAndGc.java`](../../../demo/src/main/java/com/advanced/garbagecollection/runtimeMemoryAndGc.java) · [`garbageCollectorWithMap.java`](../../../demo/src/main/java/com/collection/map/garbageCollectorAndMap/garbageCollectorWithMap.java)
 
 > **Navigation:** Use **Ctrl+click** (or Cmd+click on macOS) on any link below to jump to that section in preview.
 
@@ -18,6 +18,7 @@
 | [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method)       | JVM Architecture & Memory Internals: Creating Objects Inside a Method      |
 | [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation)              | 4. JVM Architecture & Memory Internals: The Island of Isolation            |
 | [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection)                 | The methods for requesting JVM to run garbage collection                   |
+| [Runtime heap metrics and runtime.gc() demo](#runtime-heap-metrics-and-runtimegc-demo)                                              | `maxMemory` / `totalMemory` / `freeMemory` + loop + `runtime.gc()`       |
 | [Finalization](#finalization)                                                                                                        | Finalization                                                               |
 | [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)                                              | Understanding Java Garbage Collection (GC)                                 |
 
@@ -77,6 +78,7 @@
       - [The Live-Object Marking Protocol:](#the-live-object-marking-protocol)
     - [Architectural Memory Traps: Hidden Roots](#architectural-memory-traps-hidden-roots)
   - [The methods for requesting JVM to run garbage collection](#the-methods-for-requesting-jvm-to-run-garbage-collection)
+    - [Runtime heap metrics and `runtime.gc()` demo](#runtime-heap-metrics-and-runtimegc-demo)
   - [Finalization](#finalization)
   - [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)
     - [1. How Objects Become Eligible for GC](#1-how-objects-become-eligible-for-gc)
@@ -701,7 +703,69 @@ While pure islands of isolation are collected instantly by the JVM, developers s
 
 ## The methods for requesting JVM to run garbage collection
 
-Use `System.gc()` or `Runtime.getRuntime().gc()` to **suggest** that the JVM run garbage collection. The call is not guaranteed to trigger an immediate collection; the collector still decides based on heap usage and policy. The runnable example in [§3 Comprehensive Java Code Example](#3-comprehensive-java-code-example) shows a typical test-style request.
+Use `System.gc()` or `Runtime.getRuntime().gc()` to **suggest** that the JVM run garbage collection. The call is not guaranteed to trigger an immediate collection; the collector still decides based on heap usage and policy. The runnable example in [§3 Comprehensive Java Code Example](#3-comprehensive-java-code-example) shows a typical test-style request with `System.gc()`.
+
+### Runtime heap metrics and `runtime.gc()` demo
+
+`Runtime.getRuntime()` exposes **heap sizing hints** (all values are in **bytes**). They are useful in tutorials and diagnostics; production code usually prefers JMX or unified logging instead of calling `gc()` in a loop.
+
+| Method | Meaning |
+| ------ | ------- |
+| `maxMemory()` | Upper bound the JVM will try to use for the heap (`-Xmx`). |
+| `totalMemory()` | Heap currently **committed** to the process (can grow toward `max` as objects are allocated). |
+| `freeMemory()` | Free space **within** the committed `totalMemory()` region (not the same as “all unused memory on the machine”). |
+
+```mermaid
+flowchart TD
+  A["Runtime.getRuntime()"] --> B["Print max / total / free"]
+  B --> C["Loop: new Date(); d = null;"]
+  C --> D["Many short-lived objects eligible for GC"]
+  D --> E["Print metrics Before GC"]
+  E --> F["runtime.gc() — suggestion only"]
+  F --> G["Print metrics After GC"]
+  G --> H{"freeMemory often rises"}
+  H --> I["max unchanged; total may shrink or stay"]
+```
+
+Runnable source: [`runtimeMemoryAndGc.java`](../../../demo/src/main/java/com/advanced/garbagecollection/runtimeMemoryAndGc.java)
+
+```java
+Runtime runtime = Runtime.getRuntime();
+System.out.println("Max Memory: " + runtime.maxMemory());
+System.out.println("Total Memory: " + runtime.totalMemory());
+System.out.println("Free Memory: " + runtime.freeMemory());
+
+for (int i = 0; i < 10000; i++) {
+    Date d = new Date();
+    d = null;
+}
+
+System.out.println("Before GC - Max Memory: " + runtime.maxMemory());
+System.out.println("Before GC - Total Memory: " + runtime.totalMemory());
+System.out.println("Before GC - Free Memory: " + runtime.freeMemory());
+
+runtime.gc();
+
+System.out.println("After GC - Max Memory: " + runtime.maxMemory());
+System.out.println("After GC - Total Memory: " + runtime.totalMemory());
+System.out.println("After GC - Free Memory: " + runtime.freeMemory());
+```
+
+**How to read the output**
+
+- **`maxMemory`** — usually **unchanged** across the run; it reflects `-Xmx`, not live usage.
+- **`totalMemory`** — may **increase** during the loop as the JVM commits more heap; after GC it may stay the same or drop slightly depending on collector and ergonomics.
+- **`freeMemory`** — often **higher after `gc()`** if dead `Date` instances were collected, but the delta is **not guaranteed** (GC is asynchronous; `gc()` is only a hint).
+
+```mermaid
+pie showData
+    title Typical lesson from this demo (conceptual)
+    "Eligible objects from loop (null each iteration)" : 55
+    "Metric that may rise after gc(): freeMemory" : 30
+    "Metric that stays fixed: maxMemory" : 15
+```
+
+> **Note:** `System.gc()` internally delegates to the same suggestion as `Runtime.getRuntime().gc()`. Avoid relying on either in production for correctness or performance.
 
 ---
 
