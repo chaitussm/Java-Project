@@ -1,7 +1,7 @@
 # Java Garbage Collection
 
 > Study guide: eligibility rules, JVM stack/heap mechanics, islands of isolation, explicit GC requests, and `finalize()`.  
-> Demos: [`Garbage_Collector.java`](../../../demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java) · [`garbageCollectorWithMap.java`](../../../demo/src/main/java/com/collection/map/garbageCollectorAndMap/garbageCollectorWithMap.java)
+> Demos: [`Garbage_Collector.java`](../../../demo/src/main/java/com/advanced/garbagecollection/Garbage_Collector.java) · [`runtimeMemoryAndGc.java`](../../../demo/src/main/java/com/advanced/garbagecollection/runtimeMemoryAndGc.java) · [`garbageCollectorWithMap.java`](../../../demo/src/main/java/com/collection/map/garbageCollectorAndMap/garbageCollectorWithMap.java)
 
 > **Navigation:** Use **Ctrl+click** (or Cmd+click on macOS) on any link below to jump to that section in preview.
 
@@ -11,6 +11,7 @@
 | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | [Introduction](#introduction)                                                                                                        | Introduction                                                               |
 | [The ways to make an object eligible for garbage coll...](#the-ways-to-make-an-object-eligible-for-garbage-collection)               | The ways to make an object eligible for garbage collection                 |
+| [By using Runtime class](#by-using-runtime-class)                                                                                  | `Runtime` memory APIs, demo, why metrics change after `gc()`               |
 | [1.Deep Dive: Nullifying Reference Variables for Garb...](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java) | 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java |
 | [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)                                                       | 2. Reassigning the reference variable                                      |
 | [JVM Architecture & Memory Internals: Reassigning Ref...](#jvm-architecture-memory-internals-reassigning-reference-variables)        | JVM Architecture & Memory Internals: Reassigning Reference Variables       |
@@ -18,6 +19,7 @@
 | [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method)       | JVM Architecture & Memory Internals: Creating Objects Inside a Method      |
 | [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation)              | 4. JVM Architecture & Memory Internals: The Island of Isolation            |
 | [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection)                 | The methods for requesting JVM to run garbage collection                   |
+| [Runtime heap metrics and runtime.gc() demo](#runtime-heap-metrics-and-runtimegc-demo)                                              | `maxMemory` / `totalMemory` / `freeMemory` + loop + `runtime.gc()`       |
 | [Finalization](#finalization)                                                                                                        | Finalization                                                               |
 | [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)                                              | Understanding Java Garbage Collection (GC)                                 |
 
@@ -29,6 +31,10 @@
   - [Introduction](#introduction)
   - [The ways to make an object eligible for garbage collection](#the-ways-to-make-an-object-eligible-for-garbage-collection)
     - [By using System Class](#by-using-system-class)
+    - [By using Runtime class](#by-using-runtime-class)
+      - [How to read totalMemory, freeMemory, and maxMemory](#how-to-read-totalmemory-freememory-and-maxmemory)
+      - [Demo program and sample output](#demo-program-and-sample-output)
+      - [Why freeMemory can look *lower* after `gc()`](#why-freememory-can-look-lower-after-gc)
   - [1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java)
     - [Architectural Memory Mechanics: Stack vs. Heap](#architectural-memory-mechanics-stack-vs-heap)
       - [The Allocation Phase](#the-allocation-phase)
@@ -78,6 +84,7 @@
       - [The Live-Object Marking Protocol:](#the-live-object-marking-protocol)
     - [Architectural Memory Traps: Hidden Roots](#architectural-memory-traps-hidden-roots)
   - [The methods for requesting JVM to run garbage collection](#the-methods-for-requesting-jvm-to-run-garbage-collection)
+    - [Runtime heap metrics and `runtime.gc()` demo](#runtime-heap-metrics-and-runtimegc-demo)
   - [Finalization](#finalization)
   - [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)
     - [1. How Objects Become Eligible for GC](#1-how-objects-become-eligible-for-gc)
@@ -122,10 +129,118 @@ the following are 2 ways for requesting jvm to run the garbage collector
 4. once we get Runtime object we can call the follwing methods on that object 
 5. totalmemory(): it returns number of bytes of total memory present in the heap(i,e heap size)
 6. free memory(): It returns number of bytes of free memory present in the heap
-7. gc(): For requesting jvm to run garbage collector 
+7. gc(): For requesting jvm to run garbage collector
 
+**Related API (often used with the above):** `maxMemory()` — returns the maximum heap size in bytes the JVM is allowed to use (roughly `-Xmx`). All `Runtime` memory methods return **bytes**.
 
+#### How to read totalMemory, freeMemory, and maxMemory
 
+| Method | What it really means |
+| ------ | -------------------- |
+| `maxMemory()` | **Ceiling** for the heap (`-Xmx`). Usually **does not change** during a normal program run. |
+| `totalMemory()` | Heap memory **currently committed** to the JVM process (can grow toward `max` as you allocate). |
+| `freeMemory()` | Empty space **inside** that committed `totalMemory()` region — **not** “free RAM on the whole machine.” |
+
+Approximate **used heap** at any moment:
+
+```text
+used ≈ totalMemory() - freeMemory()
+```
+
+```mermaid
+flowchart LR
+  subgraph heap ["Committed heap (totalMemory)"]
+    USED["Used by live objects + overhead"]
+    FREE["freeMemory()"]
+  end
+  MAX["maxMemory() — upper limit"]
+  heap --> MAX
+```
+
+#### Demo program and sample output
+
+Runnable class: [`runtimeDemo.java`](../../../demo/src/main/java/com/garbageCollection/runtimeDemo.java) (same logic also in [`runtimeMemoryAndGc.java`](../../../demo/src/main/java/com/advanced/garbagecollection/runtimeMemoryAndGc.java)).
+
+```java
+Runtime runtime = Runtime.getRuntime();
+System.out.println("Max Memory: " + runtime.maxMemory());
+System.out.println("Total Memory: " + runtime.totalMemory());
+System.out.println("Free Memory: " + runtime.freeMemory());
+
+for (int i = 0; i < 10000; i++) {
+    Date d = new Date();
+    d = null;
+}
+
+System.out.println("Before GC - Max Memory: " + runtime.maxMemory());
+System.out.println("Before GC - Total Memory: " + runtime.totalMemory());
+System.out.println("Before GC - Free Memory: " + runtime.freeMemory());
+
+runtime.gc();
+
+System.out.println("After GC - Max Memory: " + runtime.maxMemory());
+System.out.println("After GC - Total Memory: " + runtime.totalMemory());
+System.out.println("After GC - Free Memory: " + runtime.freeMemory());
+```
+
+Example run (values vary by JDK, GC, and `-Xmx`):
+
+```text
+Max Memory: 4198498304
+Total Memory: 266338304
+Free Memory: 263980432
+Before GC - Max Memory: 4198498304
+Before GC - Total Memory: 266338304
+Before GC - Free Memory: 263728728
+After GC - Max Memory: 4198498304
+After GC - Total Memory: 14680064
+After GC - Free Memory: 13200128
+```
+
+```mermaid
+flowchart TD
+  A["Runtime.getRuntime()"] --> B["Print max / total / free"]
+  B --> C["Loop: new Date(); d = null;"]
+  C --> D["Short-lived objects become eligible for GC"]
+  D --> E["Print metrics Before GC"]
+  E --> F["runtime.gc() — suggestion only"]
+  F --> G["Print metrics After GC"]
+```
+
+#### Why freeMemory can look *lower* after `gc()`
+
+Comparing only `freeMemory()` before and after GC is misleading. In the sample above, **absolute** `freeMemory` drops from about **251 MB** to about **12.6 MB**, yet GC did reclaim garbage — **used** heap (`total − free`) actually **decreases**.
+
+| Phase | `totalMemory()` (approx.) | `freeMemory()` (approx.) | **Used** (`total − free`) |
+| ----- | ------------------------- | ------------------------ | ------------------------- |
+| Before `gc()` | ~254 MB | ~251 MB | ~2.5 MB |
+| After `gc()` | ~14 MB | ~12.6 MB | ~1.4 MB |
+
+**What happened**
+
+1. **Before GC:** The JVM had committed a **large** heap (`totalMemory` ~254 MB). Most of that region was unused, so `freeMemory` looked huge (~251 MB) even though only a few MB were truly in use.
+2. **`runtime.gc()`:** Collects unreachable `Date` instances from the loop (each iteration sets `d = null`, so the previous object has no references).
+3. **After GC:** Modern collectors often **shrink committed heap** — return empty regions to the OS or stop holding a big unused chunk. Then `totalMemory()` **falls** (254 MB → 14 MB in the example).
+4. **`freeMemory()` is measured inside the smaller committed region**, so its **absolute** value also drops (251 MB → 12.6 MB). That does **not** mean you “lost” memory; it means the **bucket** `Runtime` reports got smaller.
+
+```text
+Before:  [======== large committed heap ========]  almost all reported as "free"
+After:   [== smaller committed heap ==]            still mostly "free" inside it
+```
+
+- **`maxMemory()`** stays the same — it is the limit (`-Xmx`), not current usage.
+- **`gc()` is a hint** — the JVM may ignore it; collection can be asynchronous. `System.gc()` delegates to the same mechanism.
+- For production tuning, prefer **JMX** or profiling tools instead of calling `gc()` in application code.
+
+```mermaid
+pie showData
+    title After gc() in this demo (conceptual)
+    "Committed heap shrinks (totalMemory down)" : 40
+    "Live objects + overhead (used down)" : 35
+    "maxMemory unchanged" : 25
+```
+
+---
 
 Eventhough programmer is not responsible to destroy useless objects it is gihly recommonded to make an object eligible for garbage collection 
 if it is no longer required
@@ -729,7 +844,11 @@ While pure islands of isolation are collected instantly by the JVM, developers s
 
 ## The methods for requesting JVM to run garbage collection
 
-Use `System.gc()` or `Runtime.getRuntime().gc()` to **suggest** that the JVM run garbage collection. The call is not guaranteed to trigger an immediate collection; the collector still decides based on heap usage and policy. The runnable example in [§3 Comprehensive Java Code Example](#3-comprehensive-java-code-example) shows a typical test-style request.
+Use `System.gc()` or `Runtime.getRuntime().gc()` to **suggest** that the JVM run garbage collection. The call is not guaranteed to trigger an immediate collection; the collector still decides based on heap usage and policy. The runnable example in [§3 Comprehensive Java Code Example](#3-comprehensive-java-code-example) shows a typical test-style request with `System.gc()`.
+
+### Runtime heap metrics and `runtime.gc()` demo
+
+See **[By using Runtime class](#by-using-runtime-class)** (under *The ways to make an object eligible for garbage collection*) for the full API table, [`runtimeDemo.java`](../../../demo/src/main/java/com/garbageCollection/runtimeDemo.java), sample console output, and an explanation of **why `freeMemory()` can look lower after `gc()`** even when garbage was collected.
 
 ---
 
