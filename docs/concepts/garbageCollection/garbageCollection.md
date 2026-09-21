@@ -29,6 +29,7 @@
   - [Guide map](#guide-map)
   - [Introduction](#introduction)
   - [The ways to make an object eligible for garbage collection](#the-ways-to-make-an-object-eligible-for-garbage-collection)
+    - [By using System Class](#by-using-system-class)
   - [1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java)
     - [Architectural Memory Mechanics: Stack vs. Heap](#architectural-memory-mechanics-stack-vs-heap)
       - [The Allocation Phase](#the-allocation-phase)
@@ -100,6 +101,33 @@ just because of this assistant the chance of failing java program with memory pr
 This assistant is nothing but garbage collector, hence the main objective of the garbage collector is to destroy useless objects
 
 ## The ways to make an object eligible for garbage collection 
+
+Once we made an object eligible for garbage collection it may not be destroyed immediately by garbage collector, whenevr jvm runs garbage collector then only the objects will be destroyed, but when exactly jvm runs garbage collector we can't expect it is varied from jvm to jvm 
+
+Instead of waiting until jvm runs garbage collector we can request jvm run garbage collector programmatically.But if jvm accept our request or not there is no gurantee, but most of the times jvm accepts our request.
+
+the following are 2 ways for requesting jvm to run the garbage collector
+
+### By using System Class 
+
+1. System class contains a static method gc() for this purpose.
+  
+<System.gc();
+
+### By using Runtime class 
+
+1. java application can communicate with jvm by using Runtime object
+2. Runtime class present in java.lang package and it is a singleton class 
+3. We can create runtime object by using 
+   
+   Runtime r = Runtime.getRuntime();
+4. once we get Runtime object we can call the follwing methods on that object 
+5. totalmemory(): it returns number of bytes of total memory present in the heap(i,e heap size)
+6. free memory(): It returns number of bytes of free memory present in the heap
+7. gc(): For requesting jvm to run garbage collector 
+
+
+
 
 Eventhough programmer is not responsible to destroy useless objects it is gihly recommonded to make an object eligible for garbage collection 
 if it is no longer required
