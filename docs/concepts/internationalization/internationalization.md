@@ -22,4 +22,20 @@ We can create a locale object to represent English language
 
 1. Locale class present in java.util package 
 2. It is a final classs and it is the direct child class of object 
+3. It implements Serializable and Cloneable interfaces
+   
+### Constructors
+
+> Locale l = new Locale(String language);
+> Locale l = new Locale(String language , String country);
+Locale class already defined some constants to represent some standard locales we can use these constants directly 
+Ex: Locale.US
+    Locale.Nederlands
+    Locale.Germany
+    Locale.English
+
+### Important methods of Locale class
+
+
+
          
