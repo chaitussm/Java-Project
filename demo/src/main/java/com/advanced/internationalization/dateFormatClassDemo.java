@@ -1,7 +1,8 @@
 package com.advanced.internationalization;
 
-import java.util.Date;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Locale;
 
 public class dateFormatClassDemo {
@@ -48,10 +49,10 @@ public class dateFormatClassDemo {
 
     public static void converStringToJavaDateForm(String dateString) {
         try {
-            DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.getDefault());
-            Date date = dateFormat.parse(dateString);
-            System.out.println("Converted date: " + date);
-        } catch (Exception e) {
+            DynamicDateParser.ParseOutcome outcome = DynamicDateParser.parse(dateString);
+            System.out.println("Converted date: " + outcome.date());
+            System.out.println("Matched using: " + outcome.matchedUsing());
+        } catch (ParseException e) {
             System.out.println("Error parsing date: " + e.getMessage());
         }
     }
@@ -69,6 +70,8 @@ public class dateFormatClassDemo {
         printdaysFormat();
         printVariousFormsOfdateFormat();
         converStringToJavaDateForm("2024-06-15");
+        converStringToJavaDateForm("15/06/2024");
+        converStringToJavaDateForm("June 15, 2024");
         converLocaleToStringForm(new Date());
     }
     
