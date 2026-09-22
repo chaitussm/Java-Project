@@ -13,6 +13,7 @@
 | [Rules of enum constants](#rules-of-enum-constants) | `public static final` objects |
 | [Fruits example (source)](#fruits-example-source) | Your enum in source |
 | [Internal architecture of `Fruits`](#internal-architecture-of-fruits) | Class desugaring + memory |
+| [Printing enums and `toString()`](#printing-enums-and-tostring) | `println` → `toString()` flow |
 | [Compilation flow](#compilation-flow) | Source → bytecode |
 | [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits) | Whiteboard reference |
 
@@ -25,6 +26,7 @@
   - [Rules of enum constants](#rules-of-enum-constants)
   - [Fruits example (source)](#fruits-example-source)
   - [Internal architecture of `Fruits`](#internal-architecture-of-fruits)
+  - [Printing enums and `toString()`](#printing-enums-and-tostring)
   - [Compilation flow](#compilation-flow)
   - [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)
   - [Run the demo](#run-the-demo)
@@ -182,6 +184,112 @@ pie showData
     "Class + extends Enum" : 40
     "static final constants" : 35
     "One object per constant on heap" : 25
+```
+
+---
+
+## Printing enums and `toString()`
+
+When you pass an enum **reference** to `System.out.println(...)`, you do **not** print the memory address. The JVM converts the object to text by calling **`toString()`** on that reference.
+
+### Demo code
+
+From [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java):
+
+```java
+System.out.println(Fruits.mangoes);
+System.out.println(Fruits.pomegrante);
+```
+
+**Console:**
+
+```text
+mangoes
+pomegrante
+```
+
+The output is the **constant name**, not `Fruits@hashcode`.
+
+### End-to-end flow (`println` on an enum reference)
+
+```mermaid
+flowchart TD
+  A["System.out.println(Fruits.mangoes)"] --> B["PrintStream.println(Object x)"]
+  B --> C{"x == null?"}
+  C -- Yes --> D["print null"]
+  C -- No --> E["String.valueOf(x)"]
+  E --> F["x.toString()"]
+  F --> G["Enum.toString()"]
+  G --> H["return name field"]
+  H --> I["PrintStream writes mangoes to console"]
+```
+
+```mermaid
+sequenceDiagram
+  participant Main as main()
+  participant Out as System.out
+  participant Ref as Fruits.mangoes
+  participant Enum as java.lang.Enum
+  Main->>Out: println(Fruits.mangoes)
+  Out->>Ref: implicit reference
+  Out->>Enum: toString() on enum instance
+  Note over Enum: name = "mangoes" (set in constructor)
+  Enum-->>Out: "mangoes"
+  Out-->>Main: line on console
+```
+
+### What `Enum.toString()` does internally
+
+For every enum constant, the compiler passes the **identifier string** into the `Enum` superclass constructor:
+
+```java
+// conceptual — inside generated Fruits constructor for mangoes
+super("mangoes", 0);  // name + ordinal
+```
+
+`java.lang.Enum` stores that `name` and **`toString()` returns it** (unless you override `toString()` in `Fruits`).
+
+| Call | Method actually used | Typical result |
+| ---- | -------------------- | -------------- |
+| `System.out.println(Fruits.mangoes)` | `Enum.toString()` → `"mangoes"` | Constant name |
+| `Fruits.mangoes.name()` | `Enum.name()` | Same string, official API |
+| `String.valueOf(Fruits.mangoes)` | delegates to `toString()` | `"mangoes"` |
+| Concat: `"Pick " + Fruits.mangoes` | `StringBuilder.append(Object)` → `toString()` | `"Pick mangoes"` |
+
+`Object.toString()` would look like `Fruits@1a2b3c4d`; enums **override** that so logs and UI show readable names.
+
+```mermaid
+flowchart LR
+  REF["Reference variable\nFruits.mangoes"] --> OBJ["Heap: Fruits instance"]
+  OBJ --> NAME["name = mangoes"]
+  NAME --> TS["toString()"]
+  TS --> TXT["String mangoes"]
+```
+
+### Pie charts — printing path
+
+```mermaid
+pie showData
+    title println(Object) work for enum reference
+    "Calls toString() on the object" : 70
+    "Writes characters to PrintStream" : 30
+```
+
+```mermaid
+pie showData
+    title Enum.toString() content (default)
+    "Returns constant name (name field)" : 90
+    "Custom override in Fruits (if any)" : 10
+```
+
+### Reference variable vs printed text
+
+```text
+Static field Fruits.mangoes  ──points to──►  [ Fruits object | name="mangoes" | ordinal=0 ]
+                                                      │
+                                           println ───┘
+                                                      ▼
+                                              toString() → "mangoes"
 ```
 
 ---
