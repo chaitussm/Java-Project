@@ -11,7 +11,7 @@
 | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
 | [Introduction](#introduction)                                                                                                        | Introduction                                                               |
 | [The ways to make an object eligible for garbage coll...](#the-ways-to-make-an-object-eligible-for-garbage-collection)               | The ways to make an object eligible for garbage collection                 |
-| [By using Runtime class](#by-using-runtime-class)                                                                                  | `Runtime` memory APIs, demo, why metrics change after `gc()`               |
+| [By using Runtime class](#by-using-runtime-class)                                                                                    | `Runtime` memory APIs, demo, why metrics change after `gc()`               |
 | [1.Deep Dive: Nullifying Reference Variables for Garb...](#1deep-dive-nullifying-reference-variables-for-garbage-collection-in-java) | 1.Deep Dive: Nullifying Reference Variables for Garbage Collection in Java |
 | [2. Reassigning the reference variable](#2-reassigning-the-reference-variable)                                                       | 2. Reassigning the reference variable                                      |
 | [JVM Architecture & Memory Internals: Reassigning Ref...](#jvm-architecture-memory-internals-reassigning-reference-variables)        | JVM Architecture & Memory Internals: Reassigning Reference Variables       |
@@ -19,7 +19,7 @@
 | [JVM Architecture & Memory Internals: Creating Object...](#jvm-architecture-memory-internals-creating-objects-inside-a-method)       | JVM Architecture & Memory Internals: Creating Objects Inside a Method      |
 | [4. JVM Architecture & Memory Internals: The Island o...](#4-jvm-architecture-memory-internals-the-island-of-isolation)              | 4. JVM Architecture & Memory Internals: The Island of Isolation            |
 | [The methods for requesting JVM to run garbage collec...](#the-methods-for-requesting-jvm-to-run-garbage-collection)                 | The methods for requesting JVM to run garbage collection                   |
-| [Runtime heap metrics and runtime.gc() demo](#runtime-heap-metrics-and-runtimegc-demo)                                              | `maxMemory` / `totalMemory` / `freeMemory` + loop + `runtime.gc()`       |
+| [Runtime heap metrics and runtime.gc() demo](#runtime-heap-metrics-and-runtimegc-demo)                                               | `maxMemory` / `totalMemory` / `freeMemory` + loop + `runtime.gc()`         |
 | [Finalization](#finalization)                                                                                                        | Finalization                                                               |
 | [Understanding Java Garbage Collection (GC)](#understanding-java-garbage-collection-gc)                                              | Understanding Java Garbage Collection (GC)                                 |
 
@@ -131,15 +131,29 @@ the following are 2 ways for requesting jvm to run the garbage collector
 6. free memory(): It returns number of bytes of free memory present in the heap
 7. gc(): For requesting jvm to run garbage collector
 
+NOTE: 
+
+1. It is convenient to use system class gc() when compared with runtime class gc() method
+2. With respect to performance it is highly recommended to use runtime class gc() when compared with System class gc() because 
+   System class gc() unternally calls runtime class gc()
+
+   class System 
+   {
+     public static void gc()
+     {
+       Runtime.getRuntime.gc();
+     }
+   }  
+
 **Related API (often used with the above):** `maxMemory()` — returns the maximum heap size in bytes the JVM is allowed to use (roughly `-Xmx`). All `Runtime` memory methods return **bytes**.
 
 #### How to read totalMemory, freeMemory, and maxMemory
 
-| Method | What it really means |
-| ------ | -------------------- |
-| `maxMemory()` | **Ceiling** for the heap (`-Xmx`). Usually **does not change** during a normal program run. |
-| `totalMemory()` | Heap memory **currently committed** to the JVM process (can grow toward `max` as you allocate). |
-| `freeMemory()` | Empty space **inside** that committed `totalMemory()` region — **not** “free RAM on the whole machine.” |
+| Method          | What it really means                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------- |
+| `maxMemory()`   | **Ceiling** for the heap (`-Xmx`). Usually **does not change** during a normal program run.             |
+| `totalMemory()` | Heap memory **currently committed** to the JVM process (can grow toward `max` as you allocate).         |
+| `freeMemory()`  | Empty space **inside** that committed `totalMemory()` region — **not** “free RAM on the whole machine.” |
 
 Approximate **used heap** at any moment:
 
@@ -211,10 +225,10 @@ flowchart TD
 
 Comparing only `freeMemory()` before and after GC is misleading. In the sample above, **absolute** `freeMemory` drops from about **251 MB** to about **12.6 MB**, yet GC did reclaim garbage — **used** heap (`total − free`) actually **decreases**.
 
-| Phase | `totalMemory()` (approx.) | `freeMemory()` (approx.) | **Used** (`total − free`) |
-| ----- | ------------------------- | ------------------------ | ------------------------- |
-| Before `gc()` | ~254 MB | ~251 MB | ~2.5 MB |
-| After `gc()` | ~14 MB | ~12.6 MB | ~1.4 MB |
+| Phase         | `totalMemory()` (approx.) | `freeMemory()` (approx.) | **Used** (`total − free`) |
+| ------------- | ------------------------- | ------------------------ | ------------------------- |
+| Before `gc()` | ~254 MB                   | ~251 MB                  | ~2.5 MB                   |
+| After `gc()`  | ~14 MB                    | ~12.6 MB                 | ~1.4 MB                   |
 
 **What happened**
 
@@ -853,6 +867,67 @@ See **[By using Runtime class](#by-using-runtime-class)** (under *The ways to ma
 ---
 
 ## Finalization
+
+Just before dstroying an object garbage collector calls finalize() to perform clean up activities.Once finalize() completes automatically garbage destroys that object 
+
+finalize() present in Object class with the following declaration 
+
+>protected void finalize() throws Throwable
+
+We can override finalize() in our class to define our own clean-up activities
+
+case 1: [`scenarioOne.java`](../../../demo/src/main/java/com/advanced/garbageCollection/finalization/scenarioOne.java)
+
+Just before destroying an object garbage collector calls finalize() on the object which is eleigible for garbage collector then the corresponding class finalize() will be executed 
+
+If String object eligible for garabage collection then String class finalize() will be executed but not test class finalize()
+
+case 2: [`scenarioTwo.java`](../../../demo/src/main/java/com/advanced/garbageCollection/finalization/scenarioTwo.java)
+
+In the above program finalize() got executed three times in that 2 times explicitly by the programmer and one time by the garbage collector 
+
+NOTE : If we are calling finalize() explicitly then it will be executed like a normal method call and object won't be destroyed 
+If garbage collector calls finalize() then object will be destroyed.
+
+case 3: [`scenarioThree.java`](../../../demo/src/main/java/com/advanced/garbageCollection/finalization/scenarioThree.java)
+
+Based on our requirement we can call finalize() explicitly then it will be executed just like a normal method call and object won't be destroyed 
+
+Eventhough Object eligible for garabge collector multiple times but garbage collector calls finalize() only once 
+
+case 4: [`scenarioFour.java`](../../../demo/src/main/java/com/garbageCollection/finalization/scenarioFour.java)
+
+We can't expect exact behaiour of garbage collector it is varied from jvm to jvm hence for the following questions we can't provide exact answers 
+
+1. When exactly jvm runs garbage collector ?
+2. In which order garbage collector identifies eligible objects 
+3. In which order garbage collector destroys eligible objects ?
+4. wheteher garbage collector destroys all eligible objects are not?
+5. what is the algorithm followed by garbage collector etc
+
+NOTE : 
+
+1. whenever program runs with low memory then jvm runs garbage collector but we can't expect exactly at what time 
+2. most of the garbage collectors follow standard algorithm : mark and sweep algorithm it doesn't means every garbage collector follow the same 
+   algorithm.
+
+case 5 : 
+
+Memory leaks : 
+
+The objects which are not using in our program and which are not eligible for gc such type of useless objects are called memory leaks 
+
+In our programs if memory leaks present then the program will be terminated by raising OutOfMemoryError
+
+Hence if an object no longer required it is highly recommonded to make that object eligible for garabage collection
+
+the following arte various third party memory management tools to identity memory leaks 
+
+1. HP OVO
+2. HP J Meter 
+3. JProbe
+4. Patrol
+5. IBM Tivoli
 
 Before an unreachable object is reclaimed, the JVM may invoke `finalize()` **at most once** (if the class overrides it). Since Java 9, `finalize()` is **deprecated** because it delays reclamation and is unreliable; use try-with-resources, `Cleaner`, or phantom references in production. The closing demo in this file still uses `finalize()` to make collection visible in the console.
 

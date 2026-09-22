@@ -1,4 +1,4 @@
-package com.garbageCollection;
+package com.advanced.garbageCollection;
 import java.util.Date;
 
 public class runtimeDemo {

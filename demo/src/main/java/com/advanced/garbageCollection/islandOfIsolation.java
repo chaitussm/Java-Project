@@ -1,4 +1,4 @@
-package com.garbageCollection;
+package com.advanced.garbageCollection;
 
 public class islandOfIsolation {
 
