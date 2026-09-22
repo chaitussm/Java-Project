@@ -1,7 +1,7 @@
 # Java Internationalization (I18N)
 
 > Study guide: **Locale**, **NumberFormat**, and **DateFormat** — runnable demos, execution summaries, and internal flows.  
-> Package: `com.advanced.internationalization.classes`
+> Packages: `com.advanced.internationalization` · `com.advanced.internationalization.classes`
 
 > **Navigation:** Use **Ctrl+click** (Cmd+click on macOS) on Guide map or TOC links to jump to any topic.
 
@@ -9,7 +9,8 @@
 | ---- | ------ |
 | Locale | [`localeClass.java`](../../../demo/src/main/java/com/advanced/internationalization/classes/localeClass.java) |
 | NumberFormat | [`NumberFormat.java`](../../../demo/src/main/java/com/advanced/internationalization/classes/NumberFormat.java) |
-| DateFormat | [`DateFormat.java`](../../../demo/src/main/java/com/advanced/internationalization/classes/DateFormat.java) |
+| DateFormat (API tour) | [`DateFormat.java`](../../../demo/src/main/java/com/advanced/internationalization/classes/DateFormat.java) |
+| String → `Date` (dynamic) | [`dateFormatClassDemo.java`](../../../demo/src/main/java/com/advanced/internationalization/dateFormatClassDemo.java) |
 
 ## Guide map
 
@@ -23,6 +24,7 @@
 | [NumberFormat.java execution summary](#numberformatjava-execution-summary) | Number demo walkthrough |
 | [NumberFormat deep internal flow](#numberformat-deep-internal-flow) | Formatting pipeline |
 | [DateFormat class](#dateformat-class) | `java.text.DateFormat` |
+| [converStringToJavaDateForm()](#converstringtojavadateform-end-to-end) | Dynamic string → `Date` |
 | [DateFormat.java execution summary](#dateformatjava-execution-summary) | Date demo walkthrough |
 | [DateFormat deep internal flow](#dateformat-deep-internal-flow) | Calendar, patterns, TZ |
 | [End-to-end I18N flow](#end-to-end-i18n-flow) | Locale → formats |
@@ -45,6 +47,7 @@
     - [NumberFormat deep internal flow](#numberformat-deep-internal-flow)
   - [DateFormat class](#dateformat-class)
     - [DateFormat styles and factories](#dateformat-styles-and-factories)
+    - [converStringToJavaDateForm() end-to-end](#converstringtojavadateform-end-to-end)
     - [DateFormat.java execution summary](#dateformatjava-execution-summary)
     - [DateFormat deep internal flow](#dateformat-deep-internal-flow)
   - [End-to-end I18N flow](#end-to-end-i18n-flow)
@@ -292,6 +295,148 @@ pie showData
 
 **SimpleDateFormat constructors:** default, `(pattern)`, `(pattern, locale)`, `(pattern, DateFormatSymbols)`; `applyPattern`, `toPattern`.
 
+### converStringToJavaDateForm() end-to-end
+
+Classroom demo: [`dateFormatClassDemo.java`](../../../demo/src/main/java/com/advanced/internationalization/dateFormatClassDemo.java) — method **`converStringToJavaDateForm(String dateString)`** turns a **human-entered date string** into a **`java.util.Date`**, without knowing the format in advance.
+
+#### Public method (entry point)
+
+```java
+public static void converStringToJavaDateForm(String dateString) {
+    try {
+        ParseOutcome outcome = parseDateDynamically(dateString);
+        System.out.println("Converted date: " + outcome.date());
+        System.out.println("Matched using: " + outcome.matchedUsing());
+    } catch (ParseException e) {
+        System.out.println("Error parsing date: " + e.getMessage());
+    }
+}
+```
+
+| Step | What happens |
+| ---- | -------------- |
+| 1 | Caller passes any date text (e.g. `2024-06-15`, `15/06/2024`, `June 15, 2024`). |
+| 2 | `parseDateDynamically` trims input and runs **ordered strategies** until one consumes the **entire** string. |
+| 3 | On success, prints `Date` (millis since epoch) and which strategy matched. |
+| 4 | On failure, `ParseException` message is printed (empty input or unrecognized format). |
+
+#### High-level flowchart
+
+```mermaid
+flowchart TD
+  IN["converStringToJavaDateForm(dateString)"] --> TRY{"try block"}
+  TRY --> PARSE["parseDateDynamically(dateString)"]
+  PARSE --> TRIM["trim & validate non-empty"]
+  TRIM --> JTM["tryJavaTimeParsers"]
+  JTM -->|success| OUT["ParseOutcome"]
+  JTM -->|fail| LOC["For each locale: US, UK, FR, DE, default"]
+  LOC --> STY["For each style: SHORT → FULL"]
+  STY --> DF["DateFormat.getDateInstance(style, locale)"]
+  DF -->|success| OUT
+  DF -->|fail| DTT["getDateTimeInstance(SHORT, SHORT)"]
+  DTT -->|success| OUT
+  DTT -->|fail| PAT["SimpleDateFormat common patterns"]
+  PAT -->|success| OUT
+  PAT -->|fail| ERR["ParseException"]
+  OUT --> PRINT["Print date + matchedUsing"]
+  ERR --> CATCH["catch ParseException → print error"]
+```
+
+#### Sequence (runtime)
+
+```mermaid
+sequenceDiagram
+  participant Main as main / caller
+  participant Conv as converStringToJavaDateForm
+  participant Dyn as parseDateDynamically
+  participant JT as java.time formatters
+  participant DF as java.text.DateFormat
+  participant SDF as SimpleDateFormat
+  Main->>Conv: dateString
+  Conv->>Dyn: parseDateDynamically
+  Dyn->>JT: ISO & pattern list
+  alt java.time matches full string
+    JT-->>Dyn: LocalDate / LocalDateTime / ZonedDateTime
+    Dyn-->>Conv: ParseOutcome
+  else try locale DateFormat styles
+    Dyn->>DF: getDateInstance + parse (lenient false)
+    DF-->>Dyn: Date or continue
+  else try pattern list
+    Dyn->>SDF: parse with pattern + locale
+    SDF-->>Dyn: Date or throw
+  end
+  Conv-->>Main: println Converted date / Matched using
+```
+
+#### Internal pipeline (`parseDateDynamically`)
+
+```text
+Input string
+    │
+    ▼
+┌───────────────────────────────────────┐
+│ 1. java.time (DateTimeFormatter)      │  ISO-8601, dd/MM/yyyy, MMM dd, yyyy, …
+└───────────────────────────────────────┘
+    │ no match
+    ▼
+┌───────────────────────────────────────┐
+│ 2. DateFormat per locale × style      │  SHORT, MEDIUM, LONG, FULL
+│    + getDateTimeInstance(SHORT×2)     │
+└───────────────────────────────────────┘
+    │ no match
+    ▼
+┌───────────────────────────────────────┐
+│ 3. SimpleDateFormat pattern table     │  yyyy-MM-dd, dd.MM.yyyy, …
+└───────────────────────────────────────┘
+    │ no match
+    ▼
+ ParseException("Unrecognized date format")
+```
+
+Each attempt uses **`setLenient(false)`** and checks that parsing consumed **all characters** (`ParsePosition` index == string length), so `15/06/2024extra` does not silently succeed.
+
+#### Strategy mix (conceptual)
+
+```mermaid
+pie showData
+    title Parse strategy order in dateFormatClassDemo
+    "java.time formatters (first)" : 35
+    "DateFormat styles × locales" : 40
+    "SimpleDateFormat patterns" : 25
+```
+
+```mermaid
+pie showData
+    title converStringToJavaDateForm outcomes
+    "Success: Date + matcher label" : 85
+    "Failure: ParseException message" : 15
+```
+
+#### Example console output
+
+```text
+Converted date: Sat Jun 15 00:00:00 UTC 2024
+Matched using: java.time LocalDate
+
+Converted date: Sat Jun 15 00:00:00 UTC 2024
+Matched using: java.time LocalDate
+
+Converted date: Sat Jun 15 00:00:00 UTC 2024
+Matched using: java.time LocalDate
+```
+
+(Exact `Matched using` text may show `DateFormat.getDateInstance(...)` when `java.time` does not match first.)
+
+#### Run only this demo
+
+```bash
+cd demo/src/main/java
+javac com/advanced/internationalization/dateFormatClassDemo.java
+java com.advanced.internationalization.dateFormatClassDemo
+```
+
+**Related:** [`DynamicDateParser.java`](../../../demo/src/main/java/com/advanced/internationalization/DynamicDateParser.java) implements the same multi-strategy logic as a reusable helper (optional; the demo inlines it in `parseDateDynamically`).
+
 ### DateFormat.java execution summary
 
 Demo: [`DateFormat.java`](../../../demo/src/main/java/com/advanced/internationalization/classes/DateFormat.java).
@@ -393,20 +538,24 @@ cd demo/src/main/java
 javac com/advanced/internationalization/classes/localeClass.java \
       com/advanced/internationalization/classes/NumberFormat.java \
       com/advanced/internationalization/classes/DateFormat.java
+javac com/advanced/internationalization/dateFormatClassDemo.java
 
 java com.advanced.internationalization.classes.localeClass
 java com.advanced.internationalization.classes.NumberFormat
 java com.advanced.internationalization.classes.DateFormat
+java com.advanced.internationalization.dateFormatClassDemo
 ```
 
 ```mermaid
 pie showData
-    title I18N demo classes (advanced package)
-    "localeClass.java" : 34
-    "NumberFormat.java" : 33
-    "DateFormat.java" : 33
+    title I18N demo classes
+    "classes/localeClass" : 25
+    "classes/NumberFormat" : 25
+    "classes/DateFormat" : 25
+    "dateFormatClassDemo" : 25
 ```
 
-All sources live under:
+Sources:
 
-`demo/src/main/java/com/advanced/internationalization/classes/`
+- `demo/src/main/java/com/advanced/internationalization/classes/`
+- `demo/src/main/java/com/advanced/internationalization/dateFormatClassDemo.java`
