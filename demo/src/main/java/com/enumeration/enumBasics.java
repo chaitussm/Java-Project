@@ -1,5 +1,7 @@
 package com.enumeration;
 
+import java.lang.reflect.Method;
+
 enum Protein {
     whey, casein, soy, yeast, plant;
 }
@@ -11,7 +13,8 @@ public class enumBasics {
     }
 
     /**
-     * Demonstrates enum constants for any enum type passed at runtime (same data as {@code values()},
+     * Demonstrates enum constants for any enum type passed at runtime (same data as
+     * {@code values()},
      * without calling {@code values()} via {@link java.lang.reflect.Method}).
      */
     public static <T extends Enum<T>> void demonstrateValuesMethod(Class<T> enumClass) {
@@ -23,6 +26,35 @@ public class enumBasics {
         }
         for (T constant : constants) {
             System.out.println(constant);
+        }
+    }
+
+    // Fixed: Dynamically invokes the static values() method via Reflection
+    @SuppressWarnings("unchecked")
+    public static <T extends Enum<T>> void demonstrateValuesMethodWithReflections(Class<T> enumClass) {
+        System.out
+                .println("--- Demonstrating values() method via Reflection for " + enumClass.getSimpleName() + " ---");
+
+        try {
+            // 1. Find the static values() method declared inside the specific enum class
+            Method valuesMethod = enumClass.getMethod("values");
+
+            // 2. Invoke the method (passing null because it is a static method) and cast to
+            // array
+            T[] constants = (T[]) valuesMethod.invoke(null);
+
+            // First iteration
+            for (T p : constants) {
+                System.out.println(p);
+            }
+
+            // Second iteration
+            for (T f : constants) {
+                System.out.println(f);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to invoke values() method: " + e.getMessage());
         }
     }
 
@@ -48,6 +80,10 @@ public class enumBasics {
         demonstrateValuesMethod(Protein.class);
         System.out.println();
         demonstrateValuesMethod(food.class);
+
+        demonstrateValuesMethodWithReflections(Protein.class);
+        System.out.println();
+        demonstrateValuesMethodWithReflections(food.class);
 
         System.out.println("\n--- Via Class.getEnumConstants() ---");
         iterateAllInEnums(Protein.class);
