@@ -7,15 +7,15 @@
 
 ## Guide map
 
-| Jump to | Topic |
-| ------- | ----- |
-| [Introduction](#introduction) | Why `enum` |
-| [Rules of enum constants](#rules-of-enum-constants) | `public static final` objects |
-| [Fruits example (source)](#fruits-example-source) | Your enum in source |
-| [Internal architecture of `Fruits`](#internal-architecture-of-fruits) | Class desugaring + memory |
-| [Printing enums and `toString()`](#printing-enums-and-tostring) | `println` → `toString()` flow |
-| [Compilation flow](#compilation-flow) | Source → bytecode |
-| [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits) | Whiteboard reference |
+| Jump to                                                               | Topic                         |
+| --------------------------------------------------------------------- | ----------------------------- |
+| [Introduction](#introduction)                                         | Why `enum`                    |
+| [Rules of enum constants](#rules-of-enum-constants)                   | `public static final` objects |
+| [Fruits example (source)](#fruits-example-source)                     | Your enum in source           |
+| [Internal architecture of `Fruits`](#internal-architecture-of-fruits) | Class desugaring + memory     |
+| [Printing enums and `toString()`](#printing-enums-and-tostring)       | `println` → `toString()` flow |
+| [Compilation flow](#compilation-flow)                                 | Source → bytecode             |
+| [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)      | Whiteboard reference          |
 
 ---
 
@@ -26,7 +26,15 @@
   - [Rules of enum constants](#rules-of-enum-constants)
   - [Fruits example (source)](#fruits-example-source)
   - [Internal architecture of `Fruits`](#internal-architecture-of-fruits)
+    - [Source vs compiler-generated shape (Fruits)](#source-vs-compiler-generated-shape-fruits)
+    - [Memory layout (heap + static area)](#memory-layout-heap--static-area)
+    - [Identity and comparison](#identity-and-comparison)
   - [Printing enums and `toString()`](#printing-enums-and-tostring)
+    - [Demo code](#demo-code)
+    - [End-to-end flow (`println` on an enum reference)](#end-to-end-flow-println-on-an-enum-reference)
+    - [What `Enum.toString()` does internally](#what-enumtostring-does-internally)
+    - [Pie charts — printing path](#pie-charts--printing-path)
+    - [Reference variable vs printed text](#reference-variable-vs-printed-text)
   - [Compilation flow](#compilation-flow)
   - [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)
   - [Run the demo](#run-the-demo)
@@ -82,10 +90,10 @@ enum Fruits {
 
 Runnable copy (package `com.advanced.enumeration`): [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java).
 
-| Constant | Role at runtime |
-| -------- | ---------------- |
-| `mangoes` | Single `Fruits` instance (singleton within the enum) |
-| `pomegrante` | Another distinct `Fruits` instance |
+| Constant     | Role at runtime                                      |
+| ------------ | ---------------------------------------------------- |
+| `mangoes`    | Single `Fruits` instance (singleton within the enum) |
+| `pomegrante` | Another distinct `Fruits` instance                   |
 
 ---
 
@@ -249,12 +257,12 @@ super("mangoes", 0);  // name + ordinal
 
 `java.lang.Enum` stores that `name` and **`toString()` returns it** (unless you override `toString()` in `Fruits`).
 
-| Call | Method actually used | Typical result |
-| ---- | -------------------- | -------------- |
-| `System.out.println(Fruits.mangoes)` | `Enum.toString()` → `"mangoes"` | Constant name |
-| `Fruits.mangoes.name()` | `Enum.name()` | Same string, official API |
-| `String.valueOf(Fruits.mangoes)` | delegates to `toString()` | `"mangoes"` |
-| Concat: `"Pick " + Fruits.mangoes` | `StringBuilder.append(Object)` → `toString()` | `"Pick mangoes"` |
+| Call                                 | Method actually used                          | Typical result            |
+| ------------------------------------ | --------------------------------------------- | ------------------------- |
+| `System.out.println(Fruits.mangoes)` | `Enum.toString()` → `"mangoes"`               | Constant name             |
+| `Fruits.mangoes.name()`              | `Enum.name()`                                 | Same string, official API |
+| `String.valueOf(Fruits.mangoes)`     | delegates to `toString()`                     | `"mangoes"`               |
+| Concat: `"Pick " + Fruits.mangoes`   | `StringBuilder.append(Object)` → `toString()` | `"Pick mangoes"`          |
 
 `Object.toString()` would look like `Fruits@1a2b3c4d`; enums **override** that so logs and UI show readable names.
 
@@ -309,11 +317,11 @@ flowchart TD
   A --> B --> C --> D --> E --> F --> G --> H
 ```
 
-| Phase | What happens |
-| ----- | ------------ |
-| **Compile** | `enum` keyword removed; replaced by `class` + `Enum` subclass machinery |
-| **Class load** | JVM runs static initializer: allocates each constant |
-| **Use** | References are stable singletons; no `new Fruits()` allowed in source |
+| Phase          | What happens                                                            |
+| -------------- | ----------------------------------------------------------------------- |
+| **Compile**    | `enum` keyword removed; replaced by `class` + `Enum` subclass machinery |
+| **Class load** | JVM runs static initializer: allocates each constant                    |
+| **Use**        | References are stable singletons; no `new Fruits()` allowed in source   |
 
 ---
 
@@ -323,11 +331,11 @@ The same architecture shown in class for **`enum Beer { KF, RC; }`** applies dir
 
 ![Enum internal architecture: enum desugars to class with static final constants](images/enum-internal-architecture-beer-slide.png)
 
-| Slide (`Beer`) | This guide (`Fruits`) |
-| -------------- | --------------------- |
-| `KF` | `mangoes` |
-| `RC` | `pomegrante` |
-| `enum` → `class Beer` | `enum` → `class Fruits extends Enum<Fruits>` |
+| Slide (`Beer`)                                   | This guide (`Fruits`)                               |
+| ------------------------------------------------ | --------------------------------------------------- |
+| `KF`                                             | `mangoes`                                           |
+| `RC`                                             | `pomegrante`                                        |
+| `enum` → `class Beer`                            | `enum` → `class Fruits extends Enum<Fruits>`        |
 | Arrows: constant → `static final` + `new Beer()` | Same: constant → `static final` + `new Fruits(...)` |
 
 ---
@@ -350,3 +358,5 @@ class com.advanced.enumeration.Fruits
 ```
 
 The last line shows runtime type is the enum class itself, not a separate “wrapper” type.
+
+Every enum constant is always public static final and hence we can access enum constant by using enum name 
