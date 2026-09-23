@@ -63,7 +63,12 @@
     - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
 - [values()](#values)
 - [enum and constructors](#enum-and-constructors)
-  - [Enum visibility and imports (Fish across packages)](#enum-visibility-and-imports-fish-across-packages)
+    - [Enum visibility and imports (Fish across packages)](#enum-visibility-and-imports-fish-across-packages)
+      - [Point-by-point](#point-by-point)
+      - [Scenario 1 — `pack2.Test1` (type import)](#scenario-1--pack2test1-type-import)
+      - [Scenario 2 — `pack3.Test2` (static import)](#scenario-2--pack3test2-static-import)
+      - [Scenario 3 — `pack4.Test3` (type + static import)](#scenario-3--pack4test3-type--static-import)
+- [enum vs Enum vs Enumeration](#enum-vs-enum-vs-enumeration)
 <!-- /TOC -->
 
 ---
@@ -882,24 +887,24 @@ public enum Fish {
 
 Demos: [`pack1/Fish.java`](../../../demo/src/main/java/pack1/Fish.java) · [`pack2/Test1.java`](../../../demo/src/main/java/pack2/Test1.java) · [`pack3/Test2.java`](../../../demo/src/main/java/pack3/Test2.java) · [`pack4/Test3.java`](../../../demo/src/main/java/pack4/Test3.java).
 
-| Package | Class | What you write in code | Import required |
-| ------- | ----- | ---------------------- | --------------- |
-| `pack1` | `Fish` | (definition) | — |
-| `pack2` | `Test1` | `Fish f = Fish.GUPPY;` | `import pack1.Fish;` **or** `import pack1.*;` |
-| `pack3` | `Test2` | `System.out.println(STAR);` | `import static pack1.Fish.STAR;` **or** `import static pack1.Fish.*;` |
+| Package | Class   | What you write in code                          | Import required                                                                                       |
+| ------- | ------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `pack1` | `Fish`  | (definition)                                    | —                                                                                                     |
+| `pack2` | `Test1` | `Fish f = Fish.GUPPY;`                          | `import pack1.Fish;` **or** `import pack1.*;`                                                         |
+| `pack3` | `Test2` | `System.out.println(STAR);`                     | `import static pack1.Fish.STAR;` **or** `import static pack1.Fish.*;`                                 |
 | `pack4` | `Test3` | `Fish f = Fish.STAR;` **and** `println(GUPPY);` | **Both:** type import for `Fish` **and** static import for `GUPPY` (or `import static pack1.Fish.*;`) |
 
 #### Point-by-point
 
-| # | Idea | Detail |
-| - | ---- | ------ |
-| 1 | **`public enum`** | `Fish` is visible outside `pack1` only because the enum is **`public`**. Package-private enums stay inside their package. |
-| 2 | **Type import** | `import pack1.Fish;` brings the **type name** `Fish` into scope so you can write `Fish.GUPPY`. |
-| 3 | **Static import (one constant)** | `import static pack1.Fish.STAR;` brings the **field** `STAR` into scope — use `STAR` alone, not `Fish.STAR`. |
-| 4 | **Static import (all constants)** | `import static pack1.Fish.*;` imports every enum constant as a simple name (`STAR`, `GUPPY`). |
-| 5 | **Mixed usage (`Test3`)** | `Fish f = Fish.STAR` needs the **type** `Fish`. `println(GUPPY)` needs **static** import of `GUPPY` (unless you write `Fish.GUPPY`). |
-| 6 | **Constants are `public static final`** | Enum constants are static members of the enum class — static import targets those members. |
-| 7 | **Compile-time only** | Imports do not copy bytecode; they only tell the compiler where names resolve. |
+| #   | Idea                                    | Detail                                                                                                                               |
+| --- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | **`public enum`**                       | `Fish` is visible outside `pack1` only because the enum is **`public`**. Package-private enums stay inside their package.            |
+| 2   | **Type import**                         | `import pack1.Fish;` brings the **type name** `Fish` into scope so you can write `Fish.GUPPY`.                                       |
+| 3   | **Static import (one constant)**        | `import static pack1.Fish.STAR;` brings the **field** `STAR` into scope — use `STAR` alone, not `Fish.STAR`.                         |
+| 4   | **Static import (all constants)**       | `import static pack1.Fish.*;` imports every enum constant as a simple name (`STAR`, `GUPPY`).                                        |
+| 5   | **Mixed usage (`Test3`)**               | `Fish f = Fish.STAR` needs the **type** `Fish`. `println(GUPPY)` needs **static** import of `GUPPY` (unless you write `Fish.GUPPY`). |
+| 6   | **Constants are `public static final`** | Enum constants are static members of the enum class — static import targets those members.                                           |
+| 7   | **Compile-time only**                   | Imports do not copy bytecode; they only tell the compiler where names resolve.                                                       |
 
 #### Scenario 1 — `pack2.Test1` (type import)
 
@@ -1029,3 +1034,12 @@ Example: refer com/enumeration/enumSpecialScenarios/enumCaseOne.java
 If we want to use any class or interface directly from outside package then the required import is normal import 
 
 If we want to access static members without class name then the required import is static import 
+
+# enum vs Enum vs Enumeration
+
+1. enum : enum is a keyword in java which can be used to define a group of named constants 
+2. Enum : Enum is a class in java present in java.lang package evry enum in java should eb direct child class of Enum class 
+          Hence this class acts a base class for all java enums.
+3. Enumeration: Enumerationm is an interface present in java.util package we can use enumeration object to get objects one-by-one from the     collection
+
+
