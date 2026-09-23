@@ -18,6 +18,8 @@
 | [EnumBasics — `fetchSingleDataFromEnum`](#enumbasics--fetchsingledatafromenum) | `Enum.valueOf` lookup           |
 | [Compilation flow](#compilation-flow)                                          | Source → bytecode               |
 | [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)               | Whiteboard reference            |
+| [enum vs switch](#enum-vs-switch)                                              | Switch argument types           |
+| [enum vs Inheritance](#enum-vs-inheritance)                                    | Why `extends` is forbidden      |
 
 ---
 
@@ -46,6 +48,11 @@
   - [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)
   - [Run the demo](#run-the-demo)
 - [enum vs switch](#enum-vs-switch)
+- [enum vs Inheritance](#enum-vs-inheritance)
+  - [Point-by-point (whiteboard)](#point-by-point-whiteboard)
+  - [Compilation errors when a class extends an enum](#compilation-errors-when-a-class-extends-an-enum)
+  - [Flow diagrams](#flow-diagrams)
+  - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
 <!-- /TOC -->
 
 ---
@@ -547,4 +554,105 @@ if we are trying to decalre inside a method we will get compile time errror sayi
 1. until 1.4 version the allowed argument types for the switch statement are byte, short , char, int but from 1.5 version onwards corresponding 
 wrapper classes and enum types are allowed 
 2. from 1.7 version onwards Strign type also allowed
-3. If we pass enum type as argument to switch statement then every case label should be valid enum constant otherwise we will get compile time   error
+3. If we pass enum type as argument to switch statement then every case label should be valid enum constant otherwise we will get compile time error
+
+---
+
+# enum vs Inheritance
+
+Java treats every `enum` as a **special class** that **already extends** `java.lang.Enum`. Because of that design—and because enums are **`final`**—you **cannot use inheritance** the way you do with ordinary classes. The whiteboard below lists every `extends` pattern the compiler rejects.
+
+### Point-by-point (whiteboard)
+
+| # | What you might write | Allowed? | Why |
+| - | -------------------- | -------- | --- |
+| 1 | `enum X { }` then `enum Y extends X { }` | **No** | One enum type cannot extend another enum type. |
+| 2 | `enum X extends java.lang.Enum { }` | **No** | Every enum **implicitly** extends `java.lang.Enum`. Java has **no multiple inheritance** for classes, so you cannot add `extends java.lang.Enum` in source. |
+| 3 | `class X { }` then `enum Y extends X { }` | **No** | An enum may only extend **`java.lang.Enum`** (implicitly). It cannot extend a normal `class`. |
+| 4 | `enum X { }` then `class Y extends X { }` | **No** | Enums are **`final`** and **not extensible**—no class (or enum) can subclass an enum. |
+
+**Narrative points (same slide, in order):**
+
+1. **Enum → enum:** `enum Y extends X` is a compile-time error. Constants live in a closed type hierarchy; there is no “sub-enum.”
+2. **Enum → `java.lang.Enum` (explicit):** The compiler already generates `class X extends Enum<X>`. Writing `extends java.lang.Enum` yourself is illegal for the same reason you cannot extend two classes.
+3. **Enum → ordinary class:** Even if `X` is a simple superclass, `enum Y extends X` fails—enums are not general subclasses.
+4. **Class → enum:** `class Y extends X` when `X` is an enum fails with messages such as **cannot inherit from final `X`** and **enum types are not extensible**.
+
+### Compilation errors when a class extends an enum
+
+```java
+enum X { }
+
+class Y extends X { }  // CE
+```
+
+Typical compiler output (wording may vary by JDK):
+
+| Error | Meaning |
+| ----- | ------- |
+| **CE1:** `cannot inherit from final X` | The desugared enum class is **`final`**, so it cannot be a superclass. |
+| **CE2:** `enum types are not extensible` | The language forbids subclassing any enum type. |
+
+### Flow diagrams
+
+**Decision: can this type use `extends`?**
+
+```mermaid
+flowchart TD
+  START["Declaration uses extends"] --> KIND{"What is being declared?"}
+  KIND -->|enum| ETARGET{"extends target?"}
+  KIND -->|class| CTARGET{"extends target?"}
+  ETARGET -->|another enum| BAD1["Compile error"]
+  ETARGET -->|java.lang.Enum| BAD2["Compile error — already implicit"]
+  ETARGET -->|ordinary class| BAD3["Compile error"]
+  ETARGET -->|none| OK1["Valid enum"]
+  CTARGET -->|enum type| BAD4["CE: final / not extensible"]
+  CTARGET -->|class or Object| OK2["Valid class"]
+```
+
+**Implicit inheritance (what the compiler does for you):**
+
+```mermaid
+flowchart LR
+  SRC["enum Fruits { mangoes, pomegrante; }"] --> COMP["javac desugaring"]
+  COMP --> CLS["final class Fruits extends Enum&lt;Fruits&gt;"]
+  CLS --> CONST["static final Fruits mangoes, pomegrante"]
+```
+
+**Four forbidden patterns from the slide (overview):**
+
+```mermaid
+flowchart TB
+  subgraph p1 ["1 — enum extends enum"]
+    A1["enum X"] --> A2["enum Y extends X"]
+    A2 --> X1["Not allowed"]
+  end
+  subgraph p2 ["2 — enum extends Enum"]
+    B1["enum X extends java.lang.Enum"] --> X2["Not allowed"]
+  end
+  subgraph p3 ["3 — enum extends class"]
+    C1["class X"] --> C2["enum Y extends X"]
+    C2 --> X3["Not allowed"]
+  end
+  subgraph p4 ["4 — class extends enum"]
+    D1["enum X"] --> D2["class Y extends X"]
+    D2 --> X4["Not allowed — final / not extensible"]
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant Dev as Developer
+  participant Comp as javac
+  participant Enum as enum X
+  Dev->>Comp: class Y extends X
+  Comp->>Enum: check superclass
+  Enum-->>Comp: final, not extensible
+  Comp-->>Dev: compilation failed
+```
+
+### Classroom slide (inheritance restrictions)
+
+![Enum vs inheritance — four forbidden extends patterns (whiteboard)](images/enum-inheritance-restrictions-whiteboard.png)
+
+**Takeaway:** Use **composition** (fields, methods, interfaces) when you need extra behavior around enums—not **subclassing**. For switch-on-enum patterns, see [enum vs switch](#enum-vs-switch) and [Switch with Enums](./switch.md).
