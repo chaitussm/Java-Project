@@ -1,5 +1,7 @@
 package com.enumeration;
 
+import java.lang.reflect.Method;
+
 enum Protein {
     whey, casein, soy, yeast, plant;
 }
@@ -8,6 +10,46 @@ public class enumBasics {
 
     enum food {
         fruits, vegetables, grains, nuts, legumes;
+    }
+
+    public static <T extends Enum<T>> void demonstrateValuesMethod() {
+        System.out.println("Demonstrating basic enum usage:");
+        for (T p : Protein.values()) {
+            System.out.println(p);
+        }
+        for (T f : food.values()) {
+            System.out.println(f);
+        }
+    }
+
+    // values() methods
+    // Fixed: Dynamically invokes the static values() method via Reflection
+    @SuppressWarnings("unchecked")
+    public static <T extends Enum<T>> void demonstrateValuesMethodV1(Class<T> enumClass) {
+        System.out
+                .println("--- Demonstrating values() method via Reflection for " + enumClass.getSimpleName() + " ---");
+
+        try {
+            // 1. Find the static values() method declared inside the specific enum class
+            Method valuesMethod = enumClass.getMethod("values");
+
+            // 2. Invoke the method (passing null because it is a static method) and cast to
+            // array
+            T[] constants = (T[]) valuesMethod.invoke(null);
+
+            // First iteration
+            for (T p : constants) {
+                System.out.println(p);
+            }
+
+            // Second iteration
+            for (T f : constants) {
+                System.out.println(f);
+            }
+
+        } catch (Exception e) {
+            System.out.println("Failed to invoke values() method: " + e.getMessage());
+        }
     }
 
     // Iterates through any provided Enum class type
@@ -51,5 +93,12 @@ public class enumBasics {
         fetchSingleDataFromEnum(food.class, "grains");
         fetchSingleDataFromEnum(food.class, "nuts");
         fetchSingleDataFromEnum(food.class, "legumes");
+
+        // 3. Demonstrate values() method for both enums
+        System.out.println("\n--- Demonstrating values() method for Protein ---");
+        demonstrateValuesMethodV1(Protein.class);
+
+        System.out.println("\n--- Demonstrating values() method for food ---");
+        demonstrateValuesMethodV1(food.class);
     }
 }
