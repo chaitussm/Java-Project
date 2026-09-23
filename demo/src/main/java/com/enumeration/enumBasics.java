@@ -1,7 +1,5 @@
 package com.enumeration;
 
-import java.lang.reflect.Method;
-
 enum Protein {
     whey, casein, soy, yeast, plant;
 }
@@ -12,40 +10,19 @@ public class enumBasics {
         fruits, vegetables, grains, nuts, legumes;
     }
 
-    /** Prints each constant from a {@code values()} array (compiler-generated per enum type). */
-    private static <T extends Enum<T>> void printEnumValues(T[] values) {
-        for (T constant : values) {
-            System.out.println(constant);
-        }
-    }
-
     /**
-     * Demonstrates {@code values()} on {@link Protein} and nested {@link food}.
-     * Each enum type has its own {@code values()} return type; one generic {@code T} cannot
-     * iterate both {@code Protein.values()} and {@code food.values()} in the same loop.
+     * Demonstrates enum constants for any enum type passed at runtime (same data as {@code values()},
+     * without calling {@code values()} via {@link java.lang.reflect.Method}).
      */
-    public static void demonstrateValuesMethod() {
-        System.out.println("Demonstrating basic enum usage:");
-        System.out.println("--- Protein ---");
-        printEnumValues(Protein.values());
-        System.out.println("--- food ---");
-        printEnumValues(food.values());
-    }
-
-    /** Invokes the compiler-generated static {@code values()} method via reflection. */
-    @SuppressWarnings("unchecked")
-    public static <T extends Enum<T>> void demonstrateValuesMethodV1(Class<T> enumClass) {
-        System.out.println(
-                "--- Demonstrating values() method via Reflection for " + enumClass.getSimpleName() + " ---");
-
-        try {
-            Method valuesMethod = enumClass.getMethod("values");
-            T[] constants = (T[]) valuesMethod.invoke(null);
-            for (T constant : constants) {
-                System.out.println(constant);
-            }
-        } catch (ReflectiveOperationException e) {
-            System.out.println("Failed to invoke values() method: " + e.getMessage());
+    public static <T extends Enum<T>> void demonstrateValuesMethod(Class<T> enumClass) {
+        System.out.println("Demonstrating basic enum usage for " + enumClass.getSimpleName() + ":");
+        T[] constants = enumClass.getEnumConstants();
+        if (constants == null) {
+            System.out.println("Error: " + enumClass.getSimpleName() + " is not an enum type");
+            return;
+        }
+        for (T constant : constants) {
+            System.out.println(constant);
         }
     }
 
@@ -68,7 +45,9 @@ public class enumBasics {
     }
 
     public static void main(String[] args) {
-        demonstrateValuesMethod();
+        demonstrateValuesMethod(Protein.class);
+        System.out.println();
+        demonstrateValuesMethod(food.class);
 
         System.out.println("\n--- Via Class.getEnumConstants() ---");
         iterateAllInEnums(Protein.class);
@@ -90,11 +69,5 @@ public class enumBasics {
         fetchSingleDataFromEnum(food.class, "grains");
         fetchSingleDataFromEnum(food.class, "nuts");
         fetchSingleDataFromEnum(food.class, "legumes");
-
-        System.out.println("\n--- Demonstrating values() method for Protein ---");
-        demonstrateValuesMethodV1(Protein.class);
-
-        System.out.println("\n--- Demonstrating values() method for food ---");
-        demonstrateValuesMethodV1(food.class);
     }
 }
