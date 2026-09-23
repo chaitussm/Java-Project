@@ -532,22 +532,22 @@ A pulse has been created.
 End of main method
 ```
 
-| Line | When it runs | Why |
-| ---- | ------------ | --- |
-| 1–4 | During **`pulses` class initialization** | One `println` per constant as each static instance is constructed |
-| 5 | Inside **`main`** | Runs only after `pulses` is fully initialized |
+| Line | When it runs                             | Why                                                               |
+| ---- | ---------------------------------------- | ----------------------------------------------------------------- |
+| 1–4  | During **`pulses` class initialization** | One `println` per constant as each static instance is constructed |
+| 5    | Inside **`main`**                        | Runs only after `pulses` is fully initialized                     |
 
 ### Point-by-point — why four constructor calls?
 
-| # | Concept | Detail |
-| - | ------- | ------ |
-| 1 | **Constants are objects** | Each of `rajma`, `urad`, `moong`, `chana` is a **distinct object** on the heap (see [Rules of enum constants](#rules-of-enum-constants)). |
-| 2 | **Static fields are created together** | The compiler emits `public static final pulses rajma = new pulses(...);` (and the same for every constant). All of these run inside the enum’s **static initializer** when the class is first used. |
-| 3 | **First touch loads the whole enum** | Reading `pulses.rajma` in `main` forces the JVM to **initialize class `pulses`**. Initialization **must** create **all** constants—not only `rajma`. |
-| 4 | **Constructor per constant** | Your `pulses() { ... }` is invoked **once per** `new pulses(...)` the compiler generated. Four constants ⇒ **four** constructor calls. |
-| 5 | **Order** | Constants are created in **declaration order** (`rajma` → `urad` → `moong` → `chana`). |
-| 6 | **No lazy per-use ctor** | Java does **not** construct `urad` only when you first reference `urad`. The set of constants is fixed at class-init time. |
-| 7 | **`pl` is a reference** | `pulses pl = pulses.rajma` copies the **existing** reference; it does **not** run the constructor again. |
+| #   | Concept                                | Detail                                                                                                                                                                                              |
+| --- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Constants are objects**              | Each of `rajma`, `urad`, `moong`, `chana` is a **distinct object** on the heap (see [Rules of enum constants](#rules-of-enum-constants)).                                                           |
+| 2   | **Static fields are created together** | The compiler emits `public static final pulses rajma = new pulses(...);` (and the same for every constant). All of these run inside the enum’s **static initializer** when the class is first used. |
+| 3   | **First touch loads the whole enum**   | Reading `pulses.rajma` in `main` forces the JVM to **initialize class `pulses`**. Initialization **must** create **all** constants—not only `rajma`.                                                |
+| 4   | **Constructor per constant**           | Your `pulses() { ... }` is invoked **once per** `new pulses(...)` the compiler generated. Four constants ⇒ **four** constructor calls.                                                              |
+| 5   | **Order**                              | Constants are created in **declaration order** (`rajma` → `urad` → `moong` → `chana`).                                                                                                              |
+| 6   | **No lazy per-use ctor**               | Java does **not** construct `urad` only when you first reference `urad`. The set of constants is fixed at class-init time.                                                                          |
+| 7   | **`pl` is a reference**                | `pulses pl = pulses.rajma` copies the **existing** reference; it does **not** run the constructor again.                                                                                            |
 
 ### Compiler-generated shape (conceptual)
 
@@ -645,11 +645,11 @@ flowchart LR
 
 **Myth vs fact:**
 
-| Myth | Fact |
-| ---- | ---- |
+| Myth                                          | Fact                                                         |
+| --------------------------------------------- | ------------------------------------------------------------ |
 | “I only used `rajma`, so only one ctor runs.” | First use of **any** constant initializes **all** constants. |
-| “`pl = pulses.rajma` creates a new pulse.” | It reuses the **singleton** created at class-init. |
-| “Enums are like `int` constants.” | They are **objects** with optional instance constructors. |
+| “`pl = pulses.rajma` creates a new pulse.”    | It reuses the **singleton** created at class-init.           |
+| “Enums are like `int` constants.”             | They are **objects** with optional instance constructors.    |
 
 **Run:**
 
@@ -862,3 +862,15 @@ semicolon.
 
 An enum can contain constructor enum constructor will be executed separately for every enum constant at the time of enum class loading 
 automatically
+
+NOTE: 
+
+Inside enum we can declare methods but should be concrete methods only and we can't declare abstract methods
+
+case 1: Every enum constant represents an object of the type enum hence whatever methods we can apply on normal java objects, can be applicable 
+        on enum constants also 
+Example: refer com/enumeration/enumSpecialScenarios/enumCaseOne.java
+
+If we want to use any class or interface directly from outside package then the required import is normal import 
+
+If we want to access static members without class name then the required import is static import 
