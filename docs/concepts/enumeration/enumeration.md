@@ -1,7 +1,7 @@
 # Java Enumeration (`enum`)
 
 > Guide: named constants, **`Fruits`** architecture, reflection-style iteration, and **`Enum.valueOf`**.  
-> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`EnumBasics.java`](../../../demo/src/main/java/com/enumeration/EnumBasics.java)
+> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`EnumBasics.java`](../../../demo/src/main/java/com/enumeration/EnumBasics.java) · [Switch on enums](./switch.md)
 
 > **Navigation:** Use **Ctrl+click** on Guide map / TOC links to jump to a section in preview.
 
