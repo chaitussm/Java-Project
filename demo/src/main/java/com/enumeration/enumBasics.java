@@ -12,42 +12,39 @@ public class enumBasics {
         fruits, vegetables, grains, nuts, legumes;
     }
 
-    public static <T extends Enum<T>> void demonstrateValuesMethod() {
-        System.out.println("Demonstrating basic enum usage:");
-        for (T p : Protein.values()) {
-            System.out.println(p);
-        }
-        for (T f : food.values()) {
-            System.out.println(f);
+    /** Prints each constant from a {@code values()} array (compiler-generated per enum type). */
+    private static <T extends Enum<T>> void printEnumValues(T[] values) {
+        for (T constant : values) {
+            System.out.println(constant);
         }
     }
 
-    // values() methods
-    // Fixed: Dynamically invokes the static values() method via Reflection
+    /**
+     * Demonstrates {@code values()} on {@link Protein} and nested {@link food}.
+     * Each enum type has its own {@code values()} return type; one generic {@code T} cannot
+     * iterate both {@code Protein.values()} and {@code food.values()} in the same loop.
+     */
+    public static void demonstrateValuesMethod() {
+        System.out.println("Demonstrating basic enum usage:");
+        System.out.println("--- Protein ---");
+        printEnumValues(Protein.values());
+        System.out.println("--- food ---");
+        printEnumValues(food.values());
+    }
+
+    /** Invokes the compiler-generated static {@code values()} method via reflection. */
     @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> void demonstrateValuesMethodV1(Class<T> enumClass) {
-        System.out
-                .println("--- Demonstrating values() method via Reflection for " + enumClass.getSimpleName() + " ---");
+        System.out.println(
+                "--- Demonstrating values() method via Reflection for " + enumClass.getSimpleName() + " ---");
 
         try {
-            // 1. Find the static values() method declared inside the specific enum class
             Method valuesMethod = enumClass.getMethod("values");
-
-            // 2. Invoke the method (passing null because it is a static method) and cast to
-            // array
             T[] constants = (T[]) valuesMethod.invoke(null);
-
-            // First iteration
-            for (T p : constants) {
-                System.out.println(p);
+            for (T constant : constants) {
+                System.out.println(constant);
             }
-
-            // Second iteration
-            for (T f : constants) {
-                System.out.println(f);
-            }
-
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             System.out.println("Failed to invoke values() method: " + e.getMessage());
         }
     }
@@ -71,7 +68,9 @@ public class enumBasics {
     }
 
     public static void main(String[] args) {
-        // 1. Iterate through the enums
+        demonstrateValuesMethod();
+
+        System.out.println("\n--- Via Class.getEnumConstants() ---");
         iterateAllInEnums(Protein.class);
         iterateAllInEnums(food.class);
 
@@ -79,7 +78,6 @@ public class enumBasics {
         System.out.println("Total number of protein types: " + Protein.values().length);
         System.out.println("Total number of food types: " + food.values().length);
 
-        // 2. Fetch single data points dynamically
         System.out.println("\n--- Fetching Single Constants ---");
         fetchSingleDataFromEnum(Protein.class, "whey");
         fetchSingleDataFromEnum(Protein.class, "casein");
@@ -87,14 +85,12 @@ public class enumBasics {
         fetchSingleDataFromEnum(Protein.class, "yeast");
         fetchSingleDataFromEnum(Protein.class, "plant");
 
-        // This will now successfully fetch because we pass food.class
         fetchSingleDataFromEnum(food.class, "fruits");
         fetchSingleDataFromEnum(food.class, "vegetables");
         fetchSingleDataFromEnum(food.class, "grains");
         fetchSingleDataFromEnum(food.class, "nuts");
         fetchSingleDataFromEnum(food.class, "legumes");
 
-        // 3. Demonstrate values() method for both enums
         System.out.println("\n--- Demonstrating values() method for Protein ---");
         demonstrateValuesMethodV1(Protein.class);
 
