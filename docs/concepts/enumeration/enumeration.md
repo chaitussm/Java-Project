@@ -547,4 +547,4 @@ if we are trying to decalre inside a method we will get compile time errror sayi
 1. until 1.4 version the allowed argument types for the switch statement are byte, short , char, int but from 1.5 version onwards corresponding 
 wrapper classes and enum types are allowed 
 2. from 1.7 version onwards Strign type also allowed
-3. If we pass enum type as argument to switch statement then every case label should be valid enum constant
+3. If we pass enum type as argument to switch statement then every case label should be valid enum constant otherwise we will get compile time   error
