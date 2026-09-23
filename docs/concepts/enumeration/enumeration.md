@@ -49,6 +49,10 @@
   - [Run the demo](#run-the-demo)
 - [enum vs switch](#enum-vs-switch)
 - [enum vs Inheritance](#enum-vs-inheritance)
+  - [Whiteboard — four forbidden `extends` patterns](#whiteboard--four-forbidden-extends-patterns)
+  - [Compilation errors when a class extends an enum](#compilation-errors-when-a-class-extends-an-enum)
+  - [Flow diagrams](#flow-diagrams)
+  - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
 <!-- /TOC -->
 
 ---
@@ -556,4 +560,99 @@ wrapper classes and enum types are allowed
 
 1. Every enum is always direct child class of java.lang.enum and hence our enum can't extends any other enum ( because jave won't support for multiple inheritance)  
 2. Every enum is always final implicitly and hence for enum we can't create child enum
-3. because of above reasons we can conclude inheritance concept not applicable for enum explicitly and we can't use extends keyword for enum 
+3. because of above reasons we can conclude inheritance concept not applicable for enum explicitly and we can't use extends keyword for enum
+
+The classroom whiteboard below expands each rule with **invalid code examples**, **compiler errors**, and **flow diagrams**.
+
+### Whiteboard — four forbidden `extends` patterns
+
+| # | What you might write | Allowed? | Why (links to points 1–3 above) |
+| - | -------------------- | -------- | ------------------------------- |
+| 1 | `enum X { }` then `enum Y extends X { }` | **No** | Enum is already a child of `java.lang.Enum` — no second parent enum (**point 1**). |
+| 2 | `enum X extends java.lang.Enum { }` | **No** | `extends java.lang.Enum` is **implicit**; Java has no multiple inheritance (**point 1**). |
+| 3 | `class X { }` then `enum Y extends X { }` | **No** | Enum may only extend `java.lang.Enum`, not an ordinary class (**point 3** — no `extends` on enum). |
+| 4 | `enum X { }` then `class Y extends X { }` | **No** | Enum is **`final`** — no child class or child enum (**point 2**). |
+
+**Point-by-point (same slide, reading left to right):**
+
+1. **Enum → enum:** `enum Y extends X` does not compile. Constants belong to one closed enum type; there is no “sub-enum.”
+2. **Enum → `java.lang.Enum` (explicit):** The compiler generates `final class X extends Enum<X>`. You cannot write `extends java.lang.Enum` yourself.
+3. **Enum → ordinary class:** `enum Y extends X` fails even when `X` is a simple class — enums are not general subclasses.
+4. **Class → enum:** `class Y extends X` when `X` is an enum fails with **cannot inherit from final `X`** and **enum types are not extensible**.
+
+### Compilation errors when a class extends an enum
+
+```java
+enum X { }
+
+class Y extends X { }  // compilation error
+```
+
+| Error | Meaning |
+| ----- | ------- |
+| **CE1:** `cannot inherit from final X` | Desugared enum type is **`final`** (see **point 2**). |
+| **CE2:** `enum types are not extensible` | Language rule: no type may subclass an enum. |
+
+### Flow diagrams
+
+**Can this declaration use `extends`?**
+
+```mermaid
+flowchart TD
+  START["Declaration uses extends"] --> KIND{"What is being declared?"}
+  KIND -->|enum| ETARGET{"extends target?"}
+  KIND -->|class| CTARGET{"extends target?"}
+  ETARGET -->|another enum| BAD1["Compile error — point 1"]
+  ETARGET -->|java.lang.Enum| BAD2["Compile error — already implicit"]
+  ETARGET -->|ordinary class| BAD3["Compile error — point 3"]
+  ETARGET -->|none| OK1["Valid enum"]
+  CTARGET -->|enum type| BAD4["CE: final / not extensible — point 2"]
+  CTARGET -->|class or Object| OK2["Valid class"]
+```
+
+**What the compiler does for every enum (implicit superclass):**
+
+```mermaid
+flowchart LR
+  SRC["enum Fruits { mangoes, pomegrante; }"] --> COMP["javac desugaring"]
+  COMP --> CLS["final class Fruits extends Enum of Fruits"]
+  CLS --> CONST["static final Fruits mangoes, pomegrante"]
+```
+
+**Four patterns from the whiteboard:**
+
+```mermaid
+flowchart TB
+  subgraph p1 ["1 — enum extends enum"]
+    A1["enum X"] --> A2["enum Y extends X"]
+    A2 --> X1["Not allowed"]
+  end
+  subgraph p2 ["2 — enum extends Enum"]
+    B1["enum X extends java.lang.Enum"] --> X2["Not allowed"]
+  end
+  subgraph p3 ["3 — enum extends class"]
+    C1["class X"] --> C2["enum Y extends X"]
+    C2 --> X3["Not allowed"]
+  end
+  subgraph p4 ["4 — class extends enum"]
+    D1["enum X"] --> D2["class Y extends X"]
+    D2 --> X4["Not allowed — final / not extensible"]
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant Dev as Developer
+  participant Comp as javac
+  participant Enum as enum X
+  Dev->>Comp: class Y extends X
+  Comp->>Enum: check superclass
+  Enum-->>Comp: final, not extensible
+  Comp-->>Dev: compilation failed
+```
+
+### Classroom slide (inheritance restrictions)
+
+![Enum vs inheritance — four forbidden extends patterns (whiteboard)](images/enum-inheritance-restrictions-whiteboard.png)
+
+**Takeaway:** Prefer **composition** (fields, methods, interfaces) for extra behavior around enums—not subclassing. For `switch` on enums, see [enum vs switch](#enum-vs-switch) and [Switch with Enums](./switch.md).
