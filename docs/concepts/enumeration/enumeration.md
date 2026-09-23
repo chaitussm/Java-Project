@@ -62,7 +62,7 @@
     - [Flow diagrams](#flow-diagrams)
     - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
 - [values()](#values)
-- [enum and constrcutors](#enum-and-constrcutors)
+- [enum and constructors](#enum-and-constructors)
 <!-- /TOC -->
 
 ---
@@ -858,7 +858,7 @@ NOTE:
 In addition to constants if we are taking any extra member like a method then list of constants should be in the first line and should ends with 
 semicolon.
 
-# enum and constrcutors
+# enum and constructors
 
 An enum can contain constructor enum constructor will be executed separately for every enum constant at the time of enum class loading 
 automatically
