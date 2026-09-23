@@ -61,6 +61,8 @@
     - [Compilation errors when a class extends an enum](#compilation-errors-when-a-class-extends-an-enum)
     - [Flow diagrams](#flow-diagrams)
     - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
+- [values()](#values)
+- [enum and constrcutors](#enum-and-constrcutors)
 <!-- /TOC -->
 
 ---
@@ -842,4 +844,21 @@ sequenceDiagram
 
 # values() 
 
+1. Every enum implicitly contaiusn values() to list out all values present inside enum 
+2. value() is not present in java.lang.ENUM and Object classes enum keyword implicitly provides this method 
+3. Inside enum order of constants is important and we can represent this order by using ordinal value 
+4. We can find ordinal value of enum constant by using ordinal method 
+   
+In old languages enum we can take only constants but in java enum in addition to constants we can take methods, constructors , normal variables 
+etc. Hence java enum is more powerful than old languages enum 
 
+Even inside java enum we can declare main method and we can run enum class directly from command prompt 
+
+NOTE: 
+In addition to constants if we are taking any extra member like a method then list of constants should be in the first line and should ends with 
+semicolon.
+
+# enum and constrcutors
+
+An enum can contain constructor enum constructor will be executed separately for every enum constant at the time of enum class loading 
+automatically
