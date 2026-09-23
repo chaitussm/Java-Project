@@ -1,7 +1,7 @@
 # Java Enumeration (`enum`)
 
 > Guide: named constants, **`Fruits`** architecture, reflection-style iteration, and **`Enum.valueOf`**.  
-> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`EnumBasics.java`](../../../demo/src/main/java/com/enumeration/EnumBasics.java)
+> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`enumBasics.java`](../../../demo/src/main/java/com/enumeration/enumBasics.java) · [Switch on enums](./switch.md)
 
 > **Navigation:** Use **Ctrl+click** on Guide map / TOC links to jump to a section in preview.
 
@@ -312,7 +312,7 @@ Static field Fruits.mangoes  ──points to──►  [ Fruits object | name="m
 
 ## EnumBasics — `iterateAllInEnums`
 
-Program: [`EnumBasics.java`](../../../demo/src/main/java/com/enumeration/EnumBasics.java) (`Protein`, nested `food`, and generic helpers).
+Program: [`enumBasics.java`](../../../demo/src/main/java/com/enumeration/enumBasics.java) (`Protein`, nested `food`, and generic helpers).
 
 ```java
 public static <T extends Enum<T>> void iterateAllInEnums(Class<T> type) {
@@ -508,8 +508,8 @@ java com.advanced.enumeration.Fruits
 **EnumBasics (generic iteration + `valueOf`):**
 
 ```bash
-javac com/enumeration/EnumBasics.java
-java com.enumeration.EnumBasics
+javac com/enumeration/enumBasics.java
+java com.enumeration.enumBasics
 ```
 
 Example (`Fruits`):
