@@ -7,17 +7,17 @@
 
 ## Guide map
 
-| Jump to                                                               | Topic                         |
-| --------------------------------------------------------------------- | ----------------------------- |
-| [Introduction](#introduction)                                         | Why `enum`                    |
-| [Rules of enum constants](#rules-of-enum-constants)                   | `public static final` objects |
-| [Fruits example (source)](#fruits-example-source)                     | Your enum in source           |
-| [Internal architecture of `Fruits`](#internal-architecture-of-fruits) | Class desugaring + memory     |
-| [Printing enums and `toString()`](#printing-enums-and-tostring)       | `println` → `toString()` flow |
-| [EnumBasics — `iterateAllInEnums`](#enumbasics--iterateallinenums)   | `Class.getEnumConstants()` loop |
-| [EnumBasics — `fetchSingleDataFromEnum`](#enumbasics--fetchsingledatafromenum) | `Enum.valueOf` lookup |
-| [Compilation flow](#compilation-flow)                                 | Source → bytecode             |
-| [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)      | Whiteboard reference          |
+| Jump to                                                                        | Topic                           |
+| ------------------------------------------------------------------------------ | ------------------------------- |
+| [Introduction](#introduction)                                                  | Why `enum`                      |
+| [Rules of enum constants](#rules-of-enum-constants)                            | `public static final` objects   |
+| [Fruits example (source)](#fruits-example-source)                              | Your enum in source             |
+| [Internal architecture of `Fruits`](#internal-architecture-of-fruits)          | Class desugaring + memory       |
+| [Printing enums and `toString()`](#printing-enums-and-tostring)                | `println` → `toString()` flow   |
+| [EnumBasics — `iterateAllInEnums`](#enumbasics--iterateallinenums)             | `Class.getEnumConstants()` loop |
+| [EnumBasics — `fetchSingleDataFromEnum`](#enumbasics--fetchsingledatafromenum) | `Enum.valueOf` lookup           |
+| [Compilation flow](#compilation-flow)                                          | Source → bytecode               |
+| [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)               | Whiteboard reference            |
 
 ---
 
@@ -45,6 +45,7 @@
   - [Compilation flow](#compilation-flow)
   - [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)
   - [Run the demo](#run-the-demo)
+- [enum vs switch](#enum-vs-switch)
 <!-- /TOC -->
 
 ---
@@ -324,14 +325,14 @@ public static <T extends Enum<T>> void iterateAllInEnums(Class<T> type) {
 
 ### Point-by-point architecture
 
-| # | Line / construct | What happens internally |
-| - | ---------------- | ------------------------ |
-| 1 | `<T extends Enum<T>>` | **Recursive generic bound:** `T` must be an enum type whose superclass is `Enum<T>` (e.g. `Protein`, `food`). Lets one method work for any enum. |
-| 2 | `Class<T> type` | **Runtime token** for the enum class (e.g. `Protein.class`). JVM uses it to read static metadata compiled into that class. |
-| 3 | `type.getSimpleName()` | Reflection: returns short name (`Protein`, `food`) for the header line. |
-| 4 | `type.getEnumConstants()` | Returns **array of all enum instances** (compiler generated `values()` array, exposed via `Class`). Order = declaration order. |
-| 5 | `for (T p : ...)` | Enhanced for-loop over that array; each `p` is a **reference** to an existing singleton object (not `new` per iteration). |
-| 6 | `System.out.println(p)` | `println(Object)` → **`p.toString()`** → constant name (`whey`, `fruits`, …). See [Printing enums and `toString()`](#printing-enums-and-tostring). |
+| #   | Line / construct          | What happens internally                                                                                                                            |
+| --- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `<T extends Enum<T>>`     | **Recursive generic bound:** `T` must be an enum type whose superclass is `Enum<T>` (e.g. `Protein`, `food`). Lets one method work for any enum.   |
+| 2   | `Class<T> type`           | **Runtime token** for the enum class (e.g. `Protein.class`). JVM uses it to read static metadata compiled into that class.                         |
+| 3   | `type.getSimpleName()`    | Reflection: returns short name (`Protein`, `food`) for the header line.                                                                            |
+| 4   | `type.getEnumConstants()` | Returns **array of all enum instances** (compiler generated `values()` array, exposed via `Class`). Order = declaration order.                     |
+| 5   | `for (T p : ...)`         | Enhanced for-loop over that array; each `p` is a **reference** to an existing singleton object (not `new` per iteration).                          |
+| 6   | `System.out.println(p)`   | `println(Object)` → **`p.toString()`** → constant name (`whey`, `fruits`, …). See [Printing enums and `toString()`](#printing-enums-and-tostring). |
 
 ```mermaid
 flowchart TD
@@ -389,14 +390,14 @@ public static <T extends Enum<T>> void fetchSingleDataFromEnum(Class<T> enumClas
 
 ### Point-by-point architecture
 
-| # | Line / construct | What happens internally |
-| - | ---------------- | ------------------------ |
-| 1 | `Class<T> enumClass` | Which enum type to search (`Protein.class`, `food.class`, …). |
-| 2 | `String name` | Exact constant **identifier** as text (`"whey"`, `"fruits"`). Case-sensitive. |
-| 3 | `Enum.valueOf(enumClass, name)` | Delegates to compiler-generated **`enumClass.valueOf(name)`**, which maps name → **existing static instance** (lookup in internal map / switch, not `new`). |
-| 4 | `T p` | Reference to the singleton constant on the heap. |
-| 5 | `println("Fetched: " + p)` | String concat calls **`p.toString()`** → prints `Fetched: whey`. |
-| 6 | `catch (IllegalArgumentException)` | Thrown when `name` is not a declared constant (e.g. typo or wrong enum class). |
+| #   | Line / construct                   | What happens internally                                                                                                                                     |
+| --- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `Class<T> enumClass`               | Which enum type to search (`Protein.class`, `food.class`, …).                                                                                               |
+| 2   | `String name`                      | Exact constant **identifier** as text (`"whey"`, `"fruits"`). Case-sensitive.                                                                               |
+| 3   | `Enum.valueOf(enumClass, name)`    | Delegates to compiler-generated **`enumClass.valueOf(name)`**, which maps name → **existing static instance** (lookup in internal map / switch, not `new`). |
+| 4   | `T p`                              | Reference to the singleton constant on the heap.                                                                                                            |
+| 5   | `println("Fetched: " + p)`         | String concat calls **`p.toString()`** → prints `Fetched: whey`.                                                                                            |
+| 6   | `catch (IllegalArgumentException)` | Thrown when `name` is not a declared constant (e.g. typo or wrong enum class).                                                                              |
 
 ```mermaid
 flowchart TD
@@ -425,11 +426,11 @@ sequenceDiagram
 
 ### `iterateAllInEnums` vs `fetchSingleDataFromEnum`
 
-| | `iterateAllInEnums` | `fetchSingleDataFromEnum` |
-| - | ------------------- | ------------------------- |
-| **API** | `getEnumConstants()` | `Enum.valueOf(class, name)` |
-| **Input** | `Class<T>` only | `Class<T>` + constant name |
-| **Output** | All constants in order | One constant or error |
+|              | `iterateAllInEnums`      | `fetchSingleDataFromEnum`       |
+| ------------ | ------------------------ | ------------------------------- |
+| **API**      | `getEnumConstants()`     | `Enum.valueOf(class, name)`     |
+| **Input**    | `Class<T>` only          | `Class<T>` + constant name      |
+| **Output**   | All constants in order   | One constant or error           |
 | **Use case** | Menus, listings, reports | Config keys, parsing user input |
 
 ```mermaid
@@ -535,3 +536,15 @@ Fetched: fruits
 The last line of `Fruits` output shows runtime type is the enum class itself, not a separate “wrapper” type.
 
 Every enum constant is always public static final and hence we can access enum constant by using enum name 
+
+1. enum should be inside or outside of class but enum shouldnt be created inside a method (because static values not allowed in method)
+if we are trying to decalre inside a method we will get compile time errror sayign "Enum tyupes must not be local"
+2. If we declare enum outside of the class the applicable modifiers are public, default, strictfp
+3. If we declare enum inside the class the applicable modifiers are public , default, strictfp,private,public and static.
+
+# enum vs switch
+
+1. until 1.4 version the allowed argument types for the switch statement are byte, short , char, int but from 1.5 version onwards corresponding 
+wrapper classes and enum types are allowed 
+2. from 1.7 version onwards Strign type also allowed
+3. If we pass enum type as argument to switch statement then every case label should be valid enum constant

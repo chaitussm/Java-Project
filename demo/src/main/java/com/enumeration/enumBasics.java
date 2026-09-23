@@ -4,7 +4,7 @@ enum Protein {
     whey, casein, soy, yeast, plant;
 }
 
-public class EnumBasics {
+public class enumBasics {
 
     enum food {
         fruits, vegetables, grains, nuts, legumes;
