@@ -10,7 +10,8 @@
 | Jump to | Topic |
 | ------- | ----- |
 | [Overview](#overview) | Why switch on enums |
-| [Pulse enum & program](#pulse-enum--program) | Source structure |
+| [pulses enum & program](#pulses-enum--program) | Source structure |
+| [V1 — multi-case arrow](#v1--multi-case-arrow-printenumwithswitchstatementv1) | Combined case labels |
 | [V2 — arrow syntax](#v2--arrow-syntax-printenumwithswitchstatementv2) | Java 14+ enhanced switch |
 | [V3 — colon syntax](#v3--colon-syntax-printenumwithswitchstatementv3) | Classic switch + `break` |
 | [V2 vs V3 comparison](#v2-vs-v3-comparison-table) | Table + slide |
@@ -23,7 +24,8 @@
 - [Switch with Enums (`enumWithSwitchBasic`)](#switch-with-enums-enumwithswitchbasic)
   - [Guide map](#guide-map)
   - [Overview](#overview)
-  - [Pulse enum & program](#pulse-enum--program)
+  - [pulses enum & program](#pulses-enum--program)
+  - [V1 — multi-case arrow (`printEnumWithSwitchStatementV1`)](#v1--multi-case-arrow-printenumwithswitchstatementv1)
   - [V2 — arrow syntax (`printEnumWithSwitchStatementV2`)](#v2--arrow-syntax-printenumwithswitchstatementv2)
   - [V3 — colon syntax (`printEnumWithSwitchStatementV3`)](#v3--colon-syntax-printenumwithswitchstatementv3)
   - [V2 vs V3 comparison table](#v2-vs-v3-comparison-table)
@@ -35,13 +37,13 @@
 
 ## Overview
 
-An **enum** switch compares the **reference** of an enum constant (e.g. `Pulse.lentils`) against **case labels** that are enum constants. The JVM uses the constant’s **ordinal** / **name** under the hood, but you write **`case lentils:`** or **`case lentils ->`**.
+An **enum** switch compares the **reference** of an enum constant (e.g. `pulses.lentils`) against **case labels** that are enum constants. The JVM uses the constant’s **ordinal** / **name** under the hood, but you write **`case lentils:`** or **`case lentils ->`**.
 
 Both styles in this guide produce the **same output** when written correctly; they differ in **syntax**, **fall-through**, and **minimum Java version**.
 
 ```mermaid
 flowchart LR
-  E["enum Pulse"]
+  E["enum pulses"]
   S["switch (pulse)"]
   OUT["println message"]
   E --> S --> OUT
@@ -49,31 +51,58 @@ flowchart LR
 
 ---
 
-## Pulse enum & program
+## pulses enum & program
 
 ```java
-enum Pulse {
-    lentils, chickpeas, beans, peas
+enum pulses {
+    lentils, chickpeas, beans, peas;
 }
 ```
 
 | Method | Syntax | Role |
 | ------ | ------ | ---- |
+| `printEnumWithSwitchStatementV1` | `case a, b, c ->` | Multi-label arrow (same body) |
 | `printEnumWithSwitchStatementV2` | `case x ->` | Enhanced switch (no `break`) |
 | `printEnumWithSwitchStatementV3` | `case x:` + `break` | Traditional switch |
 | `printEnumWithSwitchFallThroughDemo` | missing `break` | Shows accidental fall-through |
 
 ---
 
+## V1 — multi-case arrow (`printEnumWithSwitchStatementV1`)
+
+```java
+public static void printEnumWithSwitchStatementV1(pulses pulse) {
+    switch (pulse) {
+        case lentils, chickpeas, beans, peas ->
+            System.out.println("Pulse: " + pulse);
+    }
+}
+```
+
+| # | Point | Detail |
+| - | ----- | ------ |
+| 1 | **Multi-case label** | `case lentils, chickpeas, beans, peas` — any of these match the same arrow branch. |
+| 2 | **`println(pulse)`** | Uses enum **`toString()`** → prints constant name (`lentils`, etc.). |
+| 3 | **No fall-through** | Arrow form still exits after one branch. |
+
+```mermaid
+flowchart TD
+  IN["pulse reference"] --> SW{"switch"}
+  SW -->|any of 4 constants| OUT["println Pulse: + name"]
+  OUT --> END["exit switch"]
+```
+
+---
+
 ## V2 — arrow syntax (`printEnumWithSwitchStatementV2`)
 
 ```java
-public static void printEnumWithSwitchStatementV2(Pulse pulse) {
+public static void printEnumWithSwitchStatementV2(pulses pulse) {
     switch (pulse) {
-        case lentils -> System.out.println("V2: lentils are rich in protein.");
-        case chickpeas -> System.out.println("V2: chickpeas are great in hummus.");
-        case beans -> System.out.println("V2: beans are versatile legumes.");
-        case peas -> System.out.println("V2: peas are small but nutritious.");
+        case lentils -> System.out.println("Lentils are great!");
+        case chickpeas -> System.out.println("Chickpeas are versatile!");
+        case beans -> System.out.println("Beans are nutritious!");
+        case peas -> System.out.println("Peas are tasty!");
     }
 }
 ```
@@ -83,7 +112,7 @@ public static void printEnumWithSwitchStatementV2(Pulse pulse) {
 | # | Point | Detail |
 | - | ----- | ------ |
 | 1 | **Java version** | **Java 14+** (enhanced switch / switch rules for `->`). |
-| 2 | **`switch (pulse)`** | `pulse` must be an enum reference (`Pulse.lentils`, etc.). |
+| 2 | **`switch (pulse)`** | `pulse` must be an enum reference (`pulses.lentils`, etc.). |
 | 3 | **`case lentils ->`** | **Arrow rule:** if match, run **only** the right-hand side, then **exit** the switch (implicit break). |
 | 4 | **No fall-through** | Execution does **not** fall into `chickpeas` after `lentils`. |
 | 5 | **Scope** | One expression per arrow, or a **`{ }` block** for multiple statements. |
@@ -107,7 +136,7 @@ sequenceDiagram
   participant M as main
   participant V2 as printEnumWithSwitchStatementV2
   participant SW as switch arrow
-  M->>V2: Pulse.lentils
+  M->>V2: pulses.lentils
   V2->>SW: match case lentils
   SW->>SW: run single println
   Note over SW: no fall-through
@@ -126,13 +155,13 @@ pie showData
 ## V3 — colon syntax (`printEnumWithSwitchStatementV3`)
 
 ```java
-public static void printEnumWithSwitchStatementV3(Pulse pulse) {
+public static void printEnumWithSwitchStatementV3(pulses pulse) {
     switch (pulse) {
         case lentils:
-            System.out.println("V3: lentils are rich in protein.");
+            System.out.println("Lentils are great!");
             break;
         case chickpeas:
-            System.out.println("V3: chickpeas are great in hummus.");
+            System.out.println("Chickpeas are versatile!");
             break;
         // ... beans, peas with break each
     }
@@ -227,7 +256,7 @@ flowchart LR
 ## Fall-through demo (V3)
 
 ```java
-public static void printEnumWithSwitchFallThroughDemo(Pulse pulse) {
+public static void printEnumWithSwitchFallThroughDemo(pulses pulse) {
     switch (pulse) {
         case lentils:
             System.out.println("V3 fall-through: lentils line (no break below)");
@@ -240,7 +269,7 @@ public static void printEnumWithSwitchFallThroughDemo(Pulse pulse) {
 }
 ```
 
-For `Pulse.lentils`, **both** println lines run. V2 arrow syntax **cannot** express this accident without using multiple labels or explicit block logic — another reason enhanced switch is safer for enum dispatch.
+For `pulses.lentils`, **both** println lines run. V2 arrow syntax **cannot** express this accident without using multiple labels or explicit block logic — another reason enhanced switch is safer for enum dispatch.
 
 ---
 
@@ -255,15 +284,15 @@ java com.enumeration.enumWithSwitchBasic
 **Sample output:**
 
 ```text
-=== Enhanced switch (arrow ->) V2 ===
-V2: lentils are rich in protein.
-V2: chickpeas are great in hummus.
-
-=== Traditional switch (colon :) V3 ===
-V3: lentils are rich in protein.
-V3: beans are versatile legumes.
-
-=== Fall-through demo (V3, missing break) ===
+Pulse: lentils
+...
+=== V2 arrow -> ===
+Lentils are great!
+...
+=== V3 colon : ===
+Lentils are great!
+...
+=== Fall-through demo ===
 V3 fall-through: lentils line (no break below)
 V3 fall-through: chickpeas line also runs
 ```
@@ -273,4 +302,4 @@ V3 fall-through: chickpeas line also runs
 ## See also
 
 - [enumeration.md](./enumeration.md) — enum architecture, `toString()` when printing constants
-- [EnumBasics.java](../../../demo/src/main/java/com/enumeration/EnumBasics.java) — iterate / `valueOf` on enums
+- [enumBasics.java](../../../demo/src/main/java/com/enumeration/enumBasics.java) — iterate / `valueOf` on enums
