@@ -63,6 +63,7 @@
     - [Classroom slide (inheritance restrictions)](#classroom-slide-inheritance-restrictions)
 - [values()](#values)
 - [enum and constructors](#enum-and-constructors)
+  - [Enum visibility and imports (Fish across packages)](#enum-visibility-and-imports-fish-across-packages)
 <!-- /TOC -->
 
 ---
@@ -862,6 +863,160 @@ semicolon.
 
 An enum can contain constructor enum constructor will be executed separately for every enum constant at the time of enum class loading 
 automatically
+
+### Enum visibility and imports (Fish across packages)
+
+Whiteboard: **`public enum Fish`** in **`pack1`**, then three consumer classes in **`pack2`**, **`pack3`**, and **`pack4`** each showing a different **import** style.
+
+![Enum import scenarios — type import vs static import (whiteboard)](images/enum-import-scenarios-whiteboard.png)
+
+**Source enum (`pack1`):**
+
+```java
+package pack1;
+
+public enum Fish {
+    STAR, GUPPY;
+}
+```
+
+Demos: [`pack1/Fish.java`](../../../demo/src/main/java/pack1/Fish.java) · [`pack2/Test1.java`](../../../demo/src/main/java/pack2/Test1.java) · [`pack3/Test2.java`](../../../demo/src/main/java/pack3/Test2.java) · [`pack4/Test3.java`](../../../demo/src/main/java/pack4/Test3.java).
+
+| Package | Class | What you write in code | Import required |
+| ------- | ----- | ---------------------- | --------------- |
+| `pack1` | `Fish` | (definition) | — |
+| `pack2` | `Test1` | `Fish f = Fish.GUPPY;` | `import pack1.Fish;` **or** `import pack1.*;` |
+| `pack3` | `Test2` | `System.out.println(STAR);` | `import static pack1.Fish.STAR;` **or** `import static pack1.Fish.*;` |
+| `pack4` | `Test3` | `Fish f = Fish.STAR;` **and** `println(GUPPY);` | **Both:** type import for `Fish` **and** static import for `GUPPY` (or `import static pack1.Fish.*;`) |
+
+#### Point-by-point
+
+| # | Idea | Detail |
+| - | ---- | ------ |
+| 1 | **`public enum`** | `Fish` is visible outside `pack1` only because the enum is **`public`**. Package-private enums stay inside their package. |
+| 2 | **Type import** | `import pack1.Fish;` brings the **type name** `Fish` into scope so you can write `Fish.GUPPY`. |
+| 3 | **Static import (one constant)** | `import static pack1.Fish.STAR;` brings the **field** `STAR` into scope — use `STAR` alone, not `Fish.STAR`. |
+| 4 | **Static import (all constants)** | `import static pack1.Fish.*;` imports every enum constant as a simple name (`STAR`, `GUPPY`). |
+| 5 | **Mixed usage (`Test3`)** | `Fish f = Fish.STAR` needs the **type** `Fish`. `println(GUPPY)` needs **static** import of `GUPPY` (unless you write `Fish.GUPPY`). |
+| 6 | **Constants are `public static final`** | Enum constants are static members of the enum class — static import targets those members. |
+| 7 | **Compile-time only** | Imports do not copy bytecode; they only tell the compiler where names resolve. |
+
+#### Scenario 1 — `pack2.Test1` (type import)
+
+```java
+package pack2;
+
+import pack1.Fish;   // or import pack1.*;
+
+public class Test1 {
+    public static void main(String[] args) {
+        Fish f = Fish.GUPPY;
+        System.out.println(f);   // GUPPY
+    }
+}
+```
+
+```mermaid
+flowchart LR
+  subgraph pack1 ["pack1"]
+    F["public enum Fish"]
+    G["GUPPY constant"]
+    F --> G
+  end
+  subgraph pack2 ["pack2.Test1"]
+    IMP["import pack1.Fish"]
+    USE["Fish f = Fish.GUPPY"]
+    IMP --> USE
+  end
+  G -.->|"qualified name"| USE
+```
+
+#### Scenario 2 — `pack3.Test2` (static import)
+
+```java
+package pack3;
+
+import static pack1.Fish.STAR;   // or import static pack1.Fish.*;
+
+public class Test2 {
+    public static void main(String[] args) {
+        System.out.println(STAR);   // STAR
+    }
+}
+```
+
+```mermaid
+flowchart LR
+  subgraph pack1 ["pack1.Fish"]
+    STAR["static STAR"]
+  end
+  subgraph pack3 ["pack3.Test2"]
+    SIMP["import static ... STAR"]
+    OUT["println(STAR)"]
+    SIMP --> OUT
+  end
+  STAR -.->|"simple name in scope"| OUT
+```
+
+#### Scenario 3 — `pack4.Test3` (type + static import)
+
+```java
+package pack4;
+
+import pack1.Fish;
+import static pack1.Fish.GUPPY;
+
+public class Test3 {
+    public static void main(String[] args) {
+        Fish f = Fish.STAR;
+        System.out.println(GUPPY);
+    }
+}
+```
+
+```mermaid
+flowchart TD
+  T["import pack1.Fish"] --> L1["Fish f = Fish.STAR"]
+  S["import static pack1.Fish.GUPPY"] --> L2["println(GUPPY)"]
+  L1 --> OK["Compiles"]
+  L2 --> OK
+```
+
+```mermaid
+flowchart LR
+  subgraph decisions ["Compiler name resolution"]
+    Q1{"Need type Fish?"}
+    Q1 -- Yes --> I1["import pack1.Fish"]
+    Q2{"Need bare STAR or GUPPY?"}
+    Q2 -- Yes --> I2["import static pack1.Fish.* or per-constant"]
+    Q1 -- No --> Q2
+  end
+```
+
+```mermaid
+pie showData
+    title Import style by scenario (whiteboard)
+    "Type import only (Test1)" : 33
+    "Static import only (Test2)" : 33
+    "Type + static (Test3)" : 34
+```
+
+**Run (from `demo/src/main/java`):**
+
+```bash
+javac pack1/Fish.java pack2/Test1.java pack3/Test2.java pack4/Test3.java
+java pack2.Test1
+java pack3.Test2
+java pack4.Test3
+```
+
+**Sample output:**
+
+```text
+GUPPY
+STAR
+GUPPY
+```
 
 NOTE: 
 
