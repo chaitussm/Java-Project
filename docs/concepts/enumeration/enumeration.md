@@ -1,7 +1,7 @@
 # Java Enumeration (`enum`)
 
 > Guide: named constants, **`Fruits`** architecture, reflection-style iteration, and **`Enum.valueOf`**.  
-> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`enumBasics.java`](../../../demo/src/main/java/com/enumeration/enumBasics.java) · [Switch on enums](./switch.md)
+> Demos: [`Fruits.java`](../../../demo/src/main/java/com/advanced/enumeration/Fruits.java) · [`enumBasics.java`](../../../demo/src/main/java/com/enumeration/enumBasics.java) · [`enumConstructor.java`](../../../demo/src/main/java/com/enumeration/enumConstructor.java) · [Switch on enums](./switch.md)
 
 > **Navigation:** Use **Ctrl+click** on Guide map / TOC links to jump to a section in preview.
 
@@ -17,6 +17,7 @@
 | [EnumBasics — `iterateAllInEnums`](#enumbasics--iterateallinenums)             | `Class.getEnumConstants()` loop |
 | [EnumBasics — `fetchSingleDataFromEnum`](#enumbasics--fetchsingledatafromenum) | `Enum.valueOf` lookup           |
 | [Compilation flow](#compilation-flow)                                          | Source → bytecode               |
+| [Enum constructor (`enumConstructor`)](#enum-constructor-enumconstructor)      | Why ctor runs 4× for one ref    |
 | [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)               | Whiteboard reference            |
 | [enum vs switch](#enum-vs-switch)                                              | Switch argument types           |
 | [enum vs Inheritance](#enum-vs-inheritance)                                    | Why `extends` is forbidden      |
@@ -45,6 +46,13 @@
     - [Point-by-point architecture](#point-by-point-architecture-1)
     - [`iterateAllInEnums` vs `fetchSingleDataFromEnum`](#iterateallinenums-vs-fetchsingledatafromenum)
   - [Compilation flow](#compilation-flow)
+  - [Enum constructor (`enumConstructor`)](#enum-constructor-enumconstructor)
+    - [Demo program](#demo-program)
+    - [Observed output](#observed-output)
+    - [Point-by-point — why four constructor calls?](#point-by-point--why-four-constructor-calls)
+    - [Compiler-generated shape (conceptual)](#compiler-generated-shape-conceptual)
+    - [Class initialization timeline](#class-initialization-timeline)
+    - [Flow diagrams and pie charts](#flow-diagrams-and-pie-charts)
   - [Classroom slide (Beer → Fruits)](#classroom-slide-beer--fruits)
   - [Run the demo](#run-the-demo)
 - [enum vs switch](#enum-vs-switch)
@@ -487,6 +495,170 @@ flowchart TD
 
 ---
 
+## Enum constructor (`enumConstructor`)
+
+Program: [`enumConstructor.java`](../../../demo/src/main/java/com/enumeration/enumConstructor.java).
+
+You assign **only** `pulses.rajma`, but the constructor body runs **four** times before `main` prints `End of main method`. That is expected: the JVM builds **every** enum constant when the enum class is first initialized.
+
+### Demo program
+
+```java
+enum pulses {
+    rajma, urad, moong, chana;
+
+    pulses() {
+        System.out.println("A pulse has been created.");
+    }
+}
+
+public class enumConstructor {
+    public static void main(String[] args) {
+        pulses pl = pulses.rajma;
+        System.out.println("End of main method");
+    }
+}
+```
+
+### Observed output
+
+```text
+A pulse has been created.
+A pulse has been created.
+A pulse has been created.
+A pulse has been created.
+End of main method
+```
+
+| Line | When it runs | Why |
+| ---- | ------------ | --- |
+| 1–4 | During **`pulses` class initialization** | One `println` per constant as each static instance is constructed |
+| 5 | Inside **`main`** | Runs only after `pulses` is fully initialized |
+
+### Point-by-point — why four constructor calls?
+
+| # | Concept | Detail |
+| - | ------- | ------ |
+| 1 | **Constants are objects** | Each of `rajma`, `urad`, `moong`, `chana` is a **distinct object** on the heap (see [Rules of enum constants](#rules-of-enum-constants)). |
+| 2 | **Static fields are created together** | The compiler emits `public static final pulses rajma = new pulses(...);` (and the same for every constant). All of these run inside the enum’s **static initializer** when the class is first used. |
+| 3 | **First touch loads the whole enum** | Reading `pulses.rajma` in `main` forces the JVM to **initialize class `pulses`**. Initialization **must** create **all** constants—not only `rajma`. |
+| 4 | **Constructor per constant** | Your `pulses() { ... }` is invoked **once per** `new pulses(...)` the compiler generated. Four constants ⇒ **four** constructor calls. |
+| 5 | **Order** | Constants are created in **declaration order** (`rajma` → `urad` → `moong` → `chana`). |
+| 6 | **No lazy per-use ctor** | Java does **not** construct `urad` only when you first reference `urad`. The set of constants is fixed at class-init time. |
+| 7 | **`pl` is a reference** | `pulses pl = pulses.rajma` copies the **existing** reference; it does **not** run the constructor again. |
+
+### Compiler-generated shape (conceptual)
+
+```java
+final class pulses extends Enum<pulses> {
+    public static final pulses rajma = new pulses("rajma", 0);
+    public static final pulses urad   = new pulses("urad", 1);
+    public static final pulses moong  = new pulses("moong", 2);
+    public static final pulses chana  = new pulses("chana", 3);
+
+    private static final pulses[] $VALUES = { rajma, urad, moong, chana };
+
+    private pulses(String name, int ordinal) {
+        super(name, ordinal);
+        System.out.println("A pulse has been created.");  // your constructor body
+    }
+    // values(), valueOf(String), ...
+}
+```
+
+Each `new pulses(...)` runs your constructor body once → four lines of output.
+
+### Class initialization timeline
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant Main as enumConstructor.main
+  participant Pulses as class pulses
+  participant R as rajma instance
+  participant U as urad instance
+  participant M as moong instance
+  participant C as chana instance
+  Main->>JVM: start main
+  Main->>Pulses: first use — pulses.rajma
+  JVM->>Pulses: <clinit> static initialization
+  Pulses->>R: new pulses (rajma) — ctor println
+  Pulses->>U: new pulses (urad) — ctor println
+  Pulses->>M: new pulses (moong) — ctor println
+  Pulses->>C: new pulses (chana) — ctor println
+  Pulses-->>Main: rajma reference ready
+  Main->>Main: println End of main method
+```
+
+```mermaid
+flowchart TD
+  A["main: pulses pl = pulses.rajma"] --> B{"Class pulses initialized?"}
+  B -- No --> C["Run static initializer"]
+  C --> D["new rajma → pulses() runs"]
+  D --> E["new urad → pulses() runs"]
+  E --> F["new moong → pulses() runs"]
+  F --> G["new chana → pulses() runs"]
+  G --> H["Assign reference to pl"]
+  B -- Yes --> H
+  H --> I["println End of main method"]
+```
+
+### Flow diagrams and pie charts
+
+**Where work happens for this program (one run):**
+
+```mermaid
+pie showData
+    title Constructor executions at class-init
+    "rajma" : 25
+    "urad" : 25
+    "moong" : 25
+    "chana" : 25
+```
+
+```mermaid
+pie showData
+    title JVM time in main (conceptual)
+    "pulses class initialization (4 ctors)" : 80
+    "main body (assign + println)" : 20
+```
+
+**Reference vs construction:**
+
+```mermaid
+flowchart LR
+  subgraph init ["Once per class load"]
+    N1["new rajma"]
+    N2["new urad"]
+    N3["new moong"]
+    N4["new chana"]
+  end
+  subgraph main ["main()"]
+    REF["pl → rajma"]
+    OUT["End of main method"]
+  end
+  N1 --> REF
+  REF --> OUT
+```
+
+**Myth vs fact:**
+
+| Myth | Fact |
+| ---- | ---- |
+| “I only used `rajma`, so only one ctor runs.” | First use of **any** constant initializes **all** constants. |
+| “`pl = pulses.rajma` creates a new pulse.” | It reuses the **singleton** created at class-init. |
+| “Enums are like `int` constants.” | They are **objects** with optional instance constructors. |
+
+**Run:**
+
+```bash
+cd demo/src/main/java
+javac com/enumeration/enumConstructor.java
+java com.enumeration.enumConstructor
+```
+
+---
+
 ## Classroom slide (Beer → Fruits)
 
 The same architecture shown in class for **`enum Beer { KF, RC; }`** applies directly to **`Fruits`**: each enum constant becomes **`public static final`** and **`new EnumType()`**.
@@ -517,6 +689,13 @@ java com.advanced.enumeration.Fruits
 ```bash
 javac com/enumeration/enumBasics.java
 java com.enumeration.enumBasics
+```
+
+**Enum constructor (four ctor calls, one reference):**
+
+```bash
+javac com/enumeration/enumConstructor.java
+java com.enumeration.enumConstructor
 ```
 
 Example (`Fruits`):
