@@ -27,6 +27,7 @@
 | Collections — list / set / map / … | See package table in [collections.md](concepts/collection/collections.md#package-guides-by-demo-folder) |
 | Cursors | [cursors.md](concepts/collection/cursors.md) |
 | Lambda functions | [lambda-functions.md](concepts/lambda-functions.md) |
+| Classpath, JAR & system properties | [classpath-jar-system-properties.md](concepts/classpath/classpath-jar-system-properties.md) |
 | Serialization | [serializationBasics.md](concepts/serialization/serializationBasics.md) |
 | Reflection | [Java-Reflection-Basics-Guide.md](concepts/reflections/Java-Reflection-Basics-Guide.md) |
 | Exceptions | [Java-Exception-Handling-Hierarchy-Guide.md](concepts/exceptions/Java-Exception-Handling-Hierarchy-Guide.md) |
