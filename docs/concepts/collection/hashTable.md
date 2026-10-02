@@ -1,3 +1,20 @@
+# Table of Contents
+
+- [Hashtable (`hashTable` package)](#hashtable-hashtable-package)
+  - [Hashtable — complete execution flow (`hashTableDemo.java`)](#hashtable-—-complete-execution-flow-hashtabledemojava)
+    - [Source files](#source-files)
+    - [Default bucket table and load factor](#default-bucket-table-and-load-factor)
+    - [How a key picks a bucket](#how-a-key-picks-a-bucket)
+    - [End-to-end execution flow](#end-to-end-execution-flow)
+    - [Bucket allocation after all `put` calls](#bucket-allocation-after-all-put-calls)
+    - [Whiteboard view of the 11 buckets](#whiteboard-view-of-the-11-buckets)
+    - [Collision chaining at bucket 5](#collision-chaining-at-bucket-5)
+    - [How `println` walks the table](#how-println-walks-the-table)
+    - [Verified program output](#verified-program-output)
+    - [Run the demo](#run-the-demo)
+
+---
+
 # Hashtable (`hashTable` package)
 
 > Bucket flow for `hashTableDemo.java` — moved from the monolithic guide (not duplicated).

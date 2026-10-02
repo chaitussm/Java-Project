@@ -1,3 +1,41 @@
+# Table of Contents
+
+- [ConcurrentMap and ConcurrentHashMap](#concurrentmap-and-concurrenthashmap)
+  - [Guide map](#guide-map)
+  - [Type hierarchy: `Map` → `ConcurrentMap` → `ConcurrentHashMap`](#type-hierarchy-map-→-concurrentmap-→-concurrenthashmap)
+    - [Reference slides (classroom notes)](#reference-slides-classroom-notes)
+  - [ConcurrentHashMap — classroom overview](#concurrenthashmap-—-classroom-overview)
+    - [Slide points → precise behavior](#slide-points-→-precise-behavior)
+    - [Constructors (from slide + demo)](#constructors-from-slide-demo)
+  - [How `concurrentMap.java` and `concurrentHashMap.java` run](#how-concurrentmapjava-and-concurrenthashmapjava-run)
+    - [Shared operation sequence (`demonstrateConcurrent*`)](#shared-operation-sequence-demonstrateconcurrent)
+    - [Verified sample output (`concurrentHashMap`)](#verified-sample-output-concurrenthashmap)
+  - [`ConcurrentMap` interface: atomic check-then-act](#concurrentmap-interface-atomic-check-then-act)
+    - [1) `V putIfAbsent(K key, V value)`](#1-v-putifabsentk-key-v-value)
+    - [2) `boolean remove(Object key, Object value)`](#2-boolean-removeobject-key-object-value)
+    - [3) Third common method (used in the demo)](#3-third-common-method-used-in-the-demo)
+  - [ConcurrentHashMap internal structure (JDK 8+)](#concurrenthashmap-internal-structure-jdk-8)
+    - [High-level picture](#high-level-picture)
+    - [How a key picks a bin](#how-a-key-picks-a-bin)
+    - [Whiteboard-style bucket array (conceptual)](#whiteboard-style-bucket-array-conceptual)
+    - [Collision → list → tree](#collision-→-list-→-tree)
+    - [`put` flow (simplified)](#put-flow-simplified)
+    - [Resize and load factor](#resize-and-load-factor)
+    - [Iteration vs `ArrayList` + CME](#iteration-vs-arraylist-cme)
+  - [Bucket-level lock vs whole-collection lock](#bucket-level-lock-vs-whole-collection-lock)
+    - [Mental model (same 16-bin table)](#mental-model-same-16-bin-table)
+    - [Two threads, two different keys](#two-threads-two-different-keys)
+    - [Comparison table](#comparison-table)
+    - [How much of the map is “hot” under contention?](#how-much-of-the-map-is-“hot”-under-contention)
+    - [`Collections.synchronizedMap` is still whole-map](#collectionssynchronizedmap-is-still-whole-map)
+    - [When bucket locking does not help](#when-bucket-locking-does-not-help)
+    - [Takeaway](#takeaway)
+  - [Relation to this repo’s demos](#relation-to-this-repo’s-demos)
+  - [Run the demos](#run-the-demos)
+  - [See also](#see-also)
+
+---
+
 # ConcurrentMap and ConcurrentHashMap
 
 > Runnable entry points: [`concurrentMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMap.java) · [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java) · shared logic in [`concurrentMapDemo.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentMapDemo.java).

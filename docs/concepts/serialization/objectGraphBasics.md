@@ -1,3 +1,15 @@
+# Table of Contents
+
+- [Object Graph Basics in Java Serialization](#object-graph-basics-in-java-serialization)
+  - [Important Rule: Order Matters](#important-rule-order-matters)
+  - [Example Program](#example-program)
+  - [How the File Is Read](#how-the-file-is-read)
+  - [What Happens If the Order Is Wrong?](#what-happens-if-the-order-is-wrong)
+  - [Requirements](#requirements)
+  - [Current Object Graph: `dog -> cat -> rat`](#current-object-graph-dog---cat---rat)
+
+---
+
 # Object Graph Basics in Java Serialization
 
 > A visual study guide to serializing connected Java objects and restoring their reachable state.

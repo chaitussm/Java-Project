@@ -1,3 +1,29 @@
+# Table of Contents
+
+- [Cursors in Java Collections](#cursors-in-java-collections)
+  - [Source program](#source-program)
+  - [What is a cursor?](#what-is-a-cursor)
+  - [1. `Iterator<E>`](#1-iteratore)
+    - [Main methods](#main-methods)
+    - [Internal position](#internal-position)
+    - [Safe removal process](#safe-removal-process)
+  - [Limitations of `Iterator`](#limitations-of-iterator)
+  - [2. `ListIterator<E>`](#2-listiteratore)
+    - [Main methods](#main-methods-1)
+    - [Cursor position model](#cursor-position-model)
+    - [`set()`, `add()`, and `remove()` example](#set-add-and-remove-example)
+  - [3. `Enumeration<E>`](#3-enumeratione)
+  - [Limitations of `Enumeration`](#limitations-of-enumeration)
+  - [4. `Spliterator<E>`](#4-spliteratore)
+    - [Complete lambda expression equivalent](#complete-lambda-expression-equivalent)
+  - [Cursor comparison](#cursor-comparison)
+  - [Fail-fast behavior](#fail-fast-behavior)
+  - [Complexity](#complexity)
+  - [Choosing the right cursor](#choosing-the-right-cursor)
+  - [Summary](#summary)
+
+---
+
 # Cursors in Java Collections
 
 > A practical study guide to Java collection cursors, their traversal directions, and safe modification rules.

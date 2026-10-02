@@ -1,3 +1,26 @@
+# Table of Contents
+
+- [Customized Serialization: Complete Flow](#customized-serialization-complete-flow)
+  - [Source and Output Locations](#source-and-output-locations)
+  - [Classes Used](#classes-used)
+  - [Why Customized Serialization Is Needed](#why-customized-serialization-is-needed)
+  - [Complete Execution Flow](#complete-execution-flow)
+  - [Serialization Phase](#serialization-phase)
+  - [What `defaultWriteObject()` Does](#what-defaultwriteobject-does)
+  - [Important Note About `encryptPwd()`](#important-note-about-encryptpwd)
+  - [Deserialization Phase](#deserialization-phase)
+  - [What `defaultReadObject()` Does](#what-defaultreadobject-does)
+  - [Why the Write and Read Order Must Match](#why-the-write-and-read-order-must-match)
+  - [Expected Output](#expected-output)
+  - [Exception Handling](#exception-handling)
+  - [Final Summary](#final-summary)
+  - [Part 2 — normalSer.java: the baseline without customization](#part-2-—-normalserjava-the-baseline-without-customization)
+    - [Concept](#concept)
+    - [Verified Output](#verified-output)
+    - [Part 1 vs. Part 2 — the direct comparison](#part-1-vs-part-2-—-the-direct-comparison)
+
+---
+
 # Customized Serialization: Complete Flow
 
 > A step-by-step guide to Java serialization callbacks that safely persist selected transient state.

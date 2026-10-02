@@ -1,3 +1,12 @@
+# Table of Contents
+
+- [Java Project](#java-project)
+  - [Overview](#overview)
+  - [What this repository contains](#what-this-repository-contains)
+  - [Documentation](#documentation)
+
+---
+
 # Java Project
 
 <!-- TOC -->

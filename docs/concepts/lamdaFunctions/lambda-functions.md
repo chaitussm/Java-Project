@@ -1,3 +1,30 @@
+# Table of Contents
+
+- [Lambda Functions in Java](#lambda-functions-in-java)
+  - [Source program](#source-program)
+  - [What is a lambda expression?](#what-is-a-lambda-expression)
+  - [Lambda syntax](#lambda-syntax)
+    - [No parameter](#no-parameter)
+    - [One parameter](#one-parameter)
+    - [Multiple parameters](#multiple-parameters)
+    - [Expression body and block body](#expression-body-and-block-body)
+  - [Built-in functional interfaces](#built-in-functional-interfaces)
+    - [`Predicate<T>`](#predicatet)
+    - [`Consumer<T>`](#consumert)
+    - [`Function<T, R>`](#functiont-r)
+    - [`Supplier<T>`](#suppliert)
+    - [`UnaryOperator<T>`](#unaryoperatort)
+    - [`BiFunction<T, U, R>`](#bifunctiont-u-r)
+  - [Lambdas with collections](#lambdas-with-collections)
+  - [Method references](#method-references)
+  - [Combining lambdas](#combining-lambdas)
+  - [Lambda execution flow](#lambda-execution-flow)
+  - [Lambda rules and limitations](#lambda-rules-and-limitations)
+  - [Anonymous class comparison](#anonymous-class-comparison)
+  - [Summary](#summary)
+
+---
+
 # Lambda Functions in Java
 
 > A practical study guide to Java lambda syntax, functional interfaces, method references, and collection workflows.

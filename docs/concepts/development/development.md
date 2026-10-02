@@ -1,3 +1,44 @@
+# Table of Contents
+
+- [javac](#javac)
+- [java](#java)
+- [classpath](#classpath)
+- [Jar vs war vs ear](#jar-vs-war-vs-ear)
+- [Web Application vs Enterprise Application](#web-application-vs-enterprise-application)
+- [Web Server vs Application Server](#web-server-vs-application-server)
+- [How to create executable Jar file :](#how-to-create-executable-jar-file)
+  - [Example: `jarDemo.java` — Execution Summary](#example-jardemojava-—-execution-summary)
+    - [What the program does](#what-the-program-does)
+    - [Execution flow](#execution-flow)
+    - [Console output (after the window is closed)](#console-output-after-the-window-is-closed)
+    - [Output breakdown](#output-breakdown)
+    - [Lifecycle stages (proportion of code dedicated to each)](#lifecycle-stages-proportion-of-code-dedicated-to-each)
+    - [Key takeaway](#key-takeaway)
+- [Key Methods Used in `jarDemo.java` — How They Work Internally](#key-methods-used-in-jardemojava-—-how-they-work-internally)
+  - [1. `new Frame(String title)`](#1-new-framestring-title)
+  - [2. `frame.addWindowListener(WindowAdapter)`](#2-frameaddwindowlistenerwindowadapter)
+  - [3. `windowClosing(WindowEvent e)` — the overridden callback](#3-windowclosingwindowevent-e-—-the-overridden-callback)
+  - [4. `frame.add(new Label(text, alignment))`](#4-frameaddnew-labeltext-alignment)
+  - [5. `frame.setSize(width, height)` & `frame.setVisible(true)`](#5-framesetsizewidth-height-framesetvisibletrue)
+  - [Putting it all together](#putting-it-all-together)
+- [How many ways to run a Java program](#how-many-ways-to-run-a-java-program)
+  - [Detailed Steps & Internal Flow for Each Method](#detailed-steps-internal-flow-for-each-method)
+    - [1. Using the `java` command](#1-using-the-java-command)
+    - [2. Using an IDE (IntelliJ IDEA, Eclipse, NetBeans)](#2-using-an-ide-intellij-idea-eclipse-netbeans)
+    - [3. Using an executable JAR](#3-using-an-executable-jar)
+    - [4. Using a build tool (Maven / Gradle)](#4-using-a-build-tool-maven-gradle)
+    - [5. Using a container or cloud service (Docker / AWS / Azure / GCP)](#5-using-a-container-or-cloud-service-docker-aws-azure-gcp)
+    - [6. Using a script or automation tool (shell/batch script, Jenkins)](#6-using-a-script-or-automation-tool-shellbatch-script-jenkins)
+    - [7. Using a package manager (SDKMAN!, Homebrew)](#7-using-a-package-manager-sdkman-homebrew)
+    - [8. Using a remote development environment (GitHub Codespaces, VS Code Remote)](#8-using-a-remote-development-environment-github-codespaces-vs-code-remote)
+    - [9. Using a containerized development environment (Docker dev container)](#9-using-a-containerized-development-environment-docker-dev-container)
+    - [10. By running the batch file (Windows `.bat`)](#10-by-running-the-batch-file-windows-bat)
+- [classpath vs path](#classpath-vs-path)
+- [difference between jdk ,jre and jvm](#difference-between-jdk-jre-and-jvm)
+- [java vs javaw](#java-vs-javaw)
+
+---
+
 # javac 
 
 we can use javac command to compile a single or group of java source files 
@@ -623,4 +664,30 @@ JVM(Java Virtual Machine) - executes Java bytecode, provides platform independen
 2. JVM is the engine that executes Java bytecode, enabling Java's "write once, run anywhere" capability.
 3. JVM is necessary for running Java applications, but it does not include development tools like the compiler.
 
+# java vs javaw
 
+java 
+
+1. We can use java command to run a java class file where sop's will be executed and  corresponding output will be displayed in the console.
+2. `java` launches the Java application with a console window, suitable for command-line interaction.
+3. `java` is typically used when you need to see console output or interact with the application via the command line.
+
+javaw (java without console output)
+
+1. We can use javaw command to run a java class file where sop's will be execute but the corresponding output will not be displayed in the console. 
+2. `javaw` launches the Java application without a console window, suitable for GUI applications.
+3. `javaw` is typically used when you do not need to see console output and want to avoid an extra console window.
+
+In general we can use javaw command to run GUI based applications
+
+javaws (Java Web Start Utility)
+
+1. We can use javaws to download a java application from the web and to start its execution.
+2. We can use javawas command as follows 
+   javaws jnlp-url it downloads the application from the specified URL and starts execution.
+   
+3. The main advantage of this approach is every end user will get updated version and enhancement will become   
+   easy because of centralized control.
+4.  `javaws` is used to launch Java applications directly from the web using JNLP (Java Network Launch Protocol) files.
+5. `javaws` downloads the application from the specified URL and runs it in a secure environment.
+6. `javaws` is typically used for deploying Java applications over the internet without requiring manual installation.

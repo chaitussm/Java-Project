@@ -1,3 +1,12 @@
+# Table of Contents
+
+- [Java Reflection Basics](#java-reflection-basics)
+  - [Learning order](#learning-order)
+  - [Important terms](#important-terms)
+  - [Full guide](#full-guide)
+
+---
+
 # Java Reflection Basics
 
 > A concise learning path for the runnable Java Reflection examples in this package.

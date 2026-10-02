@@ -1,3 +1,28 @@
+# Table of Contents
+
+- [HashMap vs ConcurrentHashMap](#hashmap-vs-concurrenthashmap)
+  - [Guide map](#guide-map)
+  - [Classroom comparison table](#classroom-comparison-table)
+  - [Thread safety and performance](#thread-safety-and-performance)
+    - [Single-threaded vs multi-threaded](#single-threaded-vs-multi-threaded)
+  - [Iteration while another thread modifies](#iteration-while-another-thread-modifies)
+    - [Mini example — `HashMap` (fail-fast) vs `ConcurrentHashMap` (fail-safe)](#mini-example-—-hashmap-fail-fast-vs-concurrenthashmap-fail-safe)
+    - [`HashMap` — fail-fast](#hashmap-—-fail-fast)
+    - [`ConcurrentHashMap` — weakly consistent (fail-safe)](#concurrenthashmap-—-weakly-consistent-fail-safe)
+  - [Null keys and values](#null-keys-and-values)
+  - [Which map should you use?](#which-map-should-you-use)
+  - [ConcurrentHashMap vs `synchronizedMap()` vs `Hashtable`](#concurrenthashmap-vs-synchronizedmap-vs-hashtable)
+    - [Summary table (all seven slide rows)](#summary-table-all-seven-slide-rows)
+    - [Locking model (flow)](#locking-model-flow)
+    - [Multi-thread access (sequence)](#multi-thread-access-sequence)
+    - [Iteration while another thread modifies](#iteration-while-another-thread-modifies-1)
+    - [`null` keys and values](#null-keys-and-values-1)
+    - [Which thread-safe map? (extended)](#which-thread-safe-map-extended)
+  - [Run the repo demo](#run-the-repo-demo)
+  - [See also](#see-also)
+
+---
+
 # HashMap vs ConcurrentHashMap
 
 > Runnable `ConcurrentHashMap` demo: [`concurrentHashMap.java`](../../../demo/src/main/java/com/concurrentCollection/concurrentMap/concurrentHashMap.java) · Deeper internals: [concurrentMap.md](concurrentMap.md) · Hub: [concurrentCollections.md](concurrentCollections.md)

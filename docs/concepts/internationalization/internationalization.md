@@ -1,3 +1,34 @@
+# Table of Contents
+
+- [Java Internationalization (I18N)](#java-internationalization-i18n)
+  - [Guide map](#guide-map)
+  - [Introduction](#introduction)
+  - [Locale class](#locale-class)
+    - [Constructors](#constructors)
+    - [Important methods of Locale class](#important-methods-of-locale-class)
+    - [localeClass.java execution summary](#localeclassjava-execution-summary)
+    - [Locale deep internal flow](#locale-deep-internal-flow)
+  - [NumberFormat class](#numberformat-class)
+    - [NumberFormat factories and configuration](#numberformat-factories-and-configuration)
+    - [NumberFormat.java execution summary](#numberformatjava-execution-summary)
+    - [NumberFormat deep internal flow](#numberformat-deep-internal-flow)
+  - [DateFormat class](#dateformat-class)
+    - [DateFormat styles and factories](#dateformat-styles-and-factories)
+    - [converStringToJavaDateForm() end-to-end](#converstringtojavadateform-end-to-end)
+      - [Public method (entry point)](#public-method-entry-point)
+      - [High-level flowchart](#high-level-flowchart)
+      - [Sequence (runtime)](#sequence-runtime)
+      - [Internal pipeline (`parseDateDynamically`)](#internal-pipeline-parsedatedynamically)
+      - [Strategy mix (conceptual)](#strategy-mix-conceptual)
+      - [Example console output](#example-console-output)
+      - [Run only this demo](#run-only-this-demo)
+    - [DateFormat.java execution summary](#dateformatjava-execution-summary)
+    - [DateFormat deep internal flow](#dateformat-deep-internal-flow)
+  - [End-to-end I18N flow](#end-to-end-i18n-flow)
+  - [Run all demos](#run-all-demos)
+
+---
+
 # Java Internationalization (I18N)
 
 > Study guide: **Locale**, **NumberFormat**, and **DateFormat** — runnable demos, execution summaries, and internal flows.  

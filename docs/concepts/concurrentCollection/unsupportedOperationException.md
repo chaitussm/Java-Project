@@ -1,3 +1,16 @@
+# Table of Contents
+
+- [`UnsupportedOperationException` on `CopyOnWriteArrayList` iterator](#unsupportedoperationexception-on-copyonwritearraylist-iterator)
+  - [What the demo does](#what-the-demo-does)
+  - [Verified stack trace](#verified-stack-trace)
+  - [Internal flow (why it throws)](#internal-flow-why-it-throws)
+    - [Design reason](#design-reason)
+  - [Compare with `ArrayList`](#compare-with-arraylist)
+  - [Run](#run)
+  - [See also](#see-also)
+
+---
+
 # `UnsupportedOperationException` on `CopyOnWriteArrayList` iterator
 
 > Demo: [`unsupportedOperationexception.java`](../../../demo/src/main/java/com/concurrentCollection/copyOnWriteArrayListClass/unsupportedOperationexception.java) · List guide: [copyOnWriteArrayList.md](copyOnWriteArrayList.md)

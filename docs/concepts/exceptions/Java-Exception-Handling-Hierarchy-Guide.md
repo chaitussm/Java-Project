@@ -1,3 +1,32 @@
+# Table of Contents
+
+- [Java Exception Handling: Complete Hierarchy Guide](#java-exception-handling-complete-hierarchy-guide)
+  - [Example Programs](#example-programs)
+  - [The Complete Hierarchy](#the-complete-hierarchy)
+  - [What Each Level Means](#what-each-level-means)
+    - [`Throwable`](#throwable)
+    - [`Exception`](#exception)
+    - [`RuntimeException`](#runtimeexception)
+    - [Checked Exceptions](#checked-exceptions)
+    - [`Error`](#error)
+  - [Exception Flow Picture](#exception-flow-picture)
+  - [`try`, `catch`, and `finally`](#try-catch-and-finally)
+  - [Catch Ordering](#catch-ordering)
+  - [`throw` Versus `throws`](#throw-versus-throws)
+    - [`throw`](#throw)
+    - [`throws`](#throws)
+  - [Call Stack Picture](#call-stack-picture)
+  - [Custom Exceptions](#custom-exceptions)
+  - [Try-with-Resources](#try-with-resources)
+  - [Printing Exception Information](#printing-exception-information)
+  - [Rethrowing an Exception](#rethrowing-an-exception)
+  - [`finally` Behavior](#finally-behavior)
+  - [Exception Versus Error](#exception-versus-error)
+  - [Recommended Learning Order](#recommended-learning-order)
+  - [Final Summary](#final-summary)
+
+---
+
 # Java Exception Handling: Complete Hierarchy Guide
 
 <!-- TOC -->

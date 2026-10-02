@@ -1,3 +1,34 @@
+# Table of Contents
+
+- [List (`list` package)](#list-list-package)
+  - [List Interface](#list-interface)
+  - [List Interface Hierarchy](#list-interface-hierarchy)
+    - [ArrayList](#arraylist)
+    - [Difference between ArrayList and Vector](#difference-between-arraylist-and-vector)
+    - [LinkedList](#linkedlist)
+      - [Constructors](#constructors)
+      - [LinkedList class-specific methods](#linkedlist-class-specific-methods)
+    - [Difference between ArrayList and LinkedList](#difference-between-arraylist-and-linkedlist)
+    - [Modern implementations](#modern-implementations)
+    - [Legacy classes](#legacy-classes)
+  - [List Methods](#list-methods)
+    - [Index-based List operations](#index-based-list-operations)
+    - [`Collection` operations available on every List](#collection-operations-available-on-every-list)
+    - [Java 21 ordered-end methods](#java-21-ordered-end-methods)
+    - [Static factory methods](#static-factory-methods)
+  - [List Cursors](#list-cursors)
+    - [`Iterator<E>` methods](#iteratore-methods)
+    - [`ListIterator<E>` additional methods](#listiteratore-additional-methods)
+    - [Legacy `Enumeration<E>` methods](#legacy-enumeratione-methods)
+  - [Vector](#vector)
+  - [List constructor examples](#list-constructor-examples)
+  - [Stack](#stack)
+  - [ArrayList — complete execution flow (`arrayList.java`)](#arraylist-—-complete-execution-flow-arraylistjava)
+    - [Launcher flow](#launcher-flow)
+    - [Run](#run)
+
+---
+
 # List (`list` package)
 
 > List hierarchy, methods, cursors; flagship demo: `arrayList.java`.

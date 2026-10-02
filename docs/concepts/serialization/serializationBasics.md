@@ -1,3 +1,14 @@
+# Table of Contents
+
+- [Serialization Basics — The Foundation](#serialization-basics-—-the-foundation)
+  - [Concept](#concept)
+  - [End-to-End Flow (serializationBasics.java)](#end-to-end-flow-serializationbasicsjava)
+  - [Why `deserialize()` uses reflection instead of direct field access](#why-deserialize-uses-reflection-instead-of-direct-field-access)
+  - [Verified Output](#verified-output)
+  - [Related Files](#related-files)
+
+---
+
 # Serialization Basics — The Foundation
 
 > A foundational study guide to Java object serialization, deserialization, and field-state inspection.

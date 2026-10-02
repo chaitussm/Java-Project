@@ -1,3 +1,19 @@
+# Table of Contents
+
+- [Queue (`queue` package)](#queue-queue-package)
+  - [Queue constructor examples](#queue-constructor-examples)
+  - [Queue (I)](#queue-i)
+  - [Queue Interface Hierarchy](#queue-interface-hierarchy)
+    - [Choosing a Queue implementation](#choosing-a-queue-implementation)
+- [1.5 v enhancements  (Queue Interface)](#15-v-enhancements-queue-interface)
+- [PriorityQueue](#priorityqueue)
+- [Constructors](#constructors)
+  - [ArrayDeque — complete execution flow (`arrayDeque.java`)](#arraydeque-—-complete-execution-flow-arraydequejava)
+    - [Launcher flow](#launcher-flow)
+    - [Run](#run)
+
+---
+
 # Queue (`queue` package)
 
 > Queue interfaces and constructor examples; flagship demo: `arrayDeque.java`.

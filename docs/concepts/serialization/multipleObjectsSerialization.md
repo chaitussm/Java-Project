@@ -1,3 +1,18 @@
+# Table of Contents
+
+- [Serializing Multiple Objects to One File](#serializing-multiple-objects-to-one-file)
+  - [Part 1 — sequenceOfMultpleObjects.java](#part-1-—-sequenceofmultpleobjectsjava)
+    - [Concept](#concept)
+    - [Verified Output](#verified-output)
+  - [Part 2 — instanceOfMultipleObjects.java](#part-2-—-instanceofmultipleobjectsjava)
+    - [Concept](#concept-1)
+    - [Why `instanceof` is required here](#why-instanceof-is-required-here)
+    - [Verified Output](#verified-output-1)
+    - [Part 1 vs. Part 2 — when to use which](#part-1-vs-part-2-—-when-to-use-which)
+  - [Related Files](#related-files)
+
+---
+
 # Serializing Multiple Objects to One File
 
 > A study guide to stream order, typed reads, and safe runtime type checks for multiple serialized objects.

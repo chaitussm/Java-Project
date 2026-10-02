@@ -1,3 +1,13 @@
+# Table of Contents
+
+- [CI Documentation](#ci-documentation)
+  - [Guides](#guides)
+  - [Workflow file](#workflow-file)
+  - [Pipeline stages](#pipeline-stages)
+  - [Known failure resolutions](#known-failure-resolutions)
+
+---
+
 # CI Documentation
 
 > A practical reference for the Java end-to-end CI workflow, its artifacts, and common recovery steps.

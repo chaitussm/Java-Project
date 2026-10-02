@@ -1,3 +1,14 @@
+# Table of Contents
+
+- [HashSet vs LinkedHashSet — Quick Comparison](#hashset-vs-linkedhashset-—-quick-comparison)
+  - [Quick choice](#quick-choice)
+  - [Side-by-side differences](#side-by-side-differences)
+  - [What both classes have in common](#what-both-classes-have-in-common)
+  - [See the order difference](#see-the-order-difference)
+  - [Practical guidance](#practical-guidance)
+
+---
+
 # HashSet vs LinkedHashSet — Quick Comparison
 
 Use this page as a fast reference when deciding between Java's two common hash-based `Set` implementations.

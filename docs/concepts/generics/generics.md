@@ -1,3 +1,34 @@
+# Table of Contents
+
+- [Java Generics](#java-generics)
+  - [Guide map](#guide-map)
+  - [Case 1: Type safety](#case-1-type-safety)
+  - [Case 2: Type casting and collections](#case-2-type-casting-and-collections)
+  - [Conclusions](#conclusions)
+  - [Pre-1.5 non-generic `ArrayList` API](#pre-15-non-generic-arraylist-api)
+  - [ArrayList internal structure: generics vs raw](#arraylist-internal-structure-generics-vs-raw)
+    - [Runtime layout (same for both declarations)](#runtime-layout-same-for-both-declarations)
+    - [Type erasure](#type-erasure)
+    - [`add` / `get` flows](#add-get-flows)
+    - [Growth](#growth)
+    - [Examples](#examples)
+    - [Quick reference](#quick-reference)
+  - [Method overloading, type erasure, and name clash](#method-overloading-type-erasure-and-name-clash)
+    - [Classroom slide (compile-time flow)](#classroom-slide-compile-time-flow)
+    - [Source code that does not compile](#source-code-that-does-not-compile)
+    - [Internal flow at compile time](#internal-flow-at-compile-time)
+    - [Erasure arrows (parameter types only)](#erasure-arrows-parameter-types-only)
+    - [Why runtime cannot tell them apart](#why-runtime-cannot-tell-them-apart)
+    - [What *is* allowed instead](#what-is-allowed-instead)
+    - [Link to “generics only at compile time”](#link-to-“generics-only-at-compile-time”)
+  - [See also](#see-also)
+- [NOTE](#note)
+- [Generic methods and Wild Card Character(?)](#generic-methods-and-wild-card-character)
+    - [Code Example Implementation](#code-example-implementation)
+- [Generic Class & Method](#generic-class-method)
+
+---
+
 # Java Generics
 
 > Copy-friendly guide: type safety, type erasure, **generic methods that erase to the same signature**, **`ArrayList<String>` vs raw `ArrayList`** internals.  

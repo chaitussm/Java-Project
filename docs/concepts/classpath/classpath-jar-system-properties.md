@@ -1,3 +1,32 @@
+# Table of Contents
+
+- [Classpath, JAR files, and system properties](#classpath-jar-files-and-system-properties)
+  - [Guide map](#guide-map)
+  - [Part 1 — Classpath overview (seq-01)](#part-1-—-classpath-overview-seq-01)
+    - [Notes (from slide)](#notes-from-slide)
+    - [Demo program](#demo-program)
+  - [Part 2 — `Test` execution rules (seq-02)](#part-2-—-test-execution-rules-seq-02)
+    - [Execution history (from notes)](#execution-history-from-notes)
+    - [Rules](#rules)
+  - [Part 3 — JAR creation (seq-03)](#part-3-—-jar-creation-seq-03)
+    - [Why JAR files](#why-jar-files)
+    - [`jar -cvf` — create](#jar--cvf-—-create)
+  - [Part 4 — JAR extract & classpath (seq-04)](#part-4-—-jar-extract-classpath-seq-04)
+    - [`jar -xvf` — extract](#jar--xvf-—-extract)
+    - [`jar -tvf` — table of contents](#jar--tvf-—-table-of-contents)
+    - [Classpath rules (slide)](#classpath-rules-slide)
+  - [Part 5 — System properties (seq-05)](#part-5-—-system-properties-seq-05)
+    - [Demo — list all properties](#demo-—-list-all-properties)
+    - [Set property at launch: `-D`](#set-property-at-launch--d)
+  - [Part 6 — `VerifySystemProperties` (seq-06)](#part-6-—-verifysystemproperties-seq-06)
+  - [Part 7 — Compiler vs JVM (seq-07)](#part-7-—-compiler-vs-jvm-seq-07)
+    - [Points from slide](#points-from-slide)
+  - [Execution gallery (screenshots 08–15)](#execution-gallery-screenshots-08–15)
+  - [Run the demos](#run-the-demos)
+  - [Screenshot index (original upload → teaching order)](#screenshot-index-original-upload-→-teaching-order)
+
+---
+
 # Classpath, JAR files, and system properties
 
 > Sequential guide from the **Notepad++ “new 10”** classroom notes (15 screenshots), arranged in teaching order.  

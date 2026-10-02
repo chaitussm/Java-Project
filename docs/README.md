@@ -1,3 +1,11 @@
+# Table of Contents
+
+- [Documentation](#documentation)
+  - [Folders](#folders)
+  - [Quick links](#quick-links)
+
+---
+
 # Documentation
 
 <!-- TOC -->

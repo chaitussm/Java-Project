@@ -1,3 +1,48 @@
+# Table of Contents
+
+- [Regular Expressions — Basics](#regular-expressions-—-basics)
+  - [📌 Concept](#📌-concept)
+    - [Main application areas](#main-application-areas)
+  - [Execution Summary of the Program](#execution-summary-of-the-program)
+    - [Program flow](#program-flow)
+    - [What the program does](#what-the-program-does)
+    - [Why `start()` and `end()` behave like this](#why-start-and-end-behave-like-this)
+    - [Example interpretation](#example-interpretation)
+    - [`Pattern` and `Matcher` API summary](#pattern-and-matcher-api-summary)
+  - [Important Methods of `Matcher`](#important-methods-of-matcher)
+  - [🔗 Related Files](#🔗-related-files)
+  - [Character classes](#character-classes)
+  - [Predefined character classes](#predefined-character-classes)
+  - [Quantifiers](#quantifiers)
+  - [Boundary matchers](#boundary-matchers)
+  - [Logical operators](#logical-operators)
+  - [Back references](#back-references)
+  - [Regular Expressions — `Pattern` Class](#regular-expressions-—-pattern-class)
+  - [split()](#split)
+    - [Two ways to split a String](#two-ways-to-split-a-string)
+    - [Example](#example)
+  - [`StringTokenizer`](#stringtokenizer)
+  - [📌 Concept](#📌-concept-1)
+  - [Key methods](#key-methods)
+    - [Example — default delimiter](#example-—-default-delimiter)
+    - [Example — custom delimiter](#example-—-custom-delimiter)
+  - [🔥 Real-world regex — validating a mobile number](#🔥-real-world-regex-—-validating-a-mobile-number)
+  - [🔥 Real-world regex — validating an email Id](#🔥-real-world-regex-—-validating-an-email-id)
+  - [🔗 Related Files](#🔗-related-files-1)
+  - [Regular Expression to Represent Java Language Identifiers](#regular-expression-to-represent-java-language-identifiers)
+    - [Rules](#rules)
+  - [Executing the Mobile Number Validator Locally](#executing-the-mobile-number-validator-locally)
+  - [Program execution flow](#program-execution-flow)
+  - [1. Build the program](#1-build-the-program)
+  - [2. Run with a valid number](#2-run-with-a-valid-number)
+  - [3. Try other cases](#3-try-other-cases)
+  - [Executing the Validator in the CI Pipeline](#executing-the-validator-in-the-ci-pipeline)
+  - [Workflow configuration](#workflow-configuration)
+  - [CI stages explained](#ci-stages-explained)
+  - [Changing the pipeline input](#changing-the-pipeline-input)
+
+---
+
 # Regular Expressions — Basics
 
 > A hands-on reference for Java regular expressions, `Pattern`, `Matcher`, tokenization, validation, and CI execution.

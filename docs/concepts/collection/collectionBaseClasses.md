@@ -1,3 +1,13 @@
+# Table of Contents
+
+- [Collection base classes (`collectionBaseClasses` package)](#collection-base-classes-collectionbaseclasses-package)
+  - [Constructors for all collection data structures](#constructors-for-all-collection-data-structures)
+  - [Checking Whether a Collection Type Is a Class or an Interface](#checking-whether-a-collection-type-is-a-class-or-an-interface)
+    - [The formatting line — `CollectionTypeInspector.java` line 15](#the-formatting-line-—-collectiontypeinspectorjava-line-15)
+    - [Example output](#example-output)
+
+---
+
 # Collection base classes (`collectionBaseClasses` package)
 
 > `CollectionTypeInspector`, shared `*Demo` dispatchers, and constructor overview.

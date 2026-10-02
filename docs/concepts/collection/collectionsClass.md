@@ -1,3 +1,12 @@
+# Table of Contents
+
+- [Collections Class](#collections-class)
+- [Sorting elements of List](#sorting-elements-of-list)
+- [Conclusions](#conclusions)
+- [reverse vs reverseOrder()](#reverse-vs-reverseorder)
+
+---
+
 # Collections Class 
 
 collections class defines several utility methods for collection objects like sorting , searching and reversing etc

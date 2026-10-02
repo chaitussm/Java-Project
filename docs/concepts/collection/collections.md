@@ -1,3 +1,20 @@
+# Table of Contents
+
+- [Java Collections Guide](#java-collections-guide)
+  - [Introduction](#introduction)
+    - [Limitations of arrays](#limitations-of-arrays)
+  - [Collections](#collections)
+  - [Collection Definition](#collection-definition)
+  - [Collection Framework](#collection-framework)
+  - [9 key interfaces of Collection Framework](#9-key-interfaces-of-collection-framework)
+  - [Collection vs Collections](#collection-vs-collections)
+  - [RandomAccess Interface](#randomaccess-interface)
+  - [Package guides (by demo folder)](#package-guides-by-demo-folder)
+    - [Related collections docs](#related-collections-docs)
+    - [Constructors](#constructors)
+
+---
+
 # Java Collections Guide
 
 > A practical study guide to Java collection interfaces, implementations, constructors, methods, cursors, capacities, and selection rules.

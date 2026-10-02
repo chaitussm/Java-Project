@@ -1,3 +1,33 @@
+# Table of Contents
+
+- [CopyOnWriteArrayList](#copyonwritearraylist)
+  - [Guide map](#guide-map)
+  - [Class hierarchy](#class-hierarchy)
+  - [Copy-on-write mechanism](#copy-on-write-mechanism)
+    - [Read vs write cost](#read-vs-write-cost)
+  - [Properties (from classroom notes)](#properties-from-classroom-notes)
+  - [Fail-safe iteration vs `ArrayList`](#fail-safe-iteration-vs-arraylist)
+  - [ArrayList vs CopyOnWriteArrayList (classroom comparison)](#arraylist-vs-copyonwritearraylist-classroom-comparison)
+  - [CopyOnWriteArrayList vs `synchronizedList()` vs `Vector`](#copyonwritearraylist-vs-synchronizedlist-vs-vector)
+    - [Write path (flow)](#write-path-flow)
+    - [Iteration + concurrent modification](#iteration-concurrent-modification)
+    - [Iterator `remove`](#iterator-remove)
+    - [Which list to choose?](#which-list-to-choose)
+  - [Classroom execution: add after `iterator()`](#classroom-execution-add-after-iterator)
+    - [Source (slide)](#source-slide)
+    - [Verified output](#verified-output)
+    - [Execution summary (step by step)](#execution-summary-step-by-step)
+    - [Reason (from slide)](#reason-from-slide)
+  - [`UnsupportedOperationException` demo](#unsupportedoperationexception-demo)
+  - [Multi-thread execution: `copyOnWriteAlDemo`](#multi-thread-execution-copyonwritealdemo)
+  - [When to use `CopyOnWriteArrayList`](#when-to-use-copyonwritearraylist)
+  - [Runnable example](#runnable-example)
+    - [Iterator `remove` — not allowed](#iterator-remove-—-not-allowed)
+  - [Compare with related types (quick reference)](#compare-with-related-types-quick-reference)
+  - [See also](#see-also)
+
+---
+
 # CopyOnWriteArrayList
 
 > Package: `java.util.concurrent` · Related: [fail-fast vs fail-safe iterators](concurrentCollections.md#fail-fast-vs-fail-safe-iterators-with-examples) · Hub: [concurrentCollections.md](concurrentCollections.md)

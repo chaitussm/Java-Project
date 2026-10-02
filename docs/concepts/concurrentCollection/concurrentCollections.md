@@ -1,3 +1,30 @@
+# Table of Contents
+
+- [Concurrent collections hub](#concurrent-collections-hub)
+  - [Why concurrent collections matter](#why-concurrent-collections-matter)
+  - [`threadDemo.java` — complete execution flow](#threaddemojava-—-complete-execution-flow)
+    - [Source (reference)](#source-reference)
+    - [Roles](#roles)
+    - [Timeline (two threads)](#timeline-two-threads)
+    - [Program phases](#program-phases)
+  - [How `ConcurrentModificationException` occurs (fail-fast)](#how-concurrentmodificationexception-occurs-fail-fast)
+  - [Verified output](#verified-output)
+  - [Run the demo](#run-the-demo)
+  - [Fail-fast vs fail-safe iterators (with examples)](#fail-fast-vs-fail-safe-iterators-with-examples)
+    - [Master flow: what happens on `iterator.next()` after a structural change?](#master-flow-what-happens-on-iteratornext-after-a-structural-change)
+    - [Example 1 — Fail-fast (`ArrayList`, same thread)](#example-1-—-fail-fast-arraylist-same-thread)
+    - [Example 2 — Fail-fast (`ArrayList`, another thread) — repo demo](#example-2-—-fail-fast-arraylist-another-thread-—-repo-demo)
+    - [Example 3 — Fail-fast (`HashMap`)](#example-3-—-fail-fast-hashmap)
+    - [Example 4 — Fail-safe (`ConcurrentHashMap`)](#example-4-—-fail-safe-concurrenthashmap)
+    - [Example 5 — Fail-safe (`CopyOnWriteArrayList`)](#example-5-—-fail-safe-copyonwritearraylist)
+    - [Quick comparison](#quick-comparison)
+  - [Relation to concurrent collections](#relation-to-concurrent-collections)
+  - [Why `java.util.concurrent` collections exist](#why-javautilconcurrent-collections-exist)
+  - [Traditional vs concurrent collections](#traditional-vs-concurrent-collections)
+  - [Common concurrent collection types](#common-concurrent-collection-types)
+
+---
+
 # Concurrent collections hub
 
 | Guide                                                  | Topics                                                                                                      |

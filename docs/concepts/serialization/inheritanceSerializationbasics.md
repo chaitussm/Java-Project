@@ -1,3 +1,35 @@
+# Table of Contents
+
+- [Inheritance Serialization Basics](#inheritance-serialization-basics)
+  - [Part 1 — Parent IS Serializable](#part-1-—-parent-is-serializable)
+    - [Concept](#concept)
+  - [End-to-End Flow](#end-to-end-flow)
+  - [Step-by-Step Breakdown](#step-by-step-breakdown)
+    - [1. Object creation](#1-object-creation)
+    - [2. Resolve the target file](#2-resolve-the-target-file)
+    - [3. Serialize (write object → bytes → file)](#3-serialize-write-object-→-bytes-→-file)
+    - [4. Deserialize (file → bytes → object)](#4-deserialize-file-→-bytes-→-object)
+    - [5. Error handling](#5-error-handling)
+  - [🗂️ Sequence Diagram (runtime interaction)](#🗂️-sequence-diagram-runtime-interaction)
+  - [Expected Output](#expected-output)
+  - [Things That Would Break This](#things-that-would-break-this)
+  - [Related Files](#related-files)
+  - [Part 2 — Parent is NOT Serializable](#part-2-—-parent-is-not-serializable)
+    - [Concept](#concept-1)
+    - [End-to-End Flow](#end-to-end-flow-1)
+    - [Step-by-Step Breakdown (point by point)](#step-by-step-breakdown-point-by-point)
+      - [1. Parent does NOT need to be `Serializable` for the child to be serializable](#1-parent-does-not-need-to-be-serializable-for-the-child-to-be-serializable)
+      - [2. What happens at SERIALIZATION time](#2-what-happens-at-serialization-time)
+      - [3. What happens at DESERIALIZATION time — the instance control flow](#3-what-happens-at-deserialization-time-—-the-instance-control-flow)
+      - [4. Why the constructor is mandatory](#4-why-the-constructor-is-mandatory)
+      - [5. Error handling](#5-error-handling-1)
+    - [🗂️ Sequence Diagram (runtime interaction)](#🗂️-sequence-diagram-runtime-interaction-1)
+    - [Expected Output (verified by running the program)](#expected-output-verified-by-running-the-program)
+    - [Serialized vs. Reconstructed — at a glance](#serialized-vs-reconstructed-—-at-a-glance)
+    - [Things That Would Break This](#things-that-would-break-this-1)
+
+---
+
 # Inheritance Serialization Basics
 
 > A comparative study guide showing how serialization behaves when a parent class is serializable—and when it is not.

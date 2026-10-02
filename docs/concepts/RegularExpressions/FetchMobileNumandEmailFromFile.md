@@ -1,3 +1,22 @@
+# Table of Contents
+
+- [Extracting Mobile Numbers and Email IDs from a File](#extracting-mobile-numbers-and-email-ids-from-a-file)
+  - [Files Used](#files-used)
+  - [Step-by-Step Execution](#step-by-step-execution)
+    - [1. `main()` creates the input and output paths](#1-main-creates-the-input-and-output-paths)
+    - [2. `main()` calls the extraction method](#2-main-calls-the-extraction-method)
+    - [3. Create collections for the results](#3-create-collections-for-the-results)
+    - [4. Open files safely](#4-open-files-safely)
+    - [5. Create the regular expressions](#5-create-the-regular-expressions)
+    - [6. Read and inspect every line](#6-read-and-inspect-every-line)
+    - [7. Extract matches into collections](#7-extract-matches-into-collections)
+    - [8. Write collections to the output file](#8-write-collections-to-the-output-file)
+  - [Example Output](#example-output)
+  - [Run the Program](#run-the-program)
+  - [Error Handling](#error-handling)
+
+---
+
 # Extracting Mobile Numbers and Email IDs from a File
 
 > A file-processing study guide that uses regular expressions to collect unique mobile numbers and email IDs.

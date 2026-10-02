@@ -1,3 +1,10 @@
+# Table of Contents
+
+- [Arrays Class](#arrays-class)
+- [Conversion of array to list](#conversion-of-array-to-list)
+
+---
+
 # Arrays Class 
 
 Arrays class is an utility class to define several utility methods for array objects 

@@ -1,3 +1,11 @@
+# Table of Contents
+
+- [Data](#data)
+  - [Folders](#folders)
+  - [Files](#files)
+
+---
+
 # Data
 
 <!-- TOC -->

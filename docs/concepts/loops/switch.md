@@ -1,3 +1,22 @@
+# Table of Contents
+
+- [Switch with Enums (`enumWithSwitchBasic`)](#switch-with-enums-enumwithswitchbasic)
+  - [Guide map](#guide-map)
+  - [Overview](#overview)
+  - [pulses enum & program](#pulses-enum-program)
+  - [V1 — multi-case arrow (`printEnumWithSwitchStatementV1`)](#v1-—-multi-case-arrow-printenumwithswitchstatementv1)
+  - [V2 — arrow syntax (`printEnumWithSwitchStatementV2`)](#v2-—-arrow-syntax-printenumwithswitchstatementv2)
+    - [Point-by-point (V2)](#point-by-point-v2)
+  - [V3 — colon syntax (`printEnumWithSwitchStatementV3`)](#v3-—-colon-syntax-printenumwithswitchstatementv3)
+    - [Point-by-point (V3)](#point-by-point-v3)
+  - [V2 vs V3 comparison table](#v2-vs-v3-comparison-table)
+    - [Classroom summary (from slide)](#classroom-summary-from-slide)
+  - [Fall-through demo (V3)](#fall-through-demo-v3)
+  - [Run the demo](#run-the-demo)
+  - [See also](#see-also)
+
+---
+
 # Switch with Enums (`enumWithSwitchBasic`)
 
 > **Enhanced switch (`->`)** vs **traditional switch (`:`)** on enum constants — same match result, different control flow.  

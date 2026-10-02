@@ -1,3 +1,22 @@
+# Table of Contents
+
+- [CopyOnWriteArraySet](#copyonwritearrayset)
+  - [Guide map](#guide-map)
+  - [Class hierarchy](#class-hierarchy)
+  - [How it works internally](#how-it-works-internally)
+  - [Classroom properties (overview slide)](#classroom-properties-overview-slide)
+  - [CopyOnWriteArraySet vs `synchronizedSet()`](#copyonwritearrayset-vs-synchronizedset)
+    - [Write path comparison](#write-path-comparison)
+    - [Iterator `remove`](#iterator-remove)
+  - [Runnable examples](#runnable-examples)
+    - [Basic add and uniqueness](#basic-add-and-uniqueness)
+    - [Snapshot iteration (add after `iterator()`)](#snapshot-iteration-add-after-iterator)
+    - [`iterator.remove()` fails](#iteratorremove-fails)
+  - [When to use `CopyOnWriteArraySet`](#when-to-use-copyonwritearrayset)
+  - [See also](#see-also)
+
+---
+
 # CopyOnWriteArraySet
 
 > Package: `java.util.concurrent` · Backed by: [`CopyOnWriteArrayList`](copyOnWriteArrayList.md) · Hub: [concurrentCollections.md](concurrentCollections.md)

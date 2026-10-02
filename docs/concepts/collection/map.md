@@ -1,3 +1,30 @@
+# Table of Contents
+
+- [Map (`map` package)](#map-map-package)
+    - [`map` folder launchers (all extend `mapDemo`)](#map-folder-launchers-all-extend-mapdemo)
+  - [Map constructor examples](#map-constructor-examples)
+  - [Map (I)](#map-i)
+  - [Map Interface Hierarchy](#map-interface-hierarchy)
+    - [Interfaces](#interfaces)
+    - [Classes](#classes)
+  - [Map Collection Views](#map-collection-views)
+  - [Choosing a Map Implementation](#choosing-a-map-implementation)
+  - [NavigableMap — complete execution flow (`navigableMap.java`)](#navigablemap-—-complete-execution-flow-navigablemapjava)
+    - [Source files](#source-files)
+    - [End-to-end execution flow](#end-to-end-execution-flow)
+    - [`navigableMap.java` — launcher methods](#navigablemapjava-—-launcher-methods)
+    - [`demonstrateNavigableMap()` — every statement explained](#demonstratenavigablemap-—-every-statement-explained)
+      - [Execution order (numbered)](#execution-order-numbered)
+      - [NavigableMap entry methods used in the demo](#navigablemap-entry-methods-used-in-the-demo)
+      - [Parallel: key-only vs entry APIs](#parallel-key-only-vs-entry-apis)
+    - [`mapConstructors("NavigableMap")` behavior](#mapconstructorsnavigablemap-behavior)
+    - [`printDefaultCapacitySummary` from `navigableMap.main`](#printdefaultcapacitysummary-from-navigablemapmain)
+    - [What `NavigableMap` adds beyond `SortedMap`](#what-navigablemap-adds-beyond-sortedmap)
+    - [Verified NavigableMap output](#verified-navigablemap-output)
+    - [Run the NavigableMap demo](#run-the-navigablemap-demo)
+
+---
+
 # Map (`map` package)
 
 > Map hierarchy, views, **NavigableMap** / `navigableMap.java`, and `mapDemo` launchers.

@@ -1,3 +1,18 @@
+# Table of Contents
+
+- [`serialVersionUID` — Why It Exists and How It Protects Deserialization](#serialversionuid-—-why-it-exists-and-how-it-protects-deserialization)
+  - [Part 1 — Concept (`serialUIDBasics.java`)](#part-1-—-concept-serialuidbasicsjava)
+    - [Original notes (verbatim, from the source file)](#original-notes-verbatim-from-the-source-file)
+  - [Part 2 — `dog1.java`](#part-2-—-dog1java)
+  - [Part 3 — `sender.java`](#part-3-—-senderjava)
+  - [Part 4 — `receiver.java`](#part-4-—-receiverjava)
+    - [Original trailing note (verbatim, from the source file)](#original-trailing-note-verbatim-from-the-source-file)
+    - [Run order matters](#run-order-matters)
+    - [Verified Output](#verified-output)
+  - [Related Files](#related-files)
+
+---
+
 # `serialVersionUID` — Why It Exists and How It Protects Deserialization
 
 > A focused study guide to serialization compatibility, explicit version identifiers, and safe deserialization.

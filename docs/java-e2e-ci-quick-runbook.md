@@ -1,3 +1,22 @@
+# Table of Contents
+
+- [Java E2E CI — Quick Runbook](#java-e2e-ci-—-quick-runbook)
+  - [Trigger the pipeline manually](#trigger-the-pipeline-manually)
+  - [Check build results](#check-build-results)
+  - [Download Surefire test reports](#download-surefire-test-reports)
+  - [Pull the Docker image](#pull-the-docker-image)
+  - [Secrets setup](#secrets-setup)
+    - [Recommended: Resend API (works reliably from GitHub Actions)](#recommended-resend-api-works-reliably-from-github-actions)
+    - [Legacy: Gmail SMTP (often fails from CI)](#legacy-gmail-smtp-often-fails-from-ci)
+    - [Gmail setup (required for `smtp.gmail.com`)](#gmail-setup-required-for-smtpgmailcom)
+  - [Common issues](#common-issues)
+  - [Failure resolution guide](#failure-resolution-guide)
+    - [1. Gmail SMTP — `535 BadCredentials`](#1-gmail-smtp-—-535-badcredentials)
+    - [2. GHCR Docker push — `unknown blob`](#2-ghcr-docker-push-—-unknown-blob)
+    - [3. Healthy run checklist](#3-healthy-run-checklist)
+
+---
+
 # Java E2E CI — Quick Runbook
 
 > A fast operational reference for running, checking, and troubleshooting the Java CI pipeline.

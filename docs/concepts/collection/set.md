@@ -1,3 +1,42 @@
+# Table of Contents
+
+- [Set (`set` package)](#set-set-package)
+  - [Set constructor examples](#set-constructor-examples)
+  - [Set (I) Interface](#set-i-interface)
+  - [Set Interface Hierarchy](#set-interface-hierarchy)
+    - [Common implementations](#common-implementations)
+    - [Thread-safe implementations](#thread-safe-implementations)
+    - [HashSet (C)](#hashset-c)
+    - [Fill Ratio | Load Factor](#fill-ratio-load-factor)
+  - [HashSet vs LinkedHashSet](#hashset-vs-linkedhashset)
+    - [Shared properties](#shared-properties)
+    - [SortedSet (I)](#sortedset-i)
+  - [NavigableSet — complete execution flow (`navigableSet.java`)](#navigableset-—-complete-execution-flow-navigablesetjava)
+    - [Source files](#source-files)
+    - [End-to-end execution flow](#end-to-end-execution-flow)
+    - [`navigableSet.java` — launcher methods](#navigablesetjava-—-launcher-methods)
+    - [`demonstrateNavigableSet()` — every statement explained](#demonstratenavigableset-—-every-statement-explained)
+      - [Execution order (numbered)](#execution-order-numbered)
+      - [② `CollectionTypeInspector.printTypeInfo(NavigableSet, SortedSet, TreeSet)`](#②-collectiontypeinspectorprinttypeinfonavigableset-sortedset-treeset)
+      - [③ `printDefaultInitialCapacity("NavigableSet")`](#③-printdefaultinitialcapacitynavigableset)
+      - [④ `NavigableSet<String> set = new TreeSet<>();`](#④-navigablesetstring-set-new-treeset)
+      - [⑤–⑧ `set.add("Apple" | "Banana" | "Cherry" | "Mango")`](#⑤–⑧-setaddapple-banana-cherry-mango)
+      - [⑨ `System.out.println("Elements in natural sorted order: " + set)`](#⑨-systemoutprintlnelements-in-natural-sorted-order-set)
+      - [⑩ `set.lower("Cherry")` → `Banana`](#⑩-setlowercherry-→-banana)
+      - [⑪ `set.floor("Cherry")` → `Cherry`](#⑪-setfloorcherry-→-cherry)
+      - [⑫ `set.ceiling("Coconut")` → `Mango`](#⑫-setceilingcoconut-→-mango)
+      - [⑬ `set.higher("Cherry")` → `Mango`](#⑬-sethighercherry-→-mango)
+      - [⑭ `set.descendingSet()` → `[Mango, Cherry, Banana, Apple]`](#⑭-setdescendingset-→-mango-cherry-banana-apple)
+      - [⑮ `set.subSet("Banana", true, "Mango", false)` → `[Banana, Cherry]`](#⑮-setsubsetbanana-true-mango-false-→-banana-cherry)
+    - [`demonstrateTreeSetConstructors()` (called from launcher)](#demonstratetreesetconstructors-called-from-launcher)
+    - [`demonstrateTreeSetComparator()` (called from launcher)](#demonstratetreesetcomparator-called-from-launcher)
+    - [`printDefaultCapacitySummary("NavigableSet")`](#printdefaultcapacitysummarynavigableset)
+    - [What `NavigableSet` adds beyond `SortedSet`](#what-navigableset-adds-beyond-sortedset)
+    - [Verified NavigableSet output](#verified-navigableset-output)
+    - [Run the NavigableSet demo](#run-the-navigableset-demo)
+
+---
+
 # Set (`set` package)
 
 > Set hierarchy, HashSet, and **NavigableSet** / `navigableSet.java` walkthrough.

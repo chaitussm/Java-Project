@@ -1,3 +1,19 @@
+# Table of Contents
+
+- [Properties (`properties` package)](#properties-properties-package)
+  - [Properties](#properties)
+    - [Why use a properties file?](#why-use-a-properties-file)
+    - [Properties file and the `Properties` object (`load` / `store`)](#properties-file-and-the-properties-object-load-store)
+    - [Complete execution flow (`propertiesDemo.java`)](#complete-execution-flow-propertiesdemojava)
+      - [Source files](#source-files)
+      - [End-to-end flow](#end-to-end-flow)
+      - [Step-by-step summary](#step-by-step-summary)
+      - [Relationship to `Hashtable`](#relationship-to-hashtable)
+      - [Verified program output](#verified-program-output)
+    - [Run the properties demo](#run-the-properties-demo)
+
+---
+
 # Properties (`properties` package)
 
 > `propertiesDemo.java` execution flow and load/store diagrams.

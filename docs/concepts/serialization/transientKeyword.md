@@ -1,3 +1,20 @@
+# Table of Contents
+
+- [The `transient` Keyword — Basics and the `final transient` Edge Case](#the-transient-keyword-—-basics-and-the-final-transient-edge-case)
+  - [Part 1 — transientKeyword.java](#part-1-—-transientkeywordjava)
+    - [Concept](#concept)
+    - [Key rules demonstrated](#key-rules-demonstrated)
+    - [Verified Output](#verified-output)
+  - [Part 2 — reflectionVsDirectAccess.java](#part-2-—-reflectionvsdirectaccessjava)
+    - [Concept](#concept-1)
+    - [End-to-End Flow](#end-to-end-flow)
+    - [Step-by-step](#step-by-step)
+    - [Verified Output](#verified-output-1)
+    - [Things That Would Change This](#things-that-would-change-this)
+  - [Related Files](#related-files)
+
+---
+
 # The `transient` Keyword — Basics and the `final transient` Edge Case
 
 > A practical guide to fields excluded from Java serialization and the surprising constant-inlining edge case.

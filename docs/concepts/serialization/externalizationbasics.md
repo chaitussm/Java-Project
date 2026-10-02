@@ -1,3 +1,18 @@
+# Table of Contents
+
+- [Externalization Basics](#externalization-basics)
+  - [Concept](#concept)
+  - [Why Externalization Exists — The Problem It Solves](#why-externalization-exists-—-the-problem-it-solves)
+  - [How It Works — The Two Callback Methods](#how-it-works-—-the-two-callback-methods)
+  - [Important Rule: Public No-Arg Constructor Required](#important-rule-public-no-arg-constructor-required)
+  - [Summary](#summary)
+  - [Worked Example — Complete Execution Summary](#worked-example-—-complete-execution-summary)
+    - [🔑 The key deserialization rule (why the no-arg constructor runs)](#🔑-the-key-deserialization-rule-why-the-no-arg-constructor-runs)
+    - [What would break this](#what-would-break-this)
+  - [Serializable vs. Externalizable — Final Comparison](#serializable-vs-externalizable-—-final-comparison)
+
+---
+
 # Externalization Basics
 
 > A study guide to Java `Externalizable`, selective persistence, and its constructor requirements.
