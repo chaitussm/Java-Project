@@ -610,5 +610,17 @@ classpath realted to .class file    (e.g., `.` for current directory, or a direc
 
 JDK(Java Development Kit) - contains JRE + development tools like `javac`, `jar`, etc.
 
+1. JDK provides environment to develop and run java applications including the compiler and other development tools.
+2. JDK is necessary for Java development, while JRE alone is sufficient only for running Java applications.
+ 
 JRE(Java Runtime Environment) - contains JVM + standard libraries to run Java programs.
+
+1. JRE provides environment to run Java applications, including the JVM and standard libraries.
+2. JRE is necessary for running Java applications, but not for development.
+ 
 JVM(Java Virtual Machine) - executes Java bytecode, provides platform independence.
+1. JVM is a responsible to run java program line by line , hence it is an interpreter.
+2. JVM is the engine that executes Java bytecode, enabling Java's "write once, run anywhere" capability.
+3. JVM is necessary for running Java applications, but it does not include development tools like the compiler.
+
+
