@@ -1,6 +1,6 @@
-package pack3;
+package com.enumeration.pack3;
 
-import static pack1.Fish.STAR;
+import static com.enumeration.pack1.Fish.STAR;
 
 /** Scenario 2: static import of one constant — use {@code STAR} without {@code Fish.} prefix. */
 public class Test2 {

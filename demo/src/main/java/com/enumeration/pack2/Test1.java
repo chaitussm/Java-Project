@@ -1,6 +1,6 @@
-package pack2;
+package com.enumeration.pack2;
 
-import pack1.Fish;
+import com.enumeration.pack1.Fish;
 
 /** Scenario 1: type import — use {@code Fish.GUPPY}. */
 public class Test1 {

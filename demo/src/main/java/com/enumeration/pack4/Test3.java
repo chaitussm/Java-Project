@@ -1,7 +1,8 @@
-package pack4;
+package com.enumeration.pack4;
 
-import pack1.Fish;
-import static pack1.Fish.GUPPY;
+import static com.enumeration.pack1.Fish.GUPPY;
+
+import com.enumeration.pack1.Fish;
 
 /** Scenario 3: type import + static import — {@code Fish.STAR} and bare {@code GUPPY}. */
 public class Test3 {
