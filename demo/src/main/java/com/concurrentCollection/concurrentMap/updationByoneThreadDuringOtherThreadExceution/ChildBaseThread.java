@@ -2,7 +2,7 @@ package com.concurrentCollection.concurrentMap.updationByoneThreadDuringOtherThr
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class childBaseThread extends Thread {
+public class ChildBaseThread extends Thread {
 
     static ConcurrentHashMap<Integer, String> map = new ConcurrentHashMap<>();
 

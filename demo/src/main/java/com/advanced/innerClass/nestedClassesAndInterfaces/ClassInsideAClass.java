@@ -1,6 +1,6 @@
 package com.advanced.innerClass.nestedClassesAndInterfaces;
 
-public class classInsideAClass {
+public class ClassInsideAClass {
 
     /*
      *

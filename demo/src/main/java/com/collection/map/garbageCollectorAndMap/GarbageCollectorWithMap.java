@@ -1,14 +1,14 @@
 package com.collection.map.garbageCollectorAndMap;
 
-public class garbageCollectorWithMap {
+public class GarbageCollectorWithMap {
    
     public String toString()
     {
-        return "garbageCollectorWithMap instance";
+        return "GarbageCollectorWithMap instance";
     }
 
     public void finalize() {
-        System.out.println("garbageCollectorWithMap instance is being garbage collected");
+        System.out.println("GarbageCollectorWithMap instance is being garbage collected");
     }
 
 }

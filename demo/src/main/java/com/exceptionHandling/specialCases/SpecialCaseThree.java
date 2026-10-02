@@ -1,6 +1,6 @@
 package com.exceptionHandling.specialCases;
 
-public class specialCaseThree {
+public class SpecialCaseThree {
 
     public static void main(String[] args) {
       /*Both ArithmeticException and Error are unchecked exceptions so no compile time errors*/

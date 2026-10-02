@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class display {
+public class Display {
 
      public synchronized void wish(String name)
      {

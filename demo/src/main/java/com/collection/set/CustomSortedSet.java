@@ -2,19 +2,19 @@ package com.collection.set;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class sortedSet extends setDemo{
+public class CustomSortedSet extends SetDemo{
 
     public static void demonstrateSet(String collectionType) {
         setCollectionType(collectionType);
         setConstructors(collectionType);
-        if (collectionType.equals("TreeSet") || collectionType.equals("SortedSet")
+        if (collectionType.equals("TreeSet") || collectionType.equals("CustomSortedSet")
                 || collectionType.equals("NavigableSet")) {
             setComparator(collectionType);
         }
     }
 
     public static void main(String[] args) {
-        demonstrateSet("SortedSet");
-        CollectionTypeInspector.printDefaultCapacitySummary("SortedSet");
+        demonstrateSet("CustomSortedSet");
+        CollectionTypeInspector.printDefaultCapacitySummary("CustomSortedSet");
     }
 }

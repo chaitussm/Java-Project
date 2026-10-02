@@ -3,22 +3,22 @@ package com.advanced.multiThreading.threadpools.threadpoolWithRunnable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class threadpool {
+public class Threadpool {
 
     public static void main(String[] args)
     {
-        printJob[] jobs = {
-            new printJob("durga"),
-            new printJob("shiva"),
-            new printJob("vishnu"),
-            new printJob("lakshmi"),
-            new printJob("brahma"),
-            new printJob("saraswati")
+        PrintJob[] jobs = {
+            new PrintJob("durga"),
+            new PrintJob("shiva"),
+            new PrintJob("vishnu"),
+            new PrintJob("lakshmi"),
+            new PrintJob("brahma"),
+            new PrintJob("saraswati")
         };
          
         ExecutorService service = Executors.newFixedThreadPool(3);
 
-        for(printJob job : jobs)
+        for(PrintJob job : jobs)
         {
            service.submit(job);
         }

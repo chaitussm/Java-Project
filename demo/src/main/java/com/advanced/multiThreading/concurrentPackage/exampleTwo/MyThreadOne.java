@@ -2,11 +2,11 @@ package com.advanced.multiThreading.concurrentPackage.exampleTwo;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class myThreadOne extends Thread{
+public class MyThreadOne extends Thread{
 
     static ReentrantLock I = new ReentrantLock();
 
-    myThreadOne(String name)
+    MyThreadOne(String name)
     {
        super(name);
     }

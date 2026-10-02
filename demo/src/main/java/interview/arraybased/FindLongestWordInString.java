@@ -1,6 +1,6 @@
-package Interview.ArrayBased;
+package interview.arraybased;
 
-public class findLongestWordInString {
+public class FindLongestWordInString {
 
     public static String longestWordInString(String a)
     {

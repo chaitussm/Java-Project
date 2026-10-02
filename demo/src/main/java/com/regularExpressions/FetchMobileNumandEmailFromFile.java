@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class FetchMobileNumandEmailFromFile extends fileBasicMethods{
+public class FetchMobileNumandEmailFromFile extends FileBasicMethods{
 
 
     /*

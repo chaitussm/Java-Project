@@ -15,6 +15,6 @@ public class BankExample implements Bank {
         BankExample bank = new BankExample();
         bank.deposit();
         bank.reporate();
-        System.out.println("Rate of Interest: " + Bank.roi);
+        System.out.println("Rate of Interest: " + Bank.ROI);
     }
 }

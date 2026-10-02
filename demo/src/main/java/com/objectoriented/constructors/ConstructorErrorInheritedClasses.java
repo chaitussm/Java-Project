@@ -1,6 +1,6 @@
 package com.objectoriented.constructors;
 
-public class constructorErrorInheritedClasses extends defaultConstructor{
+public class ConstructorErrorInheritedClasses extends DefaultConstructor{
 
     /*  NOTE
     Important example to understand default constructors and their behavior with inheritance.
@@ -16,11 +16,11 @@ public class constructorErrorInheritedClasses extends defaultConstructor{
     }
 
     Scenario 3
-    If the superclass only defines a constructor with parameters (for example `defaultConstructor(int a)`), and the
+    If the superclass only defines a constructor with parameters (for example `DefaultConstructor(int a)`), and the
     subclass does not provide a matching constructor, compilation fails with an error like:
     
-    cannot find symbol: constructor defaultConstructor()
-    location: class com.objectoriented.constructors.defaultConstructor
+    cannot find symbol: constructor DefaultConstructor()
+    location: class com.objectoriented.constructors.DefaultConstructor
     */
     public static void main(String[] args) {
         System.out.println("Constructor basics");

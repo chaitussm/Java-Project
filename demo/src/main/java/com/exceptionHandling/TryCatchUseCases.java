@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class tryCatchUseCases {
+public class TryCatchUseCases {
     /*  NOTE
     1. The try block is used to enclose the code that may throw an exception.
     2. The catch block is used to handle the exception thrown by the try block.

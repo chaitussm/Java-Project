@@ -1,8 +1,8 @@
 package com.advanced.multiThreading.threadGroup;
 
-public class myThread extends Thread{
+public class MyThread extends Thread{
 
-     myThread(ThreadGroup g, String name)
+     MyThread(ThreadGroup g, String name)
      {
         super(g, name);
      }

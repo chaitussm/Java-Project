@@ -1,7 +1,7 @@
 package com.advanced.multiThreading;
 
 
-public class superKeywordWithMultithreading  {
+public class SuperKeywordWithMultithreading  {
 
     /* Calling the start() method of the Thread class using super keyword
 
@@ -16,7 +16,7 @@ calling it a second time throws IllegalThreadStateException*/
     
 
     public static void main(String[] args) {
-        myThread thread = new myThread();
+        MyThread thread = new MyThread();
         thread.start();
         for(int i = 0; i < 5; i++) {
             System.out.println("Main Thread: " + i);

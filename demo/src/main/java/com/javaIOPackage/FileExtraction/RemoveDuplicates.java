@@ -3,9 +3,9 @@ package com.javaIOPackage.FileExtraction;
 import java.io.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class removeDuplicates extends fileBasicMethods {
+public class RemoveDuplicates extends FileBasicMethods {
 
     // Approach 1: checks every input line against the lines already written.
     public static void removeDuplicatesUsingFileScan(String inputFile, String outputFile)

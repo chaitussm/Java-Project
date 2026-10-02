@@ -1,6 +1,6 @@
 package com.objectoriented.methods;
 
-public class VarArg_preference {
+public class VarArgPreference {
 
     //When both var arg method and non var arg method are present in the class then non var arg method will be preferred over var arg method when the method is called with the same number of arguments as the non var arg method.
     //This is because the non var arg method is more specific than the var arg method and it provides a better match for the method call.

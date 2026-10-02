@@ -2,7 +2,7 @@ package com.collection.list;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class stackClass extends listDemo {
+public class StackClass extends ListDemo {
 
     public static void demonstrateList(String collectionType) {
         listCollectionType(collectionType);

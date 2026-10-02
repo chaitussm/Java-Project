@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-public class lambdaFunctions {
+public class LambdaFunctions {
 
     public void demonstrateLambdaSyntax() {
         Runnable noParameter = () -> System.out.println("No parameter lambda");
@@ -84,7 +84,7 @@ public class lambdaFunctions {
     }
 
     public static void main(String[] args) {
-        lambdaFunctions demo = new lambdaFunctions();
+        LambdaFunctions demo = new LambdaFunctions();
         demo.demonstrateLambdaSyntax();
         demo.demonstratePredicate();
         demo.demonstrateConsumer();

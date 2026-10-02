@@ -1,9 +1,9 @@
 package com.generics.genericWithitsExtendedClasses;
 
-public class genericWithMultipleConditions<T extends Number & Comparable<T>> {
+public class GenericWithMultipleConditions<T extends Number & Comparable<T>> {
     private T value;
 
-    public genericWithMultipleConditions(T value) {
+    public GenericWithMultipleConditions(T value) {
         this.value = value;
     }
 
@@ -33,7 +33,7 @@ public class genericWithMultipleConditions<T extends Number & Comparable<T>> {
 
     @Override
     public String toString() {
-        return "genericWithMultipleConditions{" +
+        return "GenericWithMultipleConditions{" +
                 "value=" + value +
                 '}';
     }
@@ -48,7 +48,7 @@ public class genericWithMultipleConditions<T extends Number & Comparable<T>> {
     }
 
     public static void main(String[] args) {
-        genericWithMultipleConditions<Integer> example = new genericWithMultipleConditions<>(5);
+        GenericWithMultipleConditions<Integer> example = new GenericWithMultipleConditions<>(5);
         System.out.println("Value: " + example.getValue());
         System.out.println("Is Positive: " + example.isPositive());
         System.out.println("Is Negative: " + example.isNegative());

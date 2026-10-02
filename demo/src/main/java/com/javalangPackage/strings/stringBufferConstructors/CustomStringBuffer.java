@@ -1,10 +1,9 @@
 package com.javalangPackage.strings.stringBufferConstructors;
 
 
-import java.io.ObjectStreamClass;
 import java.lang.reflect.Method;
 
-public class stringBuffer {
+public class CustomStringBuffer {
 
     /*
      * If the content is fixed and wont change ferquenntly then it is recommended to use String class 
@@ -12,9 +11,9 @@ public class stringBuffer {
      * because StringBuffer class is mutable and hence it is more efficient than String class
      * All required changes in StringBuffer will be performed in the existing object only 
      * at line no 15 creates an empty String buffer Object with default capacity of 16 characters
-     * Once stringBuffer reaches to its max capacity a new stringBuffer object will be created 
+     * Once StringBuffer reaches to its max capacity a new StringBuffer object will be created 
      * new capactiy = (current capacity +1)*2 
-     * Every method present in the stringBuffer is synchronized and hence only one thread is allowed to operate on stringBuffer at a time.
+     * Every method present in the StringBuffer is synchronized and hence only one thread is allowed to operate on StringBuffer at a time.
      */
     public static void methodInClasses(StringBuffer o)
     {
@@ -39,11 +38,11 @@ public class stringBuffer {
         methodInClasses(sb);
 
         StringBuffer sb1 = new StringBuffer(20); 
-        // creates any stringBuffer object with initial capacity of 20 characters with specified initial capacity
+        // creates any StringBuffer object with initial capacity of 20 characters with specified initial capacity
 
         StringBuffer sb2 = new StringBuffer("Namah Parvathy Pathaye");// Here capacity is string length + 16 = 22 + 16 = 37
         System.out.println("StringBuffer object with current capacity is: " + sb2.capacity());
-        // for the given string equivalence stringBuffer object will be created with initial capacity of 16 + length of the given string
+        // for the given string equivalence StringBuffer object will be created with initial capacity of 16 + length of the given string
     }
 
     public static void stringBufferMethods()

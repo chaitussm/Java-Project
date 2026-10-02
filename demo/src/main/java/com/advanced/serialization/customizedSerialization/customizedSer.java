@@ -5,9 +5,9 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
-class account extends serializeBase {
+class account extends SerializeBase {
 
     String username = "Rama";
 
@@ -47,7 +47,7 @@ class account extends serializeBase {
     }
 }
 
-public class customizedSer extends serializeBase{
+public class customizedSer extends SerializeBase{
 
     // Docs: docs/concepts/serialization/customizedSer.md (Part 1, line 1)
     public static void main(String[] args)

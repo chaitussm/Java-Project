@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.daemonThreads;
 
-public class daemonThread {
+public class DaemonThread {
     /*
      * Daemon threads are background threads that help the JVM perform
      * supporting tasks such as garbage collection.

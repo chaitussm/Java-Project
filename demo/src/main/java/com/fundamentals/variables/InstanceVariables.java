@@ -1,6 +1,6 @@
 package com.fundamentals.variables;
 
-public class Instance_Variables {
+public class InstanceVariables {
 
     //Rules for instance varables 
     //1. Instance variables are declared inside the class but outside the method, constructor or any block.
@@ -16,11 +16,11 @@ public class Instance_Variables {
     int age; // instance variable
 
     public static void main(String[] args) {
-        Instance_Variables obj1 = new Instance_Variables();
+        InstanceVariables obj1 = new InstanceVariables();
         obj1.name = "Seetha";
         obj1.age = 25;
 
-        Instance_Variables obj2 = new Instance_Variables();
+        InstanceVariables obj2 = new InstanceVariables();
         obj2.name = "Rama";
         obj2.age = 30;
 

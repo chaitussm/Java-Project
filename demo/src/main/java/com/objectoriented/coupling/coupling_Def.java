@@ -9,7 +9,7 @@ class DataProcessor {
 class encrpytionService {
     private DataProcessor dataProcessor; // ClassB is dependent on DataProcessor
 
-    public encrpytionService(DataProcessor dataProcessor) {
+    encrpytionService(DataProcessor dataProcessor) {
         this.dataProcessor = dataProcessor;
     }
 

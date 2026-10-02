@@ -1,6 +1,6 @@
 package com.javalangPackage.strings.stringObjectsCreation;
 
-public class stringObjects {
+public class StringObjects {
 
     public static void main(String[] args)
     {

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class similarLikeDeadlock extends Thread {
+public class SimilarLikeDeadlock extends Thread {
 
     /*This code wont be executed because main is the entry point */
 

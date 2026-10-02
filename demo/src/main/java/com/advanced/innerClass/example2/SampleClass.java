@@ -1,6 +1,6 @@
 package com.advanced.innerClass.example2;
 
-public class sampleClass {
+public class SampleClass {
 
     int x = 10;
     static int y = 20;

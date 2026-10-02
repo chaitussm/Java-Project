@@ -1,6 +1,6 @@
 package com.javalangPackage.variousMethods;
 
-public class hashCode {
+public class HashCode {
 
     /*
      *
@@ -24,7 +24,7 @@ public class hashCode {
 
     public static void main(String[] args)
     {
-        hashCode h = new hashCode();
+        HashCode h = new HashCode();
         System.out.println(h.hashCode());
         System.out.println(h);
     }

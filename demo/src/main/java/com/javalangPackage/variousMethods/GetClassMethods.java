@@ -1,7 +1,7 @@
 package com.javalangPackage.variousMethods;
 
 import java.lang.reflect.*;
-public class getClassMethods {
+public class GetClassMethods {
 
     /*
         *
@@ -32,7 +32,7 @@ public class getClassMethods {
     public static void main(String[] args) throws Exception
     {
         //For the same class
-        getClassMethods obj = new getClassMethods();
+        GetClassMethods obj = new GetClassMethods();
         obj.getClassMethod(obj);
         //For String Class 
         String s = new String("Shiva");

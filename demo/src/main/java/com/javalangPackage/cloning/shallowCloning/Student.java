@@ -1,6 +1,6 @@
 package com.javalangPackage.cloning.shallowCloning;
 
-public class student implements Cloneable{
+public class Student implements Cloneable{
 
     /*
      *
@@ -14,11 +14,11 @@ public class student implements Cloneable{
      * 
      */
 
-     teacher t;
+     Teacher t;
 
      int j; 
 
-     student(teacher t, int j)
+     Student(Teacher t, int j)
      {
         this.t = t;
         this.j = j;

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class threadCreationPartOne extends Thread {
+public class ThreadCreationPartOne extends Thread {
 
     @Override
     public void run() {
@@ -10,7 +10,7 @@ public class threadCreationPartOne extends Thread {
     }
 
     public static void main(String[] args) {
-        threadCreationPartOne thread = new threadCreationPartOne();
+        ThreadCreationPartOne thread = new ThreadCreationPartOne();
         thread.start();
         for(int i = 0; i < 5; i++) {
             System.out.println("Main Thread: " + i);

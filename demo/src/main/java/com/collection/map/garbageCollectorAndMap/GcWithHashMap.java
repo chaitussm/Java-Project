@@ -2,7 +2,7 @@ package com.collection.map.garbageCollectorAndMap;
 
 import java.util.HashMap;
 
-public class gcWithHashMap {
+public class GcWithHashMap {
 
     /**
      * In the case of a HashMap, eventhough object doesnt have anmy reference, it is not eligibale for gc if it is associated with HashMap 
@@ -13,8 +13,8 @@ public class gcWithHashMap {
 
     public static void main(String[] args) throws Exception  {
         
-        HashMap<garbageCollectorWithMap, String> gcmap = new HashMap<garbageCollectorWithMap, String>();
-        garbageCollectorWithMap instance = new garbageCollectorWithMap();
+        HashMap<GarbageCollectorWithMap, String> gcmap = new HashMap<GarbageCollectorWithMap, String>();
+        GarbageCollectorWithMap instance = new GarbageCollectorWithMap();
         gcmap.put(instance, "durga");
         System.out.println("Before garbage collector:" + gcmap);
         instance = null; // Make the instance eligible for garbage collection

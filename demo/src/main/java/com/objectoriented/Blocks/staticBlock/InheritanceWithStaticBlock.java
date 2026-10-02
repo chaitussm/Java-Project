@@ -1,6 +1,6 @@
 package com.objectoriented.Blocks.staticBlock;
 
-public class InheritanceWithStaticBlock extends executionFlowInSB {
+public class InheritanceWithStaticBlock extends ExecutionFlowInSB {
 
     static void methodB(){
         System.out.println("Static block in InheritanceWithStaticBlock class.");

@@ -1,10 +1,10 @@
 package com.javalangPackage.cloning.shallowCloning;
 
-public class teacher {
+public class Teacher {
 
     int i ; 
 
-    teacher(int i)
+    Teacher(int i)
     {
         this.i = i;
     }

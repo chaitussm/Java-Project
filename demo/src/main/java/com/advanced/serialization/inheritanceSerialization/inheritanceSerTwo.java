@@ -3,7 +3,7 @@ package com.advanced.serialization.inheritanceSerialization;
 
 import java.io.Serializable;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
 import java.io.*;
 
@@ -29,7 +29,7 @@ class concentrate extends protein implements Serializable
 
 }
 
-public class inheritanceSerTwo extends serializeBase{
+public class inheritanceSerTwo extends SerializeBase{
 
     // Docs: docs/concepts/serialization/inheritanceSerializationbasics.md (Part 2, line 160)
 

@@ -1,6 +1,6 @@
 package com.objectoriented.Blocks.staticBlock;
 
-public class executionFlowInSB {
+public class ExecutionFlowInSB {
 
     // Static block to demonstrate execution flow
     // 1. JVMN checks for the staticc memebrs from top to bottom
@@ -12,7 +12,7 @@ public class executionFlowInSB {
 
      static int y = 20;    
      static void methodA() {
-        System.out.println("Static method in executionFlowInSB class.");
+        System.out.println("Static method in ExecutionFlowInSB class.");
         //Note we have intialize the variable at the time of declaration inside the static block
         // If we dont intitalize we get below error
         //Main.java:10: error: variable might not have been initialized

@@ -1,6 +1,6 @@
 package com.advanced.innerClass.example1;
 
-public class basicMain {
+public class BasicMain {
 
      public static void main(String[] args) {
         // 1. Create an instance of the outer class

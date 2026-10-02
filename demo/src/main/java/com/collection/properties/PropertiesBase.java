@@ -1,11 +1,11 @@
 package com.collection.properties;
 
-public class propertiesBase {
+public class PropertiesBase {
 
     private String key;
     private String value;
 
-    public propertiesBase(String key, String value) {
+    public PropertiesBase(String key, String value) {
         this.key = key;
         this.value = value;
     }

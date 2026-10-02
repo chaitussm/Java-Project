@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadlocal.threadlocalexample1;
 
-public class parentThread extends Thread{
+public class ParentThread extends Thread{
 
     /*If we use InheritableThreadLocal then the value given to parent thread will be inherited to child thread also
     We can give our own value for child Thread also*/
@@ -23,7 +23,7 @@ public class parentThread extends Thread{
     {
         l.set("parent");
         System.out.println("Parent Thread value---" + l.get());
-        childThread ch = new childThread();
+        ChildThread ch = new ChildThread();
         ch.start();
     }
     

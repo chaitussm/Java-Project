@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class sleepMethodInThread implements Runnable {
+public class SleepMethodInThread implements Runnable {
 
     @Override
     public void run() {
@@ -15,7 +15,7 @@ public class sleepMethodInThread implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new sleepMethodInThread());
+        Thread thread = new Thread(new SleepMethodInThread());
         thread.start();
         thread.join(); // Main thread will wait for this thread to finish
         for(int i = 0; i < 5; i++) {

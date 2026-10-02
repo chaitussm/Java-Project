@@ -2,25 +2,25 @@ package com.advanced.serialization.externalization;
 
 import java.io.*;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
-public class externalizationbasics extends serializeBase implements Externalizable  {
+public class Externalizationbasics extends SerializeBase implements Externalizable  {
 
-     // Docs: docs/concepts/serialization/externalizationbasics.md (line 1)
+     // Docs: docs/concepts/serialization/Externalizationbasics.md (line 1)
 
 
     String name;
     int number;
     int age;
 
-    public externalizationbasics(String name , int number , int age) {
+    public Externalizationbasics(String name , int number , int age) {
         this.name = name;
         this.number = number;
         this.age = age;
         System.out.println("Parameterized constructor");
     }
     
-    public externalizationbasics() {
+    public Externalizationbasics() {
         System.out.println("Default constructor");
     }
     
@@ -39,7 +39,7 @@ public class externalizationbasics extends serializeBase implements Externalizab
     }
 
     public static void main(String[] args) {
-        externalizationbasics eb = new externalizationbasics("durga", 123, 25);
+        Externalizationbasics eb = new Externalizationbasics("durga", 123, 25);
         String filename = sampleDataPath("serialization", "externalization.ser").toString();
 
         try (FileOutputStream fos = new FileOutputStream(filename);
@@ -53,7 +53,7 @@ public class externalizationbasics extends serializeBase implements Externalizab
 
         try (FileInputStream fis = new FileInputStream(filename);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
-            externalizationbasics eb2 = (externalizationbasics) ois.readObject();
+            Externalizationbasics eb2 = (Externalizationbasics) ois.readObject();
             System.out.println(eb2.name + "-----" + eb2.number + "-----" + eb2.age);
         }
 

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.interThreadCommunication;
 
-public class myThread extends Thread{
+public class MyThread extends Thread{
 
       int total = 0;
     public void run()

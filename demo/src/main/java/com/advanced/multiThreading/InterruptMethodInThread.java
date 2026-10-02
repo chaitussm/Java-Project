@@ -1,11 +1,11 @@
 package com.advanced.multiThreading;
 
-public class interruptMethodInThread  {
+public class InterruptMethodInThread  {
 
    
 
     public static void main(String[] args) {
-        myThreadInterrupt thread = new myThreadInterrupt();
+        MyThreadInterrupt thread = new MyThreadInterrupt();
         thread.start();
         thread.interrupt();
     }

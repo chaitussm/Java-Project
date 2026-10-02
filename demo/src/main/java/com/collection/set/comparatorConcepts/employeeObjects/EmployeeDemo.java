@@ -2,18 +2,18 @@ package com.collection.set.comparatorConcepts.employeeObjects;
 
 import java.util.TreeSet;
 
-public class employeeDemo {
+public class EmployeeDemo {
 
     public static void demoWithComparable()
     {
-       employeeBase emp1 = new employeeBase("Rama", 101);
-        employeeBase emp2 = new employeeBase("Sita", 102);
-        employeeBase emp3 = new employeeBase("Lakshman", 103);
-        employeeBase emp4 = new employeeBase("Bharat", 104);
-        employeeBase emp5 = new employeeBase("Shatrughna", 105);
+       EmployeeBase emp1 = new EmployeeBase("Rama", 101);
+        EmployeeBase emp2 = new EmployeeBase("Sita", 102);
+        EmployeeBase emp3 = new EmployeeBase("Lakshman", 103);
+        EmployeeBase emp4 = new EmployeeBase("Bharat", 104);
+        EmployeeBase emp5 = new EmployeeBase("Shatrughna", 105);
         
         // REMOVED Comparator: TreeSet now uses natural sorting (compareTo)
-        TreeSet<employeeBase> employeeSet = new TreeSet<>();
+        TreeSet<EmployeeBase> employeeSet = new TreeSet<>();
         
         employeeSet.add(emp1);
         employeeSet.add(emp2);
@@ -26,13 +26,13 @@ public class employeeDemo {
 
     public static void demoWithComparator()
     {
-        employeeBaseComparator empComp1 = new employeeBaseComparator("Rama", 101);
-        employeeBaseComparator empComp2 = new employeeBaseComparator("Sita", 102);
-        employeeBaseComparator empComp3 = new employeeBaseComparator("Lakshman", 103);
-        employeeBaseComparator empComp4 = new employeeBaseComparator("Bharat", 104);
-        employeeBaseComparator empComp5 = new employeeBaseComparator("Shatrughna", 105);
+        EmployeeBaseComparator empComp1 = new EmployeeBaseComparator("Rama", 101);
+        EmployeeBaseComparator empComp2 = new EmployeeBaseComparator("Sita", 102);
+        EmployeeBaseComparator empComp3 = new EmployeeBaseComparator("Lakshman", 103);
+        EmployeeBaseComparator empComp4 = new EmployeeBaseComparator("Bharat", 104);
+        EmployeeBaseComparator empComp5 = new EmployeeBaseComparator("Shatrughna", 105);
 
-        TreeSet<employeeBaseComparator> employeeSet = new TreeSet<>(new employeeBaseComparator("", 0));
+        TreeSet<EmployeeBaseComparator> employeeSet = new TreeSet<>(new EmployeeBaseComparator("", 0));
 
         employeeSet.add(empComp1);
         employeeSet.add(empComp2);

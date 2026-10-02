@@ -4,9 +4,9 @@ package com.javaIOPackage.FileExtraction;
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class fileExtractionOperation extends fileBasicMethods {
+public class FileExtractionOperation extends FileBasicMethods {
 
     // Reads the input file and writes only the lines not listed in the delete file.
     public static void extractfiles(String outputfile, String inputfile, String deletedfile)

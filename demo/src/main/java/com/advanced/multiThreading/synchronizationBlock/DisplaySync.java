@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.synchronizationBlock;
 
-public class displaySync {
+public class DisplaySync {
 
      public void wish(String name)
      {

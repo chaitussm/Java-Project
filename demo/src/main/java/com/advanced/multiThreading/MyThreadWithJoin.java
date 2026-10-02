@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class myThreadWithJoin extends Thread{
+public class MyThreadWithJoin extends Thread{
 
     static Thread t1;
 

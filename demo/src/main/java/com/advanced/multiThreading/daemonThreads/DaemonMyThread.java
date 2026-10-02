@@ -1,7 +1,7 @@
 
 package com.advanced.multiThreading.daemonThreads;
 
-public class daemonMyThread extends Thread {
+public class DaemonMyThread extends Thread {
     @Override
     public void run() {
         for (int i = 0; i < 10; i++) {

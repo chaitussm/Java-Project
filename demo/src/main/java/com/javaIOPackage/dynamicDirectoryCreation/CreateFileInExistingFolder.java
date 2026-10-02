@@ -3,9 +3,9 @@ package com.javaIOPackage.dynamicDirectoryCreation;
 import java.io.IOException;
 
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class createFileInExistingFolder extends fileBasicMethods{
+public class CreateFileInExistingFolder extends FileBasicMethods{
 
 
     

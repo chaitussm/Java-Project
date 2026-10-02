@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
 class dog implements Serializable{
 
@@ -27,7 +27,7 @@ class rat implements Serializable
     int j = 20;
 }
 
-public class objectGraphBasics extends serializeBase{
+public class objectGraphBasics extends SerializeBase{
 
     // Docs: docs/concepts/serialization/objectGraphBasics.md (line 1)
 

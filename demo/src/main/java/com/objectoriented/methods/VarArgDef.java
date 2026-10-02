@@ -1,6 +1,6 @@
 package com.objectoriented.methods;
 
-public class VarArg_def {
+public class VarArgDef {
 
     //VAr arg methods are also called as variable length arguments methods or variable arguments methods or varargs methods.
     //Rules for var arg methods

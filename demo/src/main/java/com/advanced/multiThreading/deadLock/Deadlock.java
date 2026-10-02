@@ -1,9 +1,9 @@
 package com.advanced.multiThreading.deadLock;
 
 /*Two threads are waiting for each other forever
-There is no resolution for the deadlock we can only prevent it */
+There is no resolution for the Deadlock we can only prevent it */
 
-public class deadlock extends Thread {
+public class Deadlock extends Thread {
 
     static String resource1 = "resource1";
     static String resource2 = "resource2";
@@ -22,8 +22,8 @@ public class deadlock extends Thread {
     }
 
     public static void main(String[] args) {
-        deadlock t1 = new deadlock();
-        deadlock t2 = new deadlock();
+        Deadlock t1 = new Deadlock();
+        Deadlock t2 = new Deadlock();
 
         t1.start();
         t2.start();

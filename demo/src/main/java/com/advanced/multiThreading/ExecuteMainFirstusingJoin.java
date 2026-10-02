@@ -1,11 +1,11 @@
 package com.advanced.multiThreading;
 
-public class executeMainFirstusingJoin {
+public class ExecuteMainFirstusingJoin {
 
     public static void main(String[] args) {
-        myThreadWithJoin.t1 = Thread.currentThread();
+        MyThreadWithJoin.t1 = Thread.currentThread();
         /*The above line is to invoke the main thread*/
-        myThreadWithJoin t = new myThreadWithJoin();
+        MyThreadWithJoin t = new MyThreadWithJoin();
         t.start();
 
         for(int i = 0; i < 5; i++) {

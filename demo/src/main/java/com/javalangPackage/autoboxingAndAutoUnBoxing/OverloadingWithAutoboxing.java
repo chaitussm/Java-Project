@@ -1,6 +1,6 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class overloadingWithAutoboxing {
+public class OverloadingWithAutoboxing {
 
     /*
      * Overloading with respect to Autoboxing , widening and var-arg methods
@@ -8,7 +8,7 @@ public class overloadingWithAutoboxing {
      * 
      */
     
-    public static void concept(Integer I)
+    public static void concept(Integer i)
     {
         System.out.println("Auto-Boxing");
     }

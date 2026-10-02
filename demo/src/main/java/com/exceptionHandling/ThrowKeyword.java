@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class throwKeyword {
+public class ThrowKeyword {
     public static void main(String[] args) {
 
         /*Example 1*/

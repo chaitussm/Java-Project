@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class typeOfExceptions {
+public class TypeOfExceptions {
 
    
 

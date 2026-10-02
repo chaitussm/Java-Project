@@ -2,7 +2,7 @@ package com.javalangPackage.variousMethods;
 
 import java.util.*;
 
-public class toStringMethod {
+public class ToStringMethod {
 
     /*
      *
@@ -18,7 +18,7 @@ public class toStringMethod {
     String name;
     int rollno;
 
-    toStringMethod(String name, int rollno)
+    ToStringMethod(String name, int rollno)
     {
        this.name = name;
        this.rollno = rollno;
@@ -33,8 +33,8 @@ public class toStringMethod {
 
     public static void main(String[] args)
     {
-       toStringMethod st = new toStringMethod("Shiva", 1);
-       toStringMethod st1 = new toStringMethod("Parvathi", 2);
+       ToStringMethod st = new ToStringMethod("Shiva", 1);
+       ToStringMethod st1 = new ToStringMethod("Parvathi", 2);
        System.out.println(st);
        System.out.println(st.toString());
        System.out.println(st1);
@@ -42,8 +42,8 @@ public class toStringMethod {
        //ArrayList, Integer wrapper classes
        String s = new String("durga");
        System.out.println(s);
-       Integer I = new Integer(10);
-       System.out.println(I);
+       Integer i = new Integer(10);
+       System.out.println(i);
        ArrayList al = new ArrayList();
        al.add("Shiva");
        al.add("Parvathi");

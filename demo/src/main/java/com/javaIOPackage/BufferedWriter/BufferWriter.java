@@ -2,9 +2,9 @@ package com.javaIOPackage.BufferedWriter;
 
 import java.io.*;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class BufferWriter extends fileBasicMethods{
+public class BufferWriter extends FileBasicMethods{
 
     /*
      * We can use Buffered writer to write character data to the file 

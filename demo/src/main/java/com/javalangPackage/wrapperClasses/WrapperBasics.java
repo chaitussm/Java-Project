@@ -1,6 +1,6 @@
 package com.javalangPackage.wrapperClasses;
 
-public class wrapperBasics {
+public class WrapperBasics {
     
     /*
      *
@@ -22,13 +22,13 @@ public class wrapperBasics {
     
     public static void methodsInWrapperClass()
     {
-        Integer I = new Integer(130);
-        System.out.println(I.byteValue());
-        System.out.println(I.shortValue());
-        System.out.println(I.intValue());
-        System.out.println(I.longValue());
-        System.out.println(I.floatValue());
-        System.out.println(I.doubleValue());
+        Integer i = new Integer(130);
+        System.out.println(i.byteValue());
+        System.out.println(i.shortValue());
+        System.out.println(i.intValue());
+        System.out.println(i.longValue());
+        System.out.println(i.floatValue());
+        System.out.println(i.doubleValue());
     }
 
     public static char charValue()
@@ -50,12 +50,12 @@ public class wrapperBasics {
 
         return bl;
     }
-    public static void IntegerwrapperClassConstructors()
+    public static void integerWrapperClassConstructors()
     {
-        Integer I1 = new Integer(10); //Integer class constructor which takes int as argument
-        Integer I2 = new Integer("10"); 
-        System.out.println(I1);
-        System.out.println(I2);
+        Integer i1 = new Integer(10); //Integer class constructor which takes int as argument
+        Integer i2 = new Integer("10"); 
+        System.out.println(i1);
+        System.out.println(i2);
         //Integer I3 = new Integer("ten"); NumberFormatException
     }
     
@@ -81,7 +81,7 @@ public class wrapperBasics {
 
     public static void main(String[] args)
     {
-        IntegerwrapperClassConstructors();
+        integerWrapperClassConstructors();
         floatwrapperClassConstructors();
         booleanWrapperClass();
         methodsInWrapperClass();

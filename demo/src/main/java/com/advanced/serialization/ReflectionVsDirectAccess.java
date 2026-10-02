@@ -7,11 +7,11 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class reflectionVsDirectAccess extends fileBasicMethods {
+public class ReflectionVsDirectAccess extends FileBasicMethods {
 
-    // Docs: docs/concepts/serialization/transientKeyword.md (Part 2, line 54)
+    // Docs: docs/concepts/serialization/TransientKeyword.md (Part 2, line 54)
     private static class SampleObject implements Serializable {
 
         private static final long serialVersionUID = 1L;

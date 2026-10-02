@@ -1,6 +1,6 @@
 package com.fundamentals.variables;
 
-public class Local_Variables {
+public class LocalVariables {
 
     //classification of variables in java
     //1. Local variables

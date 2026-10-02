@@ -2,7 +2,7 @@ package com.collection.map.treeMapSorting;
 
 import java.util.Comparator;
 
-public class customizedBase implements Comparator<Object>{
+public class CustomizedBase implements Comparator<Object>{
 
 
     @Override

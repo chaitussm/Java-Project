@@ -2,7 +2,7 @@ package com.collection.list;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class linkedList extends listDemo {
+public class CustomLinkedList extends ListDemo {
 
     public static void demonstrateList(String collectionType) {
         listCollectionType(collectionType);
@@ -10,7 +10,7 @@ public class linkedList extends listDemo {
     }
 
     public static void main(String[] args) {
-        demonstrateList("LinkedList");
-        CollectionTypeInspector.printDefaultCapacitySummary("LinkedList");
+        demonstrateList("CustomLinkedList");
+        CollectionTypeInspector.printDefaultCapacitySummary("CustomLinkedList");
     }
 }

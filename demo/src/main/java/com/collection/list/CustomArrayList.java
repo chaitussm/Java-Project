@@ -2,7 +2,7 @@ package com.collection.list;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class arrayList extends listDemo {
+public class CustomArrayList extends ListDemo {
 
     public static void demonstrateList(String collectionType) {
         listCollectionType(collectionType);
@@ -10,8 +10,8 @@ public class arrayList extends listDemo {
     }
 
     public static void main(String[] args) {
-        demonstrateList("ArrayList");
-        CollectionTypeInspector.printDefaultCapacitySummary("ArrayList");
+        demonstrateList("CustomArrayList");
+        CollectionTypeInspector.printDefaultCapacitySummary("CustomArrayList");
 
     }
 }

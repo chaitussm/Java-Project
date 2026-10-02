@@ -1,6 +1,6 @@
 package com.regularExpressions.patternClass;
 import java.util.regex.Pattern;
-public class splitMethod {
+public class SplitMethod {
 
     /**
      * String class also contains to split the target String according to a particular pattern 

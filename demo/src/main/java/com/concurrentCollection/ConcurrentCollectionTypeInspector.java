@@ -6,9 +6,9 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class concurrentCollectionTypeInspector {
+public class ConcurrentCollectionTypeInspector {
 
-    private concurrentCollectionTypeInspector() {
+    private ConcurrentCollectionTypeInspector() {
         // Private constructor to prevent instantiation
     }
 

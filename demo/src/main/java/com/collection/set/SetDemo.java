@@ -11,7 +11,7 @@ import java.util.TreeSet;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class setDemo {
+public class SetDemo {
 
     // Dispatches to the requested Set implementation demo. Unknown/blank type falls back to HashSet.
     public static void setCollectionType(String collectionType) {

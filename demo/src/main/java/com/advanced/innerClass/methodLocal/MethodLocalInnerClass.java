@@ -1,6 +1,6 @@
 package com.advanced.innerClass.methodLocal;
 
-public class methodLocalInnerClass {
+public class MethodLocalInnerClass {
 
      /*
       * To define method specific repeated required funtionality
@@ -25,7 +25,7 @@ public class methodLocalInnerClass {
 
     public static void main(String[] args)
     {
-        methodLocalInnerClass n = new methodLocalInnerClass();
+        MethodLocalInnerClass n = new MethodLocalInnerClass();
 
         n.m1();
     }

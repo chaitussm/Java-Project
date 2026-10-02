@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class setAndGetPriorityInTheread implements Runnable {
+public class SetAndGetPriorityInTheread implements Runnable {
 
     /*public final void getPriority() {
         return Thread.currentThread().getPriority();
@@ -23,7 +23,7 @@ public class setAndGetPriorityInTheread implements Runnable {
     }
 
     public static void main(String[] args) {
-        Thread thread = new Thread(new setAndGetPriorityInTheread());
+        Thread thread = new Thread(new SetAndGetPriorityInTheread());
         thread.setPriority(Thread.MAX_PRIORITY); // Setting the priority of the child thread
         thread.start();
         System.out.println("Main Thread Priority: " + Thread.currentThread().getPriority());

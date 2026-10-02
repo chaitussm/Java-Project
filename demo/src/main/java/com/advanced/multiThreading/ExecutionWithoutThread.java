@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class executionWithoutThread extends Thread {
+public class ExecutionWithoutThread extends Thread {
 
     @Override
     public void run() {
@@ -10,7 +10,7 @@ public class executionWithoutThread extends Thread {
     }
 
     public static void main(String[] args) {
-        executionWithoutThread thread = new executionWithoutThread();
+        ExecutionWithoutThread thread = new ExecutionWithoutThread();
         thread.run(); // Calling run() directly, not starting a new thread
         for(int i = 0; i < 5; i++) {
             System.out.println("Main Thread: " + i);

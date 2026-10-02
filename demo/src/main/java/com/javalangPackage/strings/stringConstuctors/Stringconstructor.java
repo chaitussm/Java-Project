@@ -1,6 +1,6 @@
 package com.javalangPackage.strings.stringConstuctors;
 
-public class stringconstructor {
+public class Stringconstructor {
 
     public static void main(String[] args) {
         String s = new String();

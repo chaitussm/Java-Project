@@ -1,6 +1,6 @@
 package com.collection.set;
 import java.util.*;
-public class treeSetexample1 {
+public class TreeSetexample1 {
 
     public static void main(String[] args) {
 

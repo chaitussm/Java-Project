@@ -1,13 +1,13 @@
 package com.advanced.multiThreading.threadlocal.threadlocalexample2;
 
-public class threadLocoalThree {
+public class ThreadLocoalThree {
 
     public static void main(String[] args)
     {
-        customerThread t1 = new customerThread("Customer Thread-1");
-        customerThread t2 = new customerThread("Customer Thread-2");
-        customerThread t3 = new customerThread("Customer Thread-3");
-        customerThread t4 = new customerThread("Customer Thread-4");
+        CustomerThread t1 = new CustomerThread("Customer Thread-1");
+        CustomerThread t2 = new CustomerThread("Customer Thread-2");
+        CustomerThread t3 = new CustomerThread("Customer Thread-3");
+        CustomerThread t4 = new CustomerThread("Customer Thread-4");
         t1.start();
         t2.start();
         t3.start();

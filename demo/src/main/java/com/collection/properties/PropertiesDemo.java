@@ -4,17 +4,17 @@ import java.util.Properties;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class propertiesDemo {
+public class PropertiesDemo {
     public static void main(String[] args) {
 
         java.util.Properties properties = new java.util.Properties();
-        properties.put(new propertiesBase("key1", "Shiva").getKey(), new propertiesBase("key1", "Brahma").getValue());
-        properties.put(new propertiesBase("key2", "Vishnu").getKey(), new propertiesBase("key2", "Vishnu").getValue());
-        properties.put(new propertiesBase("key3", "Brahma").getKey(), new propertiesBase("key3", "Shiva").getValue());
+        properties.put(new PropertiesBase("key1", "Shiva").getKey(), new PropertiesBase("key1", "Brahma").getValue());
+        properties.put(new PropertiesBase("key2", "Vishnu").getKey(), new PropertiesBase("key2", "Vishnu").getValue());
+        properties.put(new PropertiesBase("key3", "Brahma").getKey(), new PropertiesBase("key3", "Shiva").getValue());
         /*properties.setProperty("key4", null); NullPointerException will be thrown
         properties.setProperty("key4", "value4");
         try {
-            properties.store(new java.io.FileWriter("propertiesDemo.properties"), "Properties Demo");
+            properties.store(new java.io.FileWriter("PropertiesDemo.properties"), "Properties Demo");
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }*/

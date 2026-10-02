@@ -1,14 +1,14 @@
 package com.advanced.serialization;
 
-public class transientKeyword extends serializeBase{
+public class TransientKeyword extends SerializeBase{
 
-    // Docs: docs/concepts/serialization/transientKeyword.md (Part 1, line 10)
+    // Docs: docs/concepts/serialization/TransientKeyword.md (Part 1, line 10)
 
     public static void main(String[] args)
     {
         String filename = sampleDataPath("serialization","transientbasics.ser").toString();
 
-        serializeBase sb = new serializeBase();
+        SerializeBase sb = new SerializeBase();
 
         sb.serialize(filename);
         sb.checkSerializationFileCreated(filename);

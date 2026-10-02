@@ -2,7 +2,7 @@ package com.fundamentals.commandlineargs;
 
 import java.util.Scanner;
 
-public class dataTypesData {
+public class DataTypesData {
 
      // In this example we are providng the details from terminal using Scanner class and we are using the nextLine() method to read the input from the user and we are storing the input in a variable and then we are printing the input on the console.
     

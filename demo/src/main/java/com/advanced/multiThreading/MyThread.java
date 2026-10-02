@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class myThread extends Thread {
+public class MyThread extends Thread {
 
     @Override
     public void run() {

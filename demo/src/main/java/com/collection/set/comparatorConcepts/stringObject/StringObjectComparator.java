@@ -2,7 +2,7 @@ package com.collection.set.comparatorConcepts.stringObject;
 
 import java.util.Comparator;
 
-public class stringObjectComparator implements Comparator<Object> {
+public class StringObjectComparator implements Comparator<Object> {
     @Override
     public int compare(Object o1, Object o2) {
         String s1 = (String) o1;

@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class trywithresources {
+public class Trywithresources {
 
     /*from java 1.7v we are using try-with-resources statement to automatically close the resource so no need of the finally is not needed */
     public static void main(String[] args) {

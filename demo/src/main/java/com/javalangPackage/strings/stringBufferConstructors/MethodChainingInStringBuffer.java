@@ -1,10 +1,10 @@
 package com.javalangPackage.strings.stringBufferConstructors;
 
-public class methodChainingInStringBuffer {
+public class MethodChainingInStringBuffer {
 
      /*
       * Method Chaining in StringBuffer
-      * For most of the methods in string, StringBuffer and stringBuilder return types are same type hence after applying a method on the 
+      * For most of the methods in string, StringBuffer and StringBuilder return types are same type hence after applying a method on the 
       * result we can call another method whic forms method chaining, in method chaining methods calles will be executed 
       * from left to right 
       */

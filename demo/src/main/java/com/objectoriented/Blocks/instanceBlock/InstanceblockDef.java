@@ -1,6 +1,6 @@
 package com.objectoriented.Blocks.instanceBlock;
 
-public class instanceblockDef {
+public class InstanceblockDef {
 
     // Instance block to demonstrate execution flow
     // 1. JVM checks for the instance members from top to bottom
@@ -30,13 +30,13 @@ public class instanceblockDef {
     //if we keep these values at above 10 and 20 values could have been printed 
     // int i = 10;
     // int j = 20;
-    instanceblockDef()
+    InstanceblockDef()
     {
         System.out.println("Constructor");
     }
     public static void main(String[] args) {
         
-        instanceblockDef idef = new instanceblockDef();
+        InstanceblockDef idef = new InstanceblockDef();
         
         System.out.println("Main Method");
     }

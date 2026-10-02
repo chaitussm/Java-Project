@@ -2,7 +2,7 @@ package com.collection.map;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class hashTable extends mapDemo{
+public class HashTable extends MapDemo{
 
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);

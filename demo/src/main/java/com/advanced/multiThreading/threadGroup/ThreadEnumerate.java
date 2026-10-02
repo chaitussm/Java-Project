@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadGroup;
 
-public class threadEnumerate {
+public class ThreadEnumerate {
 
     public static void main(String[] args)
     {

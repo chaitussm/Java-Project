@@ -2,12 +2,12 @@ package com.collection.map.treeMapSorting;
 
 import java.util.TreeMap;
 
-public class customizedSortingTreeMap {
+public class CustomizedSortingTreeMap {
 
     public static void main(String[] args) {
 
         
-        TreeMap<Object, String> treeMap = new TreeMap<Object, String>(new customizedBase());
+        TreeMap<Object, String> treeMap = new TreeMap<Object, String>(new CustomizedBase());
 
         treeMap.put(100, "Shiva");
         treeMap.put(250, "Parvathi");

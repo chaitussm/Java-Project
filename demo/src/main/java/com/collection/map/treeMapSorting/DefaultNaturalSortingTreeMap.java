@@ -2,7 +2,7 @@ package com.collection.map.treeMapSorting;
 
 import java.util.TreeMap;
 
-public class defaultNaturalSortingTreeMap {
+public class DefaultNaturalSortingTreeMap {
 
 
     public static void main(String[] args) {

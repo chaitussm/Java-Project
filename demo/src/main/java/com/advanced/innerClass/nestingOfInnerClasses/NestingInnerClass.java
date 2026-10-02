@@ -1,8 +1,8 @@
 package com.advanced.innerClass.nestingOfInnerClasses;
 
-import com.advanced.innerClass.nestingOfInnerClasses.nestingInnerClass.InnerA.InnerB;
+import com.advanced.innerClass.nestingOfInnerClasses.NestingInnerClass.InnerA.InnerB;
 
-public class nestingInnerClass {
+public class NestingInnerClass {
 
     class InnerA
     {
@@ -20,9 +20,9 @@ public class nestingInnerClass {
 
     public static void main(String[] args)
     {
-        nestingInnerClass n = new nestingInnerClass();
+        NestingInnerClass n = new NestingInnerClass();
 
-        nestingInnerClass.InnerA in = n.new InnerA();
+        NestingInnerClass.InnerA in = n.new InnerA();
 
         InnerA.InnerB inb = in.new InnerB();
 

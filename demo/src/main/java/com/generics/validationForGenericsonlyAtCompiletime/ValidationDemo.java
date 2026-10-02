@@ -3,7 +3,7 @@ package com.generics.validationForGenericsonlyAtCompiletime;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class validationDemo {
+public class ValidationDemo {
 
     //Proof 1: Bypassing Generics at Runtime via Reflection
     public static void bypassGenericsWithReflection() throws NoSuchMethodException, IllegalAccessException, java.lang.reflect.InvocationTargetException {

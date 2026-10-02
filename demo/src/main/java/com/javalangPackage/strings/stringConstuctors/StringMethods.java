@@ -1,8 +1,8 @@
 package com.javalangPackage.strings.stringConstuctors;
 
-public class stringMethods {
+public class StringMethods {
 
-    public static void CaseMethods()
+    public static void caseMethods()
     {
         String s = new String("shiva");
         // Here 2 objects are created in heap and SCP memory and reference variable s will point to the object in heap memory
@@ -28,7 +28,7 @@ public class stringMethods {
         System.out.println("Substring from index 1 to 4: " + s.substring(1, 4));
         System.out.println("Index of character 'v': " + s.indexOf('v'));
         System.out.println("Last index of character 'a': " + s.lastIndexOf('a'));
-        CaseMethods();
+        caseMethods();
         System.out.println("Does the string start with 'Sh': " + s.startsWith("Sh"));
         System.out.println("Does the string end with 'va': " + s.endsWith("va"));
         System.out.println("Is the string empty: " + s.isEmpty());

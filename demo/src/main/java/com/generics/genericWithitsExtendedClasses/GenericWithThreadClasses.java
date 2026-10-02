@@ -1,9 +1,9 @@
 package com.generics.genericWithitsExtendedClasses;
 
-public class genericWithThreadClasses<T extends Thread> {
+public class GenericWithThreadClasses<T extends Thread> {
     private T value;
 
-    public genericWithThreadClasses(T value) {
+    public GenericWithThreadClasses(T value) {
         this.value = value;
     }
 
@@ -20,7 +20,7 @@ public class genericWithThreadClasses<T extends Thread> {
     }
 
     public static void main(String[] args) {
-        genericWithThreadClasses<Thread> example = new genericWithThreadClasses<>(new Thread());
+        GenericWithThreadClasses<Thread> example = new GenericWithThreadClasses<>(new Thread());
         example.printGenericClass();
     }
 }

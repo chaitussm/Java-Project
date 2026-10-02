@@ -28,7 +28,7 @@ class NotificationService {
     }
 }
 
-public class cohesionDef {
+public class CohesionDef {
 
     //If any component is having welldefined functionality then that component is having high cohesion and if any component is having more than one functionality then that component is having low cohesion.
     //High cohesion is desirable in software design because it promotes modularity, maintainability, and reusability. It allows developers to understand and modify specific components without affecting the entire system, leading to more efficient and effective software development.

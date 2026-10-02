@@ -2,7 +2,7 @@ package com.concurrentCollection.copyOnWriteArrayListClass;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class copyOnWriteArrayListexample {
+public class CopyOnWriteArrayListexample {
 
     public static void main(String[] args) {
 

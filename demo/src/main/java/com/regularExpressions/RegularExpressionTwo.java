@@ -1,6 +1,6 @@
 package com.regularExpressions;
 
-public class regularExpressionTwo extends regexBasics{
+public class RegularExpressionTwo extends RegexBasics{
 
     public static void main(String[] args) {
         String patternString = "he!0 wor1$";

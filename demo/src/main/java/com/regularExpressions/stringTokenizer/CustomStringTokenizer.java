@@ -2,7 +2,7 @@ package com.regularExpressions.stringTokenizer;
 
 import java.util.StringTokenizer;
 
-public class stringTokenizer {
+public class CustomStringTokenizer {
 
     public static void tokenizeString(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input);

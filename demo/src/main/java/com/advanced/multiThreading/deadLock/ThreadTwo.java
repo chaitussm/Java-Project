@@ -1,8 +1,8 @@
 package com.advanced.multiThreading.deadLock;
 
-public class threadTwo {
+public class ThreadTwo {
 
-    public synchronized void methodTwo(threadOne t1) {
+    public synchronized void methodTwo(ThreadOne t1) {
         System.out.println("Thread Two: Holding lock 2...");
         try { Thread.sleep(1000); } 
         catch (InterruptedException e) {}

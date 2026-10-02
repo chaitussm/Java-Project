@@ -1,9 +1,9 @@
 package com.advanced.multiThreading.interThreadCommunication;
 
-public class myThreadCom {
+public class MyThreadCom {
 
     public static void main(String[] args) throws InterruptedException {
-        myThread t1 = new myThread();
+        MyThread t1 = new MyThread();
         t1.start();
 
         synchronized (t1) {

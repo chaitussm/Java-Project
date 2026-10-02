@@ -2,8 +2,8 @@ package com.javaIOPackage.FileWriter;
 
 import java.io.FileWriter;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
-public class fileWriterBasics extends fileBasicMethods{
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
+public class FileWriterBasics extends FileBasicMethods{
 
     /*
      *

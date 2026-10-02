@@ -1,7 +1,7 @@
 package com.advanced.garbageCollection;
 import java.util.Date;
 
-public class runtimeDemo {
+public class RuntimeDemo {
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();
         System.out.println("Max Memory: " + runtime.maxMemory());

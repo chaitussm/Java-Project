@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.multipleLock;
 
-public class classC {
+public class ClassC {
 
     public void methodC() {
         for(int i=0;i<5;i++)

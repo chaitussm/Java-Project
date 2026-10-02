@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-public class securePassword {
+public class SecurePassword {
 
     // AES-GCM-NoPadding is the industry standard for symmetric encryption
     private static final String ALGORITHM = "AES/GCM/NoPadding";

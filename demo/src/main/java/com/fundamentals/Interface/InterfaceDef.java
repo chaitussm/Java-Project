@@ -5,7 +5,7 @@ interface Bank{
     void deposit();
     void reporate();
 
-    double roi = 9.5;
+    double ROI = 9.5;
 }
 
 public class InterfaceDef implements Bank {
@@ -27,7 +27,7 @@ public class InterfaceDef implements Bank {
         InterfaceDef obj = new InterfaceDef();
         obj.deposit();
         obj.reporate();
-        System.out.println("Rate of Interest: " + Bank.roi);
+        System.out.println("Rate of Interest: " + Bank.ROI);
     }
 
     

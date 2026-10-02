@@ -2,18 +2,18 @@ package com.collection.set;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class linkedHashSet extends setDemo{
+public class CustomLinkedHashSet extends SetDemo{
 
     public static void demonstrateSet(String collectionType) {
         setCollectionType(collectionType);
         setConstructors(collectionType);
-        if (collectionType.equals("HashSet") || collectionType.equals("LinkedHashSet")) {
+        if (collectionType.equals("HashSet") || collectionType.equals("CustomLinkedHashSet")) {
             setLoadFactor(collectionType);
         }
     }
 
     public static void main(String[] args) {
-        demonstrateSet("LinkedHashSet");
-        CollectionTypeInspector.printDefaultCapacitySummary("LinkedHashSet");
+        demonstrateSet("CustomLinkedHashSet");
+        CollectionTypeInspector.printDefaultCapacitySummary("CustomLinkedHashSet");
     }
 }

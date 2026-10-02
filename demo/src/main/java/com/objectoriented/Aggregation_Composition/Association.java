@@ -15,7 +15,7 @@ class Bank {
     private Set<Employee> employees;
   
     // Constructor of Bank class
-    public Bank(String bankName)
+    Bank(String bankName)
     {
         this.bankName = bankName;
     }
@@ -50,7 +50,7 @@ class Employee {
     private String name;
   
     // Constructor of Employee class
-    public Employee(String name)
+    Employee(String name)
     {
         // this keyword refers to current instance
         this.name = name;

@@ -3,7 +3,7 @@ package com.concurrentCollection.ConcurrentModificationException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class threadDemo extends Thread {
+public class ThreadDemo extends Thread {
 
     static ArrayList<String> arraylist = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class threadDemo extends Thread {
         arraylist.add("banana");
         arraylist.add("pomegranate");
 
-        threadDemo t = new threadDemo();
+        ThreadDemo t = new ThreadDemo();
         t.start();// At this 2 threads are there main and child thread
 
         Iterator<String> iterator = arraylist.iterator();

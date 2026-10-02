@@ -1,6 +1,6 @@
 package com.javalangPackage.strings;
 
-public class stringObjectCreationPart1 {
+public class StringObjectCreationPart1 {
 
     public static void main(String[] args) {
 

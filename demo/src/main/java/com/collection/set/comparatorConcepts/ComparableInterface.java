@@ -1,6 +1,6 @@
 package com.collection.set.comparatorConcepts;
 
-public class comparableInterface{
+public class ComparableInterface{
 
     public static void main(String[] args) {
 

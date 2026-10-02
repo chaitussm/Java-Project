@@ -1,12 +1,12 @@
 package com.advanced.serialization.serialVersionUID;
 import java.io.*;
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 /**
  * Docs: docs/concepts/serialization/SerialVersionUID.md (Part 1) 
  * Docs: docs/concepts/serialization/SerialVersionUID.md (Part 4)
  */
 
-public class receiver extends serializeBase{
+public class Receiver extends SerializeBase{
 
     public static void main(String[] args) {
 
@@ -15,7 +15,7 @@ public class receiver extends serializeBase{
         try( FileInputStream fis = new FileInputStream(filename);
              ObjectInputStream ois = new ObjectInputStream(fis)) {
 
-            dog1 d2 = (dog1) ois.readObject();
+            Dog1 d2 = (Dog1) ois.readObject();
 
             System.out.println(d2.i + "====" + d2.j);
 

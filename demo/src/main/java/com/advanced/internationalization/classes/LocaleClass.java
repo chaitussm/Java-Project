@@ -11,12 +11,12 @@ import java.util.Locale.LanguageRange;
  * instance accessors, display names, BCP 47 tags, extensions, and
  * {@link Locale.Builder} / filter / lookup APIs.
  */
-public class localeClass {
+public class LocaleClass {
 
     private static final String SEP = "------------------------------------------------------------";
 
     public static void main(String[] args) {
-        System.out.println("=== Locale class demonstration (localeClass.java) ===\n");
+        System.out.println("=== Locale class demonstration (LocaleClass.java) ===\n");
 
         demonstrateConstants();
         demonstrateConstructors();

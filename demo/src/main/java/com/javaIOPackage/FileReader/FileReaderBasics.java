@@ -1,9 +1,9 @@
 package com.javaIOPackage.FileReader;
 
 import java.io.*;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class fileReaderBasics extends fileBasicMethods {
+public class FileReaderBasics extends FileBasicMethods {
 
     /*
      *

@@ -11,7 +11,7 @@ import java.util.regex.*;
  * docs/concepts/RegularExpressions/RegularExpression.md
  */
 
-public class checkNumber {
+public class CheckNumber {
 
     public static void checkMobileNumber(String[] args) {
 
@@ -48,7 +48,7 @@ public class checkNumber {
 
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: checkNumber <mobile|email> <value>");
+            System.out.println("Usage: CheckNumber <mobile|email> <value>");
             return;
         }
 

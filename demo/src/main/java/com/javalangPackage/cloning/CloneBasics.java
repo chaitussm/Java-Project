@@ -1,6 +1,6 @@
 package com.javalangPackage.cloning;
 
-public class cloneBasics implements Cloneable{
+public class CloneBasics implements Cloneable{
 
     /*
      *
@@ -18,9 +18,9 @@ public class cloneBasics implements Cloneable{
 
    public static void main(String[] args) throws CloneNotSupportedException
    {
-       cloneBasics b = new cloneBasics();
+       CloneBasics b = new CloneBasics();
 
-       cloneBasics b1 = (cloneBasics) b.clone();
+       CloneBasics b1 = (CloneBasics) b.clone();
 
        b1.name = "Parvathi";
        b1.id = 2;

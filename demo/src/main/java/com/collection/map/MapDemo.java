@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class mapDemo {
+public class MapDemo {
 
     // Dispatches to the requested Map implementation demo. Unknown/blank type falls back to HashMap.
     public static void mapCollectionType(String collectionType) {

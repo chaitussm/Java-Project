@@ -6,7 +6,7 @@ import java.util.Date;
  * Prints heap metrics via {@link Runtime}, allocates short-lived {@link Date}
  * objects, then suggests GC with {@link Runtime#gc()}.
  */
-public class runtimeMemoryAndGc {
+public class RuntimeMemoryAndGc {
 
     public static void main(String[] args) {
         Runtime runtime = Runtime.getRuntime();

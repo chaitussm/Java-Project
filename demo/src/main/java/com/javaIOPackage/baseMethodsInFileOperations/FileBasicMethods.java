@@ -13,7 +13,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class fileBasicMethods {
+public class FileBasicMethods {
 
 
     /*To Create dynamic directory*/

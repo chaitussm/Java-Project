@@ -1,9 +1,9 @@
 package com.collection.queue;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
-import com.collection.collectionBaseClasses.queueDemo;
+import com.collection.collectionBaseClasses.QueueDemo;
 
-public class arrayDeque extends queueDemo{
+public class CustomArrayDeque extends QueueDemo{
 
     public static void demonstrateQueue(String collectionType) {
         queueCollectionType(collectionType);
@@ -11,8 +11,8 @@ public class arrayDeque extends queueDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateQueue("ArrayDeque");
-        CollectionTypeInspector.printDefaultCapacitySummary("LinkedList", "ArrayDeque", "PriorityQueue");
+        demonstrateQueue("CustomArrayDeque");
+        CollectionTypeInspector.printDefaultCapacitySummary("LinkedList", "CustomArrayDeque", "PriorityQueue");
     }
     
 }

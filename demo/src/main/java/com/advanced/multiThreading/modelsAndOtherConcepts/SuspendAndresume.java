@@ -5,7 +5,7 @@ package com.advanced.multiThreading.modelsAndOtherConcepts;
  * deprecated in Java 1.2 and later versions.Exception in thread "main" java.lang.UnsupportedOperationException
  */
 
-public class suspendAndresume extends Thread {
+public class SuspendAndresume extends Thread {
     @Override
     public void run() {
         for (int i = 0; i < 10; i++) {
@@ -19,7 +19,7 @@ public class suspendAndresume extends Thread {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        suspendAndresume t1 = new suspendAndresume();
+        SuspendAndresume t1 = new SuspendAndresume();
         t1.start();
         Thread.sleep(3000); // Let the thread run for 3 seconds
         //t1.suspend(); // Suspend the thread

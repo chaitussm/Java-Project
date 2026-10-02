@@ -3,10 +3,10 @@ package com.advanced.multiThreading.starvation;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class starvation {
+public class Starvation {
 
     /*
-     * Simple starvation demo:
+     * Simple Starvation demo:
      * 1) One shared resource is protected by an unfair lock.
      * 2) A greedy thread keeps acquiring the lock repeatedly.
      * 3) A starved thread tries to acquire the same lock and often fails.

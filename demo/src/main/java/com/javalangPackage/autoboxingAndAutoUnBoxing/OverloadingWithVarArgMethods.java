@@ -1,6 +1,6 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class overloadingWithVarArgMethods
+public class OverloadingWithVarArgMethods
 {
     public static void concept(int...x)
     {

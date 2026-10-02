@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class executionWithoutThreadCreation extends Thread {
+public class ExecutionWithoutThreadCreation extends Thread {
 
     @Override
     public void start() {
@@ -9,7 +9,7 @@ public class executionWithoutThreadCreation extends Thread {
     }
 
     public static void main(String[] args) {
-        executionWithoutThreadCreation thread = new executionWithoutThreadCreation();
+        ExecutionWithoutThreadCreation thread = new ExecutionWithoutThreadCreation();
         thread.start(); // Calling start() method, which creates a new thread
         //but here start method inside the class gets priority retaher the method inside the thread class
         System.out.println("Main Thread: " + Thread.currentThread().getName());

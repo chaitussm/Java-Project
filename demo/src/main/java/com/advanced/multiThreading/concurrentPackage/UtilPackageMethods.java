@@ -3,7 +3,7 @@ package com.advanced.multiThreading.concurrentPackage;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class utilPackageMethods {
+public class UtilPackageMethods {
 
     /*
      * ReentrantLock provides more control than synchronized.

@@ -2,7 +2,7 @@ package com.concurrentCollection.copyOnWriteArrayListClass.updationByoneThreadwh
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class childThreadBase extends Thread {
+public class ChildThreadBase extends Thread {
 
     static CopyOnWriteArrayList<String> coal = new CopyOnWriteArrayList<String>();
 

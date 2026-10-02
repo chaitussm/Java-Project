@@ -1,10 +1,10 @@
 package com.generics.genericWithitsExtendedClasses;
 
-public class genericWithNumberClasses<T extends Number> {
+public class GenericWithNumberClasses<T extends Number> {
 
     private T value;
 
-    public genericWithNumberClasses(T value) {
+    public GenericWithNumberClasses(T value) {
         this.value = value;
     }
 
@@ -26,7 +26,7 @@ public class genericWithNumberClasses<T extends Number> {
     }
 
     public static void main(String[] args) {
-        genericWithNumberClasses<Integer> example = new genericWithNumberClasses<>(5);
+        GenericWithNumberClasses<Integer> example = new GenericWithNumberClasses<>(5);
         example.printGenericClass();
         example.printValueTimesTwo();
         // if we take String it will give a compile-time error saying

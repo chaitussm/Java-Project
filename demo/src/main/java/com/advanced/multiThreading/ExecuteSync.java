@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class executeSync extends Thread {
+public class ExecuteSync extends Thread {
     
     public void run() {
         for (int i = 0; i < 5; i++) {
@@ -10,7 +10,7 @@ public class executeSync extends Thread {
     }
 
     public static void main(String[] args) {
-        executeSync thread = new executeSync();
+        ExecuteSync thread = new ExecuteSync();
         SynchronizationDemo demo = new SynchronizationDemo();
         demo.start();
         thread.start();

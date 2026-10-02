@@ -1,6 +1,6 @@
 package com.javalangPackage.strings.stringConstuctors;
 
-public class finalVsImmutability {
+public class FinalVsImmutability {
 
     public static void finalDefinition()
     {

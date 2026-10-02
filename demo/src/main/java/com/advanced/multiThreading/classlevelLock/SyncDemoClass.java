@@ -1,11 +1,11 @@
 package com.advanced.multiThreading.classlevelLock;
 
-public class syncDemoClass extends Thread {
+public class SyncDemoClass extends Thread {
 
-    democlass d;
+    Democlass d;
     String name;
 
-    syncDemoClass(String name, democlass d) {
+    SyncDemoClass(String name, Democlass d) {
         this.name = name;
         this.d = d;
     }
@@ -15,10 +15,10 @@ public class syncDemoClass extends Thread {
     }
 
     public static void main(String[] args) {
-        democlass d1 = new democlass();
-        democlass d2 = new democlass();
-        syncDemoClass t1 = new syncDemoClass("Dhoni", d1);
-        syncDemoClass t2 = new syncDemoClass("Kohli", d2);
+        Democlass d1 = new Democlass();
+        Democlass d2 = new Democlass();
+        SyncDemoClass t1 = new SyncDemoClass("Dhoni", d1);
+        SyncDemoClass t2 = new SyncDemoClass("Kohli", d2);
         /*Here class level lock is applied thats why t1 static object is executed first
         followed by t2 static object */
         t1.start();

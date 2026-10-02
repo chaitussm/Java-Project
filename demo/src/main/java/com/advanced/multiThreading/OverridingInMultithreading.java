@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class overridingInMultithreading extends Thread {
+public class OverridingInMultithreading extends Thread {
 
     /*@Override
     public void run() {
@@ -12,7 +12,7 @@ public class overridingInMultithreading extends Thread {
     default run() inside the thread class will be called but it is empty so no output*/
 
     public static void main(String[] args) {
-        overridingInMultithreading thread = new overridingInMultithreading();
+        OverridingInMultithreading thread = new OverridingInMultithreading();
         thread.start();
     }
     

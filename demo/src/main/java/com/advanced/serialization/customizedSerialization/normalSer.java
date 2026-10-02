@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
 class normalAccount implements Serializable{
 
@@ -15,7 +15,7 @@ class normalAccount implements Serializable{
 
 }
 
-public class normalSer extends serializeBase{
+public class normalSer extends SerializeBase{
 
     // Docs: docs/concepts/serialization/customizedSer.md (Part 2, line 288)
 

@@ -1,9 +1,9 @@
 package com.javaIOPackage.PrintWriter;
 
 import java.io.*;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class printWriterBasics extends fileBasicMethods {
+public class PrintWriterBasics extends FileBasicMethods {
 
     /*
      *

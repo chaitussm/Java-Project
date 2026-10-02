@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
 class engine implements Serializable
 {
@@ -17,7 +17,7 @@ class tata extends engine
 {
      int cc = 20; 
 }
-public class inheritanceSerOne extends serializeBase{
+public class inheritanceSerOne extends SerializeBase{
 
     // Docs: docs/concepts/serialization/inheritanceSerializationbasics.md (Part 1, line 13)
     public static void main(String[] args)

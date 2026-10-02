@@ -1,16 +1,16 @@
 package com.advanced.garbageCollection;
 
-public class islandOfIsolation {
+public class IslandOfIsolation {
 
-    islandOfIsolation i ; 
+    IslandOfIsolation i ; 
 
   
 
     public static void main(String[] args) {
 
-        islandOfIsolation obj1 = new islandOfIsolation();
-        islandOfIsolation obj2 = new islandOfIsolation();
-        islandOfIsolation obj3 = new islandOfIsolation();
+        IslandOfIsolation obj1 = new IslandOfIsolation();
+        IslandOfIsolation obj2 = new IslandOfIsolation();
+        IslandOfIsolation obj3 = new IslandOfIsolation();
         
         obj1.i = obj2;
         obj2.i = obj3;

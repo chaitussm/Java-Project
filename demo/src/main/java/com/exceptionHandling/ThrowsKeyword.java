@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class throwsKeyword {
+public class ThrowsKeyword {
 
     /*1.Here when we use throws keyword the caller for the main method id JVM so JVM will be handling t
     he exception to convince compiler

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class wishMethodInThread extends Thread {
+public class WishMethodInThread extends Thread {
 
     /**
      * This method contains the threaded work.
@@ -22,9 +22,9 @@ public class wishMethodInThread extends Thread {
     }
 
     public static void main(String[] args) {
-        wishMethodInThread wishThread = new wishMethodInThread();
+        WishMethodInThread wishThread = new WishMethodInThread();
         wishThread.wish("Dhoni");
-        wishMethodInThread wishThread1 = new wishMethodInThread();
+        WishMethodInThread wishThread1 = new WishMethodInThread();
         wishThread1.wish("Kohli");
         wishThread.start();
 

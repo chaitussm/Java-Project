@@ -2,9 +2,9 @@ package com.collection.set.comparatorConcepts.stringbufferComparator;
 
 import java.util.TreeSet;
 
-public class treeSetStringBuffer {
+public class TreeSetStringBuffer {
     public static void main(String[] args) {
-        TreeSet<StringBuffer> treeSet = new TreeSet<>(new stringBufferComparator());
+        TreeSet<StringBuffer> treeSet = new TreeSet<>(new StringBufferComparator());
         treeSet.add(new StringBuffer("apple"));
         treeSet.add(new StringBuffer("banana"));
         treeSet.add(new StringBuffer("cherry"));

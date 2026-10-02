@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class synchronizationInThread extends Thread {
+public class SynchronizationInThread extends Thread {
 
     /*In this also output order is not as expected*/
 
@@ -21,8 +21,8 @@ public class synchronizationInThread extends Thread {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        synchronizationInThread thread = new synchronizationInThread();
-        synchronizationInThread thread1 = new synchronizationInThread();
+        SynchronizationInThread thread = new SynchronizationInThread();
+        SynchronizationInThread thread1 = new SynchronizationInThread();
         thread.start();
         thread1.start();
         for (int j = 0; j < 5; j++) {

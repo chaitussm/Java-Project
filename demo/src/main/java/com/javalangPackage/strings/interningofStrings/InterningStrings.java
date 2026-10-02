@@ -1,6 +1,6 @@
 package com.javalangPackage.strings.interningofStrings;
 
-public class interningStrings {
+public class InterningStrings {
 
     /*
      * exampleOne explanation 

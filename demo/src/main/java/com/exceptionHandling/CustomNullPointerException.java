@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class nullPointerException {
+public class CustomNullPointerException {
 
     /*In the below example the defalut value for the static variable is null
     thsts why we will get null pointer exception*/

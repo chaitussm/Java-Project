@@ -1,6 +1,6 @@
 package com.objectoriented.constructors;
 
-public class prototypeConstructor {
+public class PrototypeConstructor {
 
     public void p1(){
         System.out.println("p1 method is called");
@@ -18,7 +18,7 @@ public class prototypeConstructor {
  
 public static void main(String[] args) {
         
-        prototypeConstructor obj = new prototypeConstructor();
+        PrototypeConstructor obj = new PrototypeConstructor();
         System.out.println("Default constructor is called");
         //super();
 

@@ -1,8 +1,8 @@
 package com.advanced.multiThreading.modelsAndOtherConcepts;
 
-public class models {
+public class Models {
 
-    /*models are 
+    /*Models are 
     1.Green thread model : Thread which is managed completely by JVM without taking OS resources and available only for Solaris 
     2.Native OS model : Thread which is managed by the operating system and takes up OS resources 
     example 

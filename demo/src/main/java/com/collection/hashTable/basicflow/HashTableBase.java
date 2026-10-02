@@ -1,10 +1,10 @@
 package com.collection.hashTable.basicflow;
 
-public class hashTableBase {
+public class HashTableBase {
 
     int i ; 
 
-    hashTableBase(int i)
+    HashTableBase(int i)
     {
         this.i = i;
     }
@@ -14,6 +14,19 @@ public class hashTableBase {
     public int hashCode() {
         
         return i;
+    }
+
+    //overriding the equals() method to stay consistent with hashCode()
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof HashTableBase)) {
+            return false;
+        }
+        HashTableBase other = (HashTableBase) obj;
+        return this.i == other.i;
     }
 
     //overriding the toString() method

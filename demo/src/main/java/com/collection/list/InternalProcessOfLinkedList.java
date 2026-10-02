@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class internalProcessOfLinkedList {
+public class InternalProcessOfLinkedList {
 
     public void demonstrateDoublyLinkedList() {
         LinkedList<Integer> list = new LinkedList<>();
@@ -88,7 +88,7 @@ public class internalProcessOfLinkedList {
     }
 
     public static void main(String[] args) {
-        internalProcessOfLinkedList demo = new internalProcessOfLinkedList();
+        InternalProcessOfLinkedList demo = new InternalProcessOfLinkedList();
         demo.demonstrateDoublyLinkedList();
         demo.explainConstantTimeRemoval();
         demo.benchmarkMiddleInsertAndDelete(100_000);

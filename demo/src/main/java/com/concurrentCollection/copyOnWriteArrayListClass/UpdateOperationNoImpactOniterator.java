@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class updateOperationNoImpactOniterator {
+public class UpdateOperationNoImpactOniterator {
 
     public static void demonstrateUpdateOperationNoImpactOnIterator() {
 
@@ -23,8 +23,9 @@ public class updateOperationNoImpactOniterator {
             // Even if we update the element "Bhishma" to "Bhishma-updated", the iterator
             // will still not reflect this change
             // Thats why old elements only printed by the iterator
-            if (element.equals("Bhishma"))
+            if (element.equals("Bhishma")) {
                 coal.set(coal.indexOf(element), "Bhishma-updated");
+            }
             System.out.println("Current element: " + element);
         }
 

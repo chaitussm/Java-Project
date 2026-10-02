@@ -1,8 +1,8 @@
 package com.javaIOPackage.dynamicDirectoryCreation;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class createDynamicDirectory extends fileBasicMethods{
+public class CreateDynamicDirectory extends FileBasicMethods{
 
 
     public static void main(String[] args)

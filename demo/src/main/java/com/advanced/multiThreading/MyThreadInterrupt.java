@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class myThreadInterrupt extends Thread {
+public class MyThreadInterrupt extends Thread {
 
     @Override
     public void run() {

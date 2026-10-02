@@ -1,6 +1,6 @@
 package com.advanced.innerClass.methodLocal;
 
-public class methodLocalWithLocalVariable {
+public class MethodLocalWithLocalVariable {
 
     /*
      *
@@ -34,7 +34,7 @@ public class methodLocalWithLocalVariable {
 
     public static void main(String[] args)
     {
-        methodLocalWithLocalVariable n = new methodLocalWithLocalVariable();
+        MethodLocalWithLocalVariable n = new MethodLocalWithLocalVariable();
 
         n.method1();
     }

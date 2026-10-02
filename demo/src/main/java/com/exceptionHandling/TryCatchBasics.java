@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class tryCatchBasics {
+public class TryCatchBasics {
     /*It is highly recommenede to use try catch block in the bleow format 
        try{
            //code that may throw exception or risky code

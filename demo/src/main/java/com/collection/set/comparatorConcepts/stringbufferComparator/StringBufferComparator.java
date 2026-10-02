@@ -2,7 +2,7 @@ package com.collection.set.comparatorConcepts.stringbufferComparator;
 
 import java.util.Comparator;
 
-public class stringBufferComparator implements Comparator<StringBuffer> {
+public class StringBufferComparator implements Comparator<StringBuffer> {
 
     @Override
     public int compare(StringBuffer sb1, StringBuffer sb2) {

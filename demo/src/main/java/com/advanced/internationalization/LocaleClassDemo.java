@@ -2,7 +2,7 @@ package com.advanced.internationalization;
 
 import java.util.Locale;
 
-public class localeClassDemo  {
+public class LocaleClassDemo  {
 
     // Prints the default locale's country and language codes, as well as their display names.
     public static void printDefaultLocale() {

@@ -1,6 +1,6 @@
 package com.objectoriented.constructors;
 
-public class defaultConstructor {
+public class DefaultConstructor {
 
 //NOTE
  
@@ -10,13 +10,13 @@ public class defaultConstructor {
 //4.Default constructor is a no argument constructor and it will call the super class default constructor
 //5.Default constructor is used to create the object of the class and it will initialize the instance variables with default values
 
-defaultConstructor()
+DefaultConstructor()
 {
     
 }
     public static void main(String[] args) {
         
-        defaultConstructor obj = new defaultConstructor();
+        DefaultConstructor obj = new DefaultConstructor();
         System.out.println("Default constructor is called");
 
     }   

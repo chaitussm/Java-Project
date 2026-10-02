@@ -2,7 +2,7 @@ package com.collection.arraysClass;
 
 import java.util.Arrays;
 
-public class arraysClassBase {
+public class ArraysClassBase {
 
     public static void methodsOfArraysClass(Object[] array) {
 
@@ -23,7 +23,7 @@ public class arraysClassBase {
         System.out.println("Index of " + array[0] + ": " + index);
 
         //binary Search with comparator
-        index = Arrays.binarySearch(array, array[0], new arraysClassComparator());
+        index = Arrays.binarySearch(array, array[0], new ArraysClassComparator());
         System.out.println("Index of " + array[0] + " with comparator: " + index);
 
         //array to list

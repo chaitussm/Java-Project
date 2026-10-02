@@ -1,10 +1,10 @@
 package com.advanced.multiThreading;
 
-public class synchroinizedExample extends Thread {
+public class SynchroinizedExample extends Thread {
 
-        display d;
+        Display d;
         String name;
-        synchroinizedExample(display d,String name)
+        SynchroinizedExample(Display d,String name)
         {
             this.name = name;
             this.d = d; 
@@ -17,9 +17,9 @@ public class synchroinizedExample extends Thread {
     
     public static void main(String[] args) {
         
-        display d  = new display();
-        synchroinizedExample de = new synchroinizedExample(d, "Dhoni");
-        synchroinizedExample de1 = new synchroinizedExample(d, "Kohli");
+        Display d  = new Display();
+        SynchroinizedExample de = new SynchroinizedExample(d, "Dhoni");
+        SynchroinizedExample de1 = new SynchroinizedExample(d, "Kohli");
         de.start();
         de1.start();
     }

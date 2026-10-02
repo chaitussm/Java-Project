@@ -1,17 +1,17 @@
 package com.advanced.multiThreading.multipleLock;
 
-public class multiLock{
+public class MultiLock{
 
     public synchronized void method1() {
        
-       classA a = new classA();
+       ClassA a = new ClassA();
        synchronized(a) {
            a.methodA();
-           classB b = new classB();
+           ClassB b = new ClassB();
            b.methodB();
             synchronized(b)
             {
-              classC c = new classC();
+              ClassC c = new ClassC();
                synchronized(c)
               {  
                c.methodC();
@@ -22,7 +22,7 @@ public class multiLock{
     }
     
     public static void main(String[] args) {
-        multiLock m = new multiLock();
+        MultiLock m = new MultiLock();
         m.method1();
     }
    

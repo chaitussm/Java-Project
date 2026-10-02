@@ -1,10 +1,10 @@
 package com.concurrentCollection.copyOnWriteArraySetClass;
 
-public class copyOnWriteArraySet {
+public class CustomCopyOnWriteArraySet {
 
     public static void demonstratecopyOnWriteArraySet(String collectionType) {
-        copyOnWriteArrayListDemo.concurrentCollectionType(collectionType);
-        copyOnWriteArrayListDemo.concurrentConstructors(collectionType);
+        CopyOnWriteArrayListDemo.concurrentCollectionType(collectionType);
+        CopyOnWriteArrayListDemo.concurrentConstructors(collectionType);
         if (collectionType.equals("CopyOnWriteArrayList")) {
             // Add any specific logic for CopyOnWriteArrayList if needed
         }

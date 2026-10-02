@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadlocal;
 
-public class threadLocalOne {
+public class ThreadLocalOne {
 
     public static void main(String[] args)
     {

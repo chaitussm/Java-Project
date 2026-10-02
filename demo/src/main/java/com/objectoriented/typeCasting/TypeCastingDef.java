@@ -1,6 +1,6 @@
 package com.objectoriented.typeCasting;
 
-public class typeCastingDef {
+public class TypeCastingDef {
 
     // Type casting is the process of converting a variable from one data type to another. In Java, there are two types of type casting: 
     // 1. Primitive type casting: This involves converting between primitive data types such as int, float, double, etc. There are two types of primitive type casting: 
@@ -13,9 +13,9 @@ public class typeCastingDef {
 
       public static void typeCasting()
     {
-        Integer I = new Integer(10);
+        Integer i = new Integer(10);
         
-        Object obj = (Object)I; 
+        Object obj = (Object)i; 
         
         System.out.println("Value of obj is  : " +  obj);
     }

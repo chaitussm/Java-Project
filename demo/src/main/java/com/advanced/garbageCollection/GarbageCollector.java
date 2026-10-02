@@ -1,6 +1,6 @@
 package com.advanced.garbageCollection;
 
-public class Garbage_Collector {
+public class GarbageCollector {
 
     public void finalize()
     {
@@ -9,10 +9,10 @@ public class Garbage_Collector {
     
     public static void main(String[] args) {
         // Create an object and assign it to a reference variable
-        Garbage_Collector obj1 = new Garbage_Collector();
+        GarbageCollector obj1 = new GarbageCollector();
 
         // Create another object and assign it to the same reference variable
-        Garbage_Collector obj2 = new Garbage_Collector();
+        GarbageCollector obj2 = new GarbageCollector();
 
         // At this point, the first object ("Object 1") is no ler referenced and becomes eligible for garbage collection
 

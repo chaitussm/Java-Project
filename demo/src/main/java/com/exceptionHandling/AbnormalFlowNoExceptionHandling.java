@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class abnormalFlowNoExceptionHandling {
+public class AbnormalFlowNoExceptionHandling {
 /* NOTE
 1. An unwanted and unexpected event that disturbs the normal flow of the program is called an exception.
 2. The main objective of exception handling is to handle exceptions and allow graceful termination without disrupting normal program flow.

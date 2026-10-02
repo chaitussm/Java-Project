@@ -2,13 +2,13 @@ package com.advanced.multiThreading.concurrentPackage.exampleOne;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class display {
+public class Display {
 
-    ReentrantLock I = new ReentrantLock();
+    ReentrantLock i = new ReentrantLock();
 
     public void wish(String name)
     {
-        I.lock();
+        i.lock();
 
         for(int i = 0; i<10;i++)
         {
@@ -24,7 +24,7 @@ public class display {
             System.out.println(name);
         }
 
-        I.unlock();
+        i.unlock();
     }
     
 }

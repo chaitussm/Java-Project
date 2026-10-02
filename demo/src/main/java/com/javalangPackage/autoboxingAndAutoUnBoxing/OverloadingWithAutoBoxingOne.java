@@ -1,6 +1,6 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class overloadingWithAutoBoxingOne
+public class OverloadingWithAutoBoxingOne
 {
    
     public static void method(Long l)
@@ -24,7 +24,7 @@ public class overloadingWithAutoBoxingOne
          * int -------> Integer ------> Object 
          * following assignments are correct */
           int i = 10;
-          Integer I = 10;//autoboxing valid 
+          Integer autoboxed = 10;//autoboxing valid 
           /*int i1 = 10L;//cannot convert from int to legal: 
           possible loss of precesion
           found : long 

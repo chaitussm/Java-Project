@@ -1,6 +1,6 @@
 package com.javalangPackage.wrapperClasses;
 
-public class stringToPrimitive {
+public class StringToPrimitive {
 
     /*
      *

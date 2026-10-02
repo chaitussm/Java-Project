@@ -4,13 +4,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-public class createProperties {
+public class CreateProperties {
 
     public static void createDefaultProperties() {
         Properties properties = new java.util.Properties();
 
-       try(FileInputStream fis = new FileInputStream("propertiesDemo.properties");
-           FileOutputStream fos = new FileOutputStream("propertiesDemo.properties");) {
+       try(FileInputStream fis = new FileInputStream("PropertiesDemo.properties");
+           FileOutputStream fos = new FileOutputStream("PropertiesDemo.properties");) {
            properties.load(fis);
 
            System.out.println("Properties loaded: " + properties);

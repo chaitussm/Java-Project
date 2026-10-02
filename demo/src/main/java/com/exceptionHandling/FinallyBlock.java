@@ -4,7 +4,7 @@ package com.exceptionHandling;
 finally block is always associated with after try catch block to maintain clean up code
 
 */
-class finallyBlock {
+class FinallyBlock {
     public static void main(String[] args) {
         try {
             int result = 10 / 0; // This will throw an ArithmeticException

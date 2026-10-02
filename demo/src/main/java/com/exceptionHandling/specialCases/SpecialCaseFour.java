@@ -1,11 +1,9 @@
 package com.exceptionHandling.specialCases;
 
-import java.io.IOException;
-
 /*throw : to handover our created exception  object to JVM manually 
 throws : to delegate responsibility of handling exception to the caller*/
 
-public class specialCaseFour {
+public class SpecialCaseFour {
 
     public static void main(String[] args) {
         

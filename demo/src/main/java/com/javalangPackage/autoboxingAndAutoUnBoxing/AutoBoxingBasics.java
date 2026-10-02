@@ -1,12 +1,12 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class autoBoxingBasics {
+public class AutoBoxingBasics {
 
 
     public static void autoBoxingDef()
     {
        //Automatic conversion of primitive to wrapper object by compiler is called autoboxing; 
-       Integer I = 10; /*Compiler converts int to Integer Automatically by autoboxing
+       Integer i = 10; /*Compiler converts int to Integer Automatically by autoboxing
        After compilation the above line will become
        Integer I = Integer.valueOf(10); i.e internally autoboxing concept is implemented by using valueOf() methods */
     }
@@ -15,9 +15,9 @@ public class autoBoxingBasics {
     {
         /*Automatic Conversion of wrapper object to primitive by compiler is called autounboxing*/
 
-        Integer I = new Integer(10);
+        Integer wrapperValue = new Integer(10);
 
-        int i = I;
+        int i = wrapperValue;
 
         /*Compiler converts Integer to int automatically by autounboxing After compilation the above will become 
           

@@ -1,10 +1,10 @@
 package com.generics.ourOwnGenericClasses;
 
-public class genericBaseWithMulitpleParams<T, U> {
+public class GenericBaseWithMulitpleParams<T, U> {
     private T firstParam;
     private U secondParam;
 
-    public genericBaseWithMulitpleParams(T firstParam, U secondParam) {
+    public GenericBaseWithMulitpleParams(T firstParam, U secondParam) {
         this.firstParam = firstParam;
         this.secondParam = secondParam;
     }

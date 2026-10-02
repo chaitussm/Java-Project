@@ -1,8 +1,8 @@
 package com.objectoriented.constructors;
 
-public class constructorWithCheckedException {
+public class ConstructorWithCheckedException {
 
-    constructorWithCheckedException() throws Exception {
+    ConstructorWithCheckedException() throws Exception {
         throw new Exception("Constructor with checked exception is called");
     }
 

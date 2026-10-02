@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.concurrentCollection.concurrentCollectionTypeInspector;
+import com.concurrentCollection.ConcurrentCollectionTypeInspector;
 
-public class copyOnWriteArrayListDemo {
+public class CopyOnWriteArrayListDemo {
 
     public static void concurrentCollectionType(String type) {
 
@@ -22,7 +22,7 @@ public class copyOnWriteArrayListDemo {
 
         switch (collectionType) {
             case "CopyOnWriteArrayList":
-                com.concurrentCollection.concurrentCollectionTypeInspector.printLoadFactorDetails(collectionType);
+                com.concurrentCollection.ConcurrentCollectionTypeInspector.printLoadFactorDetails(collectionType);
                 break;
             default:
                 throw new IllegalArgumentException("Load factor is not applicable to: " + collectionType);
@@ -55,7 +55,7 @@ public class copyOnWriteArrayListDemo {
 
     public static void demonstrateCopyOnWriteArraySet() {
 
-        concurrentCollectionTypeInspector.printDefaultCapacitySummary("CopyOnWriteArraySet");
+        ConcurrentCollectionTypeInspector.printDefaultCapacitySummary("CopyOnWriteArraySet");
         java.util.concurrent.CopyOnWriteArraySet<String> list = new java.util.concurrent.CopyOnWriteArraySet<>();
         list.add("value1");
         list.addAll(java.util.Arrays.asList("value2"));

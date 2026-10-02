@@ -22,7 +22,7 @@ public class CMDBasics {
         }
     }
 
-    public static void AddData(String[] args)
+    public static void addData(String[] args)
     {
         // Simulate command line arguments for demonstration
         args = new String[]{"5", "10"};
@@ -58,7 +58,7 @@ public class CMDBasics {
     public static void main(String[] args) {
 
         simpleData(args);//For simple arguments
-        AddData(args);//For addition arguments
+        addData(args);//For addition arguments
         stringData(args);//For string arguments
 
     }

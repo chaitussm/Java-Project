@@ -7,9 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class instanceOfMultipleObjects extends fileBasicMethods {
+public class InstanceOfMultipleObjects extends FileBasicMethods {
 
     // Docs: docs/concepts/serialization/multipleObjectsSerialization.md (Part 2, line 49)
     // Both objects must implement Serializable before they can be written to a file.

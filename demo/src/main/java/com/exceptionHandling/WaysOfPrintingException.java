@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class waysOfPrintingException {
+public class WaysOfPrintingException {
 
      public static void calculation()
     {

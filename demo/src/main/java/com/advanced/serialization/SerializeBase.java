@@ -11,10 +11,10 @@ import java.lang.reflect.*;
 import java.util.Base64;
 
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-// Docs: docs/concepts/serialization/serializationBasics.md (line 1)
-public class serializeBase extends fileBasicMethods implements Serializable {
+// Docs: docs/concepts/serialization/SerializationBasics.md (line 1)
+public class SerializeBase extends FileBasicMethods implements Serializable {
 
     int i = 10;
 
@@ -22,14 +22,14 @@ public class serializeBase extends fileBasicMethods implements Serializable {
 
     transient int k = 40;
 
-    transient static int x = 30;
+    static transient int x = 30;
 
     // final + transient: not reassignable, and never written to the serialized file (restored as 0).
-    transient final int m = 15;
+    final transient int m = 15;
 
 
 
-       // Converts the serializeBase object into bytes and saves those bytes in the specified file.
+       // Converts the SerializeBase object into bytes and saves those bytes in the specified file.
     // The file parameter contains the path or name of the destination file.
     public void serialize(String file)
     {
@@ -58,7 +58,7 @@ public class serializeBase extends fileBasicMethods implements Serializable {
 
             // Read the binary data and rebuild the object saved by serialize().
             // readObject() returns Object, so cast it to the expected base type.
-            serializeBase restoredObject = (serializeBase) ois.readObject();
+            SerializeBase restoredObject = (SerializeBase) ois.readObject();
 
             // Store each category separately so the final output is easy to read.
             StringBuilder normalFields = new StringBuilder();
@@ -172,7 +172,7 @@ public class serializeBase extends fileBasicMethods implements Serializable {
 
     // V2 reads the serialized object and returns it instead of only printing it.
     // The generic type allows a child serialization class to receive its own type.
-    public <T extends serializeBase> T deserializeV2(String file)
+    public <T extends SerializeBase> T deserializeV2(String file)
             throws IOException, ClassNotFoundException
     {
         try (ObjectInputStream ois = new ObjectInputStream(

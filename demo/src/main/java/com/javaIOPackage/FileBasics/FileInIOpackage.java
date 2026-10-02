@@ -2,9 +2,9 @@ package com.javaIOPackage.FileBasics;
 
 import java.io.*;
 import java.lang.reflect.Method;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class fileInIOpackage extends fileBasicMethods {
+public class FileInIOpackage extends FileBasicMethods {
 
     public static void main(String[] args) throws Exception
     {

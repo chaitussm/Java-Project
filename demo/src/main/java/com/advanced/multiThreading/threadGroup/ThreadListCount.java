@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadGroup;
 
-public class threadListCount {
+public class ThreadListCount {
 
     public static void main(String[] args) throws InterruptedException
     {
@@ -8,8 +8,8 @@ public class threadListCount {
         System => main => Parent Group => ChildGroup , ChildThread1, ChildThread2*/
         ThreadGroup g = new ThreadGroup("Parent group");
         ThreadGroup g1 = new ThreadGroup(g, "Child group");
-        myThread t1 = new myThread(g1, "Child Thread");
-        myThread t2 = new myThread(g1, "Child Thread");
+        MyThread t1 = new MyThread(g1, "Child Thread");
+        MyThread t2 = new MyThread(g1, "Child Thread");
         t1.start();
         t2.start();
         System.out.println(g.activeCount());
@@ -27,9 +27,9 @@ public class threadListCount {
 
         system.enumerate(t);
 
-        for(Thread T : t)
+        for(Thread thread : t)
         {
-            System.out.println(T.getName() + "=====" + T.isDaemon());
+            System.out.println(thread.getName() + "=====" + thread.isDaemon());
         }
 
 

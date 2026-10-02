@@ -15,6 +15,6 @@ enum Grain {
 
 }
 
-public class mainMethodInsideEnum {
+public class MainMethodInsideEnum {
 
 }

@@ -1,9 +1,9 @@
 package com.generics.genericWithitsExtendedClasses;
 
-public class genericWithStringClasses<T extends String> {
+public class GenericWithStringClasses<T extends String> {
     private T value;
 
-    public genericWithStringClasses(T value) {
+    public GenericWithStringClasses(T value) {
         this.value = value;
     }
 
@@ -17,7 +17,7 @@ public class genericWithStringClasses<T extends String> {
 
     @Override
     public String toString() {
-        return "genericWithStringClasses{" +
+        return "GenericWithStringClasses{" +
                 "value=" + value +
                 '}';
     }
@@ -35,7 +35,7 @@ public class genericWithStringClasses<T extends String> {
     }
 
     public static void main(String[] args) {
-        genericWithStringClasses<String> example = new genericWithStringClasses<>("Hello");
+        GenericWithStringClasses<String> example = new GenericWithStringClasses<>("Hello");
         System.out.println(example.getValue());
         System.out.println(example.getLength());
         System.out.println(example.isEmpty());

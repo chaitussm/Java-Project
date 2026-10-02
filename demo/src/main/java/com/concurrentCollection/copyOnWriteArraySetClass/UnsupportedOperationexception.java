@@ -3,7 +3,7 @@ package com.concurrentCollection.copyOnWriteArraySetClass;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class unsupportedOperationexception {
+public class UnsupportedOperationexception {
 
     public static void demonstrateUnsupportedOperationException() {
 
@@ -19,8 +19,9 @@ public class unsupportedOperationexception {
         while (iterator.hasNext()) {
 
             String element = iterator.next();
-            if (element.equals("yashoda"))
+            if (element.equals("yashoda")) {
                 iterator.remove();
+            }
             System.out.println("Removed element: " + element);
         }
 

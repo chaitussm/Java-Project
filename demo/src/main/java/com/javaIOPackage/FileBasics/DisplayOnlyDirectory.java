@@ -2,9 +2,9 @@ package com.javaIOPackage.FileBasics;
 
 import java.io.File;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class displayOnlyDirectory extends fileBasicMethods{
+public class DisplayOnlyDirectory extends FileBasicMethods{
 
     public static void fetchOnlyDirectoryname(String directory)
   {

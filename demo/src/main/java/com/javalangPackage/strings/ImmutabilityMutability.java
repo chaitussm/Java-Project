@@ -1,6 +1,6 @@
 package com.javalangPackage.strings;
 
-public class immutabilityMutability {
+public class ImmutabilityMutability {
 
     public static void main(String[] args) {
         String s = new String("Shiva");

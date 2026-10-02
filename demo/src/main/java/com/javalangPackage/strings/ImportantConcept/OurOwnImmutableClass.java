@@ -1,18 +1,16 @@
 package com.javalangPackage.strings.ImportantConcept;
 
-import java.nio.channels.UnsupportedAddressTypeException;
-
-final class ourOwnImmutableClass {
+final class OurOwnImmutableClass {
 
 
        private int value;
 
-       ourOwnImmutableClass(int value)
+       OurOwnImmutableClass(int value)
        {
           this.value = value;
        }
 
-       public ourOwnImmutableClass update(int inputValue)
+       public OurOwnImmutableClass update(int inputValue)
        {
            if(this.value == inputValue)
            {
@@ -21,15 +19,15 @@ final class ourOwnImmutableClass {
 
            else 
            {
-             return new ourOwnImmutableClass(inputValue);
+             return new OurOwnImmutableClass(inputValue);
            }
        }
 
        public static void main(String[] args)
        {
-           ourOwnImmutableClass os = new ourOwnImmutableClass(10);
-           ourOwnImmutableClass os1 = os.update(100);
-           ourOwnImmutableClass os2 = os.update(10);
+           OurOwnImmutableClass os = new OurOwnImmutableClass(10);
+           OurOwnImmutableClass os1 = os.update(100);
+           OurOwnImmutableClass os2 = os.update(10);
 
            System.out.println(os == os1);
 

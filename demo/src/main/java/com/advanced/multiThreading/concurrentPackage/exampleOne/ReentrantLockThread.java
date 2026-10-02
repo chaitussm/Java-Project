@@ -1,12 +1,12 @@
 package com.advanced.multiThreading.concurrentPackage.exampleOne;
 
-public class reentrantLockThread {
+public class ReentrantLockThread {
     
     public static void main(String[] args)
     {
-        display d = new display();
-        myThread t1 = new myThread(d, "Dhoni");
-        myThread t2 = new myThread(d, "Kohli");
+        Display d = new Display();
+        MyThread t1 = new MyThread(d, "Dhoni");
+        MyThread t2 = new MyThread(d, "Kohli");
         t1.start();
         t2.start();
     }

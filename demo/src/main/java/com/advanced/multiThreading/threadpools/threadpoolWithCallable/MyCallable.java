@@ -2,11 +2,11 @@ package com.advanced.multiThreading.threadpools.threadpoolWithCallable;
 
 import java.util.concurrent.Callable;
 
-public class myCallable implements Callable{
+public class MyCallable implements Callable{
     
     int num;
 
-    myCallable(int  num)
+    MyCallable(int  num)
     {
        this.num= num;
     }

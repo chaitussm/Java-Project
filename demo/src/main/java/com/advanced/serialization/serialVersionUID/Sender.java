@@ -2,13 +2,13 @@ package com.advanced.serialization.serialVersionUID;
 
 import java.io.*;
 
-import com.advanced.serialization.serializeBase;
+import com.advanced.serialization.SerializeBase;
 
-public class sender extends serializeBase{
+public class Sender extends SerializeBase{
 
     public static void main(String[] args) {
 
-        dog1 d1 = new dog1();
+        Dog1 d1 = new Dog1();
 
         String filename = sampleDataPath("serialization","serialVersionUID.ser" ).toString();
 

@@ -1,6 +1,6 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class autoBoxingexample1 {
+public class AutoBoxingexample1 {
 
     static Integer I = 0;
      

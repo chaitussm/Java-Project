@@ -1,6 +1,6 @@
 package com.exceptionHandling;
 
-public class rulesInExceptionHandling {
+public class RulesInExceptionHandling {
     /*
     1.Two catch blocks with the same exception type is not allowed if we try to use it we will get belwo exception 
 

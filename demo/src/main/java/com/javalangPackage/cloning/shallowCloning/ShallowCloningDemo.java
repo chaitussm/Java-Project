@@ -1,17 +1,17 @@
 package com.javalangPackage.cloning.shallowCloning;
 
-public class shallowCloningDemo {
+public class ShallowCloningDemo {
 
     public static void main(String[] args) throws CloneNotSupportedException
     {
-        teacher t = new teacher(20);
-        student s = new student(t, 30);
+        Teacher t = new Teacher(20);
+        Student s = new Student(t, 30);
         System.out.println(s.j + "----" + s.t.i);
 
-        student t1 = (student)s.clone();
+        Student t1 = (Student)s.clone();
 
-        t1.j = 50; // student Object j is updated for cloned object 
-        t1.t.i = 55; // student Object with teacher reference also changed because no new refernce is created and pointing to older reference only 
+        t1.j = 50; // Student Object j is updated for cloned object 
+        t1.t.i = 55; // Student Object with Teacher reference also changed because no new refernce is created and pointing to older reference only 
 
         System.out.println(t1.j + "----" + t1.t.i);
         

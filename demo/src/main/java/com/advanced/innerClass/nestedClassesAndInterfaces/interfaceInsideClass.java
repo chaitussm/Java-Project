@@ -11,7 +11,7 @@ public class interfaceInsideClass {
 
     interface protein
     {
-        public String type();
+        String type();
     }
 
     class wheyProtein implements protein{

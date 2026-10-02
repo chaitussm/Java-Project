@@ -20,7 +20,7 @@ class SmartPhone implements Vehicle.GPS {
 }
  
 
-public class interfaceInsideInterface {
+public class InterfaceInsideInterface {
 
     /*
      *

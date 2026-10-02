@@ -5,21 +5,21 @@ package com.objectoriented.constructors;
 //2.Abstract classes contains constructors 
 //3.For Interafces construtors are nto available
 
-public class overloadConstructors {
+public class OverloadConstructors {
     
-      overloadConstructors()
+      OverloadConstructors()
     {
         this(10);
         System.out.println("No-Arg Constructor");
     }
     
-    overloadConstructors(int i)
+    OverloadConstructors(int i)
     {
         this(11.2);
         System.out.println("Int-Arg Constructor");
     }
     
-    overloadConstructors(double d)
+    OverloadConstructors(double d)
     {
         System.out.println("Double-Arg Constructor");
     }
@@ -28,8 +28,8 @@ public class overloadConstructors {
     
     public static void main(String[] args) {
        
-       overloadConstructors obj = new overloadConstructors();
-       overloadConstructors obj1 = new overloadConstructors(10);
-       overloadConstructors obj2 = new overloadConstructors(9l);
+       OverloadConstructors obj = new OverloadConstructors();
+       OverloadConstructors obj1 = new OverloadConstructors(10);
+       OverloadConstructors obj2 = new OverloadConstructors(9l);
     }
 }

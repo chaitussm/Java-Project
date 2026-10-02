@@ -1,6 +1,6 @@
 package com.javalangPackage.variousMethods;
 
-public class customizedEqualsMethod {
+public class CustomizedEqualsMethod {
 
     /*
      *
@@ -13,7 +13,7 @@ public class customizedEqualsMethod {
     String name;
     int rollno;
 
-    customizedEqualsMethod(String name, int rollno)
+    CustomizedEqualsMethod(String name, int rollno)
     {
        this.name = name;
        this.rollno = rollno;
@@ -21,10 +21,10 @@ public class customizedEqualsMethod {
 
     public boolean equals(Object o)
     {
-        if(o instanceof customizedEqualsMethod)
+        if(o instanceof CustomizedEqualsMethod)
         {
-            /*Here instanceof means checking if the object o is an instance of customizedEqualsMethod */
-            customizedEqualsMethod st = (customizedEqualsMethod)o;
+            /*Here instanceof means checking if the object o is an instance of CustomizedEqualsMethod */
+            CustomizedEqualsMethod st = (CustomizedEqualsMethod)o;
             if(this.name.equals(st.name) && this.rollno == st.rollno)
             {
                 return true;
@@ -33,12 +33,18 @@ public class customizedEqualsMethod {
         return false;
     }
 
+    @Override
+    public int hashCode()
+    {
+        return java.util.Objects.hash(name, rollno);
+    }
+
     public static void main(String[] args)
     {
-       customizedEqualsMethod st = new customizedEqualsMethod("Shiva", 1);
-       customizedEqualsMethod st1 = new customizedEqualsMethod("Shiva", 1);
-       customizedEqualsMethod st2 = st;
-       customizedEqualsMethod st3 = new customizedEqualsMethod("Parvathi", 2);
+       CustomizedEqualsMethod st = new CustomizedEqualsMethod("Shiva", 1);
+       CustomizedEqualsMethod st1 = new CustomizedEqualsMethod("Shiva", 1);
+       CustomizedEqualsMethod st2 = st;
+       CustomizedEqualsMethod st3 = new CustomizedEqualsMethod("Parvathi", 2);
        System.out.println(st.equals(st1));
        System.out.println(st.equals(st2));
        System.out.println(st.equals(st3));

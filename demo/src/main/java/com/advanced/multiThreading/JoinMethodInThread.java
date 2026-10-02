@@ -3,7 +3,7 @@ package com.advanced.multiThreading;
 /*If a thread waits until the other thread execution is completed then we can go for join() method 
  Every join() throws InterruptedException */
 
-public class joinMethodInThread implements Runnable {
+public class JoinMethodInThread implements Runnable {
 
     @Override
     public void run() {
@@ -13,7 +13,7 @@ public class joinMethodInThread implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new joinMethodInThread());
+        Thread thread = new Thread(new JoinMethodInThread());
         thread.start();
         thread.join(); // Main thread will wait for this thread to finish
         thread.join(1000); // This will wait for 1000 milliseconds

@@ -2,7 +2,7 @@ package com.generics.genericMethods;
 
 import java.util.ArrayList;
 
-public class sendingGenericToNonGenericArea {
+public class SendingGenericToNonGenericArea {
 
     public static void main(String[] args) {
        

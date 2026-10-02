@@ -2,24 +2,24 @@ package com.advanced.multiThreading.concurrentPackage;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class reentrantLockOne {
+public class ReentrantLockOne {
 
     public static void main(String[] args)
     {
-        ReentrantLock I = new ReentrantLock();
+        ReentrantLock i = new ReentrantLock();
 
-        I.lock();
-        I.lock();
+        i.lock();
+        i.lock();
 
-        System.out.println(I.isLocked());
-        System.out.println(I.isHeldByCurrentThread());
-        System.out.println(I.getQueueLength());
-        I.unlock();
-        System.out.println(I.getHoldCount());
-        System.out.println(I.isLocked());
-        I.unlock();
-        System.out.println(I.isLocked());
-        System.out.println(I.isFair());
+        System.out.println(i.isLocked());
+        System.out.println(i.isHeldByCurrentThread());
+        System.out.println(i.getQueueLength());
+        i.unlock();
+        System.out.println(i.getHoldCount());
+        System.out.println(i.isLocked());
+        i.unlock();
+        System.out.println(i.isLocked());
+        System.out.println(i.isFair());
     }
     
 }

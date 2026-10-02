@@ -2,7 +2,7 @@ package com.advanced.internationalization;
 
 import java.text.NumberFormat;
 
-public class numberFormatClassDemo {
+public class NumberFormatClassDemo {
 
     public static void printNumberFormat() {
         java.text.NumberFormat numberFormat = java.text.NumberFormat.getInstance();

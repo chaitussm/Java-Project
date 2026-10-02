@@ -2,7 +2,7 @@ package com.concurrentCollection.concurrentMap;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class concurrentHashMapExample {
+public class ConcurrentHashMapExample {
 
     public static void main(String[] args) {
 

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.multipleLock;
 
-public class classA {
+public class ClassA {
 
     public void methodA() {
        

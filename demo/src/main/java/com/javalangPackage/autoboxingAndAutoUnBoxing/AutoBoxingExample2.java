@@ -1,70 +1,70 @@
 package com.javalangPackage.autoboxingAndAutoUnBoxing;
 
-public class autoBoxingExample2 {
+public class AutoBoxingExample2 {
 
     public static void example()
     {
-        Integer X = new Integer(10);// new object is created in heap with X pointing to 10 
-        Integer Y = new Integer(10);// new object is created in heap with Y pointing to 10 
+        Integer x = new Integer(10);// new object is created in heap with x pointing to 10 
+        Integer y = new Integer(10);// new object is created in heap with y pointing to 10 
         
-        System.out.println("Output for example is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 
+        System.out.println("Output for example is : " + (x == y));// For == symbol both objects should be pointing towards same reference 
     }
 
      public static void exampleOne()
     {
-        Integer X = new Integer(10);// new object is created in heap with X pointing to 10 
-        Integer Y = 10;// new object is created in heap with Y pointing to 10 
+        Integer x = new Integer(10);// new object is created in heap with x pointing to 10 
+        Integer y = 10;// new object is created in heap with y pointing to 10 
         
-       System.out.println("Output for exampleOne  is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 
+       System.out.println("Output for exampleOne  is : " + (x == y));// For == symbol both objects should be pointing towards same reference 
     }
 
      public static void exampleTwo()
     {
-        Integer X = 10;// new object is created in heap with X pointing to 10 
-        Integer Y = 10;/*Here JVM checks if an object is created for the object refernce 
-        10 already above object is created so with the same refrence Y */
+        Integer x = 10;// new object is created in heap with x pointing to 10 
+        Integer y = 10;/*Here JVM checks if an object is created for the object refernce 
+        10 already above object is created so with the same refrence y */
         
-        System.out.println("Output for exampleTwo is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 10 
+        System.out.println("Output for exampleTwo is : " + (x == y));// For == symbol both objects should be pointing towards same reference 10 
     }
 
      public static void exampleThree()
     {
-        Integer X = 100;// new object is created in heap with X pointing to 10 
-        Integer Y = 100;/*Here JVM checks if an object is created for the object refernce 
-        10 already above object is created so with the same refrence Y */
+        Integer x = 100;// new object is created in heap with x pointing to 10 
+        Integer y = 100;/*Here JVM checks if an object is created for the object refernce 
+        10 already above object is created so with the same refrence y */
         
-       System.out.println("Output for exampleThree is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 10 
+       System.out.println("Output for exampleThree is : " + (x == y));// For == symbol both objects should be pointing towards same reference 10 
     }
 
     public static void exampleFour()
     {
-        Integer X = 1000;// new object is created in heap with X pointing to 10 
-        Integer Y = 1000;/*Here JVM checks if an object is created for the object refernce 
-        10 already above object is created so with the same refrence Y */
+        Integer x = 1000;// new object is created in heap with x pointing to 10 
+        Integer y = 1000;/*Here JVM checks if an object is created for the object refernce 
+        10 already above object is created so with the same refrence y */
         
-       System.out.println("Output for exampleFour is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 10 
+       System.out.println("Output for exampleFour is : " + (x == y));// For == symbol both objects should be pointing towards same reference 10 
     }
 
     public static void exampleFive()
     {
-        Double X = 10.0;/* New object will be created because Double and float doesnt have the previlege to use the buffer or range provided below so 
+        Double x = 10.0;/* New object will be created because Double and float doesnt have the previlege to use the buffer or range provided below so 
         new objects are created separately*/
-        Double Y = 10.0;
+        Double y = 10.0;
         
-       System.out.println("Output for exampleFive is : " + (X == Y));// For == symbol both objects should be pointing towards same reference 10 
+       System.out.println("Output for exampleFive is : " + (x == y));// For == symbol both objects should be pointing towards same reference 10 
     }
     public static void main(String[] args)
     {
-        Integer X = 10;
+        Integer x = 10;
 
-        Integer Y = X;
+        Integer y = x;
 
-        X++;/*Here all wrapper classes are immutable, hence the incremented value 11 will be created as new object and 
-        and X is pointing towards 11 when == X and Y are pointing to different objects then result is false*/
+        x++;/*Here all wrapper classes are immutable, hence the incremented value 11 will be created as new object and 
+        and x is pointing towards 11 when == x and y are pointing to different objects then result is false*/
 
-        System.out.println(X);
-        System.out.println(Y);
-        System.out.println(X==Y);
+        System.out.println(x);
+        System.out.println(y);
+        System.out.println(x==y);
 
         example();
         exampleOne();

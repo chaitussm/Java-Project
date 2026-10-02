@@ -1,9 +1,9 @@
 package com.generics.ourOwnGenericClasses;
 
-public class genericBase<T> {
+public class GenericBase<T> {
     private T value;
 
-    public genericBase(T value) {
+    public GenericBase(T value) {
         this.value = value;
     }
 

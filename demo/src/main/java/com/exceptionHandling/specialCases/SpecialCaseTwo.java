@@ -1,6 +1,6 @@
 package com.exceptionHandling.specialCases;
 
-public class specialCaseTwo {
+public class SpecialCaseTwo {
 
     public static void main(String[] args) {
 

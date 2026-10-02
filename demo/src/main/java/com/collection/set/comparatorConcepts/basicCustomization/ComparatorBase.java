@@ -6,7 +6,7 @@ package com.collection.set.comparatorConcepts.basicCustomization;
  * ScreenShots of Java Concepts folder
  */
 
-public class comparatorBase implements java.util.Comparator<Object> {
+public class ComparatorBase implements java.util.Comparator<Object> {
     @Override
     public int compare(Object o1, Object o2) {
         Integer i1 = (Integer) o1;

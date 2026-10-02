@@ -1,8 +1,8 @@
-package Interview.ArrayBased;
+package interview.arraybased;
 import java.util.ArrayList;
 import java.util.List;
 
-public class findLongestWordsInString {
+public class FindLongestWordsInString {
 
      public static void printLongestWords(String a) {
         // Missing Validation: Handle null or empty input strings safely
@@ -19,7 +19,9 @@ public class findLongestWordsInString {
 
         for (int i = 0; i < data.length; i++) {
             String word = data[i];
-            if (word.isEmpty()) continue;
+            if (word.isEmpty()) {
+                continue;
+            }
 
             // Option 1 Approach: Found a strictly longer word
             if (word.length() > maxLength) {

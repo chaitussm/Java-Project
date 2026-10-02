@@ -2,7 +2,7 @@ package com.collection.map;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class navigableMap extends mapDemo{
+public class CustomNavigableMap extends MapDemo{
 
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);
@@ -14,7 +14,7 @@ public class navigableMap extends mapDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateMap("NavigableMap");
+        demonstrateMap("CustomNavigableMap");
         CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable");
     }
 }

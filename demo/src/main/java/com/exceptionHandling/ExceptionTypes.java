@@ -2,7 +2,7 @@ package com.exceptionHandling;
 
 import java.io.PrintWriter;
 
-public class exceptionTypes {
+public class ExceptionTypes {
 /*Exceptions which are checked by compiler for the smooth execution of the program at run time these exceptions are checked Exceptions
   
 In the belwo we have handle the execption using throws keyword in the main method. If we don't handle the exception using throws keyword then we will get a compile time error.

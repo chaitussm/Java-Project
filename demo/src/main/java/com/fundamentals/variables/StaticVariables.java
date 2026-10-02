@@ -1,6 +1,6 @@
 package com.fundamentals.variables;
 
-public class Static_Variables {
+public class StaticVariables {
     
     //Rules for static variables 
     //1. Static variables are declared inside the class but outside
@@ -14,9 +14,9 @@ public class Static_Variables {
     //steps of program execution 
     //a.start JVM
     //b.create and start main method thread
-    //c.load class(here Static_Variables class is loaded)
+    //c.load class(here StaticVariables class is loaded)
     //d.execute main method
-    //e.unload class(here Static_Variables class is unloaded)
+    //e.unload class(here StaticVariables class is unloaded)
     //end main method thread
     //shut down JVM
     //Static varaibles are stored in method area memory and they are called as class level variables or class attributes of the class.
@@ -25,9 +25,9 @@ public class Static_Variables {
     static int age; // static variable  
 
     public static void main(String[] args) {
-        Static_Variables.name = "Seetha";
-        Static_Variables.age = 25;
+        StaticVariables.name = "Seetha";
+        StaticVariables.age = 25;
 
-        System.out.println("Name = " + Static_Variables.name + ", Age = " + Static_Variables.age);
+        System.out.println("Name = " + StaticVariables.name + ", Age = " + StaticVariables.age);
     }
 }

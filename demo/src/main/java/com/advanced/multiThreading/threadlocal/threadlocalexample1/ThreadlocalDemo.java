@@ -1,10 +1,10 @@
 package com.advanced.multiThreading.threadlocal.threadlocalexample1;
 
-public class threadlocalDemo {
+public class ThreadlocalDemo {
 
     public static void main(String[] args)
     {
-        parentThread p = new parentThread();
+        ParentThread p = new ParentThread();
         p.start();
     }
     

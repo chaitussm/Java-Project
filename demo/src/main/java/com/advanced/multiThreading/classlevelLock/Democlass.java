@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.classlevelLock;
 
-public class democlass {
+public class Democlass {
 
     public static synchronized void wish(String name){
 

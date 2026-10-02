@@ -2,7 +2,7 @@ package com.collection.map;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class treeMap extends mapDemo{
+public class CustomTreeMap extends MapDemo{
 
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);
@@ -14,7 +14,7 @@ public class treeMap extends mapDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateMap("TreeMap");
-        CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable");
+        demonstrateMap("CustomTreeMap");
+        CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "CustomTreeMap", "Hashtable");
     }
 }

@@ -1,10 +1,10 @@
 package com.concurrentCollection.copyOnWriteArraySetClass.updationByoneThreadwhileOtherThreadExceution;
 
-import static com.concurrentCollection.copyOnWriteArraySetClass.updationByoneThreadwhileOtherThreadExceution.childThreadBase.coal;
+import static com.concurrentCollection.copyOnWriteArraySetClass.updationByoneThreadwhileOtherThreadExceution.ChildThreadBase.coal;
 
 import java.util.Iterator;
 
-public class copyOnWriteASDemo {
+public class CopyOnWriteASDemo {
     public static void main(String[] args) throws InterruptedException {
 
         coal.add("panduraju");
@@ -12,7 +12,7 @@ public class copyOnWriteASDemo {
 
         System.out.println("Main thread is running.");
 
-        childThreadBase childThread = new childThreadBase();
+        ChildThreadBase childThread = new ChildThreadBase();
         childThread.start();
 
         Iterator<String> itr = coal.iterator();

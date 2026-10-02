@@ -1,6 +1,6 @@
 package com.advanced.innerClass.methodLocal;
 
-public class methodLocalInnerOne {
+public class MethodLocalInnerOne {
 
     /*
      * If we declare inner class inside instance method then, from thjat method ocal inner class 
@@ -36,7 +36,7 @@ public class methodLocalInnerOne {
 
     public static void main(String[] args)
     {
-        methodLocalInnerOne n = new methodLocalInnerOne();
+        MethodLocalInnerOne n = new MethodLocalInnerOne();
 
         n.method1();
     }

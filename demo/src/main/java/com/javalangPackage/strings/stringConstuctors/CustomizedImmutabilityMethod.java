@@ -1,25 +1,25 @@
 package com.javalangPackage.strings.stringConstuctors;
 
-public class customizedImmutabilityMethod {
+public class CustomizedImmutabilityMethod {
 
     private int i;
 
-    public customizedImmutabilityMethod(int i) {
+    public CustomizedImmutabilityMethod(int i) {
         this.i = i;
     }
 
-    public customizedImmutabilityMethod modify(int i) {
+    public CustomizedImmutabilityMethod modify(int i) {
         if (this.i == i) {
             return this;
         } else {
-            return new customizedImmutabilityMethod(i);
+            return new CustomizedImmutabilityMethod(i);
         }
     }
 
     public static void main(String[] args) {
-        customizedImmutabilityMethod obj1 = new customizedImmutabilityMethod(10);
-        customizedImmutabilityMethod obj2 = obj1.modify(100);
-        customizedImmutabilityMethod obj3 = obj1.modify(10);
+        CustomizedImmutabilityMethod obj1 = new CustomizedImmutabilityMethod(10);
+        CustomizedImmutabilityMethod obj2 = obj1.modify(100);
+        CustomizedImmutabilityMethod obj3 = obj1.modify(10);
 
         System.out.println("obj1: " + obj1);
         System.out.println("obj2: " + obj2);

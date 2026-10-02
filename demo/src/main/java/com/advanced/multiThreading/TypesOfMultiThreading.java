@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class typesOfMultiThreading {
+public class TypesOfMultiThreading {
 
     /*
      * Example: multitasking concepts

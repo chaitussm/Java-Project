@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadlocal.threadlocalexample2;
 
-public class customerThread extends Thread{
+public class CustomerThread extends Thread{
 
     static Integer custId = 0;
 
@@ -12,7 +12,7 @@ public class customerThread extends Thread{
         }
     };
 
-    customerThread(String name)
+    CustomerThread(String name)
     {
         super(name);
     }

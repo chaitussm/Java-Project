@@ -3,11 +3,11 @@ package com.advanced.multiThreading.concurrentPackage.exampleThree;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class myThreadTwo extends Thread{
+public class MyThreadTwo extends Thread{
 
     static ReentrantLock I = new ReentrantLock();
 
-    myThreadTwo(String name)
+    MyThreadTwo(String name)
     {
         super(name);
     }

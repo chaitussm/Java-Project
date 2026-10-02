@@ -1,6 +1,6 @@
 package com.advanced.innerClass.anonymousInnerclasses.example1;
 
-public class anonymousInnerclass {
+public class AnonymousInnerclass {
 
     /*
      * Sometimes we can declare inner class without name such type of inner classes are called 
@@ -20,11 +20,11 @@ public class anonymousInnerclass {
 
     public static void main(String[] args)
     {
-        protein pr = new protein()
+        Protein pr = new Protein()
         {
            public void type()
            {
-             System.out.println("Plant protein");
+             System.out.println("Plant Protein");
            }
         };
         /*here overriding takes place*/

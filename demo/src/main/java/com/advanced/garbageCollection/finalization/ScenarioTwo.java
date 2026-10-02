@@ -1,10 +1,10 @@
 package com.advanced.garbageCollection.finalization;
 
-public class scenarioTwo {
+public class ScenarioTwo {
 
     public static void main(String[] args) throws Throwable {
 
-        scenarioTwo obj = new scenarioTwo();
+        ScenarioTwo obj = new ScenarioTwo();
 
         obj.finalize();
         obj.finalize();

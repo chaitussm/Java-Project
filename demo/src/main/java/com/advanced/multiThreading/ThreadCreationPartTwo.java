@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class threadCreationPartTwo implements Runnable {
+public class ThreadCreationPartTwo implements Runnable {
 
     @Override
     public void run() {
@@ -10,7 +10,7 @@ public class threadCreationPartTwo implements Runnable {
     }
 
     public static void main(String[] args) {
-        Thread thread = new Thread(new threadCreationPartTwo());
+        Thread thread = new Thread(new ThreadCreationPartTwo());
         thread.start();
         for(int i = 0; i < 5; i++) {
             System.out.println("Main Thread: " + i);

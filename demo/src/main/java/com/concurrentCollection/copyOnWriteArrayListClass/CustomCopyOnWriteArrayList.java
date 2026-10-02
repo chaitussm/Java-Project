@@ -1,17 +1,17 @@
 package com.concurrentCollection.copyOnWriteArrayListClass;
 
-public class copyOnWriteArrayList {
+public class CustomCopyOnWriteArrayList {
 
     public static void demonstratecopyOnWriteArrayList(String collectionType) {
-        copyOnWriteArrayListDemo.concurrentCollectionType(collectionType);
-        copyOnWriteArrayListDemo.concurrentConstructors(collectionType);
-        if (collectionType.equals("CopyOnWriteArrayList")) {
-            // Add any specific logic for CopyOnWriteArrayList if needed
+        CopyOnWriteArrayListDemo.concurrentCollectionType(collectionType);
+        CopyOnWriteArrayListDemo.concurrentConstructors(collectionType);
+        if (collectionType.equals("CustomCopyOnWriteArrayList")) {
+            // Add any specific logic for CustomCopyOnWriteArrayList if needed
         }
     }
 
     public static void main(String[] args) {
-        demonstratecopyOnWriteArrayList("CopyOnWriteArrayList");
+        demonstratecopyOnWriteArrayList("CustomCopyOnWriteArrayList");
     }
 
 }

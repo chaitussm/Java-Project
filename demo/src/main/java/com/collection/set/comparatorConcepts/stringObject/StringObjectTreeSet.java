@@ -5,13 +5,13 @@ import java.util.*;
 /**
  * WAP to insert objects into the TreeSet where the sorting order is 
  * according to reverse of the alphabetical order.
- * stringObjectTreeSet
+ * StringObjectTreeSet
 */
 
-public class stringObjectTreeSet {
+public class StringObjectTreeSet {
 
     public static void main(String[] args) {
-        TreeSet<String> treeSet = new TreeSet<>(new stringObjectComparator());
+        TreeSet<String> treeSet = new TreeSet<>(new StringObjectComparator());
         treeSet.add("Shiva");
         treeSet.add("Vishnu");
         treeSet.add("Brahma");

@@ -1,6 +1,6 @@
 package com.objectoriented.constructors;
 
-public class super_thisVariations extends prototypeConstructor {
+public class SuperThisVariations extends PrototypeConstructor {
 
     //NOTE
    
@@ -16,7 +16,7 @@ public class super_thisVariations extends prototypeConstructor {
 
     public static void main(String[] args) {
         
-        super_thisVariations obj = new super_thisVariations();
+        SuperThisVariations obj = new SuperThisVariations();
         obj.m2();
         // We cannot use the instance of the class inside static methods 
         // because if we are using the instance of the class inside static methods then we will 

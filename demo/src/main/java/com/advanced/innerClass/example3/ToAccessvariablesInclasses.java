@@ -1,6 +1,6 @@
 package com.advanced.innerClass.example3;
 
-public class toAccessvariablesInclasses {
+public class ToAccessvariablesInclasses {
 
     int x = 10;
 
@@ -20,15 +20,15 @@ public class toAccessvariablesInclasses {
 
             /*To print the value of x present in the outer class*/
 
-            System.out.println(toAccessvariablesInclasses.this.x);
+            System.out.println(ToAccessvariablesInclasses.this.x);
         }
     }
 
     public static void main(String [] args)
     {
-        toAccessvariablesInclasses ta = new toAccessvariablesInclasses();
+        ToAccessvariablesInclasses ta = new ToAccessvariablesInclasses();
         
-        toAccessvariablesInclasses.Inner in = ta.new Inner();
+        ToAccessvariablesInclasses.Inner in = ta.new Inner();
 
         in.m1();
     }

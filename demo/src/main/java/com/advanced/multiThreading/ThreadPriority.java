@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class threadPriority implements Runnable {
+public class ThreadPriority implements Runnable {
 
     /*Thread class is having 1 to 10 priority levels where 1 stands for minimum priority and 10 stands for maximum priority */
     @Override
@@ -11,9 +11,9 @@ public class threadPriority implements Runnable {
     }
 
     public static void main(String[] args) {
-        Thread thread1 = new Thread(new threadPriority());
-        Thread thread2 = new Thread(new threadPriority());
-        Thread thread3 = new Thread(new threadPriority());
+        Thread thread1 = new Thread(new ThreadPriority());
+        Thread thread2 = new Thread(new ThreadPriority());
+        Thread thread3 = new Thread(new ThreadPriority());
 
         thread1.setPriority(Thread.MIN_PRIORITY); // Setting minimum priority
         thread2.setPriority(Thread.NORM_PRIORITY); // Setting normal priority

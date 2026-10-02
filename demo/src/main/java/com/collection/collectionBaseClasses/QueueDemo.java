@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class queueDemo {
+public class QueueDemo {
 
     // Dispatches to the requested Queue implementation demo. Unknown/blank type falls back to LinkedList.
     public static void queueCollectionType(String collectionType) {

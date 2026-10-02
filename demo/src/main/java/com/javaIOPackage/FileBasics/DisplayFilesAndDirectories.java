@@ -2,16 +2,16 @@ package com.javaIOPackage.FileBasics;
 
 import java.io.File;
 
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class displayFilesAndDirectories extends fileBasicMethods{
+public class DisplayFilesAndDirectories extends FileBasicMethods{
 
 
-    public static void countOfDirectoryAndFiles(String Directory)
+    public static void countOfDirectoryAndFiles(String directory)
     {
         int count = 0;
 
-        File file = new File(Directory);
+        File file = new File(directory);
 
         String[] filelist = file.list();
 
@@ -26,9 +26,9 @@ public class displayFilesAndDirectories extends fileBasicMethods{
 
     public static void main(String[] args) throws Exception
     {
-        String Directory = searchFolder("demo");
+        String directory = searchFolder("demo");
 
-        countOfDirectoryAndFiles(Directory);
+        countOfDirectoryAndFiles(directory);
     }
     
 }

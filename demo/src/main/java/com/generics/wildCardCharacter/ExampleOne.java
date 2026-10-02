@@ -1,9 +1,8 @@
 package com.generics.wildCardCharacter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class exampleOne {
+public class ExampleOne {
 
     public static void main(String[] args) {
         

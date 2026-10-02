@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class yieldMethodInThread implements Runnable {
+public class YieldMethodInThread implements Runnable {
 
     /*output is not guaranteed to be in a specific order */
     @Override
@@ -12,7 +12,7 @@ public class yieldMethodInThread implements Runnable {
     }
 
     public static void main(String[] args) {
-        Thread thread = new Thread(new yieldMethodInThread());
+        Thread thread = new Thread(new YieldMethodInThread());
         thread.start();
         for(int i = 0; i < 5; i++) {
             System.out.println("Main Thread: " + i);

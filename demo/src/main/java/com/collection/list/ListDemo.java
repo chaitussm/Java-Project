@@ -11,7 +11,7 @@ import java.util.Vector;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class listDemo {
+public class ListDemo {
 
     // Dispatches to the requested List implementation demo. Unknown/blank type falls back to ArrayList.
     public static void listCollectionType(String collectionType) {

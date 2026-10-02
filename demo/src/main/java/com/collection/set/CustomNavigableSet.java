@@ -2,8 +2,8 @@ package com.collection.set;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-// Dedicated launcher for NavigableSet behavior, implemented by TreeSet.
-public class navigableSet extends setDemo {
+// Dedicated launcher for CustomNavigableSet behavior, implemented by TreeSet.
+public class CustomNavigableSet extends SetDemo {
 
     public static void demonstrateSet(String collectionType) {
         setCollectionType(collectionType);
@@ -12,7 +12,7 @@ public class navigableSet extends setDemo {
     }
 
     public static void main(String[] args) {
-        demonstrateSet("NavigableSet");
-        CollectionTypeInspector.printDefaultCapacitySummary("NavigableSet");
+        demonstrateSet("CustomNavigableSet");
+        CollectionTypeInspector.printDefaultCapacitySummary("CustomNavigableSet");
     }
 }

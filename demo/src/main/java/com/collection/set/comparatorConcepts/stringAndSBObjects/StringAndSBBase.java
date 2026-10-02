@@ -1,6 +1,6 @@
 package com.collection.set.comparatorConcepts.stringAndSBObjects;
 
-public class stringAndSBBase implements java.util.Comparator<Object>{
+public class StringAndSBBase implements java.util.Comparator<Object>{
 
     @Override
 
@@ -12,11 +12,12 @@ public class stringAndSBBase implements java.util.Comparator<Object>{
         int l1 = str1.length();
         int l2 = str2.length();
         
-        if(l1 > l2)
+        if (l1 > l2) {
             return 1;
-        else if(l1 < l2)
+        } else if (l1 < l2) {
             return -1;
-        else //if both objects length are equal then prefer the compareTo() default natural sorting
+        } else { //if both objects length are equal then prefer the compareTo() default natural sorting
             return str1.compareTo(str2);
+        }
     }
 }

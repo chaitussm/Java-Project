@@ -1,7 +1,7 @@
 package com.collection.collectionsClass.binarySearchMethod;
 import java.util.ArrayList;
 import java.util.Collections;
-public class binarySearchDemo {
+public class BinarySearchDemo {
 
     public static void main(String[] args) {
 
@@ -20,8 +20,8 @@ public class binarySearchDemo {
         int indexBeforeSort = Collections.binarySearch(list, "B");
         System.out.println("Index of B before sorting: " + indexBeforeSort);
         
-        Collections.sort(list, new binarySearchBase());
-        int index = Collections.binarySearch(list, "B", new binarySearchBase());
+        Collections.sort(list, new BinarySearchBase());
+        int index = Collections.binarySearch(list, "B", new BinarySearchBase());
         System.out.println("Index of B after sorting: " + index);
 
     }

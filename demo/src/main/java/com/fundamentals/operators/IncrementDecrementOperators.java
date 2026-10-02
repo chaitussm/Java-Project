@@ -1,6 +1,6 @@
 package com.fundamentals.operators;
 
-public class Increment_DecrementOperators {
+public class IncrementDecrementOperators {
     //Understand the concept of increment and decrement operators in Java
     //Increment operator (++) increases the value of a variable by 1
     //Decrement operator (--) decreases the value of a variable by 1

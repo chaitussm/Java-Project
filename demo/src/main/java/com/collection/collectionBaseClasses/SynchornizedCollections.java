@@ -2,7 +2,7 @@ package com.collection.collectionBaseClasses;
 
 import java.util.*;
 
-public class synchornizedCollections {
+public class SynchornizedCollections {
 
     // Collections.synchronizedList() wraps a List so every method is internally synchronized
     public void demonstrateSynchronizedList() {
@@ -71,7 +71,7 @@ public class synchornizedCollections {
     }
 
     public static void main(String[] args) {
-        synchornizedCollections demo = new synchornizedCollections();
+        SynchornizedCollections demo = new SynchornizedCollections();
         demo.demonstrateSynchronizedList();
         demo.demonstrateSynchronizedSet();
         demo.demonstrateSynchronizedSortedSet();

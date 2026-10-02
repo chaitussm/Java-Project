@@ -1,6 +1,6 @@
 package com.javalangPackage.strings.stringBufferConstructors;
 
-public class stringBuilder {
+public class CustomStringBuilder {
 
     /*
      *

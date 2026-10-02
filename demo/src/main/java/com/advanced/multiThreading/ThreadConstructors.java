@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class threadConstructors implements Runnable {
+public class ThreadConstructors implements Runnable {
 
     /*This conde contains all the available thread constructors */
 
@@ -16,8 +16,8 @@ public class threadConstructors implements Runnable {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
         Thread thread1 = new Thread();
         thread1.setName("Thread Alpha");
-        Thread thread2 = new Thread(new threadConstructors());
-        Thread thread3 = new Thread(new threadConstructors(), "Thread 3");
+        Thread thread2 = new Thread(new ThreadConstructors());
+        Thread thread3 = new Thread(new ThreadConstructors(), "Thread 3");
         Thread thread4 = new Thread(thread2);
         Thread thread5 = new Thread(thread2, "Thread 5");
         // Use the (ThreadGroup, Runnable, String, long) constructor to supply a stack-size

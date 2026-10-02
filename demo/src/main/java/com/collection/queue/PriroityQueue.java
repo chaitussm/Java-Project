@@ -1,9 +1,9 @@
 package com.collection.queue;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
-import com.collection.collectionBaseClasses.queueDemo; 
+import com.collection.collectionBaseClasses.QueueDemo; 
 
-public class priroityQueue extends queueDemo{
+public class PriroityQueue extends QueueDemo{
 
     public static void demonstrateQueue(String collectionType) {
         queueCollectionType(collectionType);

@@ -2,7 +2,7 @@ package com.concurrentCollection.copyOnWriteArraySetClass.updationByoneThreadwhi
 
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class childThreadBase extends Thread {
+public class ChildThreadBase extends Thread {
 
     static CopyOnWriteArraySet<String> coal = new CopyOnWriteArraySet<String>();
 

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadpools.threadpoolWithRunnable;
 
-public class printJob implements Runnable{
+public class PrintJob implements Runnable{
 
     /*Creating a new thread will create performance and memory problem to overcome this we should go for thread pool
     Thread pool isa pool of already created threads ready to do our job
@@ -8,7 +8,7 @@ public class printJob implements Runnable{
     
     String name;
 
-    printJob(String name)
+    PrintJob(String name)
     {
         this.name = name;
     }

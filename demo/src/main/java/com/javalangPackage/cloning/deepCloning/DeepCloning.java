@@ -1,6 +1,6 @@
 package com.javalangPackage.cloning.deepCloning;
 
-public class deepCloning implements Cloneable{
+public class DeepCloning implements Cloneable{
 
     /*
      * Deep Cloning 
@@ -12,12 +12,12 @@ public class deepCloning implements Cloneable{
     
     public static void main(String[] args) throws CloneNotSupportedException
     {
-        teacher t = new teacher(20);
-        student s = new student(t, 30);
+        Teacher t = new Teacher(20);
+        Student s = new Student(t, 30);
      
         System.out.println(s.j + "----" + s.t.i);
 
-        student t1 = (student)s.clone();
+        Student t1 = (Student)s.clone();
 
         t1.j = 888;
         t1.t.i = 999;

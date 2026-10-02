@@ -2,7 +2,7 @@ package com.javalangPackage.wrapperClasses;
 
 import java.lang.reflect.Method;
 
-public class voidClass {
+public class VoidClass {
 
     /*
      * It is a final class and it is the direct child class of Object , It doesnt contains any methods and it contains 
@@ -21,7 +21,7 @@ public class voidClass {
 
     public static void main(String[] args) {
         try {
-            Class<?> clazz = voidClass.class;
+            Class<?> clazz = VoidClass.class;
             
             // Check the void method
             Method method1 = clazz.getMethod("myVoidMethod");

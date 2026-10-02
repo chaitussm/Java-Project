@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class threadCreationByRunnable implements Runnable {
+public class ThreadCreationByRunnable implements Runnable {
 
     /*Among extending Therad class and implementing Runnable Interface , Runnable Interface approach is best 
     to define the therad because it allows the class to extend another class if needed*/
@@ -13,7 +13,7 @@ public class threadCreationByRunnable implements Runnable {
     }
 
     public static void main(String[] args) {
-        threadCreationByRunnable runnable = new threadCreationByRunnable();
+        ThreadCreationByRunnable runnable = new ThreadCreationByRunnable();
         /*If we dont pass the object inside below thread class object empty run() inside the thread class will be called*/
         Thread thread = new Thread(runnable);
         thread.start();

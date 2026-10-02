@@ -1,11 +1,11 @@
 package com.advanced.garbageCollection.finalization;
 
-public class scenarioThree {
+public class ScenarioThree {
 
-    static scenarioThree s; 
+    static ScenarioThree s; 
 
     public static void main(String[] args) throws Exception{
-       scenarioThree  s1 = new scenarioThree();
+       ScenarioThree  s1 = new ScenarioThree();
 
        System.out.println("Before nullifying hashcode of s1 is : " + s1.hashCode());
         s1 = null;

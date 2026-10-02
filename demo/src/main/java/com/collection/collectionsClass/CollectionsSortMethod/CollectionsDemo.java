@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 //import java.util.List;
 
-public class collectionsDemo {
+public class CollectionsDemo {
 
     public static void main(String[] args) {
 
@@ -27,7 +27,7 @@ public class collectionsDemo {
        System.out.println("After sorting :" + list);
 
        //with compartor based 
-       Collections.sort(list, new customizedCollectionBase());
+       Collections.sort(list, new CustomizedCollectionBase());
        System.out.println("After custom sorting :" + list);
 
        //reverse the list

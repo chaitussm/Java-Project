@@ -4,12 +4,12 @@ public class FinalModifier {
 
     final String name = "Final Access Modifier";
     //static variable can be accessed without creating an instance of the class, and it is shared among all instances of the class.
-    static final String data;
+    static final String DATA;
     final String detail;
     //final local variable
 
 
-    final static void display() {
+    static final void display() {
         final int localVariable = 10;
         System.out.println("This is a final method." + " Local variable: " + localVariable);
     }
@@ -18,7 +18,7 @@ public class FinalModifier {
 
     static {
         
-        data  = "Final Access Modifier data";
+        DATA  = "Final Access Modifier data";
     }
 
     FinalModifier() {
@@ -32,7 +32,7 @@ public class FinalModifier {
         System.out.println("Final Access Modifier");
         display();
         System.out.println("Name: " + new FinalModifier().name);
-        System.out.println("Data: " + data);
+        System.out.println("Data: " + DATA);
         System.out.println("Detail: " + new FinalModifier().detail);
     }
     

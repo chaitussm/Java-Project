@@ -1,6 +1,6 @@
 package com.advanced.multiThreading;
 
-public class overloadingInMultithreading extends Thread {
+public class OverloadingInMultithreading extends Thread {
 
     @Override
     public void run() {
@@ -14,7 +14,7 @@ public class overloadingInMultithreading extends Thread {
     }
 
     public static void main(String[] args) {
-        overloadingInMultithreading thread = new overloadingInMultithreading();
+        OverloadingInMultithreading thread = new OverloadingInMultithreading();
         thread.start();
         
     }

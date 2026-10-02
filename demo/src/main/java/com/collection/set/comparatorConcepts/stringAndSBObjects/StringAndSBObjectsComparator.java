@@ -5,10 +5,10 @@ package com.collection.set.comparatorConcepts.stringAndSBObjects;
  * If 2 objects having same length then consider their alphabetical order.
  */
 
-public class stringAndSBObjectsComparator {
+public class StringAndSBObjectsComparator {
 
     public static void main(String[] args) {
-        java.util.TreeSet<Object> treeSet = new java.util.TreeSet<>(new stringAndSBBase());
+        java.util.TreeSet<Object> treeSet = new java.util.TreeSet<>(new StringAndSBBase());
         
         treeSet.add("apple");
         treeSet.add(new StringBuffer("pear"));

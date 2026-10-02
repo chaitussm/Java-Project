@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadGroup;
 
-public class threadgroupCreation {
+public class ThreadgroupCreation {
 
     public static void main(String[] args) {
         ThreadGroup group = new ThreadGroup("MyThreadGroup");

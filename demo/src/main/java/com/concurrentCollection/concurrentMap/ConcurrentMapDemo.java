@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
-import com.concurrentCollection.concurrentCollectionTypeInspector;
+import com.concurrentCollection.ConcurrentCollectionTypeInspector;
 
-public class concurrentMapDemo {
+public class ConcurrentMapDemo {
 
     public static void concurrentCollectionType(String type) {
         switch (type) {
@@ -50,7 +50,7 @@ public class concurrentMapDemo {
             case "ConcurrentHashMap":
             case "ConcurrentSkipListMap":
             case "ConcurrentMap":
-                com.concurrentCollection.concurrentCollectionTypeInspector.printLoadFactorDetails(collectionType);
+                com.concurrentCollection.ConcurrentCollectionTypeInspector.printLoadFactorDetails(collectionType);
                 break;
             default:
                 throw new IllegalArgumentException("Load factor is not applicable to: " + collectionType);
@@ -139,7 +139,7 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentHashMap() {
 
-        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentHashMap");
+        ConcurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentHashMap");
 
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
         map.putIfAbsent("key1", "value1");
@@ -153,7 +153,7 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentSkipListMap() {
 
-        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentSkipListMap");
+        ConcurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentSkipListMap");
         ConcurrentSkipListMap<String, String> map = new ConcurrentSkipListMap<>();
         map.putIfAbsent("key1", "value1");
         map.put("key2", "value2");
@@ -166,7 +166,7 @@ public class concurrentMapDemo {
 
     public static void demonstrateConcurrentMap() {
 
-        concurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentMap");
+        ConcurrentCollectionTypeInspector.printDefaultInitialCapacity("ConcurrentMap");
         ConcurrentMap<String, String> map = new ConcurrentHashMap<>();
         map.putIfAbsent("key1", "value1");
         map.put("key2", "value2");

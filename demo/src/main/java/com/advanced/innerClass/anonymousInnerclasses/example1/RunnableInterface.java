@@ -1,6 +1,6 @@
 package com.advanced.innerClass.anonymousInnerclasses.example1;
 
-public class runnableInterface implements Runnable{
+public class RunnableInterface implements Runnable{
 
       @Override
     public void run() {
@@ -9,7 +9,7 @@ public class runnableInterface implements Runnable{
 
     public static void main(String[] args)
     {
-        runnableInterface rn = new runnableInterface()
+        RunnableInterface rn = new RunnableInterface()
         {
             public void run()
             {

@@ -1,6 +1,6 @@
 package com.advanced.multiThreading.threadGroup;
 
-public class threadGroupPriority {
+public class ThreadGroupPriority {
 
     public static void main(String[] args){
 

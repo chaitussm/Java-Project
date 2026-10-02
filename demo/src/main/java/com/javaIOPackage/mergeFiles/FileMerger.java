@@ -1,9 +1,9 @@
 package com.javaIOPackage.mergeFiles;
 
 import java.io.*;
-import com.javaIOPackage.baseMethodsInFileOperations.fileBasicMethods;
+import com.javaIOPackage.baseMethodsInFileOperations.FileBasicMethods;
 
-public class fileMerger extends fileBasicMethods {
+public class FileMerger extends FileBasicMethods {
 
     /*
      * The try-with-resources statement works automatically because it is built

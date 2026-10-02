@@ -1,6 +1,6 @@
 package com.advanced.innerClass.nestingOfInnerClasses;
 
-public class staticNestedInnerClass
+public class StaticNestedInnerClass
 {
     /*
      *

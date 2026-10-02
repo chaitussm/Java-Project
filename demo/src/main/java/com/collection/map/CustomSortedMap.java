@@ -2,7 +2,7 @@ package com.collection.map;
 
 import com.collection.collectionBaseClasses.CollectionTypeInspector;
 
-public class sortedMap extends mapDemo{
+public class CustomSortedMap extends MapDemo{
 
     public static void demonstrateMap(String collectionType) {
         mapCollectionType(collectionType);
@@ -14,7 +14,7 @@ public class sortedMap extends mapDemo{
     }
 
     public static void main(String[] args) {
-        demonstrateMap("SortedMap");
-        CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable", "SortedMap");
+        demonstrateMap("CustomSortedMap");
+        CollectionTypeInspector.printDefaultCapacitySummary("HashMap", "LinkedHashMap", "TreeMap", "Hashtable", "CustomSortedMap");
     }
 }

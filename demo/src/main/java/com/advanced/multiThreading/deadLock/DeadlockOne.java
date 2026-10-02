@@ -1,9 +1,9 @@
 package com.advanced.multiThreading.deadLock;
 
-public class deadlockOne extends Thread {
+public class DeadlockOne extends Thread {
 
-    threadOne t1 = new threadOne();
-    threadTwo t2 = new threadTwo();
+    ThreadOne t1 = new ThreadOne();
+    ThreadTwo t2 = new ThreadTwo();
 
     public void m1()
     {
@@ -15,7 +15,7 @@ public class deadlockOne extends Thread {
     }
 
     public static void main(String[] args) {
-        deadlockOne d1 = new deadlockOne();
+        DeadlockOne d1 = new DeadlockOne();
         d1.m1();
     }
     
