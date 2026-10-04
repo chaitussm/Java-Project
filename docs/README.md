@@ -36,6 +36,7 @@
 | Cursors | [cursors.md](concepts/collection/cursors.md) |
 | Lambda functions | [lambda-functions.md](concepts/lambda-functions.md) |
 | JDK / JRE / JVM | [development.md](concepts/development.md) |
+| JVM Architecture (topic syllabus) | [jvmArchitecture.md](concepts/jvmArchitecture/jvmArchitecture.md) |
 | Classpath, JAR & system properties | [classpath-jar-system-properties.md](concepts/classpath/classpath-jar-system-properties.md) |
 | Serialization | [serializationBasics.md](concepts/serialization/serializationBasics.md) |
 | Reflection | [Java-Reflection-Basics-Guide.md](concepts/reflections/Java-Reflection-Basics-Guide.md) |
