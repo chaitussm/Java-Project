@@ -237,3 +237,131 @@ We can use above flags simultaneously then jvm will consider thse flags from lef
 
 Ex: Java -ea -esa -ea -dsa -da -esa -ea -dsa Test 
 
+### Internal execution — whiteboard trace (`Test`)
+
+![Assertion runtime flags — left-to-right JVM trace (whiteboard)](images/assertion-flags-execution-whiteboard.png)
+
+The example command on the board:
+
+```text
+java -ea -esa -ea -dsa -da -esa -ea -dsa Test
+```
+
+(`Java` on the slide means the **`java`** launcher; class name **`Test`** is your **non-system** application class.)
+
+#### Two independent switches
+
+The JVM keeps **two** assertion settings. They do **not** share one on/off bit:
+
+| Track | Flags | Affects |
+| ----- | ----- | ------- |
+| **Non-system** | `-ea` / `-da` (enable / disable assertions) | **Your** classes (`Test`, project code) |
+| **System** | `-esa` / `-dsa` (enable / disable **system** assertions) | **JDK** classes (`java.*`, `javax.*`, …) |
+
+Each new flag of a given kind **overwrites** that track for the rest of the parse. The NOTE above applies: when many flags appear on one command line, the JVM applies them **from left to right**.
+
+#### Whiteboard table (pair-by-pair reading)
+
+The slide groups flags **two at a time** to show how each pair updates the two columns **Non-System** and **System** (✓ = enabled, ✗ = disabled):
+
+| Step | Flags read (pair) | Non-System after pair | System after pair |
+| ---- | ----------------- | --------------------- | ----------------- |
+| 1 | `-ea` `-esa` | ✓ Enabled | ✓ Enabled |
+| 2 | `-ea` `-dsa` | ✓ Enabled | ✗ Disabled |
+| 3 | `-da` `-esa` | ✗ Disabled | ✓ Enabled |
+| 4 | `-ea` `-dsa` | ✓ Enabled | ✗ Disabled |
+
+After **step 4** (end of the full flag list):
+
+| Track | Final state for this command |
+| ----- | ---------------------------- |
+| **Non-system** | **Enabled** (✓) |
+| **System** | **Disabled** (✗) |
+
+So for **`Test`**: assertions in **`Test`** are **on** at runtime (non-system enabled). Assertions inside **system** classes stay **off** (system disabled).
+
+#### Full left-to-right scan (same command, flag by flag)
+
+| Order | Flag | Non-system after | System after |
+| ----- | ---- | ---------------- | ------------ |
+| start | — | off (default) | off (default) |
+| 1 | `-ea` | **on** | off |
+| 2 | `-esa` | on | **on** |
+| 3 | `-ea` | **on** | on |
+| 4 | `-dsa` | on | **off** |
+| 5 | `-da` | **off** | off |
+| 6 | `-esa` | off | **on** |
+| 7 | `-ea` | **on** | on |
+| 8 | `-dsa` | on | **off** |
+
+Same **final** result: **non-system enabled**, **system disabled**.
+
+#### Point-by-point (internal execution)
+
+1. **Parse phase** — Before `Test.main` runs, the launcher passes assertion switches to the JVM. No `assert` bytecode runs yet.
+2. **Two tracks** — `-ea`/`-da` only flip **non-system**; `-esa`/`-dsa` only flip **system**.
+3. **Last flag wins per track** — Later flags on the same track override earlier ones on that same command line.
+4. **Class loaders** — **Non-system** assertion setting applies when loading **application** classes (`Test`). **System** setting applies when loading **platform** classes.
+5. **`assert` bytecode** — If assertions are **disabled** for that class’s loader, `assert` is a no-op. If **enabled**, a false condition throws `AssertionError`.
+6. **`Test` on the board** — With final non-system **enabled**, `assert` in `Test` is active. System **disabled** means JDK `assert` usage is not evaluated.
+7. **Pairs on the slide** — Steps 1–4 are a teaching trace; the **full** eight-flag scan above matches the **same** final state.
+
+```mermaid
+flowchart TD
+  CMD["java -ea -esa ... -dsa Test"] --> PARSE["Parse flags left to right"]
+  PARSE --> NS["Non-system track: -ea / -da"]
+  PARSE --> SYS["System track: -esa / -dsa"]
+  NS --> FNS["Final: non-system ENABLED"]
+  SYS --> FSYS["Final: system DISABLED"]
+  FNS --> LOAD["Load Test (non-system)"]
+  LOAD --> RUN["main runs — assert active in Test"]
+  FSYS --> JDK["System classes — assert inactive"]
+```
+
+```mermaid
+sequenceDiagram
+  participant CLI as java launcher
+  participant JVM as JVM
+  participant Test as Test (non-system)
+  CLI->>JVM: apply -ea -esa -ea -dsa -da -esa -ea -dsa
+  Note over JVM: non-system=ON, system=OFF
+  JVM->>Test: load with assertions enabled
+  Test->>Test: execute assert statements if present
+  Note over JVM: system classes keep assertions off
+```
+
+```mermaid
+flowchart LR
+  subgraph step1 ["Pair 1: -ea -esa"]
+    A1["Non ✓"] 
+    A2["Sys ✓"]
+  end
+  subgraph step2 ["Pair 2: -ea -dsa"]
+    B1["Non ✓"]
+    B2["Sys ✗"]
+  end
+  subgraph step3 ["Pair 3: -da -esa"]
+    C1["Non ✗"]
+    C2["Sys ✓"]
+  end
+  subgraph step4 ["Pair 4: -ea -dsa"]
+    D1["Non ✓"]
+    D2["Sys ✗"]
+  end
+  step1 --> step2 --> step3 --> step4
+```
+
+```mermaid
+pie showData
+    title Final assertion state for this command (two tracks)
+    "Non-system ENABLED (Test asserts on)" : 50
+    "System DISABLED (JDK asserts off)" : 50
+```
+
+```mermaid
+pie showData
+    title Eight flags on command line by category
+    "Non-system flags (-ea / -da)" : 50
+    "System flags (-esa / -dsa)" : 50
+```
+
