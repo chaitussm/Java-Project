@@ -1,4 +1,4 @@
-package com.assertions.enablingAssertion;
+package com.assertions.simpleAssert;
 
 public class assertionBasics {
 
@@ -14,7 +14,7 @@ public class assertionBasics {
         try {
             AssertionChecker.checkAge(15);
         } catch (AssertionError e) {
-            System.out.println("Caught expected error: " + e.getMessage());
+            System.out.println("Caught expected AssertionError for age below 18.");
         }
 
         System.out.println("\n--- Program finished execution safely ---");

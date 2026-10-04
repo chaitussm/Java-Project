@@ -1,11 +1,10 @@
-package com.assertions.enablingAssertion;
+package com.assertions.augumentedAssert;
 
 public class AssertionChecker {
 
     public static void checkAge(int age) {
-        /*Java throws an AssertionError with the message after :—including the actual age. If it’s true,
-         execution continues; if assertions are disabled, the check is ignored.*/
-
+        // This assert checks the condition when assertions are enabled.
+        // If it is false, Java throws an AssertionError with this detail message.
         assert age >= 18 : "Access denied: age must be 18 or older. Provided: " + age;
 
         System.out.println("Access granted for age: " + age);
