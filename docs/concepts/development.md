@@ -24,7 +24,7 @@
 | [Core formulas](#core-formulas) | JDK = JRE + tools; JRE = JVM + libraries |
 | [Pie chart — JDK composition](#pie-chart--jdk-composition) | Visual split of the three parts |
 | [Who needs which kit?](#who-needs-which-kit) | Developer vs end user |
-| [JVM architecture syllabus (detailed topics)](../jvm/jvm-architecture.md) | Class loaders, memory areas, execution engine |
+| [JVM Architecture syllabus (detailed topics)](../jvmArchitecture/jvmArchitecture.md) | Class loaders, memory areas, execution engine |
 
 ---
 
