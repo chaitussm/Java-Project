@@ -365,3 +365,163 @@ pie showData
     "System flags (-esa / -dsa)" : 50
 ```
 
+### Scoped execution — class and package selectors (`-ea:` / `-da:`)
+
+![Scoped assertion flags — pack1 / pack2 whiteboard](images/assertion-scoped-flags-whiteboard.png)
+
+The board uses this **classpath layout** (non-system classes):
+
+```text
+pack1
+ ├── A.class
+ ├── B.class
+ └── pack2
+      ├── C.class
+      └── D.class
+```
+
+| Class | Fully qualified name |
+| ----- | -------------------- |
+| `A` | `pack1.A` |
+| `B` | `pack1.B` |
+| `C` | `pack1.pack2.C` |
+| `D` | `pack1.pack2.D` |
+
+**Syntax (after the colon):**
+
+| Form | Meaning |
+| ---- | ------- |
+| `-ea:pack1.B` | **One class** — enable assertions only in `pack1.B` |
+| `-da:pack1.B` | **One class** — disable assertions in `pack1.B` |
+| `-ea:pack1...` | **Package subtree** — `pack1` and **all sub-packages** (`pack2`, …) |
+| `-da:pack1.pack2...` | **Exclude subtree** — disable for `pack2` and everything under it |
+
+(`...` is the **package** wildcard on the slide — not “current directory”.)
+
+#### Five scenarios from the whiteboard (commands + execution)
+
+| # | Goal (slide) | Command | Internal result after JVM parses flags (left → right) |
+| - | ------------ | ------- | ----------------------------------------------------- |
+| 1 | Enable assertions **only** in `B` | `java -ea:pack1.B …` | **On:** `pack1.B` only. **Off:** `A`, `C`, `D` (and any class not matching). |
+| 2 | Enable in **`B`** and **`D`** | `java -ea:pack1.B -ea:pack1.pack2.D …` | **On:** `pack1.B`, `pack1.pack2.D`. **Off:** `A`, `C`. |
+| 3 | Enable in **every** class of `pack1` (including `pack2`) | `java -ea:pack1... …` | **On:** `A`, `B`, `C`, `D`. |
+| 4 | Enable all of `pack1` **except** `B` | `java -ea:pack1... -da:pack1.B …` | **On:** `A`, `C`, `D`. **Off:** `B` (disable rule applied after package enable). |
+| 5 | Enable all of `pack1` **except** `pack2` classes | `java -ea:pack1... -da:pack1.pack2... …` | **On:** `A`, `B`. **Off:** `C`, `D` (entire `pack2` subtree disabled). |
+
+**How the JVM applies this (execution model):**
+
+1. **Default** — With no global `-ea`, assertions in non-system classes start **disabled**.
+2. **Scoped enable** — `-ea:…` turns assertions **on** for matching classes when they are loaded.
+3. **Scoped disable** — `-da:…` turns assertions **off** for matching classes (can **override** an earlier `-ea:pack1...` for a narrower name).
+4. **Order** — Same rule as the NOTE above: flags are processed **left to right**; a later matching `-da:` can remove assertion checking from a class that was included by an earlier `-ea:pack1...`.
+5. **Per class at load time** — When `pack1.A` loads, the JVM checks whether the **current policy** says assertions are enabled for `pack1.A`; same for `B`, `C`, `D` as each class initializes.
+6. **`assert` bytecode** — If enabled for that class, a failed `assert` throws `AssertionError`; if disabled, the statement is skipped.
+
+#### Scenario 1 — only `B`
+
+```text
+java -ea:pack1.B MainClass
+```
+
+```mermaid
+flowchart TD
+  CMD["-ea:pack1.B"] --> P["Parse scoped rules"]
+  P --> A["pack1.A loads → asserts OFF"]
+  P --> B["pack1.B loads → asserts ON"]
+  P --> C["pack1.pack2.C loads → asserts OFF"]
+  P --> D["pack1.pack2.D loads → asserts OFF"]
+```
+
+#### Scenario 2 — `B` and `D`
+
+```text
+java -ea:pack1.B -ea:pack1.pack2.D MainClass
+```
+
+```mermaid
+pie showData
+    title Assertion enablement (scenario 2)
+    "B and D ON" : 50
+    "A and C OFF" : 50
+```
+
+#### Scenario 3 — whole `pack1` tree
+
+```text
+java -ea:pack1... MainClass
+```
+
+```mermaid
+flowchart LR
+  ROOT["-ea:pack1..."] --> A["A ON"]
+  ROOT --> B["B ON"]
+  ROOT --> P2["pack2"]
+  P2 --> C["C ON"]
+  P2 --> D["D ON"]
+```
+
+#### Scenario 4 — `pack1...` except `B`
+
+```text
+java -ea:pack1... -da:pack1.B MainClass
+```
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  JVM->>JVM: apply -ea:pack1... (A,B,C,D ON)
+  JVM->>JVM: apply -da:pack1.B (B OFF)
+  Note over JVM: A,C,D remain ON
+```
+
+#### Scenario 5 — `pack1...` except `pack2...`
+
+```text
+java -ea:pack1... -da:pack1.pack2... MainClass
+```
+
+| Class | Assertions after both flags |
+| ----- | --------------------------- |
+| `pack1.A` | ON |
+| `pack1.B` | ON |
+| `pack1.pack2.C` | OFF |
+| `pack1.pack2.D` | OFF |
+
+```mermaid
+flowchart TD
+  E["-ea:pack1..."] --> ALL["Enable A,B,C,D"]
+  ALL --> X["-da:pack1.pack2..."]
+  X --> F["Disable C,D"]
+  F --> OUT["Final: A,B ON — C,D OFF"]
+```
+
+```mermaid
+pie showData
+    title Scenario 5 — classes with assertions ON
+    "pack1.A" : 25
+    "pack1.B" : 25
+    "pack1.pack2.C (off)" : 25
+    "pack1.pack2.D (off)" : 25
+```
+
+#### Quick map (slide summary)
+
+```mermaid
+flowchart TB
+  subgraph s1 ["1 single class"]
+    C1["-ea:pack1.B"]
+  end
+  subgraph s2 ["2 two classes"]
+    C2["-ea:pack1.B -ea:pack1.pack2.D"]
+  end
+  subgraph s3 ["3 package tree"]
+    C3["-ea:pack1..."]
+  end
+  subgraph s4 ["4 tree minus class"]
+    C4["-ea:pack1... -da:pack1.B"]
+  end
+  subgraph s5 ["5 tree minus subpackage"]
+    C5["-ea:pack1... -da:pack1.pack2..."]
+  end
+```
+
