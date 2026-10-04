@@ -230,3 +230,10 @@ NOTE : among 2 versions of assertions it is recommended to use augumented versio
    To enable assertions in every system class(pre-defined classes)
 4. -dsa | --disablesystemassertions 
    To disable assertions in every system class(pre-defined classes)
+
+NOTE: 
+
+We can use above flags simultaneously then jvm will consider thse flags from left to right 
+
+Ex: Java -ea -esa -ea -dsa -da -esa -ea -dsa Test 
+
