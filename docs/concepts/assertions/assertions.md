@@ -18,6 +18,20 @@
   - [Comparison](#comparison)
   - [When to use assertions](#when-to-use-assertions)
 - [various possible runtime flags](#various-possible-runtime-flags)
+    - [Internal execution — whiteboard trace (`Test`)](#internal-execution--whiteboard-trace-test)
+      - [Two independent switches](#two-independent-switches)
+      - [Whiteboard table (pair-by-pair reading)](#whiteboard-table-pair-by-pair-reading)
+      - [Full left-to-right scan (same command, flag by flag)](#full-left-to-right-scan-same-command-flag-by-flag)
+      - [Point-by-point (internal execution)](#point-by-point-internal-execution)
+    - [Scoped execution — class and package selectors (`-ea:` / `-da:`)](#scoped-execution--class-and-package-selectors--ea---da)
+      - [Five scenarios from the whiteboard (commands + execution)](#five-scenarios-from-the-whiteboard-commands--execution)
+      - [Scenario 1 — only `B`](#scenario-1--only-b)
+      - [Scenario 2 — `B` and `D`](#scenario-2--b-and-d)
+      - [Scenario 3 — whole `pack1` tree](#scenario-3--whole-pack1-tree)
+      - [Scenario 4 — `pack1...` except `B`](#scenario-4--pack1-except-b)
+      - [Scenario 5 — `pack1...` except `pack2...`](#scenario-5--pack1-except-pack2)
+      - [Quick map (slide summary)](#quick-map-slide-summary)
+- [AssertionError](#assertionerror)
 
 ## Introduction
 
@@ -253,10 +267,10 @@ java -ea -esa -ea -dsa -da -esa -ea -dsa Test
 
 The JVM keeps **two** assertion settings. They do **not** share one on/off bit:
 
-| Track | Flags | Affects |
-| ----- | ----- | ------- |
-| **Non-system** | `-ea` / `-da` (enable / disable assertions) | **Your** classes (`Test`, project code) |
-| **System** | `-esa` / `-dsa` (enable / disable **system** assertions) | **JDK** classes (`java.*`, `javax.*`, …) |
+| Track          | Flags                                                    | Affects                                  |
+| -------------- | -------------------------------------------------------- | ---------------------------------------- |
+| **Non-system** | `-ea` / `-da` (enable / disable assertions)              | **Your** classes (`Test`, project code)  |
+| **System**     | `-esa` / `-dsa` (enable / disable **system** assertions) | **JDK** classes (`java.*`, `javax.*`, …) |
 
 Each new flag of a given kind **overwrites** that track for the rest of the parse. The NOTE above applies: when many flags appear on one command line, the JVM applies them **from left to right**.
 
@@ -266,33 +280,33 @@ The slide groups flags **two at a time** to show how each pair updates the two c
 
 | Step | Flags read (pair) | Non-System after pair | System after pair |
 | ---- | ----------------- | --------------------- | ----------------- |
-| 1 | `-ea` `-esa` | ✓ Enabled | ✓ Enabled |
-| 2 | `-ea` `-dsa` | ✓ Enabled | ✗ Disabled |
-| 3 | `-da` `-esa` | ✗ Disabled | ✓ Enabled |
-| 4 | `-ea` `-dsa` | ✓ Enabled | ✗ Disabled |
+| 1    | `-ea` `-esa`      | ✓ Enabled             | ✓ Enabled         |
+| 2    | `-ea` `-dsa`      | ✓ Enabled             | ✗ Disabled        |
+| 3    | `-da` `-esa`      | ✗ Disabled            | ✓ Enabled         |
+| 4    | `-ea` `-dsa`      | ✓ Enabled             | ✗ Disabled        |
 
 After **step 4** (end of the full flag list):
 
-| Track | Final state for this command |
-| ----- | ---------------------------- |
-| **Non-system** | **Enabled** (✓) |
-| **System** | **Disabled** (✗) |
+| Track          | Final state for this command |
+| -------------- | ---------------------------- |
+| **Non-system** | **Enabled** (✓)              |
+| **System**     | **Disabled** (✗)             |
 
 So for **`Test`**: assertions in **`Test`** are **on** at runtime (non-system enabled). Assertions inside **system** classes stay **off** (system disabled).
 
 #### Full left-to-right scan (same command, flag by flag)
 
-| Order | Flag | Non-system after | System after |
-| ----- | ---- | ---------------- | ------------ |
-| start | — | off (default) | off (default) |
-| 1 | `-ea` | **on** | off |
-| 2 | `-esa` | on | **on** |
-| 3 | `-ea` | **on** | on |
-| 4 | `-dsa` | on | **off** |
-| 5 | `-da` | **off** | off |
-| 6 | `-esa` | off | **on** |
-| 7 | `-ea` | **on** | on |
-| 8 | `-dsa` | on | **off** |
+| Order | Flag   | Non-system after | System after  |
+| ----- | ------ | ---------------- | ------------- |
+| start | —      | off (default)    | off (default) |
+| 1     | `-ea`  | **on**           | off           |
+| 2     | `-esa` | on               | **on**        |
+| 3     | `-ea`  | **on**           | on            |
+| 4     | `-dsa` | on               | **off**       |
+| 5     | `-da`  | **off**          | off           |
+| 6     | `-esa` | off              | **on**        |
+| 7     | `-ea`  | **on**           | on            |
+| 8     | `-dsa` | on               | **off**       |
 
 Same **final** result: **non-system enabled**, **system disabled**.
 
@@ -382,31 +396,31 @@ pack1
 
 | Class | Fully qualified name |
 | ----- | -------------------- |
-| `A` | `pack1.A` |
-| `B` | `pack1.B` |
-| `C` | `pack1.pack2.C` |
-| `D` | `pack1.pack2.D` |
+| `A`   | `pack1.A`            |
+| `B`   | `pack1.B`            |
+| `C`   | `pack1.pack2.C`      |
+| `D`   | `pack1.pack2.D`      |
 
 **Syntax (after the colon):**
 
-| Form | Meaning |
-| ---- | ------- |
-| `-ea:pack1.B` | **One class** — enable assertions only in `pack1.B` |
-| `-da:pack1.B` | **One class** — disable assertions in `pack1.B` |
-| `-ea:pack1...` | **Package subtree** — `pack1` and **all sub-packages** (`pack2`, …) |
-| `-da:pack1.pack2...` | **Exclude subtree** — disable for `pack2` and everything under it |
+| Form                 | Meaning                                                             |
+| -------------------- | ------------------------------------------------------------------- |
+| `-ea:pack1.B`        | **One class** — enable assertions only in `pack1.B`                 |
+| `-da:pack1.B`        | **One class** — disable assertions in `pack1.B`                     |
+| `-ea:pack1...`       | **Package subtree** — `pack1` and **all sub-packages** (`pack2`, …) |
+| `-da:pack1.pack2...` | **Exclude subtree** — disable for `pack2` and everything under it   |
 
 (`...` is the **package** wildcard on the slide — not “current directory”.)
 
 #### Five scenarios from the whiteboard (commands + execution)
 
-| # | Goal (slide) | Command | Internal result after JVM parses flags (left → right) |
-| - | ------------ | ------- | ----------------------------------------------------- |
-| 1 | Enable assertions **only** in `B` | `java -ea:pack1.B …` | **On:** `pack1.B` only. **Off:** `A`, `C`, `D` (and any class not matching). |
-| 2 | Enable in **`B`** and **`D`** | `java -ea:pack1.B -ea:pack1.pack2.D …` | **On:** `pack1.B`, `pack1.pack2.D`. **Off:** `A`, `C`. |
-| 3 | Enable in **every** class of `pack1` (including `pack2`) | `java -ea:pack1... …` | **On:** `A`, `B`, `C`, `D`. |
-| 4 | Enable all of `pack1` **except** `B` | `java -ea:pack1... -da:pack1.B …` | **On:** `A`, `C`, `D`. **Off:** `B` (disable rule applied after package enable). |
-| 5 | Enable all of `pack1` **except** `pack2` classes | `java -ea:pack1... -da:pack1.pack2... …` | **On:** `A`, `B`. **Off:** `C`, `D` (entire `pack2` subtree disabled). |
+| #   | Goal (slide)                                             | Command                                  | Internal result after JVM parses flags (left → right)                            |
+| --- | -------------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | Enable assertions **only** in `B`                        | `java -ea:pack1.B …`                     | **On:** `pack1.B` only. **Off:** `A`, `C`, `D` (and any class not matching).     |
+| 2   | Enable in **`B`** and **`D`**                            | `java -ea:pack1.B -ea:pack1.pack2.D …`   | **On:** `pack1.B`, `pack1.pack2.D`. **Off:** `A`, `C`.                           |
+| 3   | Enable in **every** class of `pack1` (including `pack2`) | `java -ea:pack1... …`                    | **On:** `A`, `B`, `C`, `D`.                                                      |
+| 4   | Enable all of `pack1` **except** `B`                     | `java -ea:pack1... -da:pack1.B …`        | **On:** `A`, `C`, `D`. **Off:** `B` (disable rule applied after package enable). |
+| 5   | Enable all of `pack1` **except** `pack2` classes         | `java -ea:pack1... -da:pack1.pack2... …` | **On:** `A`, `B`. **Off:** `C`, `D` (entire `pack2` subtree disabled).           |
 
 **How the JVM applies this (execution model):**
 
@@ -480,12 +494,12 @@ sequenceDiagram
 java -ea:pack1... -da:pack1.pack2... MainClass
 ```
 
-| Class | Assertions after both flags |
-| ----- | --------------------------- |
-| `pack1.A` | ON |
-| `pack1.B` | ON |
-| `pack1.pack2.C` | OFF |
-| `pack1.pack2.D` | OFF |
+| Class           | Assertions after both flags |
+| --------------- | --------------------------- |
+| `pack1.A`       | ON                          |
+| `pack1.B`       | ON                          |
+| `pack1.pack2.C` | OFF                         |
+| `pack1.pack2.D` | OFF                         |
 
 ```mermaid
 flowchart TD
@@ -525,3 +539,165 @@ flowchart TB
   end
 ```
 
+1. It is always in appropriate to mix programming logic with assert statements because there is no gurantee for  the execution of assert statements always at runtime 
+
+>Appropriate way 
+public void withdraw(double amount)
+{
+    if(amount <100)
+    {
+       throw new IllegalRequestException();
+    }
+
+    else 
+      
+      process request;
+}
+
+>Inappropriate way 
+
+public void withdraw(double amount)
+{
+   assert(amount >= 100);
+   process request;
+}
+
+2. while performing debugging in our program if there is any place where the control is not allowed to reach 
+   that is the best place to use assertions 
+
+switch(x) //x should bea valid month number 
+{
+   case 1: 
+        
+        System.out.println("JAN");
+        break;
+   case 2: 
+        
+        System.out.println("FEB");
+        break;
+
+  case 12: 
+        
+        System.out.println("DEC");
+        break;
+
+  default: 
+
+        assert(false); // if the condition fails we will get runtime erro saying 
+        //AssertionError
+    
+}
+
+3. It is always inappropriate for validating public method arguments by using assertions because 
+   outside person doesn't aware whether assertions are enabled or disabled in our system.
+4. It is always appropriate for validating private method arguments by using assertions because 
+   local person can aware whether assertions are enabled or disabled in our system.
+5. It is always inappropriate for validating command line arguments by using assertions because 
+   these arguments to main method, which is public 
+
+class Test 
+{
+  int z = 5;
+
+  public void m1(int x)
+  {
+     assert(x>10);// inappropriate because public method we cannot use assert 
+  }
+
+  switch(x)
+  {
+     case 1 : 
+
+         System.out.println(1);
+         break;
+     case 2 : 
+
+         System.out.println(2);
+         break;
+
+    default : 
+        
+         assert(false);//appropriate to use for default section to validate the condition 
+  }
+
+  private void m2(int x)
+  {
+     assert(x<10);//appropriate for the private methods 
+  }
+
+  private void m3()
+  {
+     assert(m4());// inappropriate to use with mixing the program logic 
+  }
+
+  private boolean m4()
+  {
+     z = 6;
+
+     return true;
+  }
+}
+
+
+class Test
+{
+   public static void main(String[] args)
+   {
+     boolean assertOn = true;
+     assert(assertOn):assertOn = true;
+     if(assertOn)
+     {
+       System.out.println("assertOn");
+     }
+   }
+}
+
+For the above code 
+
+1. if assertions are disabled output is blank 
+2. if assertion are enabled 
+   Runtime Error : AssertionError : true 
+
+class Test
+{
+   public static void main(String[] args)
+   {
+     boolean assertOn = true;
+     assert(assertOn):assertOn = false;
+     if(assertOn) 
+     {
+       System.out.println("assertOn");
+     }
+   }
+}
+
+For the above code 
+
+1. if assertions are disabled output : assertOn
+2. if assertion are enabled 
+   Runtime Error : AssertionError : assertOn 
+
+# AssertionError 
+
+1. It is the child class ofd the error and hence it is unchecked , if assert statement fails (i.e argument is false ) then we will get AssertionError
+2. Eventhough it is leagl to catch AssertionError but it is not a good programming practice 
+
+class Test
+{
+   public static void main(String[] args)
+   {
+     int x = 10;
+
+     try{
+         assert(x<10);// throws AssertionError
+     }
+     catch{
+        System.out.println("It is the worst kind of programming practice");
+     }
+   }
+}
+
+NOTE: 
+
+In the case of web applications if we run java program in debug mode automatically assert statments will be 
+executed 
