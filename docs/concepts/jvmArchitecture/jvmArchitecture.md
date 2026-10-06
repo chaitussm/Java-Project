@@ -209,6 +209,70 @@ will store corresponding information in the method area
 After loading .class file immediately JVM creates an object for that loaded class and the heap memory of type 
 java.lang.class 
 
+![Class loading — Student.class and Customer.class (whiteboard)](images/class-loading-student-customer-whiteboard.png)
+
+**Loading phase flow (whiteboard):** `.class` files on disk → **Method Area** metadata → **`java.lang.Class` object on Heap** (not application instances).
+
+```mermaid
+flowchart LR
+  subgraph DISK ["Hard_Disk"]
+    SCF["Student.class"]
+    CCF["Customer.class"]
+  end
+
+  subgraph METHOD ["Method Area (JVM)"]
+    SMI["Student.class information"]
+    CMI["Customer.class information"]
+  end
+
+  subgraph HEAP ["Heap Area (JVM)"]
+    SCO["Class object for Student.class"]
+    CCO["Class object for Customer.class"]
+  end
+
+  SCF --> SMI
+  CCF --> CMI
+  SMI --> SCO
+  CMI --> CCO
+```
+
+| Stage | `Student.class` track | `Customer.class` track |
+| ----- | --------------------- | ---------------------- |
+| **Hard disk** | `Student.class` bytecode file | `Customer.class` bytecode file |
+| **Method Area** | Student.class **information** (name, methods, fields, constant pool, …) | Customer.class **information** |
+| **Heap Area** | One **`java.lang.Class`** instance representing Student | One **`java.lang.Class`** instance representing Customer |
+
+**Slide notes (green clouds on board):**
+
+- It is **not** a `Student` **object** — it is a **`Class` object** for `Student.class`.
+- It is **not** a `customer` **object** — it is a **`Class` object** for `Customer.class`.
+
+```mermaid
+flowchart TB
+  LOAD["Loading: read .class bytes"] --> MA["Store binary metadata in Method Area"]
+  MA --> HO["Create java.lang.Class on Heap"]
+  HO --> NOTE["Runtime type token — used for reflection, new, instanceof, …"]
+```
+
+```mermaid
+sequenceDiagram
+  participant HD as Hard_Disk
+  participant CL as Class Loader
+  participant MA as Method Area
+  participant HP as Heap
+  HD->>CL: Student.class / Customer.class
+  CL->>MA: parse & store class information
+  CL->>HP: new Class object per loaded type
+  Note over HP: Class instance, not Student/Customer instance
+```
+
+```mermaid
+pie showData
+    title Where loading places data (per class file)
+    "Method Area — class metadata" : 50
+    "Heap — java.lang.Class object" : 50
+```
+
 ### Linking
 
 
