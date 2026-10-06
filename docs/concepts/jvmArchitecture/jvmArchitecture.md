@@ -389,13 +389,22 @@ pie showData
 ---
 In this all static variables are assigned with original values and static blocks will be executed from parent to child and from top to bottom.
 
+While loading , linking and initialization if any error occurs then we wil get RuntimeException saying 
+"java.lang.linkageError"
+
 ## Types of Class Loaders
 
-<!-- description -->
+Class Loader SubSystems contains the following three types of classloaders 
+
+1. BootStrap class Loader/Premordial class Loader
+2. Extension class loader 
+3. Application class loader/System class loader 
 
 ### Bootstrap Class Loader
 
-<!-- description -->
+BootStrap class Loader is responsible to load core jave API class i.e that classes presen in rt.jar
+
+
 
 ### Extension Class Loader
 
