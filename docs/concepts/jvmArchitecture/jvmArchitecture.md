@@ -64,7 +64,7 @@
   - [Types of Class Loaders](#types-of-class-loaders)
     - [Bootstrap Class Loader](#bootstrap-class-loader)
     - [Extension Class Loader](#extension-class-loader)
-    - [Application Class Loader](#application-class-loader)
+    - [Application Class Loader or System Class Loader](#application-class-loader-or-system-class-loader)
   - [How Class Loader works](#how-class-loader-works)
   - [What is the need of Customized Class Loader](#what-is-the-need-of-customized-class-loader)
   - [Psuedo code for Customized Class Loader](#psuedo-code-for-customized-class-loader)
@@ -485,11 +485,11 @@ flowchart TB
   EXT --> ECP["Extension classpath / extension-class-loader search path"]
 ```
 
-| Item | Whiteboard meaning |
-| ---- | ------------------ |
-| **JDK → JRE → lib → ext → \*.jar** | Tree of where extension JARs live |
-| **`JDK\JRE\lib\ext`** | Bubble on board → **extension class loader** search path |
-| **Delegation** | **Extension C.L** delegates **up** to **Bootstrap C.L** before loading from `ext` |
+| Item                               | Whiteboard meaning                                                                |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| **JDK → JRE → lib → ext → \*.jar** | Tree of where extension JARs live                                                 |
+| **`JDK\JRE\lib\ext`**              | Bubble on board → **extension class loader** search path                          |
+| **Delegation**                     | **Extension C.L** delegates **up** to **Bootstrap C.L** before loading from `ext` |
 
 ```mermaid
 flowchart BT
@@ -507,11 +507,11 @@ flowchart LR
   EXTD --> LOAD["Define class if found in extension JARs"]
 ```
 
-| Property | Detail |
-| -------- | ------ |
-| **Parent** | **Bootstrap** (via delegation) |
-| **Typical path** | `$JAVA_HOME/jre/lib/ext` (classic layout on slide) |
-| **Also** | Directories listed in **`java.ext.dirs`** system property |
+| Property         | Detail                                                    |
+| ---------------- | --------------------------------------------------------- |
+| **Parent**       | **Bootstrap** (via delegation)                            |
+| **Typical path** | `$JAVA_HOME/jre/lib/ext` (classic layout on slide)        |
+| **Also**         | Directories listed in **`java.ext.dirs`** system property |
 
 ```mermaid
 pie showData
@@ -520,12 +520,23 @@ pie showData
     "Delegate to Bootstrap" : 35
     "Load from *.jar in ext" : 20
 ```
+Extention Class Loader is responsible to load classes from exctension classpath(jdk\jre\lib\ext) 
 
-### Application Class Loader
+Extention Class Loader is implemented in java and the corresponding .class file is 
 
-<!-- description -->
+>sun.misc.Launcher$extClassLoader.class
 
----
+### Application Class Loader or System Class Loader
+
+1. Application class Loader is the child class of Extension class Loader 
+2. This class Loader is responsible to load classes from application classpath 
+3. It internally uses environment variable classpath 
+
+Application Class Loader is implemented in java and the corresponding .class file is 
+
+>sun.misc.Launcher$AppClassLoader.class 
+
+
 
 ## How Class Loader works
 
