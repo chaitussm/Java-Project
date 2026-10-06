@@ -404,7 +404,64 @@ Class Loader SubSystems contains the following three types of classloaders
 
 BootStrap class Loader is responsible to load core jave API class i.e that classes presen in rt.jar
 
+![Bootstrap Class Loader — JDK/JRE/lib, rt.jar, bootstrap classpath (whiteboard)](images/bootstrap-class-loader-whiteboard.png)
 
+**Bootstrap classpath (slide):** core platform libraries under **`JDK\JRE\lib`** (classic layout: **`rt.jar`** holds fundamental `java.*` types).
+
+```mermaid
+flowchart TB
+  JDK["JDK"]
+  JRE["JRE"]
+  LIB["lib"]
+  RT["rt.jar"]
+  JDK --> JRE --> LIB --> RT
+  LIB --> BCP["Bootstrap classpath"]
+  RT -.->|"core API classes"| BCP
+```
+
+| Item | Whiteboard meaning |
+| ---- | ------------------ |
+| **JDK → JRE → lib → rt.jar** | Directory tree where bootstrap/platform classes are loaded from |
+| **`JDK\JRE\lib`** | Labeled **Bootstrap classpath** on the board |
+| **`rt.jar`** | Run-time archive of core Java classes (teaching diagram; module-based JDKs expose the same role via **jimage** / modules) |
+| **Implementation** | **Not Java** — bootstrap loader is **native (C/C++)**, drawn with **Java ✗** and **C/C++** underlined on the slide |
+
+```mermaid
+flowchart LR
+  subgraph PATH ["Bootstrap classpath"]
+    direction TB
+    P1["JDK"]
+    P2["JRE"]
+    P3["lib"]
+    P1 --> P2 --> P3
+  end
+  P3 --> RTJAR["rt.jar"]
+  RTJAR --> BCL["Bootstrap Class Loader"]
+  BCL --> MA["Loads core API into Method Area"]
+```
+
+```mermaid
+flowchart TB
+  subgraph IMPL ["Bootstrap Class Loader implementation (slide)"]
+    J["Java — crossed out on board"]
+    N["C/C++ — native implementation"]
+  end
+  N --> BCL2["Bootstrap Class Loader"]
+```
+
+| Property | Detail |
+| -------- | ------ |
+| **Parent** | None — top of delegation chain |
+| **`getParent()`** | Returns **`null`** (bootstrap convention) |
+| **Loads** | Core `java.*` / platform classes (slide: **`rt.jar`**) |
+
+```mermaid
+pie showData
+    title Bootstrap loader focus (whiteboard)
+    "Bootstrap classpath JDK/JRE/lib" : 40
+    "rt.jar core libraries" : 35
+    "Native C/C++ implementation" : 25
+```
 
 ### Extension Class Loader
 
