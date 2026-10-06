@@ -118,6 +118,73 @@ JVM is the part of JRE and it is resposible to load and run java .class (class f
 
 ## Basic Architecture of JVM
 
+![Basic Architecture of JVM — classroom whiteboard](images/jvm-basic-architecture-whiteboard.png)
+
+The board shows **three layers**: class loading (top), **runtime data areas** (middle), and **execution + native** (bottom). Arrows are **bidirectional** where drawn with double heads on the slide.
+
+```mermaid
+flowchart TB
+  CF[".class file"] --> CLS["Class Loader Subsystem"]
+
+  CLS <-->|"load / link / initialize"| RUNTIME
+
+  subgraph RUNTIME ["various memory Areas of JVM"]
+    direction LR
+    MA["Method Area"]
+    HEAP["Heap Area"]
+    STACK["Stack Area"]
+    PC["PC Registers"]
+    NMS["Native method Stacks"]
+  end
+
+  RUNTIME <-->|"bytecode execution uses runtime data"| EE["Execution Engine"]
+
+  EE <-->|"JNI bridge"| JNI["Java Native Interface (JNI)"]
+  JNI <-->|"native code"| NML["Native method Libraries"]
+```
+
+**Data flow (same as whiteboard, top → bottom):**
+
+| Step | From | To | Meaning |
+| ---- | ---- | -- | ------- |
+| 1 | `.class file` | Class Loader Subsystem | Bytecode enters the JVM; loaders read `.class` (or JAR) bytes. |
+| 2 | Class Loader Subsystem | various memory Areas | Loaded types and static state land in **Method Area**; objects in **Heap**; frames in **Stack**; per-thread **PC** and **Native method Stacks**. |
+| 3 | various memory Areas | Execution Engine | Interpreter / JIT reads bytecode and uses stack, heap, and method metadata. |
+| 4 | Execution Engine | JNI | Calls into platform-specific native code when needed. |
+| 5 | JNI | Native method Libraries | OS / C libraries backing `native` methods. |
+
+```mermaid
+flowchart LR
+  subgraph layer1 ["Layer 1 — Loading"]
+    A[".class file"] --> B["Class Loader Subsystem"]
+  end
+  subgraph layer2 ["Layer 2 — Runtime data areas"]
+    direction LR
+    M1["Method Area"]
+    M2["Heap Area"]
+    M3["Stack Area"]
+    M4["PC Registers"]
+    M5["Native method Stacks"]
+  end
+  subgraph layer3 ["Layer 3 — Execution & native"]
+    E["Execution Engine"]
+    J["Java Native Interface (JNI)"]
+    N["Native method Libraries"]
+    E --- J --- N
+  end
+  layer1 --> layer2
+  layer2 --> layer3
+```
+
+```mermaid
+pie showData
+    title Runtime data areas inside JVM (whiteboard)
+    "Method Area" : 20
+    "Heap Area" : 20
+    "Stack Area" : 20
+    "PC Registers" : 20
+    "Native method Stacks" : 20
+```
 
 ## Class Loader SubSystem
 
