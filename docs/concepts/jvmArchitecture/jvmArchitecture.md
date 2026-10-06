@@ -536,7 +536,58 @@ Application Class Loader is implemented in java and the corresponding .class fil
 
 >sun.misc.Launcher$AppClassLoader.class 
 
+![Application / System Class Loader — hierarchy and AppClassLoader (whiteboard)](images/application-class-loader-whiteboard.png)
 
+**Delegation hierarchy (slide):** upward arrows — **Application Class Loader** → **Extension Class Loader** → **Bootstrap Class Loader**.
+
+```mermaid
+flowchart BT
+  BOOT["Bootstrap Class Loader"]
+  EXT["Extension Class Loader"]
+  APP["Application Class Loader / System Class Loader"]
+  APP -->|"delegates upward"| EXT
+  EXT -->|"delegates upward"| BOOT
+```
+
+| Loader | Role on the board |
+| ------ | ----------------- |
+| **Application / System** | Loads classes from **application classpath** (`CLASSPATH`, `-cp`, CWD) |
+| **Extension** | Parent in hierarchy — searches `ext` after delegating up |
+| **Bootstrap** | Top of chain — platform/core classes |
+
+```mermaid
+flowchart LR
+  REQ["Class load request"] --> APPCL["Application Class Loader"]
+  APPCL -->|"1. delegate"| EXTCL["Extension Class Loader"]
+  EXTCL -->|"2. delegate"| BOOTCL["Bootstrap Class Loader"]
+  BOOTCL -->|"not found"| EXTCL
+  EXTCL -->|"not found"| APPCL
+  APPCL -->|"3. search"| CP["Application classpath"]
+  CP --> DEF["Define application class"]
+```
+
+**Implementation (whiteboard checkmark):**
+
+```text
+sun.misc.Launcher$AppClassLoader.class
+```
+
+```mermaid
+flowchart TB
+  subgraph IMPL ["Application Class Loader — Java implementation"]
+    FILE["sun.misc.Launcher$AppClassLoader.class"]
+    ROLE["Loads user / app classes from classpath"]
+    FILE --> ROLE
+  end
+```
+
+```mermaid
+pie showData
+    title Application Class Loader (whiteboard focus)
+    "Child of Extension Class Loader" : 35
+    "Application classpath (CLASSPATH)" : 40
+    "AppClassLoader .class in Java" : 25
+```
 
 ## How Class Loader works
 
