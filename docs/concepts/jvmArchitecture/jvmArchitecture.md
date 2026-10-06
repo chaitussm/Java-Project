@@ -469,9 +469,57 @@ pie showData
 ### Extension Class Loader
 
 1. Extension Class Loader is the child class of BootStrap class Loader 
- 
-        
 
+![Extension Class Loader — JDK/JRE/lib/ext and delegation (whiteboard)](images/extension-class-loader-whiteboard.png)
+
+**Extension classpath (slide):** **`JDK\JRE\lib\ext`** — loads classes from **`*.jar`** files in the **ext** directory (and paths from **`java.ext.dirs`** when configured).
+
+```mermaid
+flowchart TB
+  JDK["JDK"]
+  JRE["JRE"]
+  LIB["lib"]
+  EXT["ext"]
+  JARS["*.jar"]
+  JDK --> JRE --> LIB --> EXT --> JARS
+  EXT --> ECP["Extension classpath / extension-class-loader search path"]
+```
+
+| Item | Whiteboard meaning |
+| ---- | ------------------ |
+| **JDK → JRE → lib → ext → \*.jar** | Tree of where extension JARs live |
+| **`JDK\JRE\lib\ext`** | Bubble on board → **extension class loader** search path |
+| **Delegation** | **Extension C.L** delegates **up** to **Bootstrap C.L** before loading from `ext` |
+
+```mermaid
+flowchart BT
+  BOOT["Bootstrap Class Loader (BootStrap C.L)"]
+  EXTCL["Extension Class Loader (Extension C.L)"]
+  EXTCL -->|"delegates upward first"| BOOT
+```
+
+```mermaid
+flowchart LR
+  REQ["Class load request"] --> EXTCL2["Extension Class Loader"]
+  EXTCL2 -->|"1. delegate"| BOOT2["Bootstrap Class Loader"]
+  BOOT2 -->|"not found"| EXTCL2
+  EXTCL2 -->|"2. search"| EXTD["JDK/JRE/lib/ext/*.jar"]
+  EXTD --> LOAD["Define class if found in extension JARs"]
+```
+
+| Property | Detail |
+| -------- | ------ |
+| **Parent** | **Bootstrap** (via delegation) |
+| **Typical path** | `$JAVA_HOME/jre/lib/ext` (classic layout on slide) |
+| **Also** | Directories listed in **`java.ext.dirs`** system property |
+
+```mermaid
+pie showData
+    title Extension Class Loader (whiteboard)
+    "Search path JDK/JRE/lib/ext" : 45
+    "Delegate to Bootstrap" : 35
+    "Load from *.jar in ext" : 20
+```
 
 ### Application Class Loader
 
