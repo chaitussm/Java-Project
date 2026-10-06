@@ -281,6 +281,56 @@ pie showData
 
 <!-- description -->
 
+![Class Loader Sub System — Loading, Linking, Initialization (whiteboard)](images/class-loader-subsystem-process-whiteboard.png)
+
+**fig: Class Loading process** — all three activities run inside the **Class Loader Sub System**, in order: **Loading** → **Linking** → **Initialization**.
+
+```mermaid
+flowchart LR
+  subgraph CLS ["Class Loader Sub System"]
+    direction LR
+    LOAD["Loading"]
+    subgraph LINK ["Linking"]
+      direction TB
+      VER["Verify"]
+      PRE["Prepare"]
+      RES["Resolve"]
+      VER --> PRE --> RES
+    end
+    INIT["Initialization"]
+    LOAD --> LINK
+    LINK --> INIT
+  end
+```
+
+| Phase | Role (high level) |
+| ----- | ----------------- |
+| **Loading** | Read `.class` bytes; place metadata in **Method Area**; create **`java.lang.Class`** on **Heap** |
+| **Linking** | **Verify** bytecode → **Prepare** static fields (default values) → **Resolve** symbolic references |
+| **Initialization** | Run `<clinit>`; assign static fields; class is ready for use |
+
+```mermaid
+sequenceDiagram
+  participant L as Loading
+  participant V as Verify
+  participant P as Prepare
+  participant R as Resolve
+  participant I as Initialization
+  L->>V: class bytes loaded
+  V->>P: verification OK
+  P->>R: static layout prepared
+  R->>I: references resolved
+  Note over I: static initializers run
+```
+
+```mermaid
+pie showData
+    title Class Loader Sub System — three main phases
+    "Loading" : 33
+    "Linking (Verify + Prepare + Resolve)" : 34
+    "Initialization" : 33
+```
+
 ---
 
 ## Types of Class Loaders
