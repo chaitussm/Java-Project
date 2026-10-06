@@ -11,38 +11,38 @@
 
 ## Guide map
 
-| Jump to | Topic (Notepad++) |
-| ------- | ----------------- |
-| [Virtual Machine](#virtual-machine) | Virtual Machine |
-| [Type of Virtual Machines](#type-of-virtual-machines) | Type of Virtual Machines |
-| [Hard ware Based VM](#hard-ware-based-vm) | ↳ 1. Hard ware Based VM |
-| [Application Based VM](#application-based-vm) | ↳ 2. Application Based VM |
-| [Basic Architecture of JVM](#basic-architecture-of-jvm) | Basic Architecture of JVM |
-| [Class Loader SubSystem](#class-loader-subsystem) | Class Loader SubSystem |
-| [Loading](#loading) | ↳ 1. Loading |
-| [Linking](#linking) | ↳ 2. Linking |
-| [Initialization](#initialization) | ↳ 3. Initialization |
-| [Types of Class Loaders](#types-of-class-loaders) | Types of Class Loaders |
-| [Bootstrap Class Loader](#bootstrap-class-loader) | ↳ 1. Bootstrap Class Loader |
-| [Extension Class Loader](#extension-class-loader) | ↳ 2. Extension Class Loader |
-| [Application Class Loader](#application-class-loader) | ↳ 3. Application Class Loader |
-| [How Class Loader works](#how-class-loader-works) | How Class Loader works |
+| Jump to                                                                                     | Topic (Notepad++)                           |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| [Virtual Machine](#virtual-machine)                                                         | Virtual Machine                             |
+| [Type of Virtual Machines](#type-of-virtual-machines)                                       | Type of Virtual Machines                    |
+| [Hard ware Based VM](#hard-ware-based-vm)                                                   | ↳ 1. Hard ware Based VM                     |
+| [Application Based VM](#application-based-vm)                                               | ↳ 2. Application Based VM                   |
+| [Basic Architecture of JVM](#basic-architecture-of-jvm)                                     | Basic Architecture of JVM                   |
+| [Class Loader SubSystem](#class-loader-subsystem)                                           | Class Loader SubSystem                      |
+| [Loading](#loading)                                                                         | ↳ 1. Loading                                |
+| [Linking](#linking)                                                                         | ↳ 2. Linking                                |
+| [Initialization](#initialization)                                                           | ↳ 3. Initialization                         |
+| [Types of Class Loaders](#types-of-class-loaders)                                           | Types of Class Loaders                      |
+| [Bootstrap Class Loader](#bootstrap-class-loader)                                           | ↳ 1. Bootstrap Class Loader                 |
+| [Extension Class Loader](#extension-class-loader)                                           | ↳ 2. Extension Class Loader                 |
+| [Application Class Loader](#application-class-loader)                                       | ↳ 3. Application Class Loader               |
+| [How Class Loader works](#how-class-loader-works)                                           | How Class Loader works                      |
 | [What is the need of Customized Class Loader](#what-is-the-need-of-customized-class-loader) | What is the need of Customized Class Loader |
-| [Psuedo code for Customized Class Loader](#psuedo-code-for-customized-class-loader) | Psuedo code for Customized Class Loader |
-| [Various Memory Areas of JVM](#various-memory-areas-of-jvm) | Various Memory Areas of JVM |
-| [Method Area](#method-area) | ↳ 1. Method Area |
-| [Heap Area](#heap-area) | ↳ 2. Heap Area |
-| [Stack Area](#stack-area) | ↳ 3. Stack Area |
-| [PC Registers](#pc-registers) | ↳ 4. PC Registers |
-| [Native Method Stacks](#native-method-stacks) | ↳ 5. Native Method Stacks |
-| [Program to display heap memory statistics](#program-to-display-heap-memory-statistics) | Program to display heap memory statistics |
-| [How to set Maximum and Minimum heap size?](#how-to-set-maximum-and-minimum-heap-size) | How to set Maximum and Minimum heap size? |
-| [Execution Engine](#execution-engine) | Execution Engine |
-| [Interpreter](#interpreter) | ↳ 1. Interpreter |
-| [JIT Compilers](#jit-compilers) | ↳ 2. JIT Compilers |
-| [Java Native Interface (JNI)](#java-native-interface-jni) | Java Native Interface(JNI) |
-| [Complete Architecture Diagram of JVM](#complete-architecture-diagram-of-jvm) | Complete Architecture Diagram of JVM |
-| [Class File Structure](#class-file-structure) | Class File Structure |
+| [Psuedo code for Customized Class Loader](#psuedo-code-for-customized-class-loader)         | Psuedo code for Customized Class Loader     |
+| [Various Memory Areas of JVM](#various-memory-areas-of-jvm)                                 | Various Memory Areas of JVM                 |
+| [Method Area](#method-area)                                                                 | ↳ 1. Method Area                            |
+| [Heap Area](#heap-area)                                                                     | ↳ 2. Heap Area                              |
+| [Stack Area](#stack-area)                                                                   | ↳ 3. Stack Area                             |
+| [PC Registers](#pc-registers)                                                               | ↳ 4. PC Registers                           |
+| [Native Method Stacks](#native-method-stacks)                                               | ↳ 5. Native Method Stacks                   |
+| [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)     | Program to display heap memory statistics   |
+| [How to set Maximum and Minimum heap size?](#how-to-set-maximum-and-minimum-heap-size)      | How to set Maximum and Minimum heap size?   |
+| [Execution Engine](#execution-engine)                                                       | Execution Engine                            |
+| [Interpreter](#interpreter)                                                                 | ↳ 1. Interpreter                            |
+| [JIT Compilers](#jit-compilers)                                                             | ↳ 2. JIT Compilers                          |
+| [Java Native Interface (JNI)](#java-native-interface-jni)                                   | Java Native Interface(JNI)                  |
+| [Complete Architecture Diagram of JVM](#complete-architecture-diagram-of-jvm)               | Complete Architecture Diagram of JVM        |
+| [Class File Structure](#class-file-structure)                                               | Class File Structure                        |
 
 ---
 
@@ -51,6 +51,7 @@
 <!-- TOC -->
 - [JVM Architecture](#jvm-architecture)
   - [Guide map](#guide-map)
+  - [Table of contents](#table-of-contents)
   - [Virtual Machine](#virtual-machine)
   - [Type of Virtual Machines](#type-of-virtual-machines)
     - [Hard ware Based VM](#hard-ware-based-vm)
@@ -87,29 +88,36 @@
 
 ## Virtual Machine
 
-<!-- description -->
-
----
-
 ## Type of Virtual Machines
 
-<!-- description -->
+It is a software simulation of a machine which perform operation like a physical machine. There are 2 types of virual machines 
+1. Hardware based or system based virtual machine 
+2. Application based or process based virtual machine 
 
 ### Hard ware Based VM
 
-<!-- description -->
+1. Hardware based or system based virtual machine
+
+It provides several logical systems on the same computer with strong isolation from each other i.e on one physical machine we are defining multiple logical machines 
+
+The main advantage of hardware based virtual machines is hardware resources sharing and improves utlization of 
+hardware resources
+
+Ex: KVM[kernal based virtual machine for linux systems], VMware,Xen, cloud computing etc.
 
 ### Application Based VM
 
-<!-- description -->
-
----
+2. Applicatin based or process based virtual machine 
+   
+These virtual machines acts as runtime engines to run a particular programming languages applications 
+Ex: JVM[Java Virtual Machine ] ---> Acts as runtime engine to run Java based applications 
+    PVM[Parrot Virtual Machine] ---> Acts as runtime engine to run peral based applications 
+    CLR[Coomon Language Runtime] ---> Acts as runtime engine to run .NET based applications 
+    
+JVM is the part of JRE and it is resposible to load and run java .class (class files)
 
 ## Basic Architecture of JVM
 
-<!-- description -->
-
----
 
 ## Class Loader SubSystem
 
