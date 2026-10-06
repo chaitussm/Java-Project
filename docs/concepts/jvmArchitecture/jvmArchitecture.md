@@ -145,13 +145,13 @@ flowchart TB
 
 **Data flow (same as whiteboard, top → bottom):**
 
-| Step | From | To | Meaning |
-| ---- | ---- | -- | ------- |
-| 1 | `.class file` | Class Loader Subsystem | Bytecode enters the JVM; loaders read `.class` (or JAR) bytes. |
-| 2 | Class Loader Subsystem | various memory Areas | Loaded types and static state land in **Method Area**; objects in **Heap**; frames in **Stack**; per-thread **PC** and **Native method Stacks**. |
-| 3 | various memory Areas | Execution Engine | Interpreter / JIT reads bytecode and uses stack, heap, and method metadata. |
-| 4 | Execution Engine | JNI | Calls into platform-specific native code when needed. |
-| 5 | JNI | Native method Libraries | OS / C libraries backing `native` methods. |
+| Step | From                   | To                      | Meaning                                                                                                                                          |
+| ---- | ---------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1    | `.class file`          | Class Loader Subsystem  | Bytecode enters the JVM; loaders read `.class` (or JAR) bytes.                                                                                   |
+| 2    | Class Loader Subsystem | various memory Areas    | Loaded types and static state land in **Method Area**; objects in **Heap**; frames in **Stack**; per-thread **PC** and **Native method Stacks**. |
+| 3    | various memory Areas   | Execution Engine        | Interpreter / JIT reads bytecode and uses stack, heap, and method metadata.                                                                      |
+| 4    | Execution Engine       | JNI                     | Calls into platform-specific native code when needed.                                                                                            |
+| 5    | JNI                    | Native method Libraries | OS / C libraries backing `native` methods.                                                                                                       |
 
 ```mermaid
 flowchart LR
@@ -188,15 +188,30 @@ pie showData
 
 ## Class Loader SubSystem
 
-<!-- description -->
+clas Loader Subsystem is responsible for the following 3 activities 
+
+1. Loading 
+2. Linking 
+3. Initialization
 
 ### Loading
 
-<!-- description -->
+Loading means reading .class files and store corresponsing binary data in method area, for each class file JVM 
+will store corresponding information in the method area 
+1. Fully qualified name of class 
+2. Fully qualified name of immediate parent class 
+3. Methods information 
+4. Variables information 
+5. Constructtors information 
+6. Modifiers information 
+7. Constant pool information etc.
+
+After loading .class file immediately JVM creates an object for that loaded class and the heap memory of type 
+java.lang.class 
 
 ### Linking
 
-<!-- description -->
+
 
 ### Initialization
 
