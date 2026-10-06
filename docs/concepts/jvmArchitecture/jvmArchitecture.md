@@ -419,12 +419,12 @@ flowchart TB
   RT -.->|"core API classes"| BCP
 ```
 
-| Item | Whiteboard meaning |
-| ---- | ------------------ |
-| **JDK → JRE → lib → rt.jar** | Directory tree where bootstrap/platform classes are loaded from |
-| **`JDK\JRE\lib`** | Labeled **Bootstrap classpath** on the board |
-| **`rt.jar`** | Run-time archive of core Java classes (teaching diagram; module-based JDKs expose the same role via **jimage** / modules) |
-| **Implementation** | **Not Java** — bootstrap loader is **native (C/C++)**, drawn with **Java ✗** and **C/C++** underlined on the slide |
+| Item                         | Whiteboard meaning                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **JDK → JRE → lib → rt.jar** | Directory tree where bootstrap/platform classes are loaded from                                                           |
+| **`JDK\JRE\lib`**            | Labeled **Bootstrap classpath** on the board                                                                              |
+| **`rt.jar`**                 | Run-time archive of core Java classes (teaching diagram; module-based JDKs expose the same role via **jimage** / modules) |
+| **Implementation**           | **Not Java** — bootstrap loader is **native (C/C++)**, drawn with **Java ✗** and **C/C++** underlined on the slide        |
 
 ```mermaid
 flowchart LR
@@ -449,11 +449,11 @@ flowchart TB
   N --> BCL2["Bootstrap Class Loader"]
 ```
 
-| Property | Detail |
-| -------- | ------ |
-| **Parent** | None — top of delegation chain |
-| **`getParent()`** | Returns **`null`** (bootstrap convention) |
-| **Loads** | Core `java.*` / platform classes (slide: **`rt.jar`**) |
+| Property          | Detail                                                 |
+| ----------------- | ------------------------------------------------------ |
+| **Parent**        | None — top of delegation chain                         |
+| **`getParent()`** | Returns **`null`** (bootstrap convention)              |
+| **Loads**         | Core `java.*` / platform classes (slide: **`rt.jar`**) |
 
 ```mermaid
 pie showData
@@ -462,10 +462,16 @@ pie showData
     "rt.jar core libraries" : 35
     "Native C/C++ implementation" : 25
 ```
-
+1. JDK/JRE/lib this location is called bootStrap classpath i.e BootStrap classloader is responsible to load classes from BootStrap classpath 
+2. BootStrap class loader is by defautl available with every JVM , it is implemented in native languages like 
+   C/C++ and not implemented in java.
+    
 ### Extension Class Loader
 
-<!-- description -->
+1. Extension Class Loader is the child class of BootStrap class Loader 
+ 
+        
+
 
 ### Application Class Loader
 
