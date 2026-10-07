@@ -591,7 +591,80 @@ pie showData
 
 ## How Class Loader works
 
+![How Class Loader works — delegation model (whiteboard)](images/class-loader-delegation-whiteboard.png)
 
+**Flow (slide):** **JVM** sends a **request** → **Class Loader Subsystem** → **Application Class Loader** first, then **delegate upward**; each level **searches** its classpath if parents do not define the class.
+
+```mermaid
+flowchart LR
+  JVM["JVM"] -->|"request"| CLS["Class Loader Subsystem"]
+  CLS -->|"request"| APP["Application Class Loader"]
+```
+
+```mermaid
+flowchart BT
+  BOOT["Bootstrap Class Loader"]
+  EXT["Extension Class Loader"]
+  APP["Application Class Loader"]
+  APP -->|"delegates"| EXT
+  EXT -->|"delegates"| BOOT
+```
+
+| Level | Searches in (whiteboard) |
+| ----- | ------------------------ |
+| **Bootstrap** | **Bootstrap class path** — `JDK \| JRE \| lib` |
+| **Extension** | **Extension class path** — `JDK \| JRE \| lib \| ext` |
+| **Application** | **Application class path** — environment variable **`classpath`** / `-cp` |
+
+```mermaid
+flowchart TB
+  APP2["Application Class Loader"] -->|"delegates"| EXT2["Extension Class Loader"]
+  EXT2 -->|"delegates"| BOOT2["Bootstrap Class Loader"]
+  BOOT2 -->|"searches"| BCP["Bootstrap class path JDK/JRE/lib"]
+  BOOT2 -->|"not found — delegates down"| EXT2
+  EXT2 -->|"searches"| ECP["Extension class path JDK/JRE/lib/ext"]
+  EXT2 -->|"not found — delegates down"| APP2
+  APP2 -->|"searches"| ACP["Application class path CLASSPATH"]
+  APP2 -->|"still not found"| ERR["ClassNotFoundException or NoClassDefFoundError"]
+```
+
+**Point-by-point (delegation model):**
+
+1. **JVM** asks the **Class Loader Subsystem** to load a type (by binary name).
+2. **Application Class Loader** receives the request and **delegates upward** to **Extension**, then **Bootstrap**.
+3. **Bootstrap** searches **JDK/JRE/lib** (bootstrap classpath). If it cannot define the class, control returns down the chain.
+4. **Extension** searches **JDK/JRE/lib/ext**. If not found, delegates back to **Application**.
+5. **Application** searches **application classpath** (`CLASSPATH`, `-cp`, etc.).
+6. If **no loader** defines the class → **`ClassNotFoundException`** (load time) or later **`NoClassDefFoundError`** (use without successful load).
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant App as Application C.L
+  participant Ext as Extension C.L
+  participant Boot as Bootstrap C.L
+  JVM->>App: loadClass request
+  App->>Ext: delegate parent first
+  Ext->>Boot: delegate parent first
+  Boot->>Boot: search bootstrap path
+  Boot-->>Ext: not found
+  Ext->>Ext: search ext path
+  Ext-->>App: not found
+  App->>App: search application classpath
+  alt class found
+    App-->>JVM: Class defined
+  else not found
+    App-->>JVM: ClassNotFoundException
+  end
+```
+
+```mermaid
+pie showData
+    title Class loader search responsibility (conceptual)
+    "Bootstrap path JDK/JRE/lib" : 33
+    "Extension path lib/ext" : 33
+    "Application CLASSPATH" : 34
+```
 
 ## What is the need of Customized Class Loader
 
