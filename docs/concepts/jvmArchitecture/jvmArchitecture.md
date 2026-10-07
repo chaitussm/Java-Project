@@ -675,6 +675,50 @@ pie showData
    extension class loader delegates the request to application class loader 
 5. Application class loader will search in application classpath if it is available then it will be loaded otherwise we will get runtime exception saying NoClassDefFoundError or ClassNotFoundException
 
+When the same `.class` is available on **both** the extension classpath and the application classpath, the **extension** loader defines it first (after bootstrap does not find it). Core types such as `String` report a **`null`** loader (bootstrap). The classroom program below prints which loader defined each type.
+
+**Assumptions for the demo**
+
+- `Customer.class` is present on **extension** and **application** class paths.
+- `Test.class` is present on the **application** classpath only.
+
+Example program: [Test](../../../demo/src/main/java/com/jvmArchitecture/HowClassLoaderWorks/Test.java)
+
+```java
+class Test
+{
+    public static void main(String[] args)
+    {
+        System.out.println(String.class.getClassLoader());
+        System.out.println(Test.class.getClassLoader());
+        System.out.println(Customer.class.getClassLoader());
+    }
+}
+```
+
+Run from the `demo` module (uses JDK 8 `java.ext.dirs` so extension classpath behavior matches classic slides):
+
+```bash
+./scripts/run-classloader-test.sh
+```
+
+### Execution summary
+
+| Line | Class        | Typical loader printed                          |
+| ---- | ------------ | ----------------------------------------------- |
+| 1    | `String`     | `null` (bootstrap)                              |
+| 2    | `Test`       | `sun.misc.Launcher$AppClassLoader@…`            |
+| 3    | `Customer`   | `sun.misc.Launcher$ExtClassLoader@…`            |
+
+Sample console output (hash suffix varies per run):
+
+```text
+null
+sun.misc.Launcher$AppClassLoader@15db9742
+sun.misc.Launcher$ExtClassLoader@55f96302
+```
+
+On **JDK 9+**, `-Djava.ext.dirs` is not supported; the lab script compiles bytecode for Java 8 and runs with a **JDK 8** runtime so the three loaders match the whiteboard.
 
 ## What is the need of Customized Class Loader
 

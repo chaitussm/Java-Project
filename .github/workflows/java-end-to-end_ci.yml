@@ -24,11 +24,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 21 and 8
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: |
+            21
+            8
           cache: maven
 
       - name: Build and test with Maven
@@ -38,6 +40,8 @@ jobs:
       - name: Execute Java programs and create HTML report
         if: always()
         working-directory: demo
+        env:
+          JAVA_8_HOME: ${{ env.JAVA_HOME_8_X64 }}
         run: |
           report_directory="target/ci-reports"
           report_file="$report_directory/execution-report.html"
@@ -122,6 +126,41 @@ jobs:
 
           run_program "regularExpressions" "com.regularExpressions.checkNumber" "mobile $MOBILE_NUMBER"
           run_program "regularExpressions" "com.regularExpressions.checkNumber" "email $EMAIL_ID"
+
+          run_classloader_lab() {
+            programs_run_with_arguments+=("com.jvmArchitecture.HowClassLoaderWorks.Test")
+            set +e
+            timeout --kill-after=2s 15s ./scripts/run-classloader-test.sh > "$output_file" 2>&1
+            exit_code=$?
+            set -e
+            output=$(head -c 20000 "$output_file")
+
+            if [ "$exit_code" -eq 0 ] \
+              && printf '%s\n' "$output" | grep -Fxq 'null' \
+              && printf '%s' "$output" | grep -q 'AppClassLoader' \
+              && printf '%s' "$output" | grep -q 'ExtClassLoader'; then
+              status="PASSED"
+              css_class="pass"
+              passed_count=$((passed_count + 1))
+            elif [ "$exit_code" -eq 124 ] || [ "$exit_code" -eq 137 ]; then
+              status="TIMED OUT"
+              css_class="fail"
+              timed_out_count=$((timed_out_count + 1))
+            else
+              status="FAILED"
+              css_class="fail"
+              failed_count=$((failed_count + 1))
+            fi
+
+            printf '<tr><td>%s</td><td>%s</td><td>%s</td><td><pre>%s</pre></td><td>%s</td><td class="%s">%s</td></tr>\n' \
+              "jvmArchitecture" "com.jvmArchitecture.HowClassLoaderWorks.Test" "classpath lab (JDK 8 + java.ext.dirs)" \
+              "$(html_escape "$output")" "$exit_code" "$css_class" "$status" >> "$report_file"
+            echo "[$status] jvmArchitecture > com.jvmArchitecture.HowClassLoaderWorks.Test (exit code: $exit_code)"
+            printf '%s\n' "$output"
+            program_count=$((program_count + 1))
+          }
+
+          run_classloader_lab
 
           # Only execute source files that declare a Java application entry point.
           # Base, helper, model, and collection-support classes without main() are
