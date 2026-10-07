@@ -549,11 +549,11 @@ flowchart BT
   EXT -->|"delegates upward"| BOOT
 ```
 
-| Loader | Role on the board |
-| ------ | ----------------- |
+| Loader                   | Role on the board                                                      |
+| ------------------------ | ---------------------------------------------------------------------- |
 | **Application / System** | Loads classes from **application classpath** (`CLASSPATH`, `-cp`, CWD) |
-| **Extension** | Parent in hierarchy — searches `ext` after delegating up |
-| **Bootstrap** | Top of chain — platform/core classes |
+| **Extension**            | Parent in hierarchy — searches `ext` after delegating up               |
+| **Bootstrap**            | Top of chain — platform/core classes                                   |
 
 ```mermaid
 flowchart LR
@@ -591,9 +591,7 @@ pie showData
 
 ## How Class Loader works
 
-<!-- description -->
 
----
 
 ## What is the need of Customized Class Loader
 
