@@ -28,9 +28,10 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
+          # Last version becomes JAVA_HOME; keep 21 last so Maven and program runs use JDK 21.
           java-version: |
-            21
             8
+            21
           cache: maven
 
       - name: Build and test with Maven
@@ -42,7 +43,14 @@ jobs:
         working-directory: demo
         env:
           JAVA_8_HOME: ${{ env.JAVA_HOME_8_X64 }}
+          JAVA_21_HOME: ${{ env.JAVA_HOME_21_X64 }}
         run: |
+          if [ -n "${JAVA_21_HOME:-}" ]; then
+            export JAVA_HOME="$JAVA_21_HOME"
+            export PATH="$JAVA_HOME/bin:$PATH"
+          fi
+          java -version
+
           report_directory="target/ci-reports"
           report_file="$report_directory/execution-report.html"
           output_file="$report_directory/program-output.txt"
@@ -97,7 +105,7 @@ jobs:
             fi
 
             set +e
-            timeout --kill-after=2s 5s java -cp target/classes "$program" $arguments > "$output_file" 2>&1
+            timeout --kill-after=2s 5s "$JAVA_HOME/bin/java" -cp target/classes "$program" $arguments > "$output_file" 2>&1
             exit_code=$?
             set -e
             output=$(head -c 20000 "$output_file")
