@@ -610,10 +610,10 @@ flowchart BT
   EXT -->|"delegates"| BOOT
 ```
 
-| Level | Searches in (whiteboard) |
-| ----- | ------------------------ |
-| **Bootstrap** | **Bootstrap class path** — `JDK \| JRE \| lib` |
-| **Extension** | **Extension class path** — `JDK \| JRE \| lib \| ext` |
+| Level           | Searches in (whiteboard)                                                  |
+| --------------- | ------------------------------------------------------------------------- |
+| **Bootstrap**   | **Bootstrap class path** — `JDK \| JRE \| lib`                            |
+| **Extension**   | **Extension class path** — `JDK \| JRE \| lib \| ext`                     |
 | **Application** | **Application class path** — environment variable **`classpath`** / `-cp` |
 
 ```mermaid
@@ -665,6 +665,16 @@ pie showData
     "Extension path lib/ext" : 33
     "Application CLASSPATH" : 34
 ```
+
+1. Class Loader follows delegation hierarchy principle 
+2. Whenever JVM come across a particular class first it will check if corresponding .class is already loaded or  not if it is already loaded in method area then JVM will consider that loaded class, if it is not laded then JVM requests class Loader subsystem to load that particular class
+   Then class loader subsystem handovers the request to application class loader 
+   Application class loader delegates the request to extension class loader which inturn delegates the rtequest to bootstrap class loader
+3. Then bootstrap class loader will search in bootstrap classpath if it is available then the corresposding .class will be loaded by bootstrap class loader if it is not available then bootstrap class loader delegates the request to extension class loader 
+4. Extension class loader will search in extension classpath if it is available then it will be loaded otherwise 
+   extension class loader delegates the request to application class loader 
+5. Application class loader will search in application classpath if it is available then it will be loaded otherwise we will get runtime exception saying NoClassDefFoundError or ClassNotFoundException
+
 
 ## What is the need of Customized Class Loader
 
