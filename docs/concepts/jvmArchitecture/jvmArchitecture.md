@@ -591,9 +591,91 @@ pie showData
 
 ## How Class Loader works
 
-Class loaders follow **parent delegation**: before loading a class, a loader asks its parent. The **application** loader delegates to **extension**, which delegates to **bootstrap**. That is why core types such as `String` report a **`null`** loader (bootstrap, native), while application types usually report **`AppClassLoader`**.
+![How Class Loader works — delegation model (whiteboard)](images/class-loader-delegation-whiteboard.png)
 
-When the same `.class` is available on **both** the extension classpath and the application classpath, the **extension** loader defines it first (after bootstrap does not find it). The classroom program below prints which loader defined each type.
+**Flow (slide):** **JVM** sends a **request** → **Class Loader Subsystem** → **Application Class Loader** first, then **delegate upward**; each level **searches** its classpath if parents do not define the class.
+
+```mermaid
+flowchart LR
+  JVM["JVM"] -->|"request"| CLS["Class Loader Subsystem"]
+  CLS -->|"request"| APP["Application Class Loader"]
+```
+
+```mermaid
+flowchart BT
+  BOOT["Bootstrap Class Loader"]
+  EXT["Extension Class Loader"]
+  APP["Application Class Loader"]
+  APP -->|"delegates"| EXT
+  EXT -->|"delegates"| BOOT
+```
+
+| Level           | Searches in (whiteboard)                                                  |
+| --------------- | ------------------------------------------------------------------------- |
+| **Bootstrap**   | **Bootstrap class path** — `JDK \| JRE \| lib`                            |
+| **Extension**   | **Extension class path** — `JDK \| JRE \| lib \| ext`                     |
+| **Application** | **Application class path** — environment variable **`classpath`** / `-cp` |
+
+```mermaid
+flowchart TB
+  APP2["Application Class Loader"] -->|"delegates"| EXT2["Extension Class Loader"]
+  EXT2 -->|"delegates"| BOOT2["Bootstrap Class Loader"]
+  BOOT2 -->|"searches"| BCP["Bootstrap class path JDK/JRE/lib"]
+  BOOT2 -->|"not found — delegates down"| EXT2
+  EXT2 -->|"searches"| ECP["Extension class path JDK/JRE/lib/ext"]
+  EXT2 -->|"not found — delegates down"| APP2
+  APP2 -->|"searches"| ACP["Application class path CLASSPATH"]
+  APP2 -->|"still not found"| ERR["ClassNotFoundException or NoClassDefFoundError"]
+```
+
+**Point-by-point (delegation model):**
+
+1. **JVM** asks the **Class Loader Subsystem** to load a type (by binary name).
+2. **Application Class Loader** receives the request and **delegates upward** to **Extension**, then **Bootstrap**.
+3. **Bootstrap** searches **JDK/JRE/lib** (bootstrap classpath). If it cannot define the class, control returns down the chain.
+4. **Extension** searches **JDK/JRE/lib/ext**. If not found, delegates back to **Application**.
+5. **Application** searches **application classpath** (`CLASSPATH`, `-cp`, etc.).
+6. If **no loader** defines the class → **`ClassNotFoundException`** (load time) or later **`NoClassDefFoundError`** (use without successful load).
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant App as Application C.L
+  participant Ext as Extension C.L
+  participant Boot as Bootstrap C.L
+  JVM->>App: loadClass request
+  App->>Ext: delegate parent first
+  Ext->>Boot: delegate parent first
+  Boot->>Boot: search bootstrap path
+  Boot-->>Ext: not found
+  Ext->>Ext: search ext path
+  Ext-->>App: not found
+  App->>App: search application classpath
+  alt class found
+    App-->>JVM: Class defined
+  else not found
+    App-->>JVM: ClassNotFoundException
+  end
+```
+
+```mermaid
+pie showData
+    title Class loader search responsibility (conceptual)
+    "Bootstrap path JDK/JRE/lib" : 33
+    "Extension path lib/ext" : 33
+    "Application CLASSPATH" : 34
+```
+
+1. Class Loader follows delegation hierarchy principle 
+2. Whenever JVM come across a particular class first it will check if corresponding .class is already loaded or  not if it is already loaded in method area then JVM will consider that loaded class, if it is not laded then JVM requests class Loader subsystem to load that particular class
+   Then class loader subsystem handovers the request to application class loader 
+   Application class loader delegates the request to extension class loader which inturn delegates the rtequest to bootstrap class loader
+3. Then bootstrap class loader will search in bootstrap classpath if it is available then the corresposding .class will be loaded by bootstrap class loader if it is not available then bootstrap class loader delegates the request to extension class loader 
+4. Extension class loader will search in extension classpath if it is available then it will be loaded otherwise 
+   extension class loader delegates the request to application class loader 
+5. Application class loader will search in application classpath if it is available then it will be loaded otherwise we will get runtime exception saying NoClassDefFoundError or ClassNotFoundException
+
+When the same `.class` is available on **both** the extension classpath and the application classpath, the **extension** loader defines it first (after bootstrap does not find it). Core types such as `String` report a **`null`** loader (bootstrap). The classroom program below prints which loader defined each type.
 
 **Assumptions for the demo**
 
