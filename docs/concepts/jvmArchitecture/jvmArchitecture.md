@@ -68,7 +68,7 @@
   - [How Class Loader works](#how-class-loader-works)
     - [Execution summary](#execution-summary)
   - [What is the need of Customized Class Loader](#what-is-the-need-of-customized-class-loader)
-  - [Psuedo code for Customized Class Loader](#psuedo-code-for-customized-class-loader)
+  - [Psuedo code for Customized Class Loader or How to define customized Class Loader](#psuedo-code-for-customized-class-loader-or-how-to-define-customized-class-loader)
   - [Various Memory Areas of JVM](#various-memory-areas-of-jvm)
     - [Method Area](#method-area)
     - [Heap Area](#heap-area)
@@ -754,10 +754,10 @@ flowchart LR
   end
 ```
 
-| Model | First `new Student()` | Later `new Student()` (s2 … s100) | `Student.class` modified on disk |
-| ----- | --------------------- | --------------------------------- | -------------------------------- |
-| **Default class loading** | **load** `Student.class` once | **use** already loaded class | Still **use** old class in Method Area |
-| **Customized class loading** | **load** `Student.class` | **check** modified → **load** updated or **use** cached | Can **reload** updated `.class` |
+| Model                        | First `new Student()`         | Later `new Student()` (s2 … s100)                       | `Student.class` modified on disk       |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------- | -------------------------------------- |
+| **Default class loading**    | **load** `Student.class` once | **use** already loaded class                            | Still **use** old class in Method Area |
+| **Customized class loading** | **load** `Student.class`      | **check** modified → **load** updated or **use** cached | Can **reload** updated `.class`        |
 
 ```mermaid
 flowchart TB
@@ -832,11 +832,12 @@ pie showData
     "Reload updated bytecode" : 30
 ```
 
-## Psuedo code for Customized Class Loader
+## Psuedo code for Customized Class Loader or How to define customized Class Loader
 
-<!-- description -->
+We can define our own customized class loader by extending java.lang.Classloader class 
 
----
+
+
 
 ## Various Memory Areas of JVM
 
