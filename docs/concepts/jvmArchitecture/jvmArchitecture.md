@@ -834,10 +834,109 @@ pie showData
 
 ## Psuedo code for Customized Class Loader or How to define customized Class Loader
 
-We can define our own customized class loader by extending java.lang.Classloader class 
+We can define our own customized class loader by extending **`java.lang.ClassLoader`**. Override **`loadClass(String cname)`** (slide spelling) so the loader **checks for updates**, **loads the updated `.class` file** when needed, and **returns** the corresponding **`Class`** object.
 
+![Pseudo code — CustClassLoader and Client (whiteboard)](images/customized-class-loader-pseudocode-whiteboard.png)
 
+**Flow (slide):** Define **`CustClassLoader extends ClassLoader`** → override **`loadClass`** with custom reload logic → in **`Client`**, use default loading once (`new Dog()`), then call **`cl.loadClass("Dog")`** on your custom loader whenever you want an update check.
 
+**Pseudo code (whiteboard)**
+
+```java
+public class CustClassLoader extends ClassLoader {
+
+    public Class loadClass(String cname) throws ClassNotFoundException {
+        // check for updates & load updated .class file
+        // and return corresponding Class object
+    }
+}
+```
+
+```java
+class Client {
+
+    public static void main(String[] args) {
+        Dog d1 = new Dog();
+
+        CustClassLoader cl = new CustClassLoader();
+        cl.loadClass("Dog");
+        // ...
+        cl.loadClass("Dog");
+    }
+}
+```
+
+| Piece | Role on the board |
+| ----- | ------------------- |
+| **`CustClassLoader extends ClassLoader`** | Custom loader type; parent API is **`java.lang.ClassLoader`** |
+| **`loadClass(String cname)`** | Entry point — inspect / reload bytecode for binary name `cname` |
+| **`new Dog()`** | Normal **default** class loading (application loader) |
+| **`cl.loadClass("Dog")`** | Explicit load through **custom** logic (can repeat for updates) |
+
+```mermaid
+flowchart TB
+  subgraph DEFINE ["Define customized class loader"]
+    BASE["java.lang.ClassLoader"]
+    CUST["CustClassLoader extends ClassLoader"]
+    LC["loadClass(String cname)"]
+    LOGIC["Check for updates → load updated .class → return Class"]
+    BASE --> CUST --> LC --> LOGIC
+  end
+```
+
+```mermaid
+flowchart LR
+  subgraph CLIENT ["Client program (whiteboard)"]
+    D["Dog d1 = new Dog()"]
+    CL["CustClassLoader cl = new CustClassLoader()"]
+    L1["cl.loadClass(\"Dog\")"]
+    L2["cl.loadClass(\"Dog\") …"]
+    D --> CL --> L1 --> L2
+  end
+```
+
+```mermaid
+flowchart TB
+  START["Client calls cl.loadClass(\"Dog\")"]
+  CHK["CustClassLoader: check whether Dog.class updated"]
+  RELOAD["Read updated .class bytes from disk"]
+  DEFINE["defineClass / link → Class object"]
+  CACHE["Return already loaded Class"]
+  RET["Return Class to Client"]
+  START --> CHK
+  CHK -->|"modified"| RELOAD --> DEFINE --> RET
+  CHK -->|"not modified"| CACHE --> RET
+```
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant App as Default class loader
+  participant Cust as CustClassLoader
+  participant Disk as Dog.class on disk
+  C->>App: new Dog() — first reference
+  App->>Disk: load if not present
+  App-->>C: Dog instance d1
+  C->>Cust: loadClass("Dog")
+  Cust->>Disk: check / read .class
+  Cust-->>C: Class for Dog
+  C->>Cust: loadClass("Dog") again
+  Cust->>Disk: check for updates
+  alt updated on disk
+    Cust->>Cust: load new bytecode
+  else unchanged
+    Cust->>Cust: use cached definition
+  end
+  Cust-->>C: Class for Dog
+```
+
+```mermaid
+pie showData
+    title Customized loader pseudo code (slide focus)
+    "Extend java.lang.ClassLoader" : 30
+    "Override loadClass" : 35
+    "Client calls loadClass repeatedly" : 35
+```
 
 ## Various Memory Areas of JVM
 
