@@ -866,12 +866,12 @@ class Client {
 }
 ```
 
-| Piece | Role on the board |
-| ----- | ------------------- |
-| **`CustClassLoader extends ClassLoader`** | Custom loader type; parent API is **`java.lang.ClassLoader`** |
-| **`loadClass(String cname)`** | Entry point — inspect / reload bytecode for binary name `cname` |
-| **`new Dog()`** | Normal **default** class loading (application loader) |
-| **`cl.loadClass("Dog")`** | Explicit load through **custom** logic (can repeat for updates) |
+| Piece                                     | Role on the board                                               |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| **`CustClassLoader extends ClassLoader`** | Custom loader type; parent API is **`java.lang.ClassLoader`**   |
+| **`loadClass(String cname)`**             | Entry point — inspect / reload bytecode for binary name `cname` |
+| **`new Dog()`**                           | Normal **default** class loading (application loader)           |
+| **`cl.loadClass("Dog")`**                 | Explicit load through **custom** logic (can repeat for updates) |
 
 ```mermaid
 flowchart TB
@@ -959,14 +959,31 @@ pie showData
     "Override loadClass" : 35
     "Client calls loadClass repeatedly" : 35
 ```
+While designing WebServers and application servers usualll we can go for customized class loaders to customize 
+class loading mechanism 
+
+What is the need of classloader class ?
+
+we can use **`java.lang.ClassLoader`** class to define our own customized class loaders, every class ooader in java should be child class of **`java.lang.ClassLoader`** class either directly or indirectly, hence this class acts as base class for all cutomized class loaders 
 
 ## Various Memory Areas of JVM
 
-<!-- description -->
+Whenever JVM loads and runs a java program it needs memory to store several things like bytecode, objects and variables etc 
+             Total JVM memory organized into following 5 categories 
+
+1. Method area 
+2. Heap area 
+3. Stack memory
+4. PC registers 
+5. Native method Stacks 
 
 ### Method Area
 
-<!-- description -->
+1. For every JVM one Method area will be available 
+2. Method area will be created at the time of jvm startup 
+3. Inside Method area class level binary data including static variables will be stored 
+4. Constant pools of a class will be stored inside Method area 
+
 
 ### Heap Area
 
