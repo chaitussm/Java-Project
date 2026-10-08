@@ -66,6 +66,7 @@
     - [Extension Class Loader](#extension-class-loader)
     - [Application Class Loader or System Class Loader](#application-class-loader-or-system-class-loader)
   - [How Class Loader works](#how-class-loader-works)
+    - [Execution summary](#execution-summary)
   - [What is the need of Customized Class Loader](#what-is-the-need-of-customized-class-loader)
   - [Psuedo code for Customized Class Loader](#psuedo-code-for-customized-class-loader)
   - [Various Memory Areas of JVM](#various-memory-areas-of-jvm)
@@ -704,11 +705,11 @@ Run from the `demo` module (uses JDK 8 `java.ext.dirs` so extension classpath be
 
 ### Execution summary
 
-| Line | Class        | Typical loader printed                          |
-| ---- | ------------ | ----------------------------------------------- |
-| 1    | `String`     | `null` (bootstrap)                              |
-| 2    | `Test`       | `sun.misc.Launcher$AppClassLoader@…`            |
-| 3    | `Customer`   | `sun.misc.Launcher$ExtClassLoader@…`            |
+| Line | Class      | Typical loader printed               |
+| ---- | ---------- | ------------------------------------ |
+| 1    | `String`   | `null` (bootstrap)                   |
+| 2    | `Test`     | `sun.misc.Launcher$AppClassLoader@…` |
+| 3    | `Customer` | `sun.misc.Launcher$ExtClassLoader@…` |
 
 Sample console output (hash suffix varies per run):
 
@@ -720,11 +721,21 @@ sun.misc.Launcher$ExtClassLoader@55f96302
 
 On **JDK 9+**, `-Djava.ext.dirs` is not supported; the lab script compiles bytecode for Java 8 and runs with a **JDK 8** runtime so the three loaders match the whiteboard.
 
+NOTE : 
+
+1. Boot strap class loader is not java object , hence we got null in the first case but extension and application class loaders are java objects.Hence we are getting corresponding output for the remaining 2 sop's 
+[classname@hashcode_in_hexadecimalform]
+
+2. Class loader subsystem will give the highest priority for Boot strap classpath and then extension classpath followed by application classpath 
+
+
 ## What is the need of Customized Class Loader
 
-<!-- description -->
-
----
+1. Default class loaders will load .class file only once eventhough we are using multiple times that class in our program 
+2. After loading .class file if it is modified outside then default class loader won't load updated version of class file(because .class file already availabel in method area)
+3. We can resolve this problem by defining our own customized class loader 
+4. The main advantage of customized class loader is we can control class loading mechanism based on our requirement 
+5. For example we can load .class file separately every time so that updated version available to our program 
 
 ## Psuedo code for Customized Class Loader
 
