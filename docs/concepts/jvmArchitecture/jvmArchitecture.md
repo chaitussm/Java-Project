@@ -885,13 +885,35 @@ flowchart TB
 ```
 
 ```mermaid
-flowchart LR
-  subgraph CLIENT ["Client program (whiteboard)"]
+flowchart TB
+  subgraph CLIENT ["Client.main (whiteboard)"]
     D["Dog d1 = new Dog()"]
     CL["CustClassLoader cl = new CustClassLoader()"]
     L1["cl.loadClass(\"Dog\")"]
     L2["cl.loadClass(\"Dog\") …"]
     D --> CL --> L1 --> L2
+  end
+  DEF["Loaded by Default class Loader"]
+  CUST["Loaded by Customized class Loader"]
+  D -.-> DEF
+  L1 -.-> CUST
+  L2 -.-> CUST
+```
+
+```mermaid
+flowchart LR
+  subgraph DEFAULT_PATH ["Default loading"]
+    ND["new Dog()"]
+    APP["Application / System ClassLoader"]
+    MA["Method Area — Dog Class cached"]
+    ND --> APP --> MA
+  end
+  subgraph CUSTOM_PATH ["Customized loading"]
+    LC["cl.loadClass(\"Dog\")"]
+    CCL["CustClassLoader.loadClass"]
+    UPD["Check updates → load .class if needed"]
+    RET["Return Class object"]
+    LC --> CCL --> UPD --> RET
   end
 ```
 
