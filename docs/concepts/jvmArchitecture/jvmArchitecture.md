@@ -1001,11 +1001,11 @@ flowchart TB
   end
 ```
 
-| Whiteboard element | Meaning |
-| ------------------ | ------- |
-| **Outer boundary — Method Area** | Single per-JVM region for type metadata |
+| Whiteboard element                       | Meaning                                                 |
+| ---------------------------------------- | ------------------------------------------------------- |
+| **Outer boundary — Method Area**         | Single per-JVM region for type metadata                 |
 | **Each inner bubble — class level data** | Per-class binary metadata (methods, constants, statics) |
-| **Multiple bubbles** | Several classes loaded concurrently |
+| **Multiple bubbles**                     | Several classes loaded concurrently                     |
 
 ```mermaid
 flowchart LR
@@ -1045,10 +1045,18 @@ pie showData
     "Static variables" : 30
     "Constant pools" : 30
 ```
+Method Area can bve accessed by multiple threads simultaneously
 
 ### Heap Area
 
-<!-- description -->
+1. For every JVM one heap area is available 
+2. Heap area will be created at the time of JVM startup 
+3. Objects and corresponding instance variables will be stored in the heap area.
+4. Every array in java is object only, hence arrays also stored in the heap area.
+5. Heap Area can be accessed by multiple threads and hence the data stored in th heap memory is not thread safe.
+6. Heap Area need be continuous.
+
+
 
 ### Stack Area
 
