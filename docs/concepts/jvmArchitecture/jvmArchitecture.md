@@ -1056,7 +1056,69 @@ Method Area can bve accessed by multiple threads simultaneously
 5. Heap Area can be accessed by multiple threads and hence the data stored in th heap memory is not thread safe.
 6. Heap Area need be continuous.
 
+![Heap Area — object data per instance (whiteboard)](images/heap-area-whiteboard.png)
 
+**Flow (slide):** One shared **Heap Area** holds **many** runtime objects; each instance contributes its own **object data** entry (the board shows six as an example). Class metadata lives in the **Method Area**; **objects and instance fields** live on the **Heap** (points 3–4).
+
+```mermaid
+flowchart TB
+  subgraph HEAP ["Heap Area"]
+    direction TB
+    O1["object data"]
+    O2["object data"]
+    O3["object data"]
+    O4["object data"]
+    O5["object data"]
+    O6["object data"]
+  end
+```
+
+| Whiteboard element | Meaning |
+| ------------------ | ------- |
+| **Outer boundary — Heap Area** | Single per-JVM region for object instances (point 1) |
+| **Each inner shape — object data** | One object’s instance data on the heap (point 3) |
+| **Multiple shapes** | Many objects (and arrays — point 4) allocated over time |
+
+```mermaid
+flowchart LR
+  NEW["new Student() / new int[]"] --> ALLOC["Allocate on Heap"]
+  ALLOC --> HEAP2["Heap Area"]
+  HEAP2 --> OD1["Object 1 — object data"]
+  HEAP2 --> OD2["Object 2 — object data"]
+  HEAP2 --> OD3["Array — object data"]
+  HEAP2 --> MORE["…"]
+```
+
+```mermaid
+flowchart TB
+  subgraph ONE ["One object — object data (point 3)"]
+    INST["Instance variables"]
+    REF["References to other objects"]
+    ARR["Array elements (arrays are objects — point 4)"]
+    INST --- REF
+    REF --- ARR
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant Heap as Heap Area
+  participant T1 as Thread 1
+  participant T2 as Thread 2
+  JVM->>Heap: create at JVM startup (point 2)
+  T1->>Heap: new object — object data
+  T2->>Heap: new object — object data
+  Note over Heap: Shared heap — points 5–6 (multi-thread access; layout concerns)
+```
+
+```mermaid
+pie showData
+    title Heap Area (whiteboard focus)
+    "Object instance data" : 45
+    "Arrays as objects" : 25
+    "Shared across threads" : 30
+```
 
 ### Stack Area
 
