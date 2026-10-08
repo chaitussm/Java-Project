@@ -737,6 +737,101 @@ NOTE :
 4. The main advantage of customized class loader is we can control class loading mechanism based on our requirement 
 5. For example we can load .class file separately every time so that updated version available to our program 
 
+![Default vs customized class loading — Student.class (whiteboard)](images/customized-class-loader-whiteboard.png)
+
+**Flow (slide):** In the **program**, many references such as `Student s1 = new Student()` … `Student s100 = new Student()` need the same type. **Default** loaders **load once** and **reuse** the `Class` in the **Method Area** even if `Student.class` is **modified on disk** later. A **customized** loader can **check for modification** before each use and **reload** the updated `.class` when needed.
+
+```mermaid
+flowchart LR
+  subgraph PROG ["Program (whiteboard)"]
+    direction TB
+    S1["Student s1 = new Student()"]
+    S2["Student s2 = new Student()"]
+    S3["Student s3 = new Student()"]
+    DOTS["…"]
+    S100["Student s100 = new Student()"]
+    S1 --> S2 --> S3 --> DOTS --> S100
+  end
+```
+
+| Model | First `new Student()` | Later `new Student()` (s2 … s100) | `Student.class` modified on disk |
+| ----- | --------------------- | --------------------------------- | -------------------------------- |
+| **Default class loading** | **load** `Student.class` once | **use** already loaded class | Still **use** old class in Method Area |
+| **Customized class loading** | **load** `Student.class` | **check** modified → **load** updated or **use** cached | Can **reload** updated `.class` |
+
+```mermaid
+flowchart TB
+  subgraph DEFAULT ["Default class loading"]
+    DLOAD["Load Student.class file"]
+    DS1["s1 = new Student()"]
+    DREST["s2 … s100 = new Student()"]
+    DMOD["Student.class modified"]
+    DLOAD -->|"load"| DS1
+    DLOAD -->|"use (same Class in Method Area)"| DREST
+    DMOD -.->|"no reload"| DREST
+  end
+```
+
+```mermaid
+flowchart TB
+  subgraph CUSTOM ["Customized class loading"]
+    CLOAD["Load Student.class file"]
+    CS1["s1 = new Student()"]
+    CCHK["Check whether Student.class is modified"]
+    CYES["Load updated .class file"]
+    CNO["Use already loaded .class file"]
+    CREST["s2 … s100 = new Student()"]
+    CLOAD -->|"load"| CS1
+    CS1 --> CREST
+    CREST --> CCHK
+    CCHK -->|"modified"| CYES --> CREST
+    CCHK -->|"not modified"| CNO --> CREST
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant P as Program
+  participant D as Default class loader
+  participant M as Method Area
+  participant F as Student.class on disk
+  P->>D: new Student() — first time
+  D->>F: read .class
+  D->>M: define Student (once)
+  P->>D: new Student() — again
+  D->>M: use existing Class
+  Note over F,M: File updated on disk
+  P->>D: new Student() — again
+  D->>M: still use old Class
+```
+
+```mermaid
+sequenceDiagram
+  participant P as Program
+  participant C as Customized class loader
+  participant M as Method Area
+  participant F as Student.class on disk
+  P->>C: new Student() — first time
+  C->>F: read .class
+  C->>M: define Student
+  P->>C: new Student() — again
+  C->>F: check last modified / checksum
+  alt not modified
+    C->>M: use already loaded Class
+  else modified
+    C->>F: read updated .class
+    C->>M: load new version
+  end
+```
+
+```mermaid
+pie showData
+    title Why customize class loading? (slide focus)
+    "Load once — default reuse" : 35
+    "Detect .class file changes" : 35
+    "Reload updated bytecode" : 30
+```
+
 ## Psuedo code for Customized Class Loader
 
 <!-- description -->
