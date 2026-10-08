@@ -984,6 +984,67 @@ Whenever JVM loads and runs a java program it needs memory to store several thin
 3. Inside Method area class level binary data including static variables will be stored 
 4. Constant pools of a class will be stored inside Method area 
 
+![Method Area — class-level data per loaded class (whiteboard)](images/method-area-whiteboard.png)
+
+**Flow (slide):** One shared **Method Area** contains **many** entries; each loaded class occupies its own **class level data** region (the board shows six as an example).
+
+```mermaid
+flowchart TB
+  subgraph MA ["Method Area"]
+    direction TB
+    C1["class level data"]
+    C2["class level data"]
+    C3["class level data"]
+    C4["class level data"]
+    C5["class level data"]
+    C6["class level data"]
+  end
+```
+
+| Whiteboard element | Meaning |
+| ------------------ | ------- |
+| **Outer boundary — Method Area** | Single per-JVM region for type metadata |
+| **Each inner bubble — class level data** | Per-class binary metadata (methods, constants, statics) |
+| **Multiple bubbles** | Several classes loaded concurrently |
+
+```mermaid
+flowchart LR
+  CL["Class Loader Subsystem"] -->|"loads .class"| DEFINE["Define class"]
+  DEFINE -->|"stores class level data"| MA2["Method Area"]
+  MA2 --> D1["Loaded class 1"]
+  MA2 --> D2["Loaded class 2"]
+  MA2 --> D3["Loaded class 3"]
+  MA2 --> MORE["…"]
+```
+
+```mermaid
+flowchart TB
+  subgraph ENTRY ["One class — class level data (points 3 & 4)"]
+    BIN["Class-level binary data"]
+    STATIC["Static variables"]
+    POOL["Constant pool"]
+    BIN --- STATIC
+    STATIC --- POOL
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant MA as Method Area
+  participant CL as Class loader
+  JVM->>MA: create at JVM startup (point 2)
+  CL->>MA: store class level data on load (points 3–4)
+  Note over MA: One Method Area — many classes
+```
+
+```mermaid
+pie showData
+    title Method Area (whiteboard focus)
+    "Class-level binary data" : 40
+    "Static variables" : 30
+    "Constant pools" : 30
+```
 
 ### Heap Area
 
