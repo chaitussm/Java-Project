@@ -1305,13 +1305,13 @@ public void m1(int i, double d, Object o, float f) {
 }
 ```
 
-| Index | Slot(s) | Type | Name |
-| ----- | ------- | ---- | ---- |
-| **0** | 1 | `int` | `i` |
-| **1–2** | 2 | `double` | `d` |
-| **3** | 1 | `Object` (reference) | `o` |
-| **4** | 1 | `float` | `f` |
-| **5–6** | 2 | `long` | `x` |
+| Index   | Slot(s) | Type                 | Name |
+| ------- | ------- | -------------------- | ---- |
+| **0**   | 1       | `int`                | `i`  |
+| **1–2** | 2       | `double`             | `d`  |
+| **3**   | 1       | `Object` (reference) | `o`  |
+| **4**   | 1       | `float`              | `f`  |
+| **5–6** | 2       | `long`               | `x`  |
 
 ```mermaid
 flowchart TB
@@ -1365,6 +1365,13 @@ pie showData
     "Single-slot types (int, float, Object)" : 3
     "Two-slot types (double, long)" : 2
 ```
+===============
+Operand Stack : 
+
+1. JVM uses operand stack uses as wrokspace 
+2. Some instructions can push values to the operand stack and some instructions can pop values from operand stack and some instructions can perform required operations 
+3. 
+
 
 ### PC Registers
 
