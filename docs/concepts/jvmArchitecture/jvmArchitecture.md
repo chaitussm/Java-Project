@@ -1249,11 +1249,11 @@ flowchart TB
   end
 ```
 
-| Section (top → bottom) | Role |
-| ---------------------- | ---- |
-| **Local variable Array** | Holds parameters and locals for the current method |
-| **Operand Stack** | Evaluates expressions — operands and partial results |
-| **Frame Data** | Links to constant pool, return address, dynamic dispatch, exceptions |
+| Section (top → bottom)   | Role                                                                 |
+| ------------------------ | -------------------------------------------------------------------- |
+| **Local variable Array** | Holds parameters and locals for the current method                   |
+| **Operand Stack**        | Evaluates expressions — operands and partial results                 |
+| **Frame Data**           | Links to constant pool, return address, dynamic dispatch, exceptions |
 
 ```mermaid
 flowchart LR
@@ -1282,6 +1282,13 @@ pie showData
     "Operand Stack" : 35
     "Frame Data" : 30
 ```
+
+-Local variable Array : 
+1. It contains all parameters and local variables of the method 
+2. Each slot in the array is of 4 bytes 
+3. Values of type int , float and reference(Object) occupy one entry in the array 
+4. Values of double and long occupy 2 consecutive entries in the array
+5. byte, short and char values will be converted to int type before storing and occupy one slot But the way of storing boolean values is varied form jvm to jvm.But most of the jvm's follow one slot for boolean values 
 
 ### PC Registers
 
