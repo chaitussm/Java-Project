@@ -1468,11 +1468,78 @@ Frame Data :
 1. For every thread JVM will create a separate native method stack 
 2. All native method calls invoked by the thread will be stored in the corresponding ntive method stack 
 
-NOTE: 
+**NOTE:**
 
 1. Method area, heap area and stack area are considered as important memory areas with respect to programmer 
 2. Method area and heap area are per jvm whereas stack area , pc registers and native method stack are per thread
-  
+
+![JVM vs thread memory areas — heap, method, stack, PC, native stack (whiteboard)](images/jvm-thread-memory-areas-whiteboard.png)
+
+**Flow (slide):** **For every JVM** → **one Heap Area** and **one Method Area**. **For every thread** → **one Stack Area**, **one PC Register**, and **one Native method Stack** (NOTE point 2).
+
+```mermaid
+flowchart TB
+  JVM["For Every JVM"]
+  JVM --> HEAP["one Heap Area"]
+  JVM --> MA["one Method Area"]
+```
+
+```mermaid
+flowchart TB
+  TH["For Every Thread"]
+  TH --> STK["one Stack Area"]
+  TH --> PC["one PC Register"]
+  TH --> NMS["one Native method Stack"]
+```
+
+```mermaid
+flowchart LR
+  subgraph PER_JVM ["Per JVM (shared)"]
+    HEAP2["Heap Area"]
+    MA2["Method Area"]
+  end
+  subgraph PER_THREAD ["Per thread (private)"]
+    STK2["Stack Area"]
+    PC2["PC Register"]
+    NMS2["Native Method Stack"]
+  end
+  T1["Thread t1"] --> PER_THREAD
+  T2["Thread t2"] --> PER_THREAD2["Stack + PC + Native stack"]
+```
+
+```mermaid
+flowchart TB
+  subgraph JVM_ALL ["One JVM instance"]
+    HEAP3["Heap Area"]
+    MA3["Method Area"]
+    subgraph T1B ["Thread 1"]
+      S1["Stack Area"]
+      P1["PC Register"]
+      N1["Native Method Stack"]
+    end
+    subgraph T2B ["Thread 2"]
+      S2["Stack Area"]
+      P2["PC Register"]
+      N2["Native Method Stack"]
+    end
+  end
+  HEAP3 --- T1B
+  HEAP3 --- T2B
+  MA3 --- T1B
+  MA3 --- T2B
+```
+
+| Scope | Memory areas (whiteboard) |
+| ----- | ------------------------- |
+| **Per JVM** | **Heap Area**, **Method Area** |
+| **Per thread** | **Stack Area**, **PC Register**, **Native Method Stack** |
+
+```mermaid
+pie showData
+    title Memory areas by scope (NOTE)
+    "Per JVM — Heap + Method" : 40
+    "Per thread — Stack + PC + Native stack" : 60
+```
 
 ## Program to display heap memory statistics
 
