@@ -1228,8 +1228,60 @@ pie showData
 ```
 #### Stack frame Structure 
 
-Each stack frame contains 3 parts 
+Each stack frame contains 3 parts:
 
+1. **Local variable array** — storage for method parameters and local variables  
+2. **Operand stack** — workspace for bytecode execution (push/pop operands)  
+3. **Frame data** — metadata for the frame (constant pool reference, return address, exception handling, etc.)
+
+![Stack Frame — local variable array, operand stack, frame data (whiteboard)](images/stack-frame-structure-whiteboard.png)
+
+**Flow (slide):** One **Stack Frame** is a vertical block with three sections — **Local variable Array** (top), **Operand Stack** (middle), and **Frame Data** (bottom).
+
+```mermaid
+flowchart TB
+  subgraph SF ["Stack Frame"]
+    direction TB
+    LV["Local variable Array"]
+    OS["Operand Stack"]
+    FD["Frame Data"]
+    LV --> OS --> FD
+  end
+```
+
+| Section (top → bottom) | Role |
+| ---------------------- | ---- |
+| **Local variable Array** | Holds parameters and locals for the current method |
+| **Operand Stack** | Evaluates expressions — operands and partial results |
+| **Frame Data** | Links to constant pool, return address, dynamic dispatch, exceptions |
+
+```mermaid
+flowchart LR
+  BYTE["Bytecode instruction"] --> OS2["Operand Stack"]
+  OS2 --> LV2["Local variable Array"]
+  OS2 --> FD2["Frame Data"]
+  FD2 --> CP["Constant pool / return info"]
+```
+
+```mermaid
+sequenceDiagram
+  participant M as Method invocation
+  participant SF as Stack Frame
+  M->>SF: create frame — push on Runtime Stack
+  SF->>SF: allocate Local variable Array
+  SF->>SF: initialize Operand Stack
+  SF->>SF: set Frame Data
+  Note over SF: Bytecode runs using operand stack + locals
+  M->>SF: return — pop frame
+```
+
+```mermaid
+pie showData
+    title Stack Frame structure (whiteboard)
+    "Local variable Array" : 35
+    "Operand Stack" : 35
+    "Frame Data" : 30
+```
 
 ### PC Registers
 
