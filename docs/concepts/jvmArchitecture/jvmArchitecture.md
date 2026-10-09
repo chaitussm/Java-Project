@@ -1150,7 +1150,81 @@ pie showData
 4. After completing all method calls the stakc will become empty and that empty stack will be destroyed by the jvm just before terminating the thread.
 5. Each entry in the stack is called stack frame or activation record 
 6. The data stored in the stack is available for the corresponding thread and not available to the remaining threads, hence this data is thread safe
-7.  
+
+![Stack memory — per-thread runtime stacks and stack frames (whiteboard)](images/stack-area-whiteboard.png)
+
+**Flow (slide):** **Stack memory** holds one **Runtime Stack** per thread (**t1**, **t2**, … **tn**). Each method call pushes a **Stack Frame** (activation record); when the method returns, that frame is popped (points 2–3). When the thread ends, its empty stack is destroyed (point 4).
+
+```mermaid
+flowchart TB
+  subgraph SM ["Stack memory"]
+    direction LR
+    subgraph RS1 ["Runtime Stack — t1"]
+      direction TB
+      F1a["Stack Frame"]
+      F1b["Stack Frame"]
+      F1c["Stack Frame"]
+    end
+    subgraph RS2 ["Runtime Stack — t2"]
+      direction TB
+      F2a["Stack Frame"]
+      F2b["Stack Frame"]
+    end
+    DOTS["…"]
+    subgraph RSn ["Runtime Stack — tn"]
+      direction TB
+      Fna["Stack Frame"]
+      Fnb["Stack Frame"]
+    end
+    RS1 --- DOTS --- RSn
+  end
+```
+
+| Whiteboard element | Maps to notes |
+| ------------------ | ------------- |
+| **Stack memory** | JVM region for thread stacks (one stack per thread — point 1) |
+| **t1, t2, … tn** | Each **thread** gets its own **Runtime Stack** |
+| **Stack Frame** | One **method call** + **local variables** (points 2, 5) |
+| **Frames removed / empty stack** | Method return (point 3); thread exit (point 4) |
+
+```mermaid
+flowchart LR
+  T1["Thread t1"] --> ST1["Runtime Stack t1"]
+  T2["Thread t2"] --> ST2["Runtime Stack t2"]
+  TN["Thread tn"] --> STN["Runtime Stack tn"]
+  ST1 --> PRIV1["Thread-safe — only t1 sees this data (point 6)"]
+  ST2 --> PRIV2["Thread-safe — only t2 sees this data"]
+```
+
+```mermaid
+flowchart TB
+  CALL["Method call by thread"] --> PUSH["Push Stack Frame"]
+  PUSH --> RUN["Execute — locals on frame (point 2)"]
+  RUN --> RET["Method completes"]
+  RET --> POP["Pop frame from stack (point 3)"]
+  POP --> MORE{More calls?}
+  MORE -->|yes| CALL
+  MORE -->|no — thread ends| EMPTY["Stack empty → destroyed (point 4)"]
+```
+
+```mermaid
+sequenceDiagram
+  participant T as Thread t1
+  participant RS as Runtime Stack
+  T->>RS: push frame — main()
+  T->>RS: push frame — m1() (locals)
+  T->>RS: pop frame — m1 returns
+  T->>RS: pop frame — main returns
+  Note over RS: Each entry is a Stack Frame (point 5)
+```
+
+```mermaid
+pie showData
+    title Stack memory (whiteboard focus)
+    "One Runtime Stack per thread" : 35
+    "Stack Frame per method call" : 40
+    "Thread-private / thread-safe data" : 25
+```
 
 ### PC Registers
 
