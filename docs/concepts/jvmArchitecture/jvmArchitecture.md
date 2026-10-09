@@ -78,9 +78,8 @@
         - [Operand Stack](#operand-stack)
     - [PC Registers(Program Counter Registers)](#pc-registersprogram-counter-registers)
     - [Native Method Stacks](#native-method-stacks)
-      - [Where variables and objects live — Test example (whiteboard)](#where-variables-and-objects-live--test-example-whiteboard)
+      - [Where variables and objects live — `Test` example (whiteboard)](#where-variables-and-objects-live--test-example-whiteboard)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
-  - [How to set Maximum and Minimum heap size?](#how-to-set-maximum-and-minimum-heap-size)
   - [Execution Engine](#execution-engine)
     - [Interpreter](#interpreter)
     - [JIT Compilers](#jit-compilers)
@@ -1528,9 +1527,9 @@ flowchart TB
   MA3 --- T2B
 ```
 
-| Scope | Memory areas (whiteboard) |
-| ----- | ------------------------- |
-| **Per JVM** | **Heap Area**, **Method Area** |
+| Scope          | Memory areas (whiteboard)                                |
+| -------------- | -------------------------------------------------------- |
+| **Per JVM**    | **Heap Area**, **Method Area**                           |
 | **Per thread** | **Stack Area**, **PC Register**, **Native Method Stack** |
 
 ```mermaid
@@ -1541,6 +1540,8 @@ pie showData
 ```
 
 #### Where variables and objects live — `Test` example (whiteboard)
+
+## Program to display heap memory statistics
 
 Static fields sit in the **Method Area**; local variables sit in a **Stack** frame; **objects** created with `new` live on the **Heap**. Instance fields (such as `s1`) are stored **inside** the object on the heap.
 
@@ -1560,12 +1561,12 @@ class Test {
 
 **Flow (slide):** **`static Student s2`** → **Method Area** → references a **Student** on the **Heap**. **`Test t`** and **`Student s3`** are **locals** on the **Stack** → each references heap objects. **`Student s1`** is an **instance variable** inside the **Test** object on the **Heap** → references another **Student** on the **Heap**.
 
-| Symbol | Kind | Stored in | Points to |
-| ------ | ---- | --------- | --------- |
-| **`s2`** | static field | **Method Area** | **Student** object (Heap) |
-| **`t`** | local in `main` | **Stack Area** (frame) | **Test** object (Heap) |
-| **`s3`** | local in `main` | **Stack Area** (frame) | **Student** object (Heap) |
-| **`s1`** | instance field | inside **Test** object (Heap) | **Student** object (Heap) |
+| Symbol   | Kind            | Stored in                     | Points to                 |
+| -------- | --------------- | ----------------------------- | ------------------------- |
+| **`s2`** | static field    | **Method Area**               | **Student** object (Heap) |
+| **`t`**  | local in `main` | **Stack Area** (frame)        | **Test** object (Heap)    |
+| **`s3`** | local in `main` | **Stack Area** (frame)        | **Student** object (Heap) |
+| **`s1`** | instance field  | inside **Test** object (Heap) | **Student** object (Heap) |
 
 ```mermaid
 flowchart TB
@@ -1618,23 +1619,22 @@ pie showData
     "Stack — locals t, s3" : 30
 ```
 
-## Program to display heap memory statistics
-
-
-
-## How to set Maximum and Minimum heap size?
-
-<!-- description -->
-
----
 
 ## Execution Engine
 
-<!-- description -->
+1. This is the central component of JVM 
+2. Execution engine is responsible to execute java class files 
+3. Execution engine mainly contains 2 components 
+   a.Interpreter
+   b.JIT Compiler 
 
 ### Interpreter
 
-<!-- description -->
+It is responsible to rtead byte code and interpret into machine code(native code) and execute that machine code 
+line by line. The problem with interpreter is it interprets everytime even same method invoked multiple times which reduces performace of the system
+
+To overcome this problem sun people introduced JIT compiler in 1.1 version 
+
 
 ### JIT Compilers
 
@@ -1667,14 +1667,14 @@ flowchart TB
   end
 ```
 
-| Stage (top → bottom) | Role on the board |
-| -------------------- | ----------------- |
+| Stage (top → bottom)            | Role on the board                                                |
+| ------------------------------- | ---------------------------------------------------------------- |
 | **Intermediate code generator** | Translates bytecode into an internal intermediate representation |
-| **I.C** | Intermediate code passed to optimization |
-| **code optimizer** | Improves intermediate code for speed / size |
-| **profiler** | Identifies hot methods / branches to guide JIT |
-| **Target code generator** | Emits platform-specific instructions |
-| **m/c code** | Native **machine code** executed by the CPU |
+| **I.C**                         | Intermediate code passed to optimization                         |
+| **code optimizer**              | Improves intermediate code for speed / size                      |
+| **profiler**                    | Identifies hot methods / branches to guide JIT                   |
+| **Target code generator**       | Emits platform-specific instructions                             |
+| **m/c code**                    | Native **machine code** executed by the CPU                      |
 
 ```mermaid
 flowchart TB
@@ -1707,6 +1707,24 @@ pie showData
 ```
 
 ---
+1. The main purpose of JIT compiler is to improve performance 
+2. Internally JIT Compiler maintains a separate count for every method 
+3. Whenever JVM come across any method call first that method will be interpreted normally by the interpreter 
+   JIT compiler increments the corresponding count variable 
+4. This process will be continued for every method 
+5. Once if any method count reaches threshold value then JIT compiler identifies that method is repeatedly used 
+   method(hotspot)
+6. Immediately JIT compiles that method and generates the corresponding native code.Next time come across that 
+   method call then JVM uses that native code directly and executes it instead of interpreting once again so that performance of the system will be improved.
+7. The threshold count varies form JVM to JVM.
+8. Some advanced JIT compilers will recompile generated native code if count reaches threshold value second time
+   so that more optimized machine code will be generated
+9. Internally profiler, which is the part of JIT compiler is responsible to identify hotspots
+
+NOTE : 
+
+1. JVM interprets total program atleast once 
+2. JIT compilation is applicable only for repeatedly required methods not for every method
 
 ## Java Native Interface (JNI)
 
