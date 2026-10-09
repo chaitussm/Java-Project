@@ -75,6 +75,7 @@
     - [Stack Area](#stack-area)
       - [Stack frame Structure](#stack-frame-structure)
         - [Local variable Array](#local-variable-array)
+        - [Operand Stack](#operand-stack)
     - [PC Registers](#pc-registers)
     - [Native Method Stacks](#native-method-stacks)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
@@ -1365,13 +1366,90 @@ pie showData
     "Single-slot types (int, float, Object)" : 3
     "Two-slot types (double, long)" : 2
 ```
-===============
-Operand Stack : 
+##### Operand Stack
 
 1. JVM uses operand stack uses as wrokspace 
 2. Some instructions can push values to the operand stack and some instructions can pop values from operand stack and some instructions can perform required operations 
-3. 
 
+![Operand Stack — iload / iadd / istore example (whiteboard)](images/operand-stack-whiteboard.png)
+
+**Flow (slide):** Bytecode uses the **operand stack** as a workspace with the **local variable array**. Example: `iload_0` and `iload_1` **push** locals onto the stack, `iadd` **pops** two ints and **pushes** the sum, `istore_2` **pops** the result into local slot **2**.
+
+**Bytecode (whiteboard)**
+
+| Step | Instruction | Effect |
+| ---- | ----------- | ------ |
+| 1 | `iload_0` | Push local **0** (`100`) onto operand stack |
+| 2 | `iload_1` | Push local **1** (`90`) onto operand stack |
+| 3 | `iadd` | Pop two values, add, push **190** |
+| 4 | `istore_2` | Pop **190** into local **2** |
+
+```mermaid
+flowchart LR
+  subgraph BEFORE ["Before starting"]
+    direction TB
+    LV0["Local array: 0→100, 1→90, 2→—"]
+    OS0["Operand stack: empty"]
+  end
+```
+
+```mermaid
+flowchart TB
+  subgraph S1 ["After iload_0"]
+    LV1["Locals: 0=100, 1=90, 2=—"]
+    OS1["Stack: 100"]
+  end
+  subgraph S2 ["After iload_1"]
+    LV2["Locals: unchanged"]
+    OS2["Stack: 100, 90 (90 on top)"]
+  end
+  subgraph S3 ["After iadd"]
+    LV3["Locals: unchanged"]
+    OS3["Stack: 190"]
+  end
+  subgraph S4 ["After istore_2"]
+    LV4["Locals: 0=100, 1=90, 2=190"]
+    OS4["Stack: empty"]
+  end
+  S1 --> S2 --> S3 --> S4
+```
+
+| Phase | Local variable array (0 / 1 / 2) | Operand stack (bottom → top) |
+| ----- | -------------------------------- | ---------------------------- |
+| **Before starting** | 100 / 90 / — | *(empty)* |
+| **After `iload_0`** | 100 / 90 / — | 100 |
+| **After `iload_1`** | 100 / 90 / — | 100, 90 |
+| **After `iadd`** | 100 / 90 / — | 190 |
+| **After `istore_2`** | 100 / 90 / 190 | *(empty)* |
+
+```mermaid
+sequenceDiagram
+  participant LV as Local variable array
+  participant OS as Operand Stack
+  Note over LV: 0=100, 1=90
+  LV->>OS: iload_0 — push 100
+  LV->>OS: iload_1 — push 90
+  OS->>OS: iadd — pop 90, pop 100, push 190
+  OS->>LV: istore_2 — pop 190 → slot 2
+  Note over LV: 2=190
+  Note over OS: empty
+```
+
+```mermaid
+flowchart LR
+  PUSH["Push instructions — iload_*"] --> OS5["Operand Stack"]
+  POP["Pop / operate — iadd"] --> OS5
+  STORE["Pop to locals — istore_*"] --> LV5["Local variable array"]
+  OS5 --> POP
+```
+
+```mermaid
+pie showData
+    title Operand Stack example (whiteboard)
+    "Push from locals (iload)" : 40
+    "Operate on stack (iadd)" : 30
+    "Store to locals (istore)" : 30
+```
 
 ### PC Registers
 
