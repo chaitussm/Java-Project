@@ -1493,18 +1493,16 @@ flowchart TB
 ```
 
 ```mermaid
-flowchart LR
-  subgraph PER_JVM ["Per JVM (shared)"]
+flowchart TB
+  subgraph PER_JVM ["Per JVM — shared (NOTE 2)"]
     HEAP2["Heap Area"]
     MA2["Method Area"]
   end
-  subgraph PER_THREAD ["Per thread (private)"]
+  subgraph PER_THREAD ["Per thread — private (NOTE 2)"]
     STK2["Stack Area"]
     PC2["PC Register"]
     NMS2["Native Method Stack"]
   end
-  T1["Thread t1"] --> PER_THREAD
-  T2["Thread t2"] --> PER_THREAD2["Stack + PC + Native stack"]
 ```
 
 ```mermaid
