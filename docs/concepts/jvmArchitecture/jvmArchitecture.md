@@ -76,7 +76,7 @@
       - [Stack frame Structure](#stack-frame-structure)
         - [Local variable Array](#local-variable-array)
         - [Operand Stack](#operand-stack)
-    - [PC Registers](#pc-registers)
+    - [PC Registers(Program Counter Registers)](#pc-registersprogram-counter-registers)
     - [Native Method Stacks](#native-method-stacks)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
   - [How to set Maximum and Minimum heap size?](#how-to-set-maximum-and-minimum-heap-size)
@@ -1377,12 +1377,12 @@ pie showData
 
 **Bytecode (whiteboard)**
 
-| Step | Instruction | Effect |
-| ---- | ----------- | ------ |
-| 1 | `iload_0` | Push local **0** (`100`) onto operand stack |
-| 2 | `iload_1` | Push local **1** (`90`) onto operand stack |
-| 3 | `iadd` | Pop two values, add, push **190** |
-| 4 | `istore_2` | Pop **190** into local **2** |
+| Step | Instruction | Effect                                      |
+| ---- | ----------- | ------------------------------------------- |
+| 1    | `iload_0`   | Push local **0** (`100`) onto operand stack |
+| 2    | `iload_1`   | Push local **1** (`90`) onto operand stack  |
+| 3    | `iadd`      | Pop two values, add, push **190**           |
+| 4    | `istore_2`  | Pop **190** into local **2**                |
 
 ```mermaid
 flowchart LR
@@ -1414,13 +1414,13 @@ flowchart TB
   S1 --> S2 --> S3 --> S4
 ```
 
-| Phase | Local variable array (0 / 1 / 2) | Operand stack (bottom → top) |
-| ----- | -------------------------------- | ---------------------------- |
-| **Before starting** | 100 / 90 / — | *(empty)* |
-| **After `iload_0`** | 100 / 90 / — | 100 |
-| **After `iload_1`** | 100 / 90 / — | 100, 90 |
-| **After `iadd`** | 100 / 90 / — | 190 |
-| **After `istore_2`** | 100 / 90 / 190 | *(empty)* |
+| Phase                | Local variable array (0 / 1 / 2) | Operand stack (bottom → top) |
+| -------------------- | -------------------------------- | ---------------------------- |
+| **Before starting**  | 100 / 90 / —                     | *(empty)*                    |
+| **After `iload_0`**  | 100 / 90 / —                     | 100                          |
+| **After `iload_1`**  | 100 / 90 / —                     | 100, 90                      |
+| **After `iadd`**     | 100 / 90 / —                     | 190                          |
+| **After `istore_2`** | 100 / 90 / 190                   | *(empty)*                    |
 
 ```mermaid
 sequenceDiagram
@@ -1450,22 +1450,33 @@ pie showData
     "Operate on stack (iadd)" : 30
     "Store to locals (istore)" : 30
 ```
+================
+Frame Data : 
 
-### PC Registers
+1. Frame data contains all symbolic references related to that method 
+2. It also contains a refernce to exception table which provides corresponding catch block information in the case of exceptions 
 
-<!-- description -->
+
+### PC Registers(Program Counter Registers)
+
+1. For everyt thread a separate PC register will be created at the time of thread creation 
+2. PC registers contains the address of current executing instruction 
+3. Once instruction execution completes automatically PC register will be incremented to hold address of next instruction
 
 ### Native Method Stacks
 
-<!-- description -->
+1. For every thread JVM will create a separate native method stack 
+2. All native method calls invoked by the thread will be stored in the corresponding ntive method stack 
 
----
+NOTE: 
+
+1. Method area, heap area and stack area are considered as important memory areas with respect to programmer 
+2. Method area and heap area are per jvm whereas stack area , pc registers and native method stack are per thread
+  
 
 ## Program to display heap memory statistics
 
-<!-- description -->
 
----
 
 ## How to set Maximum and Minimum heap size?
 
