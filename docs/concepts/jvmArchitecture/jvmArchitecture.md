@@ -78,6 +78,7 @@
         - [Operand Stack](#operand-stack)
     - [PC Registers(Program Counter Registers)](#pc-registersprogram-counter-registers)
     - [Native Method Stacks](#native-method-stacks)
+      - [Where variables and objects live — Test example (whiteboard)](#where-variables-and-objects-live--test-example-whiteboard)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
   - [How to set Maximum and Minimum heap size?](#how-to-set-maximum-and-minimum-heap-size)
   - [Execution Engine](#execution-engine)
