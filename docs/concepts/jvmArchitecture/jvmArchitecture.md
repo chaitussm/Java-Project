@@ -73,6 +73,7 @@
     - [Method Area](#method-area)
     - [Heap Area](#heap-area)
     - [Stack Area](#stack-area)
+      - [Stack frame Structure](#stack-frame-structure)
     - [PC Registers](#pc-registers)
     - [Native Method Stacks](#native-method-stacks)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
@@ -1180,12 +1181,12 @@ flowchart TB
   end
 ```
 
-| Whiteboard element | Maps to notes |
-| ------------------ | ------------- |
-| **Stack memory** | JVM region for thread stacks (one stack per thread — point 1) |
-| **t1, t2, … tn** | Each **thread** gets its own **Runtime Stack** |
-| **Stack Frame** | One **method call** + **local variables** (points 2, 5) |
-| **Frames removed / empty stack** | Method return (point 3); thread exit (point 4) |
+| Whiteboard element               | Maps to notes                                                 |
+| -------------------------------- | ------------------------------------------------------------- |
+| **Stack memory**                 | JVM region for thread stacks (one stack per thread — point 1) |
+| **t1, t2, … tn**                 | Each **thread** gets its own **Runtime Stack**                |
+| **Stack Frame**                  | One **method call** + **local variables** (points 2, 5)       |
+| **Frames removed / empty stack** | Method return (point 3); thread exit (point 4)                |
 
 ```mermaid
 flowchart LR
@@ -1225,6 +1226,10 @@ pie showData
     "Stack Frame per method call" : 40
     "Thread-private / thread-safe data" : 25
 ```
+#### Stack frame Structure 
+
+Each stack frame contains 3 parts 
+
 
 ### PC Registers
 
