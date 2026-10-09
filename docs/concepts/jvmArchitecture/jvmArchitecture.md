@@ -1638,7 +1638,73 @@ pie showData
 
 ### JIT Compilers
 
-<!-- description -->
+The **Execution Engine** runs bytecode using an **Interpreter**, **JIT compiler(s)**, and **GC** (Garbage Collector) — as on the classroom board. **JIT** compiles **hot** bytecode into **native machine code** for faster execution after profiling.
+
+![Execution Engine — Interpreter, JIT compiler pipeline, GC (whiteboard)](images/jit-compiler-execution-engine-whiteboard.png)
+
+**Flow (slide — JIT compiler block):** **Intermediate code generator** → **I.C** (intermediate code) → **code optimizer** (with **profiler** feedback) → **Target code generator** → **m/c code** (machine code).
+
+```mermaid
+flowchart TB
+  subgraph EE ["Execution Engine (whiteboard)"]
+    direction LR
+    INT["Interpreter"]
+    subgraph JIT ["JIT compiler"]
+      direction TB
+      IC_GEN["Intermediate code generator"]
+      IC["I.C — intermediate code"]
+      OPT["code optimizer"]
+      PROF["profiler"]
+      TGT["Target code generator"]
+      MC["m/c code"]
+      IC_GEN --> IC --> OPT --> TGT --> MC
+      PROF -.-> OPT
+      PROF -.-> TGT
+    end
+    GC["GC"]
+    DOTS["…"]
+    INT --- JIT --- GC --- DOTS
+  end
+```
+
+| Stage (top → bottom) | Role on the board |
+| -------------------- | ----------------- |
+| **Intermediate code generator** | Translates bytecode into an internal intermediate representation |
+| **I.C** | Intermediate code passed to optimization |
+| **code optimizer** | Improves intermediate code for speed / size |
+| **profiler** | Identifies hot methods / branches to guide JIT |
+| **Target code generator** | Emits platform-specific instructions |
+| **m/c code** | Native **machine code** executed by the CPU |
+
+```mermaid
+flowchart TB
+  BC["Bytecode (hot method)"] --> IC_GEN2["Intermediate code generator"]
+  IC_GEN2 --> IC2["Intermediate code"]
+  IC2 --> OPT2["code optimizer"]
+  OPT2 --> TGT2["Target code generator"]
+  TGT2 --> NATIVE["Machine code (m/c code)"]
+  PROF2["profiler"] -.->|"hot spots"| OPT2
+```
+
+```mermaid
+sequenceDiagram
+  participant EE as Execution Engine
+  participant INT as Interpreter
+  participant JIT as JIT compiler
+  participant CPU as CPU
+  EE->>INT: run bytecode (initial / cold)
+  INT->>JIT: hot method detected (profiler)
+  JIT->>JIT: I.C → optimize → target code
+  JIT->>CPU: execute m/c code
+```
+
+```mermaid
+pie showData
+    title JIT compiler pipeline (whiteboard)
+    "Intermediate code generation" : 25
+    "Optimization + profiler" : 35
+    "Target / machine code" : 40
+```
 
 ---
 
