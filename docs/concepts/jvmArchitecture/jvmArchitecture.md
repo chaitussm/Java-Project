@@ -1728,16 +1728,13 @@ NOTE :
 
 ## Java Native Interface (JNI)
 
-<!-- description -->
+1. JNI acts as mediator for java method calls and corresponding native libraries i.e JNI is responsible to provide information about native libraries to the JVM 
+2. Native method library holds native libraries information
 
----
 
 ## Complete Architecture Diagram of JVM
 
-<!-- description -->
-
----
 
 ## Class File Structure
 
-<!-- description -->
+
