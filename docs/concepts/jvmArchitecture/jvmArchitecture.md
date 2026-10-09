@@ -74,6 +74,7 @@
     - [Heap Area](#heap-area)
     - [Stack Area](#stack-area)
       - [Stack frame Structure](#stack-frame-structure)
+        - [Local variable Array](#local-variable-array)
     - [PC Registers](#pc-registers)
     - [Native Method Stacks](#native-method-stacks)
   - [Program to display heap memory statistics](#program-to-display-heap-memory-statistics)
@@ -1283,12 +1284,87 @@ pie showData
     "Frame Data" : 30
 ```
 
--Local variable Array : 
+##### Local variable Array
+
 1. It contains all parameters and local variables of the method 
 2. Each slot in the array is of 4 bytes 
 3. Values of type int , float and reference(Object) occupy one entry in the array 
 4. Values of double and long occupy 2 consecutive entries in the array
 5. byte, short and char values will be converted to int type before storing and occupy one slot But the way of storing boolean values is varied form jvm to jvm.But most of the jvm's follow one slot for boolean values 
+
+![Local variable Array — slot layout for m1 (whiteboard)](images/local-variable-array-whiteboard.png)
+
+**Flow (slide):** Parameters and locals are laid out in **index order** in the local variable array. **`double`** and **`long`** use **two consecutive 4-byte slots**; **`int`**, **`float`**, and **reference** types use **one slot** each (points 2–4).
+
+**Example (whiteboard)**
+
+```java
+public void m1(int i, double d, Object o, float f) {
+    long x;
+    // ...
+}
+```
+
+| Index | Slot(s) | Type | Name |
+| ----- | ------- | ---- | ---- |
+| **0** | 1 | `int` | `i` |
+| **1–2** | 2 | `double` | `d` |
+| **3** | 1 | `Object` (reference) | `o` |
+| **4** | 1 | `float` | `f` |
+| **5–6** | 2 | `long` | `x` |
+
+```mermaid
+flowchart TB
+  subgraph LVA ["Local variable Array — m1 (whiteboard)"]
+    direction LR
+    S0["0: i"]
+    S1["1: d"]
+    S2["2: d"]
+    S3["3: o"]
+    S4["4: f"]
+    S5["5: x"]
+    S6["6: x"]
+  end
+```
+
+```mermaid
+flowchart LR
+  subgraph ONE ["1 slot — 4 bytes (point 3)"]
+    I["int i"]
+    F["float f"]
+    R["Object o"]
+  end
+  subgraph TWO ["2 slots — 8 bytes (point 4)"]
+    D["double d"]
+    L["long x"]
+  end
+```
+
+```mermaid
+flowchart TB
+  PARAMS["Method parameters — left to right"] --> IDX["Assign rising slot indices"]
+  LOCALS["Local variables declared in body"] --> IDX
+  IDX --> RULE1["int / float / reference → 1 slot"]
+  IDX --> RULE2["long / double → 2 consecutive slots"]
+```
+
+```mermaid
+sequenceDiagram
+  participant M as m1(...)
+  participant LV as Local variable Array
+  M->>LV: slot 0 ← int i
+  M->>LV: slots 1–2 ← double d
+  M->>LV: slot 3 ← Object o
+  M->>LV: slot 4 ← float f
+  M->>LV: slots 5–6 ← long x
+```
+
+```mermaid
+pie showData
+    title Local variable Array slots (m1 example)
+    "Single-slot types (int, float, Object)" : 3
+    "Two-slot types (double, long)" : 2
+```
 
 ### PC Registers
 
