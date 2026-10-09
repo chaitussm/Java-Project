@@ -1734,6 +1734,127 @@ NOTE :
 
 ## Complete Architecture Diagram of JVM
 
+End-to-end view from **`.java` source** through **`javac`**, **`.class`**, the **Class Loader Subsystem**, **runtime memory areas**, **Execution Engine** (Interpreter, JIT, GC), and **JNI** → **Native method libraries** — as on the classroom whiteboard.
+
+![Complete Architecture of JVM (whiteboard)](images/complete-jvm-architecture-whiteboard.png)
+
+**Flow (slide):** **Java source** → **javac** → **`.class`** → **Class Loader Subsystem** (Loading → Linking → Initialization) ↔ **various memory areas** ↔ **Execution Engine** ↔ **JNI** ↔ **Native method libraries**.
+
+```mermaid
+flowchart TB
+  SRC["Java source file (.java)"]
+  JAVAC["Java compiler (javac)"]
+  CLASS["Java class file (.class)"]
+  SRC --> JAVAC --> CLASS
+
+  CLASS --> CLS["Class Loader Subsystem"]
+
+  subgraph CLS_BOX ["Class Loader Subsystem"]
+    direction TB
+    subgraph LOAD ["Loading"]
+      BOOT["Bootstrap C.L"]
+      EXT["Extension C.L"]
+      APP["Application C.L"]
+    end
+    subgraph LINK ["Linking"]
+      VER["Verify"]
+      PRE["Prepare"]
+      RES["Resolve"]
+    end
+    INIT["Initialization"]
+    LOAD --> LINK --> INIT
+  end
+
+  CLS --> CLS_BOX
+
+  subgraph RUNTIME ["Various memory areas of JVM"]
+    direction LR
+    MA["Method Area — class data"]
+    HEAP["Heap Area — object data"]
+    STACK["Stack Area — t1, t2, … tn"]
+    PC["PC Registers — per thread"]
+    NMS["Native method stacks — t1, t2, … tn"]
+  end
+
+  CLS_BOX <-->|"load / store metadata & objects"| RUNTIME
+
+  subgraph EE ["Execution Engine"]
+    direction LR
+    INT["Interpreter"]
+    subgraph JIT ["JIT compiler"]
+      direction TB
+      ICG["Intermediate code generator"]
+      IC["I.C"]
+      OPT["Code optimizer"]
+      TCG["Target code generator"]
+      MC["m/c code / native code"]
+      ICG --> IC --> OPT --> TCG --> MC
+      PROF["profiler"] -.-> OPT
+    end
+    GC["GC …"]
+    INT --- JIT --- GC
+  end
+
+  RUNTIME <-->|"bytecode execution"| EE
+
+  JNI["Java Native Interface (JNI)"]
+  NAT["Native method libraries"]
+
+  EE <-->|"native calls"| JNI
+  JNI <-->|"platform libraries"| NAT
+```
+
+| Region (whiteboard) | Main pieces |
+| ------------------- | ----------- |
+| **Compile path** | `.java` → **javac** → `.class` |
+| **Class Loader Subsystem** | **Loading** (Bootstrap / Extension / Application C.L) → **Linking** (Verify, Prepare, Resolve) → **Initialization** |
+| **Method Area** | **class data** (per loaded type) |
+| **Heap Area** | **object data** (instances, arrays) |
+| **Stack Area** | Per-thread stacks **t1 … tn**; frame = **L.V.A**, **O.S**, **F.D** |
+| **PC Registers** | **PC Register for t1 … tn** |
+| **Native method stacks** | Native call stacks per thread |
+| **Execution Engine** | **Interpreter**, **JIT** pipeline, **profiler**, **GC** |
+| **JNI** | Bridge to **Native method libraries** |
+
+```mermaid
+flowchart TB
+  subgraph STACK_DETAIL ["Stack Area — Stack Frame (whiteboard)"]
+    direction TB
+    LVA["L.V.A — Local variable Array"]
+    OS["O.S — Operand Stack"]
+    FD["F.D — Frame Data"]
+    LVA --> OS --> FD
+  end
+```
+
+```mermaid
+sequenceDiagram
+  participant Dev as Developer
+  participant JVM as JVM
+  participant CLS as Class Loader Subsystem
+  participant MEM as Memory areas
+  participant EE as Execution Engine
+  participant JNI as JNI
+  participant NAT as Native libraries
+  Dev->>JVM: .class bytes
+  JVM->>CLS: load → link → initialize
+  CLS->>MEM: class data, objects, frames
+  JVM->>EE: execute bytecode
+  EE->>MEM: read / update runtime data
+  EE->>JNI: native method needed
+  JNI->>NAT: call native code
+  NAT-->>JNI: result
+  JNI-->>EE: return to Java
+```
+
+```mermaid
+pie showData
+    title Complete JVM architecture (whiteboard focus)
+    "Class loading + linking" : 25
+    "Runtime memory areas" : 30
+    "Execution Engine + JIT" : 30
+    "JNI + native libraries" : 15
+```
 
 ## Class File Structure
 
