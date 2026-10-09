@@ -1539,6 +1539,84 @@ pie showData
     "Per thread — Stack + PC + Native stack" : 60
 ```
 
+#### Where variables and objects live — `Test` example (whiteboard)
+
+Static fields sit in the **Method Area**; local variables sit in a **Stack** frame; **objects** created with `new` live on the **Heap**. Instance fields (such as `s1`) are stored **inside** the object on the heap.
+
+```java
+class Test {
+    Student s1 = new Student();
+    static Student s2 = new Student();
+
+    public static void main(String[] args) {
+        Test t = new Test();
+        Student s3 = new Student();
+    }
+}
+```
+
+![Test — Method Area, Stack Area, and Heap Area (whiteboard)](images/test-class-memory-areas-whiteboard.png)
+
+**Flow (slide):** **`static Student s2`** → **Method Area** → references a **Student** on the **Heap**. **`Test t`** and **`Student s3`** are **locals** on the **Stack** → each references heap objects. **`Student s1`** is an **instance variable** inside the **Test** object on the **Heap** → references another **Student** on the **Heap**.
+
+| Symbol | Kind | Stored in | Points to |
+| ------ | ---- | --------- | --------- |
+| **`s2`** | static field | **Method Area** | **Student** object (Heap) |
+| **`t`** | local in `main` | **Stack Area** (frame) | **Test** object (Heap) |
+| **`s3`** | local in `main` | **Stack Area** (frame) | **Student** object (Heap) |
+| **`s1`** | instance field | inside **Test** object (Heap) | **Student** object (Heap) |
+
+```mermaid
+flowchart TB
+  subgraph MA_EX ["Method Area"]
+    S2["static Student s2"]
+  end
+  subgraph ST_EX ["Stack Area — main frame"]
+    T["Test t"]
+    S3["Student s3"]
+  end
+  subgraph HEAP_EX ["Heap Area"]
+    STU_A["Student object"]
+    STU_B["Student object"]
+    STU_C["Student object"]
+    subgraph TEST_OBJ ["Test object"]
+      S1["instance Student s1"]
+    end
+  end
+  S2 --> STU_A
+  T --> TEST_OBJ
+  S3 --> STU_B
+  S1 --> STU_C
+```
+
+```mermaid
+flowchart LR
+  NEW["new Student() / new Test()"] --> HEAP["Heap — object bodies"]
+  STATIC["static field"] --> MA["Method Area"]
+  LOCAL["local variable"] --> STACK["Stack frame"]
+  INST["instance field"] --> HEAP
+```
+
+```mermaid
+sequenceDiagram
+  participant MA as Method Area
+  participant ST as Stack
+  participant HP as Heap
+  Note over MA: s2 holds ref to Student #1
+  MA->>HP: static s2 → Student
+  ST->>HP: local t → new Test (contains s1)
+  HP->>HP: s1 → new Student
+  ST->>HP: local s3 → Student
+```
+
+```mermaid
+pie showData
+    title Test example — references by area
+    "Heap — objects + instance fields" : 50
+    "Method Area — static s2" : 20
+    "Stack — locals t, s3" : 30
+```
+
 ## Program to display heap memory statistics
 
 
