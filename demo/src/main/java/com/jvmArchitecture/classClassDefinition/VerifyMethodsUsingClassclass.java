@@ -1,4 +1,4 @@
-package com.jvmArchitecture.ClassclassDefinition;
+package com.jvmArchitecture.classClassDefinition;
 
 import java.lang.reflect.Method;
 

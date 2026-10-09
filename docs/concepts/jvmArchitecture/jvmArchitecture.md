@@ -1073,11 +1073,11 @@ flowchart TB
   end
 ```
 
-| Whiteboard element | Meaning |
-| ------------------ | ------- |
-| **Outer boundary — Heap Area** | Single per-JVM region for object instances (point 1) |
-| **Each inner shape — object data** | One object’s instance data on the heap (point 3) |
-| **Multiple shapes** | Many objects (and arrays — point 4) allocated over time |
+| Whiteboard element                 | Meaning                                                 |
+| ---------------------------------- | ------------------------------------------------------- |
+| **Outer boundary — Heap Area**     | Single per-JVM region for object instances (point 1)    |
+| **Each inner shape — object data** | One object’s instance data on the heap (point 3)        |
+| **Multiple shapes**                | Many objects (and arrays — point 4) allocated over time |
 
 ```mermaid
 flowchart LR
@@ -1120,9 +1120,37 @@ pie showData
     "Shared across threads" : 30
 ```
 
+1. A java application can communicate with JVM by using Runtime object 
+2. Runtime class present in java.lang package and it is a singleton class 
+3. We can create Runtime Object as follows 
+   Runtime R = Runtime.getRuntime();
+4. once we get runtime objects we can call the following methods on that object 
+5. >R.maxMemory():
+   It returns the number of bytes of maxmemory allocated to the heap 
+6. >R.totalMemory():
+   It returns number of bytes of total memory allocated to the heap(initial memory)
+7. >R.freeMemory():
+   It returns number of bytes of free memory present in the heap
+8. Heap memory is finite memory but based on our requirement we can set maximum and minimum heap sizes i.e 
+   We can increase or decrease the heap size based on our requirement 
+9. We can use the following flags with java command
+   -Xmx : to set maximum heap size (maxMemory)
+   Ex: java -Xmx512M HeapDemo 
+   This command will set maximum heap size as 512 MB
+   -Xms : we can use this command to set minimum heap size 
+   Ex: java -Xms64M HeapDemo
+   To set minimum heap size as 64 MB i.e totalMemory
+
+   
 ### Stack Area
 
-<!-- description -->
+1. For every thread jvm will create a separate stack at the time of thread creation 
+2. Each and every method call performed by that thread will be stored in the stack including loacl variables  also
+3. After completing a method the corresponding entry from the stack will be removed 
+4. After completing all method calls the stakc will become empty and that empty stack will be destroyed by the jvm just before terminating the thread.
+5. Each entry in the stack is called stack frame or activation record 
+6. The data stored in the stack is available for the corresponding thread and not available to the remaining threads, hence this data is thread safe
+7.  
 
 ### PC Registers
 

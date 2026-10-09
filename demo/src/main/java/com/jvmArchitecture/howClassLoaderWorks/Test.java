@@ -1,4 +1,4 @@
-package com.jvmArchitecture.HowClassLoaderWorks;
+package com.jvmArchitecture.howClassLoaderWorks;
 
 /**
  * Classroom format — assume {@code Customer.class} is on extension and application class paths;
