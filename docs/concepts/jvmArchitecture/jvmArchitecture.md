@@ -88,6 +88,10 @@
   - [Class File Structure](#class-file-structure)
     - [magic\_number](#magic_number)
     - [minor\_version and major\_version](#minor_version-and-major_version)
+    - [constant\_pool\[\]](#constant_pool)
+    - [access\_flags](#access_flags)
+    - [this\_class](#this_class)
+    - [super\_class](#super_class)
 <!-- /TOC -->
 
 ---
@@ -1892,10 +1896,10 @@ Whenever we are executing the java class if jvm unable to find valid magic numbe
 
 **Flow (slide):** JVM reads **`0xCAFEBABE`** first; the next bytes are **minor** and **major** version (**M.m**). A **newer JVM** can usually run **older** compiler output; **older JVM** cannot run **newer** class file versions.
 
-| Compile → run (whiteboard) | Supported? |
-| -------------------------- | ---------- |
-| **Javac 1.6 V** → **Java 1.7 V** | Yes |
-| **Javac 1.7 V** → **Java 1.6 V** | No |
+| Compile → run (whiteboard)       | Supported? |
+| -------------------------------- | ---------- |
+| **Javac 1.6 V** → **Java 1.7 V** | Yes        |
+| **Javac 1.7 V** → **Java 1.6 V** | No         |
 
 ```mermaid
 flowchart TB
@@ -1918,9 +1922,9 @@ flowchart TB
 
 | Java version (slide) | **M.m** (major.minor) |
 | -------------------- | --------------------- |
-| **1.5 V** | **49.0** |
-| **1.6 V** | **50.0** |
-| **1.7 V** | **51.0** |
+| **1.5 V**            | **49.0**              |
+| **1.6 V**            | **50.0**              |
+| **1.7 V**            | **51.0**              |
 
 ```mermaid
 flowchart LR
@@ -1954,4 +1958,26 @@ pie showData
 ### minor_version and major_version
 
 
-major and minor vesrions represtn .class file version jvm will use these versions to identify which version og copiler generates the current .class file 
+major and minor versions represents .class file version jvm will use these versions to identify which version og copiler generates the current .class file 
+
+NOTE : 
+
+lower version compiler generated .class files can be run by higher version jvm but higher version compiler generated .class files can't be run lower version jvm's 
+
+if we are trying to run we will get runtime exception saying `java.lang.UnsupportedClassVersionError`
+
+### constant_pool[] 
+
+It represents information about constants present in constant pool 
+
+### access_flags
+
+It provides information about modifiers which are declared to the class
+
+### this_class 
+
+It represents fully qualified name of the class 
+
+### super_class 
+
+It represents fully quialified name of immediate super class of current class 
