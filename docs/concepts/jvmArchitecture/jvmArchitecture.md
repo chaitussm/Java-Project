@@ -1981,3 +1981,62 @@ It represents fully qualified name of the class
 ### super_class 
 
 It represents fully quialified name of immediate super class of current class 
+
+![super_class and this_class — Test.class example (whiteboard)](images/super-class-whiteboard.png)
+
+**Flow (slide):** In **`Test.class`**, **`this_class`** names the current class (**`Test`**); **`super_class`** names the **immediate superclass** (**`Object`** when `Test` does not declare `extends`).
+
+| Class file field | Whiteboard example (`Test.class`) |
+| ---------------- | --------------------------------- |
+| **`this_class`** | **`Test`** — current class |
+| **`super_class`** | **`Object`** — immediate super class |
+
+```mermaid
+flowchart LR
+  CF["Test.class"]
+  CF --> THIS["this_class : Test"]
+  CF --> SUPER["super_class : Object"]
+```
+
+```mermaid
+flowchart TB
+  subgraph FILE ["Class file metadata"]
+    TC["this_class → constant pool entry for Test"]
+    SC["super_class → constant pool entry for java/lang/Object"]
+  end
+  TC --> TEST["Test"]
+  SC --> OBJ["Object"]
+  TEST -->|"extends (default)"| OBJ
+```
+
+```java
+class Test {
+    // no extends clause → super_class in .class is Object
+}
+```
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant CF as Test.class
+  participant CP as constant_pool
+  JVM->>CF: read this_class index
+  CF->>CP: resolve name → Test
+  JVM->>CF: read super_class index
+  CF->>CP: resolve name → java/lang/Object
+  Note over JVM: Builds inheritance link Test → Object
+```
+
+```mermaid
+flowchart BT
+  OBJ["java.lang.Object"]
+  TEST["Test"]
+  TEST -->|"super_class"| OBJ
+```
+
+```mermaid
+pie showData
+    title Class identity in .class file (slide)
+    "this_class — current type" : 50
+    "super_class — parent type" : 50
+```
