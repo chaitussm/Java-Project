@@ -1888,6 +1888,69 @@ NOTE :
 
 Whenever we are executing the java class if jvm unable to find valid magic number then we will get runtime exception saying `java.lang.ClassFormatError`:Incompatible magic value
 
+![Class file — magic number context, M.m versions, javac/runtime compatibility (whiteboard)](images/classfile-magic-version-whiteboard.png)
+
+**Flow (slide):** JVM reads **`0xCAFEBABE`** first; the next bytes are **minor** and **major** version (**M.m**). A **newer JVM** can usually run **older** compiler output; **older JVM** cannot run **newer** class file versions.
+
+| Compile → run (whiteboard) | Supported? |
+| -------------------------- | ---------- |
+| **Javac 1.6 V** → **Java 1.7 V** | Yes |
+| **Javac 1.7 V** → **Java 1.6 V** | No |
+
+```mermaid
+flowchart TB
+  BYTES[".class file bytes"]
+  MAGIC["magic_number — 0xCAFEBABE"]
+  CHECK{"Valid magic?"}
+  OK["Continue — read minor_version, major_version"]
+  ERR["ClassFormatError: Incompatible magic value"]
+  BYTES --> MAGIC --> CHECK
+  CHECK -->|yes| OK
+  CHECK -->|no| ERR
+```
+
+```mermaid
+flowchart TB
+  MM["M.m — class file version"]
+  MM --> MAJ["Major version"]
+  MM --> MIN["minor version"]
+```
+
+| Java version (slide) | **M.m** (major.minor) |
+| -------------------- | --------------------- |
+| **1.5 V** | **49.0** |
+| **1.6 V** | **50.0** |
+| **1.7 V** | **51.0** |
+
+```mermaid
+flowchart LR
+  J6["Javac 1.6"] -->|"class 50.x"| R7["Java 1.7 runtime"]
+  J7["Javac 1.7"] -->|"class 51.x"| R6["Java 1.6 runtime"]
+  R7 --> PASS["Runs — backward compatible"]
+  R6 --> FAIL["Fails — version too new"]
+```
+
+```mermaid
+sequenceDiagram
+  participant JVM
+  participant CF as .class file
+  JVM->>CF: read 4 bytes
+  alt magic == 0xCAFEBABE
+    JVM->>CF: read minor_version, major_version (M.m)
+    JVM->>JVM: verify runtime supports major
+  else invalid magic
+    JVM-->>JVM: ClassFormatError
+  end
+```
+
+```mermaid
+pie showData
+    title Class file header after magic (conceptual)
+    "magic_number — 0xCAFEBABE" : 25
+    "major_version (M)" : 40
+    "minor_version (m)" : 35
+```
+
 ### minor_version and major_version
 
 
