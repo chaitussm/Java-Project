@@ -92,6 +92,14 @@
     - [access\_flags](#access_flags)
     - [this\_class](#this_class)
     - [super\_class](#super_class)
+    - [interface\_count](#interface_count)
+    - [interface\_array](#interface_array)
+    - [fields\_count](#fields_count)
+    - [fields\[\]](#fields)
+    - [method\_count](#method_count)
+    - [methods\_array](#methods_array)
+    - [attributes\_count](#attributes_count)
+    - [attributes\[\]](#attributes)
 <!-- /TOC -->
 
 ---
@@ -1986,9 +1994,9 @@ It represents fully quialified name of immediate super class of current class
 
 **Flow (slide):** In **`Test.class`**, **`this_class`** names the current class (**`Test`**); **`super_class`** names the **immediate superclass** (**`Object`** when `Test` does not declare `extends`).
 
-| Class file field | Whiteboard example (`Test.class`) |
-| ---------------- | --------------------------------- |
-| **`this_class`** | **`Test`** — current class |
+| Class file field  | Whiteboard example (`Test.class`)    |
+| ----------------- | ------------------------------------ |
+| **`this_class`**  | **`Test`** — current class           |
 | **`super_class`** | **`Object`** — immediate super class |
 
 ```mermaid
@@ -2040,3 +2048,37 @@ pie showData
     "this_class — current type" : 50
     "super_class — parent type" : 50
 ```
+
+### interface_count
+
+It returns number of interfaces implemented by current class 
+
+### interface_array
+
+It returns interfaces information implemented by current class 
+
+### fields_count 
+
+It represents number of fields(static varibles) present in current class 
+
+### fields[]
+
+It represents fields information present in current class 
+
+### method_count 
+
+It represents number of methods present in current class 
+
+### methods_array
+
+It provides information about all methods present in current class 
+
+### attributes_count 
+
+It returns number of attributes presnt in current class 
+
+### attributes[]
+
+It provides information about all attributes present in current class 
+
+>javap -verbose Test.class
